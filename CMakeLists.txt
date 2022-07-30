@@ -10,3 +10,4 @@ set(project HYPED)
 project(${project} CXX)
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/lib)
+add_subdirectory(${CMAKE_SOURCE_DIR}/src)
