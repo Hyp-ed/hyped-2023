@@ -7,5 +7,6 @@ include_directories(${target}
     "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 target_link_libraries(${target}
+    hyped_core
     hyped_io
 )

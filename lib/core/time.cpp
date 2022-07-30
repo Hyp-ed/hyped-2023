@@ -6,7 +6,7 @@ Time::Time()
 {
 }
 
-TimePoint Time::now()
+TimePoint Time::now() const
 {
   return std::chrono::high_resolution_clock::now();
 }

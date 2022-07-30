@@ -13,14 +13,15 @@ using TimePoint = std::chrono::high_resolution_clock::time_point;
 /**
  * @brief Difference between points in time; nanosecond precision.
  */
-using TimeSpan = std::chrono::high_resolution_clock::duration;
+using Duration = std::chrono::high_resolution_clock::duration;
 
 /**
  * @brief Time provider allowing the user to obtain the current time of the system.
  * We abtract this away instead of using `Time` directly in order to allow testability.
  */
 class ITime {
-  virtual TimePoint now() = 0;
+ public:
+  virtual TimePoint now() const = 0;
 };
 
 /**
@@ -28,8 +29,9 @@ class ITime {
  * ITime interface.
  */
 class Time : public ITime {
+ public:
   Time();
-  virtual TimePoint now();
+  virtual TimePoint now() const;
 };
 
 }  // namespace hyped::core
