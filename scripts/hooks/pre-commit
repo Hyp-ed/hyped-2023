@@ -1,0 +1,4 @@
+#!/bin/sh
+
+FILES=$(git diff --cached --name-only)
+clang-format -Werror --dry-run $FILES
