@@ -1,4 +1,4 @@
 #!/bin/sh
 
-FILES=$(git diff --cached --name-only)
+FILES=$(git diff --cached --name-only | grep "*.[ch]pp$")
 clang-format -Werror --dry-run $FILES
