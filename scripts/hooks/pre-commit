@@ -2,3 +2,5 @@
 
 FILES=$(git diff --cached --name-only | grep "*.[ch]pp$")
 clang-format -Werror --dry-run $FILES
+
+ctest --test-dir build -j
