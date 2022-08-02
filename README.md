@@ -11,7 +11,7 @@
 To pepare your project:
 
 ```
-./scripts/setup.sh
+./scripts/setup
 ```
 
 To create the build files:
