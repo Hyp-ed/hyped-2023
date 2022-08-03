@@ -2,7 +2,7 @@
 
 namespace hyped::core {
 
-Timer::Timer(const Time &time) : time_(time)
+Timer::Timer(const ITimeSource &time) : time_(time)
 {
 }
 

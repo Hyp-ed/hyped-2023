@@ -1,12 +1,12 @@
-#include "time.hpp"
+#include "wall_clock.hpp"
 
 namespace hyped::core {
 
-Time::Time()
+WallClock::WallClock()
 {
 }
 
-TimePoint Time::now() const
+TimePoint WallClock::now() const
 {
   return std::chrono::high_resolution_clock::now();
 }

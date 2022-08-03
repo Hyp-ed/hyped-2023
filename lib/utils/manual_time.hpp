@@ -2,7 +2,7 @@
 
 namespace hyped::utils {
 
-class ManualTime : public core::ITime {
+class ManualTime : public core::ITimeSource {
  public:
   ManualTime();
   virtual core::TimePoint now() const;
