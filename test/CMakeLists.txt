@@ -7,5 +7,4 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(googletest)
 include(GoogleTest)
 
-add_subdirectory(core)
 add_subdirectory(utils)

@@ -2,11 +2,12 @@
 
 #include <core/timer.hpp>
 #include <core/types.hpp>
+#include <core/wall_clock.hpp>
 #include <io/gpio.hpp>
 
 int main(int argc, char **argv)
 {
-  hyped::core::Time time;
+  hyped::core::WallClock time;
   hyped::core::Timer timer(time);
   const auto execution_time = timer.measure_execution_time([]() {
     hyped::io::Gpio gpio;
