@@ -5,10 +5,9 @@
 
 #include <core/time.hpp>
 
-namespace hyped::utils {
+namespace hyped::helper {
 
-ManualTime::ManualTime()
-    : current_time_{std::chrono::high_resolution_clock::from_time_t(0)}
+ManualTime::ManualTime() : current_time_{std::chrono::high_resolution_clock::from_time_t(0)}
 {
 }
 
@@ -22,4 +21,4 @@ void ManualTime::set_time(const core::TimePoint time_point)
   current_time_ = time_point;
 }
 
-}  // namespace hyped::utils
+}  // namespace hyped::helper

@@ -1,6 +1,6 @@
 #include "naive_navigator.hpp"
 
-namespace hyped::utils {
+namespace hyped::helper {
 
 NaiveNavigator::NaiveNavigator() : current_trajectory_{}
 {
@@ -16,4 +16,4 @@ void NaiveNavigator::update(const navigator::Trajectory &current_trajectory)
   current_trajectory_ = current_trajectory;
 }
 
-}  // namespace hyped::utils
+}  // namespace hyped::helper

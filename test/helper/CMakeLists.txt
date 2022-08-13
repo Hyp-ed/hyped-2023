@@ -1,4 +1,4 @@
-set(target hyped_test_utils)
+set(target hyped_test_helper)
 file(GLOB code "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
 add_executable(${target} ${code})
 target_include_directories(${target}
@@ -8,6 +8,6 @@ target_include_directories(${target}
 )
 target_link_libraries(${target}
     GTest::gtest_main
-    hyped_utils
+    hyped_helper
 )
 gtest_discover_tests(${target})

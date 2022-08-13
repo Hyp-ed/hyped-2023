@@ -1,6 +1,6 @@
 #include <core/time.hpp>
 
-namespace hyped::utils {
+namespace hyped::helper {
 
 class ManualTime : public core::ITimeSource {
  public:
@@ -12,4 +12,4 @@ class ManualTime : public core::ITimeSource {
   core::TimePoint current_time_;
 };
 
-}  // namespace hyped::utils
+}  // namespace hyped::helper
