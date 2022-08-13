@@ -4,14 +4,14 @@
 
 namespace hyped::helper {
 
-class NaiveNavigator : public navigator::INavigator<navigator::Trajectory> {
+class NaiveNavigator : public navigation::INavigator<navigation::Trajectory> {
  public:
   NaiveNavigator();
-  virtual navigator::Trajectory currentTrajectory();
-  virtual void update(const navigator::Trajectory &current_trajectory);
+  virtual navigation::Trajectory currentTrajectory();
+  virtual void update(const navigation::Trajectory &current_trajectory);
 
  private:
-  navigator::Trajectory current_trajectory_;
+  navigation::Trajectory current_trajectory_;
 };
 
 }  // namespace hyped::helper

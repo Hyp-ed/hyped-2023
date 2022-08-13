@@ -6,12 +6,12 @@ NaiveNavigator::NaiveNavigator() : current_trajectory_{}
 {
 }
 
-navigator::Trajectory NaiveNavigator::currentTrajectory()
+navigation::Trajectory NaiveNavigator::currentTrajectory()
 {
   return current_trajectory_;
 }
 
-void NaiveNavigator::update(const navigator::Trajectory &current_trajectory)
+void NaiveNavigator::update(const navigation::Trajectory &current_trajectory)
 {
   current_trajectory_ = current_trajectory;
 }
