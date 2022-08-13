@@ -8,3 +8,4 @@ FetchContent_MakeAvailable(googletest)
 include(GoogleTest)
 
 add_subdirectory(helper)
+add_subdirectory(navigation)
