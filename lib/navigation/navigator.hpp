@@ -5,9 +5,9 @@
 namespace hyped::navigation {
 
 struct Trajectory {
-  core::Displacement displacement;
-  core::Velocity velocity;
-  core::Acceleration acceleration;
+  core::Float displacement;
+  core::Float velocity;
+  core::Float acceleration;
 };
 
 inline bool operator==(const Trajectory &lhs, const Trajectory &rhs)
