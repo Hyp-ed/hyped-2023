@@ -7,13 +7,16 @@ namespace hyped::test {
 
 TEST(KalmanFilter, construction)
 {
+  using KalmanFilter     = navigation::KalmanFilter<3, 3>;
   const auto manual_time = std::make_shared<helper::ManualTime>();
-  navigation::KalmanFilter<3, 3>::StateVector initial_state;
-  navigation::KalmanFilter<3, 3>::ErrorCovarianceMatrix initial_error_covariance;
-  navigation::KalmanFilter<3, 3> kalman_filter(
-    manual_time, initial_state, initial_error_covariance, [](const core::Duration dt) {
-      return navigation::KalmanFilter<3, 3>::StateTransitionMatrix();
-    });
+  KalmanFilter::StateVector initial_state;
+  KalmanFilter::ErrorCovarianceMatrix initial_error_covariance;
+  KalmanFilter kalman_filter(manual_time, initial_state, initial_error_covariance);
+  kalman_filter.filter(KalmanFilter::StateTransitionMatrix(),
+                       KalmanFilter::StateTransitionCovarianceMatrix(),
+                       KalmanFilter::MeasurementMatrix(),
+                       KalmanFilter::MeasurementNoiseCovarianceMatrix(),
+                       KalmanFilter::StateVector());
 }
 
 }  // namespace hyped::test

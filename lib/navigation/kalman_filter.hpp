@@ -23,36 +23,47 @@ class KalmanFilter {
   using MeasurementNoiseCovarianceMatrix
     = Eigen::Matrix<core::Float, measurement_dimension, measurement_dimension>;
 
-  KalmanFilter(
-    std::shared_ptr<core::ITimeSource> time_source,
-    const StateVector initial_state,
-    const ErrorCovarianceMatrix initial_error_covariance,
-    const std::function<StateTransitionMatrix(const core::Duration dt)> transition_matrix_by_time)
+  KalmanFilter(std::shared_ptr<core::ITimeSource> time_source,
+               const StateVector initial_state,
+               const ErrorCovarianceMatrix initial_error_covariance)
       : time_source_(time_source),
         last_update_time_(time_source->now()),
-        state_vector_(initial_state),
-        error_covariance_(initial_error_covariance),
-        transition_matrix_by_time_(transition_matrix_by_time)
+        state_estimate_(initial_state),
+        error_covariance_(initial_error_covariance)
   {
     static_assert(state_dimension > 0);
     static_assert(measurement_dimension > 0);
   }
 
-  void filter(const MeasurementVector &measurement)
+  void filter(const StateTransitionMatrix &transition_matrix,
+              const StateTransitionCovarianceMatrix &transition_covariance,
+              const MeasurementMatrix &measurement_matrix,
+              const MeasurementNoiseCovarianceMatrix &measurement_noise_covariance,
+              const MeasurementVector &measurement)
   {
-    const auto current_update_time = time_source_->now();
-    const auto dt                  = current_update_time - last_update_time_;
+    const auto current_update_time    = time_source_->now();
+    const auto dt                     = current_update_time - last_update_time_;
+    const auto apriori_state_estimate = transition_matrix * state_estimate_;
+    const auto apriori_error_covariance
+      = (transition_matrix.transpose() * error_covariance_ * transition_matrix)
+        + transition_covariance;
+    const auto kalman_gain
+      = apriori_error_covariance * measurement_matrix.transpose()
+        * (measurement_matrix * apriori_error_covariance * measurement_matrix.transpose()
+           + measurement_noise_covariance)
+            .inverse();
+    state_estimate_ = apriori_state_estimate
+                      + kalman_gain * (measurement - measurement_matrix * apriori_state_estimate);
   }
 
-  const StateVector &getStateEstimate() const { return state_vector_; }
+  const StateVector &getStateEstimate() const { return state_estimate_; }
   const ErrorCovarianceMatrix &getErrorCovariance() const { return error_covariance_; }
 
  private:
   std::shared_ptr<core::ITimeSource> time_source_;
   core::TimePoint last_update_time_;
-  StateVector state_vector_;
+  StateVector state_estimate_;
   ErrorCovarianceMatrix error_covariance_;
-  std::function<StateTransitionMatrix(const core::Duration dt)> transition_matrix_by_time_;
 };
 
 }  // namespace hyped::navigation
