@@ -1,10 +1,11 @@
 #pragma once
 
 #include <cstdint>
-#include <vector>
 #include <cstdio>
+#include <cstdlib>  // for atoi
 
 namespace hyped::io {
+
 class Adc {
  public:
   /**
@@ -22,10 +23,10 @@ class Adc {
 
 
   /**
-   * @param fd is a file path to where we read the raw values from
+   * @param    file_descriptor specifying the file voltage values are read from
    * @return   uint16_t returns two bytes of current voltage data
    */ 
-  uint16_t readHelper(int fd); 
+  uint16_t resetAndRead4(const int file_descriptor); 
 
  private:
   uint32_t pin_;
