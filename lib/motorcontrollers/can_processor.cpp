@@ -7,16 +7,16 @@ CanProcessor::CanProcessor()
     //TODO implement
 }
 
-std::optional<bool> CanProcessor::sendMessage()
+bool CanProcessor::sendMessage()
 {
     //TODO implement
-    return std::nullopt;
+    return false;
 }
 
-std::optional<bool> CanProcessor::processMessage()
+void CanProcessor::processMessage(core::CanFrame frame)
 {
     //TODO implement
-    return std::nullopt;
+    return;
 }
 
 }

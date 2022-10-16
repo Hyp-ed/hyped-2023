@@ -1,7 +1,7 @@
 #pragma once
 
-#include <optional>
 #include <cstdint>
+#include <core/types.hpp>
 
 namespace hyped::motorcontrollers {
 
@@ -10,7 +10,7 @@ class CanProcessor
 public:
     CanProcessor();
 
-    std::optional<bool> sendMessage();
-    std::optional<bool> processMessage();
+    bool sendMessage();
+    void processMessage(core::CanFrame frame);
 }; 
 }

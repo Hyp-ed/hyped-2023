@@ -2,7 +2,8 @@
 
 namespace hyped::motorcontrollers {
 class Controller
-{public:
+{
+public:
     Controller();
 };
 }
