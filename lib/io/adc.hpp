@@ -11,7 +11,7 @@ class Adc {
   /**
    * @param pin
    */
-  explicit Adc(const uint32_t pin);
+  Adc(const uint32_t pin);
 
   /**
    * @brief reads AIN value from file system
