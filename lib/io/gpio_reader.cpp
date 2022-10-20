@@ -2,10 +2,14 @@
 
 namespace hyped::io {
 
-core::LowOrHigh GpioReader::read()
+
+  GpioReader::GpioReader(const std::uint8_t pin, Gpio* state) : pin_(pin), io_(state)  {
+
+  }
+
+  core::LowOrHigh GpioReader::read()
 {
-  // TODO: implement
-  throw -1;
+  *io_.ex
 }
 
 }  // namespace hyped::io

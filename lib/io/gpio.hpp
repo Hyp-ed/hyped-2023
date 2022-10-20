@@ -3,7 +3,6 @@
 #include "gpio_reader.hpp"
 #include "gpio_writer.hpp"
 
-#include <fcntl.h>
 
 #include <cstdint>
 #include <optional>
@@ -13,6 +12,10 @@ namespace hyped::io {
 //Not dealing with log right now
 class Gpio {
  public:
+    static constexpr uint8_t kBankNum = 4;
+    enum class Direction { kIn = 0, kOut = 1 };
+
+
     Gpio();
 
     std::optional<GpioReader> getReader(const std::uint8_t pin);
