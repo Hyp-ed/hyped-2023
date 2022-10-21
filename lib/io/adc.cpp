@@ -3,8 +3,8 @@
 #include <fcntl.h>   // define O_WONLY and O_RDONLY
 #include <unistd.h>  // close()
 
-namespace hyped::io {
-    
+namespace hyped::io { 
+
 Adc::Adc(const uint32_t pin) : pin_(pin)
 {
   char buf[100];

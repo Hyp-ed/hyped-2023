@@ -34,4 +34,5 @@ class Adc {
   uint32_t pin_;
   int file_;
 };
+
 }  // namespace hyped::io
