@@ -3,8 +3,7 @@
 namespace hyped::motorcontrollers {
 Controller::Controller()
 {
-    //TODO implement
+  // TODO implement
 }
 
-
-}
+}  // namespace hyped::motorcontrollers

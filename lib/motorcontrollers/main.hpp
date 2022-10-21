@@ -1,11 +1,10 @@
 #pragma once
 
 namespace hyped::motorcontrollers {
-class Main
-{
-public:
-    Main();
+class Main {
+ public:
+  Main();
 
-    void run();
+  void run();
 };
-}
+}  // namespace hyped::motorcontrollers

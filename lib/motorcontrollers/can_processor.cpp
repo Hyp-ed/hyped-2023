@@ -1,22 +1,22 @@
 #include "can_processor.hpp"
 
 namespace hyped::motorcontrollers {
-    
+
 CanProcessor::CanProcessor()
 {
-    //TODO implement
+  // TODO implement
 }
 
-bool CanProcessor::sendMessage()
+bool CanProcessor::sendMessage(const core::CanFrame frame)
 {
-    //TODO implement
-    return false;
+  // TODO implement
+  return false;
 }
 
-void CanProcessor::processMessage(core::CanFrame frame)
+void CanProcessor::processMessage(const core::CanFrame frame)
 {
-    //TODO implement
-    return;
+  // TODO implement
+  return;
 }
 
-}
+}  // namespace hyped::motorcontrollers

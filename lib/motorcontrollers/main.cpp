@@ -3,11 +3,11 @@
 namespace hyped::motorcontrollers {
 Main::Main()
 {
-    //TODO implement
+  // TODO implement
 }
 
 void Main::run()
 {
-    //TODO implement
+  // TODO implement
 }
-}
+}  // namespace hyped::motorcontrollers

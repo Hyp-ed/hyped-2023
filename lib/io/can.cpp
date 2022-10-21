@@ -1,9 +1,8 @@
 #include "can.hpp"
 
-namespace hyped::io
-{
+namespace hyped::io {
 Can::Can()
 {
-    //TODO implement
+  // TODO implement
 }
-} // namespace hyped::io
+}  // namespace hyped::io

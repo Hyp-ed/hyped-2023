@@ -1,16 +1,16 @@
 #pragma once
 
 #include <cstdint>
+
 #include <core/types.hpp>
 
 namespace hyped::motorcontrollers {
 
-class CanProcessor
-{
-public:
-    CanProcessor();
+class CanProcessor {
+ public:
+  CanProcessor();
 
-    bool sendMessage();
-    void processMessage(core::CanFrame frame);
-}; 
-}
+  bool sendMessage(const core::CanFrame frame);
+  void processMessage(const core::CanFrame frame);
+};
+}  // namespace hyped::motorcontrollers

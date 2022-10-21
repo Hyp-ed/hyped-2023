@@ -3,6 +3,6 @@
 namespace hyped::motorcontrollers {
 StateProcessor::StateProcessor()
 {
-    //TODO implement
+  // TODO implement
 }
-}
+}  // namespace hyped::motorcontrollers
