@@ -10,4 +10,5 @@ target_include_directories(${target}
 target_link_libraries(${target}
     hyped_core
     hyped_io
+    hyped_utils
 )
