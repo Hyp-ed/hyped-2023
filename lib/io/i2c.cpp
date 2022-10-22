@@ -29,13 +29,15 @@ I2c::~I2c()
 
 void I2c::setSensorAddress(const uint8_t device_address)
 {
-  if (file_descriptor_ < 0) {
+  if (file_descriptor_ < 0) 
+  {
     /* log "Could not find i2c device while setting sensor address"*/;
     return;
   }
   sensor_address_          = device_address;
   const int return_value   = ioctl(file_descriptor_, I2C_SLAVE, device_address);
-  if (return_value < 0) {
+  if (return_value < 0) 
+  {
     /*log "Could not set sensor address" */;
     return;
   }
@@ -43,7 +45,8 @@ void I2c::setSensorAddress(const uint8_t device_address)
 
 std::optional<uint8_t> I2c::readByte(const uint8_t device_address, const uint8_t reg_address)
 {
-  if (file_descriptor_ < 0) {
+  if (file_descriptor_ < 0) 
+  {
     /* log "Could not find i2c device while reading"*/;
     return std::nullopt; 
   }
@@ -54,13 +57,15 @@ std::optional<uint8_t> I2c::readByte(const uint8_t device_address, const uint8_t
   uint8_t write_buffer[1] = {reg_address};			         
   // Writing the reg_address so we switch to the correct register which we then read from 
  	const int num_bytes_written = write(file_descriptor_, write_buffer, 1);
-	if(num_bytes_written != 1) {
+	if(num_bytes_written != 1) 
+  {
 		/* log "could not write to i2c device"*/
     return std::nullopt; 
 	}
   // Reading one byte to our read buffer 
   const int num_bytes_read = read(file_descriptor_, read_buffer, 1); 
-	if( num_bytes_read != 1 ){
+	if( num_bytes_read != 1 )
+  {
 		/*log "could not read from i2c device"*/
     return std::nullopt; 
 	}
@@ -78,7 +83,8 @@ I2cWriteResult I2c::writeByte(const uint8_t device_address, const uint8_t regist
   uint8_t write_buffer[2] = {register_address, data};	
   // Writing 2 bytes to our write buffer 
   const auto num_bytes_written = write(file_descriptor_, write_buffer, 2);
-  if (num_bytes_written != 2) {
+  if (num_bytes_written != 2) 
+  {
     /* log "Could not write to i2c device" */;
     I2cWriteResult::kFailure;
   }
