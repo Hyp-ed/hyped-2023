@@ -54,22 +54,22 @@ std::optional<uint8_t> I2c::readByte(const uint8_t device_address, const uint8_t
   // Contains data which we will read 
   uint8_t read_buffer[1];		
   // Contains data which we need to write
-  uint8_t write_buffer[1] = {register_address};			         
-  // Writing the register address so we switch to it
- 	const int num_bytes_written = write(file_descriptor_, write_buffer, 1);
+  uint8_t write_buffer[1] = {reg_address};			         
+  // Writing the reg_address so we switch to the correct register which we then read from 
+  const int num_bytes_written = write(file_descriptor_, write_buffer, 1);
   if(num_bytes_written != 1) 
   {
-		/* log "could not write to i2c device"*/
+    /* log "could not write to i2c device"*/
     return std::nullopt; 
-	}
+  }
   // Reading one byte to our read buffer 
   const int num_bytes_read = read(file_descriptor_, read_buffer, 1); 
-	if( num_bytes_read != 1 )
+  if( num_bytes_read != 1 )
   {
-		/*log "could not read from i2c device"*/
+    /*log "could not read from i2c device"*/
     return std::nullopt; 
-	}
-	return read_buffer[0];
+  }
+  return read_buffer[0];
 }
 
 I2cWriteResult I2c::writeByte(const uint8_t device_address, const uint8_t register_address, uint8_t data)
