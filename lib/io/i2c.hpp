@@ -1,22 +1,29 @@
 #include <cstdint>
 #include <cstdio>
+#include <optional>
 
 namespace hyped::io {
+
+enum class I2cWriteResult
+{
+  kSuccess,
+  kFailure
+};
 
 class I2c {
  public:
   I2c(const uint8_t bus_address);
   ~I2c();
 
-  int readData(const uint32_t address, uint8_t *data, const size_t len);
-  int writeData(const uint32_t address, uint8_t *data, const size_t len);
+  std::optional<uint8_t> readByte(const uint8_t device_address, const uint8_t register_address);
+  I2cWriteResult        writeByte(const uint8_t device_address, const uint8_t register_address, uint8_t data);
 
  private:
-  void setSensorAddress(uint32_t address);
+  void setSensorAddress(uint8_t device_address);
 
  private:
-  int fd_;
-  uint32_t sensor_address_;
+  int file_descriptor_;
+  uint8_t sensor_address_;
 };
 
 }  // namespace hyped::io
