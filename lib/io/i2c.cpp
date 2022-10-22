@@ -8,7 +8,7 @@
 #if LINUX
 #include <linux/i2c-dev.h>
 #else
-#define I2C_SLAVE 0x0703  // To specify that we are make I2C transactions 
+#define I2C_SLAVE 0x0703  // To specify that we are making I2C transactions 
 #endif
 
 namespace hyped::io {
@@ -43,7 +43,7 @@ void I2c::setSensorAddress(const uint8_t device_address)
   }
 }
 
-std::optional<uint8_t> I2c::readByte(const uint8_t device_address, const uint8_t reg_address)
+std::optional<uint8_t> I2c::readByte(const uint8_t device_address, const uint8_t register_address)
 {
   if (file_descriptor_ < 0) 
   {
@@ -54,10 +54,10 @@ std::optional<uint8_t> I2c::readByte(const uint8_t device_address, const uint8_t
   // Contains data which we will read 
   uint8_t read_buffer[1];		
   // Contains data which we need to write
-  uint8_t write_buffer[1] = {reg_address};			         
-  // Writing the reg_address so we switch to the correct register which we then read from 
+  uint8_t write_buffer[1] = {register_address};			         
+  // Writing the register address so we switch to it
  	const int num_bytes_written = write(file_descriptor_, write_buffer, 1);
-	if(num_bytes_written != 1) 
+  if(num_bytes_written != 1) 
   {
 		/* log "could not write to i2c device"*/
     return std::nullopt; 
