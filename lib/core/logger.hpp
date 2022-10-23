@@ -6,7 +6,7 @@
 
 namespace hyped::utils {
 
-enum class Level { kNone, kDebug, kInfo, kWarn, kError, kFatal };
+enum class Level { kNone, kDebug, kInfo, kWarn, kFatal };
 
 class ILogger {
  public:

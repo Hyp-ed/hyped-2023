@@ -95,8 +95,7 @@ void Logger::warn(const char *format, ...)
 void Logger::fatal(const char *format, ...)
 {
   FILE *file = stderr;
-  if (level_ == Level::kFatal || level_ == Level::kError || level_ == Level::kWarn
-      || level_ == Level::kInfo || level_ == Level::kDebug) {
+  if (level_ == Level::kFatal || level_ == Level::kWarn || level_ == Level::kInfo || level_ == Level::kDebug) {
     printHead(file, "FATAL");
     va_list args;
     va_start(args, format);
