@@ -14,7 +14,7 @@ class ILogger {
   ILogger(const char *const module) : module_(module), level_(Level::kInfo){};
   ILogger() : module_("Logger"), level_(Level::kInfo){};
 
-  void set_level(const Level level);
+  void setLevel(const Level level);
 
   virtual void debug(const char *format, ...) = 0;
   virtual void info(const char *format, ...)  = 0;
@@ -33,7 +33,7 @@ class Logger : public ILogger {
   Logger() : ILogger(){};
 
   void intToLevel(const int level);
-  void set_level(const Level level);
+  void setLevel(const Level level);
 
   void printHead(FILE *file, const char *title);
   void print(FILE *file, const char *format, va_list args);

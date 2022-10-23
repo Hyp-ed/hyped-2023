@@ -3,7 +3,7 @@
 #include <chrono>
 
 namespace hyped::utils {
-void Logger::set_level(const Level level)
+void Logger::setLevel(const Level level)
 {
   level_ = level;
 };
