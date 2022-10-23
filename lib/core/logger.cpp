@@ -24,9 +24,6 @@ void Logger::intToLevel(const int level)
       level_ = Level::kWarn;
       break;
     case 4:
-      level_ = Level::kError;
-      break;
-    case 5:
       level_ = Level::kFatal;
       break;
     default:
@@ -88,19 +85,6 @@ void Logger::warn(const char *format, ...)
   FILE *file = stderr;
   if (level_ == Level::kWarn || level_ == Level::kInfo || level_ == Level::kDebug) {
     printHead(file, "WARN");
-    va_list args;
-    va_start(args, format);
-    print(file, format, args);
-    va_end(args);
-  }
-};
-
-void Logger::error(const char *format, ...)
-{
-  FILE *file = stderr;
-  if (level_ == Level::kError || level_ == Level::kWarn || level_ == Level::kInfo
-      || level_ == Level::kDebug) {
-    printHead(file, "ERROR");
     va_list args;
     va_start(args, format);
     print(file, format, args);

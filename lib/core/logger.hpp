@@ -19,7 +19,6 @@ class ILogger {
   virtual void debug(const char *format, ...) = 0;
   virtual void info(const char *format, ...)  = 0;
   virtual void warn(const char *format, ...)  = 0;
-  virtual void error(const char *format, ...) = 0;
   virtual void fatal(const char *format, ...) = 0;
 
  protected:
@@ -42,7 +41,6 @@ class Logger : public ILogger {
   void debug(const char *format, ...);
   void info(const char *format, ...);
   void warn(const char *format, ...);
-  void error(const char *format, ...);
   void fatal(const char *format, ...);
 };
 }  // namespace hyped::utils
