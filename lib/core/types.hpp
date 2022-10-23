@@ -1,6 +1,6 @@
 #pragma once
+#include <array>
 #include <cstdint>
-
 namespace hyped::core {
 
 enum class LowOrHigh { kLow = 0, kHigh };
@@ -11,6 +11,6 @@ struct CanFrame {
   uint8_t __pad;   /* padding */
   uint8_t __res0;  /* reserved / padding */
   uint8_t __res1;  /* reserved / padding */
-  uint8_t data[8];
+  std::array<uint8_t, 8> data;
 };
 }  // namespace hyped::core
