@@ -2,38 +2,14 @@
 
 #include <chrono>
 
-namespace hyped::utils {
+namespace hyped::core {
 
-Logger::Logger(const char *const module, const Level level, const core::ITimeSource &timer)
-    : module_(module),
+Logger::Logger(const char *const label, const LogLevel level, const core::ITimeSource &timer)
+    : label_(label),
       level_(level),
       timer_(timer)
 {
 }
-
-void Logger::intToLevel(const int level)
-{
-  switch (level) {
-    case 0:
-      level_ = Level::kNone;
-      break;
-    case 1:
-      level_ = Level::kDebug;
-      break;
-    case 2:
-      level_ = Level::kInfo;
-      break;
-    case 3:
-      level_ = Level::kWarn;
-      break;
-    case 4:
-      level_ = Level::kFatal;
-      break;
-    default:
-      level_ = Level::kNone;
-      break;
-  }
-};
 
 void Logger::printHead(FILE *file, const char *title)
 {
@@ -42,61 +18,34 @@ void Logger::printHead(FILE *file, const char *title)
   const auto tp_seconds = std::chrono::system_clock::from_time_t(ttime_t);
   const std::chrono::milliseconds tp_milliseconds = duration_cast<std::chrono::milliseconds>(time_point - tp_seconds);
   const std::tm *time_struct = localtime(&ttime_t);
-  fprintf(file, "%02d:%02d:%02d.%03lld %s[%s] ", time_struct->tm_hour, time_struct->tm_min, time_struct->tm_sec, tp_milliseconds.count(), title, module_);
+  fprintf(file, "%02d:%02d:%02d.%03lld %s[%s] ", time_struct->tm_hour, time_struct->tm_min, time_struct->tm_sec, tp_milliseconds.count(), title, label_);
 };
 
-void Logger::print(FILE *file, const char *format, va_list args)
-{
-  vfprintf(file, format, args);
-  fprintf(file, "\n");
-};
-
-void Logger::debug(const char *format, ...)
-{
-  FILE *file = stdout;
-  if (level_ == Level::kDebug) {
-    printHead(file, "DEBUG");
+void Logger::log(const LogLevel level, const char *format, ...){
+  FILE *file;
+  if (level_ <= level) {
+    switch (level) {
+      case LogLevel::kDebug:
+        file = stdout;
+        printHead(file, "DEBUG");
+        break;
+      case LogLevel::kInfo:
+        file = stdout;
+        printHead(file, "INFO");
+        break;
+      case LogLevel::kFatal:
+        file = stderr;
+        printHead(file, "FATAL");
+        break;
+      default:
+        break;
+    }
     va_list args;
     va_start(args, format);
-    print(file, format, args);
+    vfprintf(file, format, args);
+    fprintf(file, "\n");
     va_end(args);
   }
-};
-
-void Logger::info(const char *format, ...)
-{
-  FILE *file = stdout;
-  if (level_ == Level::kInfo || level_ == Level::kDebug) {
-    printHead(file, "INFO");
-    va_list args;
-    va_start(args, format);
-    print(file, format, args);
-    va_end(args);
-  }
-};
-
-void Logger::warn(const char *format, ...)
-{
-  FILE *file = stderr;
-  if (level_ == Level::kWarn || level_ == Level::kInfo || level_ == Level::kDebug) {
-    printHead(file, "WARN");
-    va_list args;
-    va_start(args, format);
-    print(file, format, args);
-    va_end(args);
-  }
-};
-
-void Logger::fatal(const char *format, ...)
-{
-  FILE *file = stderr;
-  if (level_ == Level::kFatal || level_ == Level::kWarn || level_ == Level::kInfo || level_ == Level::kDebug) {
-    printHead(file, "FATAL");
-    va_list args;
-    va_start(args, format);
-    print(file, format, args);
-    va_end(args);
-  }
-};
+}
 
 };  // namespace hyped::utils
