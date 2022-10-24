@@ -3,10 +3,13 @@
 #include <chrono>
 
 namespace hyped::utils {
-void Logger::setLevel(const Level level)
+
+Logger::Logger(const char *const module, const Level level, const core::ITimeSource &timer)
+    : module_(module),
+      level_(level),
+      timer_(timer)
 {
-  level_ = level;
-};
+}
 
 void Logger::intToLevel(const int level)
 {
@@ -34,20 +37,12 @@ void Logger::intToLevel(const int level)
 
 void Logger::printHead(FILE *file, const char *title)
 {
-  const std::time_t result = std::time(nullptr);
-  const tm *current_time        = localtime(&result);
-  fprintf(file, "%02d:%02d:%02d", current_time->tm_hour, current_time->tm_min, current_time->tm_sec);
-
-  static const bool print_micro = true;
-  if (print_micro) {
-    const auto now_time = std::chrono::high_resolution_clock::now().time_since_epoch();
-    const std::chrono::duration<int, std::milli> time_span
-      = duration_cast<std::chrono::milliseconds>(now_time);
-    fprintf(file, ".%03d ", static_cast<uint16_t>(time_span.count()) % 1000);
-  } else {
-    fprintf(file, " ");
-  }
-  fprintf(file, "%s[%s]: ", title, module_);
+  const auto tp = timer_.now();
+  const auto ttime_t = std::chrono::system_clock::to_time_t(tp);
+  const auto tp_sec = std::chrono::system_clock::from_time_t(ttime_t);
+  const std::chrono::milliseconds ms = duration_cast<std::chrono::milliseconds>(tp - tp_sec);
+  const std::tm *ttm = localtime(&ttime_t);
+  fprintf(file, "%02d:%02d:%02d.%03lld %s[%s] ", ttm->tm_hour, ttm->tm_min, ttm->tm_sec, ms.count(), title, module_);
 };
 
 void Logger::print(FILE *file, const char *format, va_list args)

@@ -11,7 +11,8 @@ int main(int argc, char **argv)
   hyped::core::WallClock time;
   hyped::core::Timer timer(time);
   const auto execution_time = timer.measure_execution_time([]() {
-    hyped::utils::Logger log("GPIO", hyped::utils::Level::kDebug);
+    hyped::core::WallClock timer;
+    hyped::utils::Logger log("GPIO", hyped::utils::Level::kDebug, timer);
     hyped::io::Gpio gpio(log);
     auto gpio_reader_opt = gpio.getReader(0);
     if (!gpio_reader_opt) {
