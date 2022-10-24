@@ -1,13 +1,8 @@
-#pragma once
-
 #include <core/types.hpp>
 
 namespace hyped::io {
-
-class GpioReader {
+class Can {
  public:
-  GpioReader();
-  core::DigitalSignal read();
+  Can();
 };
-
 }  // namespace hyped::io

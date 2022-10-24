@@ -14,7 +14,7 @@ int main(int argc, char **argv)
     auto gpio_reader_opt = gpio.getReader(0);
     if (!gpio_reader_opt) {
       std::cout << "Error" << std::endl;
-    } else if (gpio_reader_opt->read() == hyped::core::LowOrHigh::kHigh) {
+    } else if (gpio_reader_opt->read() == hyped::core::DigitalSignal::kHigh) {
       std::cout << "Pin is high" << std::endl;
     } else {
       std::cout << "Pin is low" << std::endl;
