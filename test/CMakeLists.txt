@@ -7,5 +7,5 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(googletest)
 include(GoogleTest)
 
-add_subdirectory(helper)
+add_subdirectory(utils)
 add_subdirectory(navigation)

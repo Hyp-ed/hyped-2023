@@ -7,7 +7,7 @@
 
 namespace hyped::helper {
 
-ManualTime::ManualTime() : current_time_{std::chrono::high_resolution_clock::from_time_t(0)}
+ManualTime::ManualTime() : current_time_{std::chrono::system_clock::from_time_t(0)}
 {
 }
 

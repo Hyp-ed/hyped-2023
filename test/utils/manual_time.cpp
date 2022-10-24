@@ -1,12 +1,12 @@
 #include <gtest/gtest.h>
 
-#include <helper/manual_time.hpp>
+#include <utils/manual_time.hpp>
 
 namespace hyped::test {
 
 void test_with_time(helper::ManualTime &manual_time, const std::time_t time)
 {
-  const auto time_point = std::chrono::high_resolution_clock::from_time_t(time);
+  const auto time_point = std::chrono::system_clock::from_time_t(time);
   manual_time.set_time(time_point);
   ASSERT_EQ(manual_time.now(), time_point);
 }
