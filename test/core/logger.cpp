@@ -27,7 +27,7 @@ TEST(Logger, Stdout)
   testStdoutLog(core::LogLevel::kDebug, manual_time, "01:00:00.000 DEBUG[test] test\n");
   testStdoutLog(core::LogLevel::kInfo, manual_time, "01:00:00.000 INFO[test] test\n");
   testStdoutLog(core::LogLevel::kFatal, manual_time, "");
-};
+}
 
 
 TEST(Logger, Stderr)
@@ -36,5 +36,5 @@ TEST(Logger, Stderr)
   testStderrLog(core::LogLevel::kDebug, manual_time, "");
   testStderrLog(core::LogLevel::kInfo, manual_time, "");
   testStderrLog(core::LogLevel::kFatal, manual_time, "01:00:00.000 FATAL[test] test\n");
-};
+}
 }  // namespace hyped::test

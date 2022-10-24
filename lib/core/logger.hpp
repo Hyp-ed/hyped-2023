@@ -2,9 +2,9 @@
 
 #include "time.hpp"
 
+#include <cstdarg>
 #include <iostream>
 #include <optional>
-#include <string>
 
 namespace hyped::core {
 

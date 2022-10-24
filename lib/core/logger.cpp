@@ -18,10 +18,11 @@ void Logger::printHead(FILE *file, const char *title)
   const auto time_point_seconds = std::chrono::system_clock::from_time_t(ttime_t);
   const std::chrono::milliseconds time_point_milliseconds
     = duration_cast<std::chrono::milliseconds>(time_point - time_point_seconds);
-  const std::tm *time_struct = localtime(&ttime_t);
+  const long long time_milliseconds = time_point_milliseconds.count();
+  const std::tm *time_struct        = localtime(&ttime_t);
   fprintf(file, "%02d:%02d:%02d.%03lld %s[%s] ", time_struct->tm_hour, time_struct->tm_min,
-          time_struct->tm_sec, time_point_milliseconds.count(), title, label_);
-};
+          time_struct->tm_sec, time_milliseconds, title, label_);
+}
 
 void Logger::log(const LogLevel level, const char *format, ...)
 {
@@ -51,4 +52,4 @@ void Logger::log(const LogLevel level, const char *format, ...)
   }
 }
 
-};  // namespace hyped::core
+}  // namespace hyped::core
