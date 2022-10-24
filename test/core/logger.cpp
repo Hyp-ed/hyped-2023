@@ -5,13 +5,6 @@
 
 namespace hyped::test {
 
-void test_time(utils::ManualTime &manual_time, const std::time_t time)
-{
-  const auto time_point = std::chrono::system_clock::from_time_t(time);
-  manual_time.set_time(time_point);
-  ASSERT_EQ(manual_time.now(), time_point);
-}
-
 void logHelper(core::LogLevel level, utils::ManualTime &manual_time, std::string expected_output, bool stdout)
 {
   if (stdout) {
