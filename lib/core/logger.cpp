@@ -34,14 +34,14 @@ void Logger::intToLevel(const int level)
 
 void Logger::printHead(FILE *file, const char *title)
 {
-  std::time_t t = std::time(nullptr);
-  tm *tt        = localtime(&t);
-  fprintf(file, "%02d:%02d:%02d", tt->tm_hour, tt->tm_min, tt->tm_sec);
+  const std::time_t result = std::time(nullptr);
+  const tm *current_time        = localtime(&result);
+  fprintf(file, "%02d:%02d:%02d", current_time->tm_hour, current_time->tm_min, current_time->tm_sec);
 
   static const bool print_micro = true;
   if (print_micro) {
-    auto now_time = std::chrono::high_resolution_clock::now().time_since_epoch();
-    std::chrono::duration<int, std::milli> time_span
+    const auto now_time = std::chrono::high_resolution_clock::now().time_since_epoch();
+    const std::chrono::duration<int, std::milli> time_span
       = duration_cast<std::chrono::milliseconds>(now_time);
     fprintf(file, ".%03d ", static_cast<uint16_t>(time_span.count()) % 1000);
   } else {
