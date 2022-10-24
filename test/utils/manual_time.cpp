@@ -4,7 +4,7 @@
 
 namespace hyped::test {
 
-void test_time(utils::ManualTime &manual_time, const std::time_t time)
+void test_with_time(utils::ManualTime &manual_time, const std::time_t time)
 {
   const auto time_point = std::chrono::system_clock::from_time_t(time);
   manual_time.set_time(time_point);
@@ -14,10 +14,10 @@ void test_time(utils::ManualTime &manual_time, const std::time_t time)
 TEST(ManualTime, basic)
 {
   utils::ManualTime manual_time;
-  test_time(manual_time, 0);
-  test_time(manual_time, 1000);
-  test_time(manual_time, 100);
-  test_time(manual_time, 2000);
+  test_with_time(manual_time, 0);
+  test_with_time(manual_time, 1000);
+  test_with_time(manual_time, 100);
+  test_with_time(manual_time, 2000);
 }
 
 }  // namespace hyped::test
