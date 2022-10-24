@@ -2,7 +2,7 @@
 
 namespace hyped::io {
 
-core::LowOrHigh GpioReader::read()
+core::DigitalSignal GpioReader::read()
 {
   // TODO: implement
   throw -1;
