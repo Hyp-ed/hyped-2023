@@ -15,12 +15,12 @@ int main(int argc, char **argv)
     hyped::io::Gpio gpio(logger);
     auto gpio_reader_opt = gpio.getReader(0);
     if (!gpio_reader_opt) {
-      std::cout << "Error" << std::endl;
+      logger.log(hyped::core::LogLevel::kFatal, "Error");
     } else if (gpio_reader_opt->read() == hyped::core::LowOrHigh::kHigh) {
-      std::cout << "Pin is high" << std::endl;
+      logger.log(hyped::core::LogLevel::kInfo, "High");
     } else {
-      std::cout << "Pin is low" << std::endl;
-    }
+      logger.log(hyped::core::LogLevel::kInfo, "Low");
+    };
   });
   std::cout << "Ran for " << execution_time.count() << " ns" << std::endl;
 }

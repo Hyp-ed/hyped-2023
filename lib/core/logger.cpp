@@ -23,7 +23,7 @@ void Logger::printHead(FILE *file, const char *title)
 
 void Logger::log(const LogLevel level, const char *format, ...){
   FILE *file;
-  if (level_ <= level) {
+  if (level_ <= level && level_ != LogLevel::kNone) {
     switch (level) {
       case LogLevel::kDebug:
         file = stdout;
