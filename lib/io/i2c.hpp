@@ -4,11 +4,7 @@
 
 namespace hyped::io {
 
-enum class I2cWriteResult
-{
-  kSuccess,
-  kFailure
-};
+enum class I2cWriteResult { kSuccess, kFailure };
 
 class I2c {
  public:
@@ -16,7 +12,8 @@ class I2c {
   ~I2c();
 
   std::optional<uint8_t> readByte(const uint8_t device_address, const uint8_t register_address);
-  I2cWriteResult        writeByte(const uint8_t device_address, const uint8_t register_address, uint8_t data);
+  I2cWriteResult writeByte(const uint8_t device_address, const uint8_t register_address,
+                           uint8_t data);
 
  private:
   void setSensorAddress(uint8_t device_address);
