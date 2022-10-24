@@ -187,23 +187,54 @@ int8_t Gpio::wait()
 }
 
 
-//incomplete
-std::optional<GpioReader> Gpio::getReader(const uint8_t pin)
-{
-  direction_ = Gpio::Direction::kIn;
+
+uint8_t Gpio::Write(const uint8_t pin, const bool SetOrClear) {
+  if (!initialised_) {
+    log_.error("service has not been initialised");
+    return 0;
+  }
+
+  direction_ = Gpio::Direction::kOut;
   pin_ = pin;
 
+  string val;
+  if (SetOrClear) {
+    val = "1";
+  } else {
+    val = "0";
+  }
+
+  bool exported = false;
+  
+  //Need to see what this does?
   for (uint32_t pin : exported_pins) {
     if (pin_ == pin) {
-      //Check?
-      log_.error("pin %d already in use", pin_);
-      return;
+      //log_.error("pin %d already in use", pin_);
+      exported = true;
     }
   }
-  return std::nullopt;
+
+  if (exported == false) {
+      exported_pins.push_back(pin_);
+      exportGPIO();
+  }
+  attach();
+
+
+  #if GPIOFS
+    if SetOrClear {
+      write(fd_, "1", 2);
+    } else {
+      write(fd_, "0", 2);
+    }
+  #else
+    *set_               = pin_mask_;
+    log_.debug("gpio %d set", pin_);
+  #endif
 }
+
 // For now, just have a direct read via pins;
-uint8_t Gpio::read(const uint8_t pin)
+uint8_t Gpio::Read(const uint8_t pin)
 {
 
   if (!initialised_) {
@@ -215,6 +246,8 @@ uint8_t Gpio::read(const uint8_t pin)
   pin_ = pin;
 
   bool exported = false;
+
+  //Need to see what this does?
   for (uint32_t pin : exported_pins) {
     if (pin_ == pin) {
       //log_.error("pin %d already in use", pin_);
@@ -244,10 +277,13 @@ uint8_t Gpio::read(const uint8_t pin)
 #endif
 }
 
-std::optional<GpioWriter> Gpio::getWriter(const uint8_t pin)
+
+static uint8_t readHelper(int file)
 {
-  
-  return std::nullopt;
+  char buf[2];
+  lseek(file, 0, SEEK_SET);      // reset file pointer
+  read(file, buf, sizeof(buf));  // actually consume new data, changes value in buffer
+  return std::atoi(buf);
 }
 
 }  // namespace hyped::io

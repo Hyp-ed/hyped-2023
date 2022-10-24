@@ -17,7 +17,9 @@ class Gpio {
 
 
     Gpio();
-
+    uint8_t Read(const uint8_t pin);
+    uint8_t Write(const uint8_t ping);
+    
     std::optional<GpioReader> getReader(const std::uint8_t pin);
     std::optional<GpioWriter> getWriter(const std::uint8_t pin);
   private:
