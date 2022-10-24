@@ -37,10 +37,10 @@ void Logger::intToLevel(const int level)
 
 void Logger::printHead(FILE *file, const char *title)
 {
-  const auto tp = timer_.now();
-  const auto ttime_t = std::chrono::system_clock::to_time_t(tp);
+  const auto time_point = timer_.now();
+  const auto ttime_t = std::chrono::system_clock::to_time_t(time_point);
   const auto tp_seconds = std::chrono::system_clock::from_time_t(ttime_t);
-  const std::chrono::milliseconds tp_milliseconds = duration_cast<std::chrono::milliseconds>(tp - tp_seconds);
+  const std::chrono::milliseconds tp_milliseconds = duration_cast<std::chrono::milliseconds>(time_point - tp_seconds);
   const std::tm *time_struct = localtime(&ttime_t);
   fprintf(file, "%02d:%02d:%02d.%03lld %s[%s] ", time_struct->tm_hour, time_struct->tm_min, time_struct->tm_sec, tp_milliseconds.count(), title, module_);
 };
