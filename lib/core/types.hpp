@@ -2,6 +2,6 @@
 
 namespace hyped::core {
 
-enum class LowOrHigh { kLow = 0, kHigh };
+enum class DigitalSignal { kLow = 0, kHigh };
 
 }  // namespace hyped::core
