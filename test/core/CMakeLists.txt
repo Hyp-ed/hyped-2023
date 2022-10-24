@@ -1,14 +1,14 @@
-set(target hyped_pod)
-file(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
+set(target hyped_test_core)
 file(GLOB code "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
-add_executable(${target} ${headers} ${code})
+add_executable(${target} ${code})
 target_include_directories(${target}
-    INTERFACE
+    PRIVATE
     "${CMAKE_SOURCE_DIR}/lib"
     "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 target_link_libraries(${target}
+    GTest::gtest_main
     hyped_core
-    hyped_io
     hyped_utils
 )
+gtest_discover_tests(${target})
