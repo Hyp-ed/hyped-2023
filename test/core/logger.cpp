@@ -5,55 +5,36 @@
 
 namespace hyped::test {
 
-void logHelper(core::LogLevel level, utils::ManualTime &manual_time, std::string expected_output, bool stdout)
+void testLog(const core::LogLevel level, const utils::ManualTime &manual_time, const std::string expected_output, const bool use_stdout)
 {
-  if (stdout) {
+  if (use_stdout) {
     testing::internal::CaptureStdout();
   } else {
     testing::internal::CaptureStderr();
   }
   core::Logger logger("test", level, manual_time);
   logger.log(level, "test");
-  if (stdout) {
+  if (use_stdout) {
     ASSERT_EQ(testing::internal::GetCapturedStdout(), expected_output);
   } else {
     ASSERT_EQ(testing::internal::GetCapturedStderr(), expected_output);
   }
 }
 
-TEST(Logger, DebugStdout)
+TEST(Logger, Stdout)
 {
   utils::ManualTime manual_time;
-  logHelper(core::LogLevel::kDebug, manual_time, "01:00:00.000 DEBUG[test] test\n", true);
+  testLog(core::LogLevel::kDebug, manual_time, "01:00:00.000 DEBUG[test] test\n", true);
+  testLog(core::LogLevel::kInfo, manual_time, "01:00:00.000 INFO[test] test\n", true);
+  testLog(core::LogLevel::kFatal, manual_time, "", true);
 };
 
-TEST(Logger, InfoStdout)
-{
-  utils::ManualTime manual_time;
-  logHelper(core::LogLevel::kInfo, manual_time, "01:00:00.000 INFO[test] test\n", true);
-};
 
-TEST(Logger, FatalStdout)
+TEST(Logger, Stderr)
 {
   utils::ManualTime manual_time;
-  logHelper(core::LogLevel::kFatal, manual_time, "", true);
-};
-
-TEST(Logger, DebugStderr)
-{
-  utils::ManualTime manual_time;
-  logHelper(core::LogLevel::kDebug, manual_time, "", false);
-};
-
-TEST(Logger, InfoStderr)
-{
-  utils::ManualTime manual_time;
-  logHelper(core::LogLevel::kInfo, manual_time, "", false);
-};
-
-TEST(Logger, FatalStderr)
-{
-  utils::ManualTime manual_time;
-  logHelper(core::LogLevel::kFatal, manual_time, "01:00:00.000 FATAL[test] test\n", false);
+  testLog(core::LogLevel::kDebug, manual_time, "", false);
+  testLog(core::LogLevel::kInfo, manual_time, "", false);
+  testLog(core::LogLevel::kFatal, manual_time, "01:00:00.000 FATAL[test] test\n", false);
 };
 }  // namespace hyped::test

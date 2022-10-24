@@ -4,16 +4,16 @@
 
 namespace hyped::core {
 
-Logger::Logger(const char *const label, const LogLevel level, const core::ITimeSource &timer)
+Logger::Logger(const char *const label, const LogLevel level, const core::ITimeSource &time_source_)
     : label_(label),
       level_(level),
-      timer_(timer)
+      time_source_(time_source_)
 {
 }
 
 void Logger::printHead(FILE *file, const char *title)
 {
-  const auto time_point = timer_.now();
+  const auto time_point = time_source_.now();
   const auto ttime_t = std::chrono::system_clock::to_time_t(time_point);
   const auto tp_seconds = std::chrono::system_clock::from_time_t(ttime_t);
   const std::chrono::milliseconds tp_milliseconds = duration_cast<std::chrono::milliseconds>(time_point - tp_seconds);
