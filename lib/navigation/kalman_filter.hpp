@@ -41,12 +41,14 @@ class KalmanFilter {
               const MeasurementNoiseCovarianceMatrix &measurement_noise_covariance,
               const MeasurementVector &measurement)
   {
-    const auto current_update_time    = time_source_->now();
-    const auto dt                     = current_update_time - last_update_time_;
     const auto apriori_state_estimate = transition_matrix * state_estimate_;
     const auto apriori_error_covariance
       = (transition_matrix.transpose() * error_covariance_ * transition_matrix)
         + transition_covariance;
+    // TODO: Some optimisation is to be found here:
+    // 1. Try and get rid of the inverse.
+    // 2. Reuse calculations such as `apriori_error_covariance * measurement_matrix.transpose()`.
+    // K_k = P_k^{-1} * H_k^T * (H_k * P_k^{-1} * H_k^T + R_k)^{-1}
     const auto kalman_gain
       = apriori_error_covariance * measurement_matrix.transpose()
         * (measurement_matrix * apriori_error_covariance * measurement_matrix.transpose()
