@@ -9,3 +9,4 @@ include(GoogleTest)
 
 add_subdirectory(utils)
 add_subdirectory(navigation)
+add_subdirectory(core)
