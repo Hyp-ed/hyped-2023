@@ -7,7 +7,7 @@ namespace hyped::io {
 class GpioReader {
  public:
   GpioReader();
-  core::LowOrHigh read();
+  core::DigitalSignal read();
 };
 
 }  // namespace hyped::io

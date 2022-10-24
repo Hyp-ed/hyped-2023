@@ -10,7 +10,7 @@ class GpioWriter {
  public:
   GpioWriter(const uint8_t pin);
 
-  void write(const core::LowOrHigh state);
+  void write(const core::DigitalSignal state);
 };
 
 }  // namespace hyped::io

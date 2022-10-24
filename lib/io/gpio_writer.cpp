@@ -2,7 +2,7 @@
 
 namespace hyped::io {
 
-void GpioWriter::write(const core::LowOrHigh state)
+void GpioWriter::write(const core::DigitalSignal state)
 {
   // TODO: implement
 }
