@@ -2,7 +2,7 @@
 
 #include <navigation/navigator.hpp>
 
-namespace hyped::helper {
+namespace hyped::utils {
 
 class NaiveNavigator : public navigation::INavigator<navigation::Trajectory> {
  public:
@@ -14,4 +14,4 @@ class NaiveNavigator : public navigation::INavigator<navigation::Trajectory> {
   navigation::Trajectory current_trajectory_;
 };
 
-}  // namespace hyped::helper
+}  // namespace hyped::utils

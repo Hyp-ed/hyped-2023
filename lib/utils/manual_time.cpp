@@ -5,7 +5,7 @@
 
 #include <core/time.hpp>
 
-namespace hyped::helper {
+namespace hyped::utils {
 
 ManualTime::ManualTime()
     : current_time_{std::chrono::system_clock::from_time_t(0)}
@@ -22,4 +22,4 @@ void ManualTime::set_time(const core::TimePoint time_point)
   current_time_ = time_point;
 }
 
-}  // namespace hyped::helper
+}  // namespace hyped::utils
