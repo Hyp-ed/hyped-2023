@@ -40,14 +40,12 @@ Can::Can(hyped::core::ILogger &logger) : logger_(logger)
 int Can::sendCanFrame(can_frame message)
 {
   if (socket_ < 0) {
-    // log no can device found
     logger_.log(hyped::core::LogLevel::kFatal,
                 "Trying to send CAN message but no CAN socket found");
     return;
   }
 
   if (write(socket_, &message, sizeof(can_frame)) != sizeof(can_frame)) {
-    // log message not sent
     logger_.log(hyped::core::LogLevel::kFatal, "Failed to send CAN message");
   }
 
