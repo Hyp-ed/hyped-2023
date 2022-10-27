@@ -6,21 +6,30 @@ namespace hyped::io {
 
 enum class Polarity { kActiveHigh = 0, kActiveLow };
 
+enum class PwmWriteResult { kSuccess = 0, kError };
+
 class Pwm {
  public:
-  Pwm(const std::string device, hyped::core::ILogger &log);
+  Pwm(const uint8_t channel, hyped::core::ILogger &log);
   ~Pwm();
 
-  void enable();
-  void disable();
+  PwmWriteResult enable();
+  PwmWriteResult disable();
 
-  void setFrequency(uint16_t frequency);
-  void setDutyCycle(uint8_t duty_cycle);
-  void setPolarity(Polarity polarity);
-
+  PwmWriteResult setFrequency(uint16_t frequency);
+  PwmWriteResult setDutyCycle(float duty_cycle);
+  PwmWriteResult setPolarity(Polarity polarity);
+  
  private:
   hyped::core::ILogger &log_;
-  float frequency_;  // Hz
+  uint16_t frequency_;  // Hz
+  float dutyCycle_; // Percentage
   float analogMax_;  // V
+  std::string path_;
+
+  int enableFd_;
+  int dutyFd_;
+  int periodFd_;
+  int polarityFd_;
 };
 }  // namespace hyped::io
