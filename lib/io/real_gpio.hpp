@@ -2,23 +2,26 @@
 
 #include "gpio.hpp"
 
-
 #include <core/types.hpp>
 
 namespace hyped::io {
 
 class GpioReader : public IGpioReader {
  public:
-  GpioReader();
-
   virtual std::optional<core::DigitalSignal> read();
+
+ private:
+  GpioReader();
+  friend class Gpio;
 };
 
 class GpioWriter : public IGpioWriter {
  public:
-  GpioWriter(const uint8_t pin);
-
   virtual GpioWriteResult write(const core::DigitalSignal state);
+
+ private:
+  GpioWriter(const uint8_t pin);
+  friend class Gpio;
 };
 
 class Gpio {
