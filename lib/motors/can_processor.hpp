@@ -13,4 +13,5 @@ class CanProcessor {
   bool sendMessage(const core::CanFrame frame);
   void processMessage(const core::CanFrame frame);
 };
-}  // namespace hyped::motorcontrollers
+
+}  // namespace hyped::motors

@@ -19,4 +19,4 @@ void CanProcessor::processMessage(const core::CanFrame frame)
   return;
 }
 
-}  // namespace hyped::motorcontrollers
+}  // namespace hyped::motors

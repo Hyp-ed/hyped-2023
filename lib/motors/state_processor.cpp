@@ -7,4 +7,4 @@ StateProcessor::StateProcessor()
   // TODO implement
 }
 
-}  // namespace hyped::motorcontrollers
+}  // namespace hyped::motors

@@ -6,4 +6,4 @@ class StateProcessor {
   StateProcessor();
 };
 
-}  // namespace hyped::motorcontrollers
+}  // namespace hyped::motors

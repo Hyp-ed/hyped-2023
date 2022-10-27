@@ -9,4 +9,4 @@ class Main {
   void run();
 };
 
-}  // namespace hyped::motorcontrollers
+}  // namespace hyped::motors

@@ -6,4 +6,4 @@ Controller::Controller()
 {
 }
 
-}  // namespace hyped::motorcontrollers
+}  // namespace hyped::motors

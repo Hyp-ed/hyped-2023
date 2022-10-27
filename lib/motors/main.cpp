@@ -12,4 +12,4 @@ void Main::run()
   // TODO implement
 }
 
-}  // namespace hyped::motorcontrollers
+}  // namespace hyped::motors
