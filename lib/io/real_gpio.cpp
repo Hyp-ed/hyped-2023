@@ -1,6 +1,18 @@
-#include "gpio.hpp"
+#include "real_gpio.hpp"
 
 namespace hyped::io {
+
+
+core::DigitalSignal GpioReader::read()
+{
+  // TODO: implement
+  throw -1;
+}
+
+void GpioWriter::write(const core::DigitalSignal state)
+{
+  // TODO: implement
+}
 
 Gpio::Gpio(hyped::core::ILogger &log) : log_(log)
 {

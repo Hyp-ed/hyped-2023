@@ -1,10 +1,10 @@
 #include <iostream>
 
+#include <core/logger.hpp>
 #include <core/timer.hpp>
 #include <core/types.hpp>
 #include <core/wall_clock.hpp>
-#include <io/gpio.hpp>
-#include <core/logger.hpp>
+#include <io/real_gpio.hpp>
 
 int main(int argc, char **argv)
 {
