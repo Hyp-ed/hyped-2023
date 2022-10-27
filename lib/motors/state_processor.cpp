@@ -1,8 +1,10 @@
 #include "state_processor.hpp"
 
-namespace hyped::motorcontrollers {
+namespace hyped::motors {
+
 StateProcessor::StateProcessor()
 {
   // TODO implement
 }
+
 }  // namespace hyped::motorcontrollers

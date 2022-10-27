@@ -3,7 +3,7 @@
 #include <array>
 #include <cstdint>
 
-namespace hyped::motorcontrollers {
+namespace hyped::motors {
 
 using ControllerMessage = std::array<uint8_t, 8>;
 

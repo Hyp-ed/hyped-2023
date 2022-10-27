@@ -4,7 +4,7 @@
 
 #include <core/types.hpp>
 
-namespace hyped::motorcontrollers {
+namespace hyped::motors {
 
 class CanProcessor {
  public:

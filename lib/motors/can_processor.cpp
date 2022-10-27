@@ -1,6 +1,6 @@
 #include "can_processor.hpp"
 
-namespace hyped::motorcontrollers {
+namespace hyped::motors {
 
 CanProcessor::CanProcessor()
 {
