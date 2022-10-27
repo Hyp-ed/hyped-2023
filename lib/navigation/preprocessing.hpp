@@ -1,4 +1,5 @@
 #include <array>
+#include "consts.hpp"
 
 namespace hyped::navigation{
 
@@ -16,9 +17,9 @@ namespace hyped::navigation{
 
 
     //TODO: make better types & set number of sensors as constant somewhere else
-    std::array<float, 4> imu_data_;
-    std::array<int, 4> encoder_data_;
-    std::array<int, 2> keyence_data_;
+    std::array<nav_t, kNumberImus> imu_data_;
+    std::array<int, kNumberEncoders> encoder_data_;
+    std::array<int, kNumberKeyence> keyence_data_;
     
 
     private:
@@ -34,11 +35,11 @@ namespace hyped::navigation{
 
 
     //TODO: make better
-    std::array<bool, 4> reliable_imus_;
-    std::array<bool, 4> reliable_encoders_;
+    std::array<bool, kNumberImus> reliable_imus_;
+    std::array<bool, kNumberEncoders> reliable_encoders_;
 
-    std::array<int, 4> outlier_imus_ = {0, 0, 0, 0};
-    std::array<int, 4> oultier_encoders_ = {0, 0, 0, 0};
+    std::array<int, kNumberImus> outlier_imus_ = {0, 0, 0, 0};
+    std::array<int, kNumberEncoders> oultier_encoders_ = {0, 0, 0, 0};
 
     bool keyence_disagreement_;
 
