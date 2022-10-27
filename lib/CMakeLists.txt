@@ -1,3 +1,5 @@
-add_subdirectory(io)
 add_subdirectory(core)
 add_subdirectory(utils)
+add_subdirectory(io)
+add_subdirectory(navigation)
+add_subdirectory(motorcontrollers)

@@ -8,7 +8,7 @@ WallClock::WallClock()
 
 TimePoint WallClock::now() const
 {
-  return std::chrono::high_resolution_clock::now();
+  return std::chrono::system_clock::now();
 }
 
 }  // namespace hyped::core
