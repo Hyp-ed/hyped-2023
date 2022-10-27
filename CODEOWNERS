@@ -2,5 +2,7 @@
 * @kshxtij
 lib/sensors @SnickeyX
 test/sensors @SnickeyX
+lib/io @SnickeyX @mifrandir
+test/io @SnickeyX @mifrandir
 lib/navigation @maxguy2001
 test/navigation @maxguy2001
