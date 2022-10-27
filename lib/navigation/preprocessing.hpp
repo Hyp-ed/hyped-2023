@@ -6,13 +6,13 @@ namespace hyped::navigation{
     
     public:
     
-    Preprocessing::Preprocessing();
+    Preprocessing();
 
-    void Preprocessing::preprocessImus();
+    void preprocessImus();
 
-    void Preprocessing::preprocessEncoders();
+    void preprocessEncoders();
 
-    void Preprocessing::preprocessKeyence();
+    void preprocessKeyence();
 
 
     //TODO: make better types & set number of sensors as constant somewhere else
