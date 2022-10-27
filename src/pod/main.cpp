@@ -16,7 +16,10 @@ int main(int argc, char **argv)
     auto gpio_reader_opt = gpio.getReader(0);
     if (!gpio_reader_opt) {
       logger.log(hyped::core::LogLevel::kFatal, "Error");
-    } else if (gpio_reader_opt->read() == hyped::core::DigitalSignal::kHigh) {
+      return;
+    }
+    auto gpio_reader = *gpio_reader_opt;
+    if (gpio_reader->read() == hyped::core::DigitalSignal::kHigh) {
       logger.log(hyped::core::LogLevel::kInfo, "High");
     } else {
       logger.log(hyped::core::LogLevel::kInfo, "Low");

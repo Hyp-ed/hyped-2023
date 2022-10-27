@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <memory>
 #include <optional>
 
 #include <core/logger.hpp>
@@ -14,8 +15,10 @@ namespace hyped::io {
  */
 class IGpioReader {
  public:
-  virtual core::DigitalSignal read() = 0;
+  virtual std::optional<core::DigitalSignal> read() = 0;
 };
+
+enum class GpioWriteResult { kSuccess = 0, kFailure };
 
 /**
  * An abstract interface to write to a GPIO pin. This is to be used whenever write access
@@ -23,7 +26,7 @@ class IGpioReader {
  */
 class IGpioWriter {
  public:
-  virtual void write(const core::DigitalSignal state) = 0;
+  virtual GpioWriteResult write(const core::DigitalSignal state) = 0;
 };
 
 /**
@@ -33,8 +36,8 @@ class IGpioWriter {
  */
 class IGpio {
  public:
-  virtual std::optional<IGpioReader> getReader(const std::uint8_t pin) = 0;
-  virtual std::optional<IGpioWriter> getWriter(const std::uint8_t pin) = 0;
+  virtual std::optional<std::shared_ptr<IGpioReader>> getReader(const std::uint8_t pin) = 0;
+  virtual std::optional<std::shared_ptr<IGpioWriter>> getWriter(const std::uint8_t pin) = 0;
 };
 
 }  // namespace hyped::io
