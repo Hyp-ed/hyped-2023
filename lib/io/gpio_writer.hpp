@@ -6,7 +6,12 @@
 
 namespace hyped::io {
 
-class GpioWriter {
+class IGpioWriter {
+ public:
+  virtual void write(const core::DigitalSignal state) = 0;
+};
+
+class GpioWriter : public IGpioWriter {
  public:
   GpioWriter(const uint8_t pin);
 

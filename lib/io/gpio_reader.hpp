@@ -4,7 +4,12 @@
 
 namespace hyped::io {
 
-class GpioReader {
+class IGpioReader {
+ public:
+  virtual core::DigitalSignal read() = 0;
+};
+
+class GpioReader : public IGpioReader {
  public:
   GpioReader();
   core::DigitalSignal read();
