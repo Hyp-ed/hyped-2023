@@ -11,62 +11,63 @@
 namespace hyped::io {
 Can::Can(hyped::core::ILogger &logger) : logger_(logger)
 {
+}
+
+CanResult Can::initialiseCanSocket()
+{
   if ((socket_ = socket(PF_CAN, SOCK_RAW, CAN_RAW)) < 0) {
     logger_.log(hyped::core::LogLevel::kFatal, "Unable to open CAN socket");
-    return;
+    return hyped::io::CanResult::kFailure;
   }
-
   sockaddr_can socket_address;
   socket_address.can_family  = AF_CAN;
   socket_address.can_ifindex = if_nametoindex("can1");
-
   if (socket_address.can_ifindex == 0) {
     logger_.log(hyped::core::LogLevel::kFatal, "Unable to find CAN1 network interface");
     close(socket_);
     socket_ = -1;
-    return;
+    return hyped::io::CanResult::kFailure;
   }
-
-  if (bind(socket_, (sockaddr *)&socket_address, sizeof(socket_address)) < 0) {
+  if (bind(socket_, reinterpret_cast<sockaddr *>(&socket_address), sizeof(socket_address)) < 0) {
     logger_.log(hyped::core::LogLevel::kFatal, "Unable to bind CAN socket");
     close(socket_);
     socket_ = -1;
-    return;
+    return hyped::io::CanResult::kFailure;
   }
-
   logger_.log(hyped::core::LogLevel::kInfo, "CAN socket successfully created");
+  return hyped::io::CanResult::kSuccess;
 }
 
-int Can::sendCanFrame(can_frame message)
+CanResult Can::sendCanFrame(can_frame message)
 {
   if (socket_ < 0) {
     logger_.log(hyped::core::LogLevel::kFatal,
                 "Trying to send CAN message but no CAN socket found");
-    return;
+    return hyped::io::CanResult::kFailure;
   }
-
   if (write(socket_, &message, sizeof(can_frame)) != sizeof(can_frame)) {
     logger_.log(hyped::core::LogLevel::kFatal, "Failed to send CAN message");
   }
-
   logger_.log(hyped::core::LogLevel::kDebug,
               "CAN message sent, ID:%i, DATA: %i %i %i %i %i %i %i %i",
-              (int)message.can_id,
-              (int)message.data[0],
-              (int)message.data[1],
-              (int)message.data[2],
-              (int)message.data[3],
-              (int)message.data[4],
-              (int)message.data[5],
-              (int)message.data[6],
-              (int)message.data[7]);
+              static_cast<int>(message.can_id),
+              static_cast<int>(message.data[0]),
+              static_cast<int>(message.data[1]),
+              static_cast<int>(message.data[2]),
+              static_cast<int>(message.data[3]),
+              static_cast<int>(message.data[4]),
+              static_cast<int>(message.data[5]),
+              static_cast<int>(message.data[6]),
+              static_cast<int>(message.data[7]));
+  return hyped::io::CanResult::kSuccess;
 }
 
-can_frame Can::receiveCanFrame()
+std::optional<can_frame> Can::receiveCanFrame()
 {
   can_frame received_message;
   if (read(socket_, &received_message, sizeof(can_frame)) < sizeof(can_frame)) {
     logger_.log(hyped::core::LogLevel::kFatal, "Failed to receive CAN message");
+    return std::nullopt;
   }
   return received_message;
 }

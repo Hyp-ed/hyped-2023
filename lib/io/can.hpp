@@ -2,11 +2,14 @@
 #include <core/types.hpp>
 
 namespace hyped::io {
+
+enum CanResult { kFailure, kSuccess };
 class Can {
  public:
   Can(hyped::core::ILogger &logger);
-  int sendCanFrame(can_frame message);
-  can_frame receiveCanFrame();
+  CanResult initialiseCanSocket();
+  CanResult sendCanFrame(can_frame message);
+  std::optional<can_frame> receiveCanFrame();
 
  private:
   int socket_;
