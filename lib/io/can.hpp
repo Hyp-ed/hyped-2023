@@ -12,10 +12,10 @@ namespace hyped::io {
 enum class CanResult { kFailure, kSuccess };
 class Can {
  public:
-  Can(hyped::core::ILogger &logger);
+  Can(core::ILogger &logger);
   CanResult initialise(const std::string &can_network_interface);
   CanResult sendCanFrame(const core::CanFrame &message);
-  std::optional<can_frame> receiveCanFrame();
+  std::optional<core::CanFrame> receiveCanFrame();
 
  private:
   int socket_;
