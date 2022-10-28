@@ -13,22 +13,25 @@ Can::Can(hyped::core::ILogger &logger) : logger_(logger)
 {
 }
 
-CanResult Can::initialiseCanSocket()
+CanResult Can::initialiseCanSocket(std::string can_network_interface)
 {
-  if ((socket_ = socket(PF_CAN, SOCK_RAW, CAN_RAW)) < 0) {
+  socket_ = socket(PF_CAN, SOCK_RAW, CAN_RAW);
+  if (socket_ < 0) {
     logger_.log(hyped::core::LogLevel::kFatal, "Unable to open CAN socket");
     return hyped::io::CanResult::kFailure;
   }
   sockaddr_can socket_address;
   socket_address.can_family  = AF_CAN;
-  socket_address.can_ifindex = if_nametoindex("can1");
+  socket_address.can_ifindex = if_nametoindex(can_network_interface.c_str());
   if (socket_address.can_ifindex == 0) {
     logger_.log(hyped::core::LogLevel::kFatal, "Unable to find CAN1 network interface");
     close(socket_);
     socket_ = -1;
     return hyped::io::CanResult::kFailure;
   }
-  if (bind(socket_, reinterpret_cast<sockaddr *>(&socket_address), sizeof(socket_address)) < 0) {
+  int bindStatus
+    = bind(socket_, reinterpret_cast<sockaddr *>(&socket_address), sizeof(socket_address));
+  if (bindStatus < 0) {
     logger_.log(hyped::core::LogLevel::kFatal, "Unable to bind CAN socket");
     close(socket_);
     socket_ = -1;
@@ -45,7 +48,8 @@ CanResult Can::sendCanFrame(can_frame message)
                 "Trying to send CAN message but no CAN socket found");
     return hyped::io::CanResult::kFailure;
   }
-  if (write(socket_, &message, sizeof(can_frame)) != sizeof(can_frame)) {
+  int numBytesWritten = write(socket_, &message, sizeof(can_frame));
+  if (numBytesWritten != sizeof(can_frame)) {
     logger_.log(hyped::core::LogLevel::kFatal, "Failed to send CAN message");
   }
   logger_.log(hyped::core::LogLevel::kDebug,
@@ -65,7 +69,8 @@ CanResult Can::sendCanFrame(can_frame message)
 std::optional<can_frame> Can::receiveCanFrame()
 {
   can_frame received_message;
-  if (read(socket_, &received_message, sizeof(can_frame)) < sizeof(can_frame)) {
+  int numBytesRead = read(socket_, &received_message, sizeof(can_frame));
+  if (numBytesRead < sizeof(can_frame)) {
     logger_.log(hyped::core::LogLevel::kFatal, "Failed to receive CAN message");
     return std::nullopt;
   }

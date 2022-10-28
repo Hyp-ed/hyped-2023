@@ -1,3 +1,5 @@
+#include <string>
+
 #include <core/logger.hpp>
 #include <core/types.hpp>
 
@@ -7,7 +9,7 @@ enum CanResult { kFailure, kSuccess };
 class Can {
  public:
   Can(hyped::core::ILogger &logger);
-  CanResult initialiseCanSocket();
+  CanResult initialiseCanSocket(std::string can_network_interface);
   CanResult sendCanFrame(can_frame message);
   std::optional<can_frame> receiveCanFrame();
 
