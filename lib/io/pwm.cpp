@@ -23,49 +23,70 @@ Pwm::~Pwm()
   close(polarityFd_);
 }
 
-PwmWriteResult Pwm::setFrequency(uint16_t frequency)
+hyped::core::Result Pwm::enable()
 {
-  log_.log(hyped::core::LogLevel::kInfo, "Setting PWM frequency to %d", frequency);
+  log_.log(hyped::core::LogLevel::kInfo, "Enabling PWM");
+  return hyped::core::Result::kSuccess;
 }
 
-PwmWriteResult Pwm::setDutyCycle(float duty_cycle)
+hyped::core::Result Pwm::disable()
 {
-  if (duty_cycle < 0 || duty_cycle > 1) {
-    log_.log(hyped::core::LogLevel::kFatal, "Duty cycle must be between 0 and 1");
-    return PwmWriteResult::kError;;
-  }
-  log_.log(hyped::core::LogLevel::kInfo, "Setting PWM duty cycle to %f", duty_cycle);
-  const int num_bytes_written = write(dutyFd_, std::to_string(duty_cycle).c_str(), 4);
-  if (num_bytes_written < 0) {
-    log_.log(hyped::core::LogLevel::kFatal, "Failed to write to duty cycle file");
-    return PwmWriteResult::kError;
-  }
-  return PwmWriteResult::kSuccess;
+  log_.log(hyped::core::LogLevel::kInfo, "Disabling PWM");
+  return hyped::core::Result::kSuccess;
 }
 
-PwmWriteResult Pwm::setPolarity(Polarity polarity)
+hyped::core::Result Pwm::setFrequency(uint32_t frequency)
+{
+  log_.log(hyped::core::LogLevel::kInfo, "Setting frequency to %d Hz", frequency);
+  return hyped::core::Result::kSuccess;
+}
+
+std::optional<uint32_t> Pwm::getFrequency()
+{
+  log_.log(hyped::core::LogLevel::kInfo, "Getting frequency");
+  return std::nullopt;
+}
+
+hyped::core::Result Pwm::setDutyCycle(float duty_cycle)
+{
+  log_.log(hyped::core::LogLevel::kInfo, "Setting duty cycle to %f", duty_cycle);
+  return hyped::core::Result::kSuccess;
+}
+
+std::optional<float> Pwm::getDutyCycle()
+{
+  log_.log(hyped::core::LogLevel::kInfo, "Getting duty cycle");
+  return std::nullopt;
+}
+
+hyped::core::Result Pwm::setPolarity(Polarity polarity)
 {
   log_.log(hyped::core::LogLevel::kInfo, "Setting PWM polarity to %d", polarity);
+  return hyped::core::Result::kSuccess;
 }
 
-PwmWriteResult Pwm::enable()
+std::optional<Polarity> Pwm::getPolarity()
 {
-  const int num_bytes_written = write(enableFd_, "1", 1);
-  if (num_bytes_written < 0) {
-    log_.log(hyped::core::LogLevel::kFatal, "Failed to write to enable file");
-    return PwmWriteResult::kError;
-  }
-  return PwmWriteResult::kSuccess;
+  log_.log(hyped::core::LogLevel::kInfo, "Getting PWM polarity");
+  return std::nullopt;
 }
 
-PwmWriteResult Pwm::disable()
+hyped::core::Result Pwm::setPeriod(uint32_t period)
 {
-  const int num_bytes_written = write(enableFd_, "0", 1);
-  if (num_bytes_written < 0) {
-    log_.log(hyped::core::LogLevel::kFatal, "Failed to write to enable file");
-    return PwmWriteResult::kError;
-  }
-  return PwmWriteResult::kSuccess;
+  log_.log(hyped::core::LogLevel::kInfo, "Setting period to %d", period);
+  return hyped::core::Result::kSuccess;
+}
+
+std::optional<uint32_t> Pwm::getPeriod()
+{
+  log_.log(hyped::core::LogLevel::kInfo, "Getting period");
+  return std::nullopt;
+}
+
+hyped::core::Result Pwm::run()
+{
+  log_.log(hyped::core::LogLevel::kInfo, "Running PWM");
+  return hyped::core::Result::kSuccess;
 }
 
 }  // namespace hyped::io

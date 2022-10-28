@@ -4,6 +4,7 @@
 namespace hyped::core {
 
 enum class DigitalSignal { kLow = 0, kHigh };
+enum class Result { kSuccess = 0, kError };
 
 using Float = float;
 
