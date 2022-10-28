@@ -41,7 +41,7 @@ CanResult Can::initialiseCanSocket(std::string can_network_interface)
   return hyped::io::CanResult::kSuccess;
 }
 
-CanResult Can::sendCanFrame(can_frame message)
+CanResult Can::sendCanFrame(const core::CanFrame message)
 {
   if (socket_ < 0) {
     logger_.log(hyped::core::LogLevel::kFatal,
