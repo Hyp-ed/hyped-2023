@@ -47,11 +47,11 @@ TEST(DummyGpio, printToStderr)
   // dummy GPIO that prints to stdout whenever the interface is accessed
   utils::DummyGpio dummy_gpio(
     [](const std::uint8_t pin) {
-      std::cout << "read " << static_cast<int>(pin) << std::endl;
+      std::cout << "read from " << static_cast<int>(pin) << std::endl;
       return core::DigitalSignal::kHigh;
     },
     [](const std::uint8_t pin, const core::DigitalSignal state) {
-      std::cout << "wrote " << static_cast<int>(pin) << " ";
+      std::cout << "wrote ";
       switch (state) {
         case core::DigitalSignal::kLow:
           std::cout << "low";
@@ -59,17 +59,17 @@ TEST(DummyGpio, printToStderr)
         case core::DigitalSignal::kHigh:
           std::cout << "high";
       }
-      std::cout << std::endl;
+      std::cout << " to " << static_cast<int>(pin) << std::endl;
       return io::GpioWriteResult::kSuccess;
     });
-  testRead(dummy_gpio, 4, "read 4\n");
-  testRead(dummy_gpio, 42, "read 42\n");
-  testRead(dummy_gpio, 255, "read 255\n");
-  testRead(dummy_gpio, 0, "read 0\n");
-  testWrite(dummy_gpio, 4, core::DigitalSignal::kHigh, "wrote 4 high\n");
-  testWrite(dummy_gpio, 42, core::DigitalSignal::kLow, "wrote 42 low\n");
-  testWrite(dummy_gpio, 255, core::DigitalSignal::kHigh, "wrote 255 high\n");
-  testWrite(dummy_gpio, 0, core::DigitalSignal::kLow, "wrote 0 low\n");
+  testRead(dummy_gpio, 4, "read from 4\n");
+  testRead(dummy_gpio, 42, "read from 42\n");
+  testRead(dummy_gpio, 255, "read from 255\n");
+  testRead(dummy_gpio, 0, "read from 0\n");
+  testWrite(dummy_gpio, 4, core::DigitalSignal::kHigh, "wrote high to 4\n");
+  testWrite(dummy_gpio, 42, core::DigitalSignal::kLow, "wrote low to 42\n");
+  testWrite(dummy_gpio, 255, core::DigitalSignal::kHigh, "wrote high to 255\n");
+  testWrite(dummy_gpio, 0, core::DigitalSignal::kLow, "wrote low to 0\n");
 }
 
 }  // namespace hyped::test
