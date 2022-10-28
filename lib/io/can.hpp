@@ -1,18 +1,20 @@
 #include <string>
 
-#include <linux/can.h>
-
 #include <core/logger.hpp>
 #include <core/types.hpp>
 
+#if LINUX
+#include <linux/can.h>
+#endif
+
 namespace hyped::io {
 
-enum CanResult { kFailure, kSuccess };
+enum class CanResult { kFailure, kSuccess };
 class Can {
  public:
   Can(hyped::core::ILogger &logger);
-  CanResult initialiseCanSocket(std::string can_network_interface);
-  CanResult sendCanFrame(const core::CanFrame message);
+  CanResult initialise(const std::string &can_network_interface);
+  CanResult sendCanFrame(const core::CanFrame &message);
   std::optional<can_frame> receiveCanFrame();
 
  private:
