@@ -6,27 +6,31 @@
 
 namespace hyped::io {
 
-class GpioReader : public IGpioReader {
+class HardwareGpioReader : public IGpioReader {
  public:
   virtual std::optional<core::DigitalSignal> read();
 
  private:
-  GpioReader();
-  friend class Gpio;
+  HardwareGpioReader();
+  friend class HardwareGpio;
 };
 
-class GpioWriter : public IGpioWriter {
+class HardwareGpioWriter : public IGpioWriter {
  public:
   virtual GpioWriteResult write(const core::DigitalSignal state);
 
  private:
-  GpioWriter(const uint8_t pin);
-  friend class Gpio;
+  HardwareGpioWriter(const uint8_t pin);
+  friend class HardwareGpio;
 };
 
-class Gpio {
+/**
+ * Hardware GPIO interface, requires physical GPIO pins to be present. This should only
+ * be instantiated at the top level and then provided to users through the IGpio interface.
+ */
+class HardwareGpio {
  public:
-  Gpio(hyped::core::ILogger &log);
+  HardwareGpio(hyped::core::ILogger &log);
 
   virtual std::optional<std::shared_ptr<IGpioReader>> getReader(const std::uint8_t pin);
   virtual std::optional<std::shared_ptr<IGpioWriter>> getWriter(const std::uint8_t pin);

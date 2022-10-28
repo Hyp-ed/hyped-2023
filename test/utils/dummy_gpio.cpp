@@ -44,6 +44,7 @@ void testWrite(utils::DummyGpio &dummy_gpio,
 
 TEST(DummyGpio, printToStderr)
 {
+  // dummy GPIO that prints to stdout whenever the interface is accessed
   utils::DummyGpio dummy_gpio(
     [](const std::uint8_t pin) {
       std::cout << "read " << static_cast<int>(pin) << std::endl;

@@ -4,7 +4,7 @@
 #include <core/timer.hpp>
 #include <core/types.hpp>
 #include <core/wall_clock.hpp>
-#include <io/real_gpio.hpp>
+#include <io/hardware_gpio.hpp>
 
 int main(int argc, char **argv)
 {
@@ -12,7 +12,7 @@ int main(int argc, char **argv)
   hyped::core::Timer timer(time);
   const auto execution_time = timer.measure_execution_time([time]() {
     hyped::core::Logger logger("GPIO", hyped::core::LogLevel::kDebug, time);
-    hyped::io::Gpio gpio(logger);
+    hyped::io::HardwareGpio gpio(logger);
     auto gpio_reader_opt = gpio.getReader(0);
     if (!gpio_reader_opt) {
       logger.log(hyped::core::LogLevel::kFatal, "Error");
