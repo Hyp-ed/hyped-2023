@@ -32,7 +32,7 @@ class IGpioWriter {
 /**
  * An abstract GPIO interface. This is to be used in all places where it is necessary to
  * initiate GPIO access. It is the callees responsibility to provide a correct implementation
- * such as `Gpio` in `real_gpio.hpp`.
+ * such as `Gpio` in `hardware_gpio.hpp`.
  */
 class IGpio {
  public:
