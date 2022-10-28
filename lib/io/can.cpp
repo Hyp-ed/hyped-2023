@@ -29,9 +29,9 @@ CanResult Can::initialiseCanSocket(std::string can_network_interface)
     socket_ = -1;
     return hyped::io::CanResult::kFailure;
   }
-  int bindStatus
+  const int bind_status
     = bind(socket_, reinterpret_cast<sockaddr *>(&socket_address), sizeof(socket_address));
-  if (bindStatus < 0) {
+  if (bind_status < 0) {
     logger_.log(hyped::core::LogLevel::kFatal, "Unable to bind CAN socket");
     close(socket_);
     socket_ = -1;
@@ -48,8 +48,8 @@ CanResult Can::sendCanFrame(can_frame message)
                 "Trying to send CAN message but no CAN socket found");
     return hyped::io::CanResult::kFailure;
   }
-  int numBytesWritten = write(socket_, &message, sizeof(can_frame));
-  if (numBytesWritten != sizeof(can_frame)) {
+  const int num_bytes_written = write(socket_, &message, sizeof(can_frame));
+  if (num_bytes_written != sizeof(can_frame)) {
     logger_.log(hyped::core::LogLevel::kFatal, "Failed to send CAN message");
   }
   logger_.log(hyped::core::LogLevel::kDebug,
@@ -69,8 +69,8 @@ CanResult Can::sendCanFrame(can_frame message)
 std::optional<can_frame> Can::receiveCanFrame()
 {
   can_frame received_message;
-  int numBytesRead = read(socket_, &received_message, sizeof(can_frame));
-  if (numBytesRead < sizeof(can_frame)) {
+  const int num_bytes_read = read(socket_, &received_message, sizeof(can_frame));
+  if (num_bytes_read < sizeof(can_frame)) {
     logger_.log(hyped::core::LogLevel::kFatal, "Failed to receive CAN message");
     return std::nullopt;
   }
