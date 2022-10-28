@@ -10,9 +10,12 @@ class Navigator{
 
   void navigate();
 
+  void publishTrajectory();
+
+  private:
+
   Trajectory trajectory_;
 
-  void updateTrajectory();
 
 };
 

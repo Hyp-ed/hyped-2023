@@ -14,6 +14,7 @@ void Navigator::navigate(){
 
   - look at new data
   - preprocess
+  - check sensor agreement
   - calculate current trajecotory
   - update current trajectory
   
@@ -21,12 +22,12 @@ void Navigator::navigate(){
 }
 
 
-void Navigator::updateTrajectory(){
+void Navigator::publishTrajectory(){
 
   /*
   TODO: implement
 
-  idk how ros works but make sure everyone who needs to knwo trajectory has it
+  idk how ros works but make sure everyone who needs to know trajectory has it
 
   */
 }

@@ -81,6 +81,7 @@ namespace hyped::navigation{
     - check how we move data (should this be void, probably not)
     - run imu outlier detection
     - run check imus reliable
+    - get mean and run kalman filter
     */
   }
 
