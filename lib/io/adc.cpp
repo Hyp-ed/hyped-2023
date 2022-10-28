@@ -34,7 +34,7 @@ std::optional<uint16_t> Adc::resetAndRead4(const int file_descriptor)
 {
   const auto offset = lseek(file_descriptor, 0, SEEK_SET);  // reset file pointer
   if (offset != 0) {
-    logger_.log(hyped::core::LogLevel::kInfo, "Failed to reset file offset");
+    logger_.log(hyped::core::LogLevel::kFatal, "Failed to reset file offset");
     return std::nullopt;
   }
   char read_buffer[4];  // buffer size 4 for fs value
@@ -43,7 +43,7 @@ std::optional<uint16_t> Adc::resetAndRead4(const int file_descriptor)
            &read_buffer,
            sizeof(read_buffer));  // actually consume new data, changes value in buffer
   if (num_bytes_read != sizeof(read_buffer)) {
-    logger_.log(hyped::core::LogLevel::kInfo, "Failed to read 4 bytes");
+    logger_.log(hyped::core::LogLevel::kFatal, "Failed to read 4 bytes");
     return std::nullopt;  // returning NULL since we did not get any value
   }
   const int raw_voltage = std::atoi(read_buffer);
