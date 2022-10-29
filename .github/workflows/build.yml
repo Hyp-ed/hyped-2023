@@ -3,7 +3,7 @@ name: Build & Test
 on: push
 
 jobs:
-  os_matrix:
+  build:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
