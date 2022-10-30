@@ -6,8 +6,7 @@ namespace hyped::navigation{
     //TODO: implement
   }
 
-
-  bool Crosscheck::checkAll(){
+  bool Crosscheck::checkTrajectoryAgreement(){
     /*
     TODO: implement
     basically:
@@ -53,7 +52,4 @@ namespace hyped::navigation{
     */
    return true;
   }
-
-
-
 }

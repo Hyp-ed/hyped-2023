@@ -6,6 +6,7 @@ namespace hyped::test {
 
 TEST(Trajectory, equality)
 {
+  
   navigation::Trajectory reference = {100.0, 10.0, 1.0};
   {
     navigation::Trajectory other = {100.0, 10.0, 1.0};

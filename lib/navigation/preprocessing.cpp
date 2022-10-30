@@ -17,6 +17,8 @@ namespace hyped::navigation{
     -set outlier points as median
 
     -also has to be able to handle 1 unreliable sensor
+    -also figure out return type/ what we update and update
+    documentation as appropriate
     */
   }
 
@@ -31,6 +33,8 @@ namespace hyped::navigation{
     -set outlier points as median
 
     -also has to be able to handle 1 unreliable sensor
+    -also figure out return type/ what we update and update
+    documentation as appropriate
     */
   }
 
@@ -44,6 +48,8 @@ namespace hyped::navigation{
     in reliable imus.
     -if number unreliable in reliable_imus > 1, fail state
 
+    -also figure out return type/ what we update and update
+    documentation as appropriate
     */
   }
 
@@ -57,6 +63,8 @@ namespace hyped::navigation{
     in reliable imus.
     -if number unreliable in reliable_imus > 1, fail state
 
+    -also figure out return type/ what we update and update
+    documentation as appropriate
     */
   }
 
@@ -69,6 +77,10 @@ namespace hyped::navigation{
     - if they disagree and keyenece_disagreement = false, set to true
     - if they disagree and keyenece_disagreement = true, 
     we have 2 disgeements in a row so fail state
+    - update with largest of sensor values
+    
+    -also figure out return type/ what we update and update
+    documentation as appropriate
     */
   }
 
@@ -82,9 +94,12 @@ namespace hyped::navigation{
     - run imu outlier detection
     - run check imus reliable
     - get mean and run kalman filter
+    - update trajectory with mean
+
+    -also figure out return type/ what we update and update
+    documentation as appropriate
     */
   }
-
 
   void Preprocessing::preprocessEncoders(){
 
@@ -95,8 +110,23 @@ namespace hyped::navigation{
     - check how we move data (should this be void, probably not)
     - run encoder outlier detection
     - run check encoders reliable
+    - update trajectory with mean
+
+    -also figure out return type/ what we update and update
+    documentation as appropriate
     */
   }
 
+  std::array<nav_t, kNumImus> Preprocessing::getImuData(){
+    return imu_data_;
+  }
+
+  std::array<int, kNumEncoders> Preprocessing::getEncoderData(){
+    return encoder_data_;
+  }
+
+  std::array<int, kNumKeyence> Preprocessing::getKeyenceData(){
+    return keyence_data_;
+  }
 
 }

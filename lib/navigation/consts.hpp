@@ -1,6 +1,5 @@
 #include <cstdint>
 
-
 namespace hyped::navigation{
 
   using nav_t = float;
@@ -36,6 +35,8 @@ inline bool operator!=(const Trajectory &lhs, const Trajectory &rhs)
 
 //explicitly define zero trajectory
 inline Trajectory zero_trajectory = {0, 0, 0};
+
+
 
 template<typename SensorData>
 class INavigator {
