@@ -21,14 +21,14 @@ namespace hyped::navigation{
      * TODO: update comment with what we do with data once implemented
      * 
      */
-    std::array<uint32_t, kNumEncoders> Preprocessing::preprocessEncoders(const std::array<uint32_t, kNumEncoders> encoder_data);
+    std::array<uint32_t, kNumEncoders> preprocessEncoders(const std::array<uint32_t, kNumEncoders> encoder_data);
 
     /**
      * @brief checks that keyence data is  consistent
      * TODO: update comment with what we do with data once implemented
      * 
      */
-    std::array<uint32_t, kNumKeyence> Preprocessing::preprocessKeyence(const std::array<uint32_t, kNumKeyence> keyence_data);
+    std::array<uint32_t, kNumKeyence> preprocessKeyence(const std::array<uint32_t, kNumKeyence> keyence_data);
 
     /**
      * @brief Get the Imu Data object

@@ -82,6 +82,7 @@ namespace hyped::navigation{
     -also figure out return type/ what we update and update
     documentation as appropriate
     */
+   return {0, 0};
   }
 
   std::array<nav_t, kNumImus> Preprocessing::preprocessImus(const std::array<nav_t, kNumImus> imu_data){
@@ -99,6 +100,7 @@ namespace hyped::navigation{
     -also figure out return type/ what we update and update
     documentation as appropriate
     */
+   return {0.0, 0.0, 0.0, 0.0};
   }
 
   std::array<uint32_t, kNumEncoders> Preprocessing::preprocessEncoders(const std::array<uint32_t, kNumEncoders> encoder_data){
@@ -115,6 +117,7 @@ namespace hyped::navigation{
     -also figure out return type/ what we update and update
     documentation as appropriate
     */
+   return {0, 0, 0, 0};
   }
 
   std::array<nav_t, kNumImus> Preprocessing::getImuData(){
