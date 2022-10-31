@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <cstdio>
+#include <optional>
 
 namespace hyped::sensors {
 
@@ -15,9 +16,9 @@ class II2cSensor {
   /*
    * This function carries out the initilization steps for a particular sensor.
    */
-  virtual bool configure()    = 0;
-  virtual WriteResult write() = 0;
-  virtual uint16_t read()     = 0;
+  virtual bool configure()               = 0;
+  virtual WriteResult write()            = 0;
+  virtual std::optional<uint16_t> read() = 0;
 };
 
 }  // namespace hyped::sensors
