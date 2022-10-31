@@ -40,7 +40,7 @@ CanResult Can::initialise(const std::string &can_network_interface)
   return hyped::io::CanResult::kSuccess;
 }
 
-CanResult Can::sendCanFrame(const CanFrame &message)
+CanResult Can::send(const CanFrame &message)
 {
   if (socket_ < 0) {
     logger_.log(core::LogLevel::kFatal, "Trying to send CAN message but no CAN socket found");
@@ -65,7 +65,7 @@ CanResult Can::sendCanFrame(const CanFrame &message)
   return hyped::io::CanResult::kSuccess;
 }
 
-std::optional<CanFrame> Can::receiveCanFrame()
+std::optional<CanFrame> Can::receive()
 {
   CanFrame received_message;
   const int num_bytes_read = read(socket_, &received_message, sizeof(can_frame));

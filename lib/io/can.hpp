@@ -5,7 +5,11 @@
 
 #ifndef LINUX
 #include <linux/can.h>
-#define CanFrame can_frame
+#endif
+namespace hyped::io {
+
+#ifndef LINUX
+using CanFrame = can_frame;
 #else
 struct CanFrame {
   uint32_t can_id; /* 32 bit CAN_ID + EFF/RTR/ERR flags */
@@ -16,15 +20,14 @@ struct CanFrame {
   std::array<uint8_t, 8> data;
 };
 #endif
-namespace hyped::io {
 
 enum class CanResult { kFailure, kSuccess };
 class Can {
  public:
   Can(core::ILogger &logger);
   CanResult initialise(const std::string &can_network_interface);
-  CanResult sendCanFrame(const CanFrame &message);
-  std::optional<CanFrame> receiveCanFrame();
+  CanResult send(const CanFrame &message);
+  std::optional<CanFrame> receive();
 
  private:
   int socket_;
