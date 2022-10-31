@@ -1,4 +1,5 @@
 #include <array>
+#include "consts.hpp"
 
 namespace hyped::navigation{
 
@@ -16,7 +17,9 @@ namespace hyped::navigation{
        * @return true signifies trajectory agreement
        * @return false signifies trajectory disagreement. We enter fail state
        */
-      bool checkTrajectoryAgreement();
+      bool checkTrajectoryAgreement(const std::array<nav_t, kNumImus> imu_data,
+      const std::array<nav_t, kNumEncoders> encoders_data, 
+      const std::array<nav_t, kNumKeyence> keyence_data);
 
     private:
 
@@ -28,7 +31,8 @@ namespace hyped::navigation{
        * @return true IMU and wheel encoders agree
        * @return false IMU and wheel encoders disagree
        */
-      bool checkEncoderImu();
+      bool checkEncoderImu(const std::array<nav_t, kNumImus> imu_data,
+      const std::array<nav_t, kNumEncoders> encoders_data);
 
       /**
        * @brief Checks the keyence value of displacement against the 
@@ -38,7 +42,8 @@ namespace hyped::navigation{
        * @return true Keyence and wheel encoders agree
        * @return false Keyence and wheel encoders disagree
        */
-      bool checkEncooderKeyence();
+      bool checkEncooderKeyence(const std::array<nav_t, kNumImus> imu_data,
+      const std::array<nav_t, kNumKeyence> keyence_data);
 
   };
 }
