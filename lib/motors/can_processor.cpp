@@ -7,13 +7,13 @@ CanProcessor::CanProcessor()
   // TODO implement
 }
 
-bool CanProcessor::sendMessage(const core::CanFrame frame)
+bool CanProcessor::sendMessage(const CanFrame frame)
 {
   // TODO implement
   return false;
 }
 
-void CanProcessor::processMessage(const core::CanFrame frame)
+void CanProcessor::processMessage(const CanFrame frame)
 {
   // TODO implement
   return;
