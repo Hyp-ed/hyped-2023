@@ -1,11 +1,13 @@
 #include <gtest/gtest.h>
 
-#include <utils/manual_time.hpp>
 #include <core/logger.hpp>
+#include <utils/manual_time.hpp>
 
 namespace hyped::test {
 
-void testStdoutLog(const core::LogLevel level, const utils::ManualTime &manual_time, const std::string expected_output)
+void testStdoutLog(const core::LogLevel level,
+                   const utils::ManualTime &manual_time,
+                   const std::string expected_output)
 {
   testing::internal::CaptureStdout();
   core::Logger logger("test", level, manual_time);
@@ -13,13 +15,15 @@ void testStdoutLog(const core::LogLevel level, const utils::ManualTime &manual_t
   ASSERT_EQ(testing::internal::GetCapturedStdout(), expected_output);
 }
 
-void testStderrLog(const core::LogLevel level, const utils::ManualTime &manual_time, const std::string expected_output)
+void testStderrLog(const core::LogLevel level,
+                   const utils::ManualTime &manual_time,
+                   const std::string expected_output)
 {
   testing::internal::CaptureStderr();
   core::Logger logger("test", level, manual_time);
   logger.log(level, "test");
   ASSERT_EQ(testing::internal::GetCapturedStderr(), expected_output);
-} 
+}
 
 TEST(Logger, Stdout)
 {
@@ -29,7 +33,6 @@ TEST(Logger, Stdout)
   testStdoutLog(core::LogLevel::kFatal, manual_time, "");
 }
 
-
 TEST(Logger, Stderr)
 {
   utils::ManualTime manual_time;
@@ -37,4 +40,18 @@ TEST(Logger, Stderr)
   testStderrLog(core::LogLevel::kInfo, manual_time, "");
   testStderrLog(core::LogLevel::kFatal, manual_time, "01:00:00.000 FATAL[test] test\n");
 }
+
+TEST(Logger, VaryingTimes)
+{
+  utils::ManualTime manual_time;
+  manual_time.set_time(std::chrono::system_clock::from_time_t(3600));
+  testStdoutLog(core::LogLevel::kDebug, manual_time, "02:00:00.000 DEBUG[test] test\n");
+  manual_time.set_time(std::chrono::system_clock::from_time_t(24 * 3600));
+  testStdoutLog(core::LogLevel::kDebug, manual_time, "01:00:00.000 DEBUG[test] test\n");
+  manual_time.set_time(std::chrono::system_clock::from_time_t(60));
+  testStdoutLog(core::LogLevel::kDebug, manual_time, "01:01:00.000 DEBUG[test] test\n");
+  manual_time.set_time(std::chrono::system_clock::from_time_t(1));
+  testStdoutLog(core::LogLevel::kDebug, manual_time, "01:00:01.000 DEBUG[test] test\n");
+}
+
 }  // namespace hyped::test
