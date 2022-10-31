@@ -28,4 +28,23 @@ void Navigator::publishTrajectory(){
   */
 }
 
+void Navigator::setImuData(const core::ImuData imu_data){
+  imu_data_.at(0) = imu_data.imu0;
+  imu_data_.at(1) = imu_data.imu1;
+  imu_data_.at(2) = imu_data.imu2;
+  imu_data_.at(3) = imu_data.imu3;
+}
+
+void Navigator::setEncoderData(const core::WheelEncoderData encoder_data){
+  encoder_data_.at(0) = encoder_data.encoder0;
+  encoder_data_.at(1) = encoder_data.encoder1;
+  encoder_data_.at(2) = encoder_data.encoder2;
+  encoder_data_.at(3) = encoder_data.encoder3;
+}
+
+void Navigator::setKeyenceData(const core::KeyenceData keyence_data){
+  keyence_data_.at(0) = keyence_data.keyence0;
+  keyence_data_.at(1) = keyence_data.keyence1;
+}
+
 }  // namespace hyped::navigation

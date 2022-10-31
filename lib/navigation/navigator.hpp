@@ -1,4 +1,5 @@
 #include "consts.hpp"
+#include "core/types.hpp"
 
 namespace hyped::navigation{
 
@@ -19,7 +20,33 @@ class Navigator{
   */
   void publishTrajectory();
 
+  /**
+   * @brief Set Imu Data from sensors
+   * 
+   * @param imu_data 
+   */
+  void setImuData(const core::ImuData imu_data);
+
+  /**
+   * @brief Set Encoder Data from sensors
+   * 
+   * @param encoder_data 
+   */
+  void setEncoderData(const core::WheelEncoderData encoder_data);
+
+  /**
+   * @brief Set Keyence Data from sensors
+   * 
+   * @param keyence_data 
+   */
+  void setKeyenceData(const core::KeyenceData keyence_data);
+
   private:
+
+  std::array<nav_t, kNumImus> imu_data_;
+  std::array<int32_t, kNumEncoders> encoder_data_;
+  std::array<int32_t, kNumKeyence> keyence_data_;
+
   
   //current navigation trajectory
   Trajectory trajectory_;

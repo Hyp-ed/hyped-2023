@@ -121,11 +121,11 @@ namespace hyped::navigation{
     return imu_data_;
   }
 
-  std::array<int, kNumEncoders> Preprocessing::getEncoderData(){
+  std::array<uint32_t, kNumEncoders> Preprocessing::getEncoderData(){
     return encoder_data_;
   }
 
-  std::array<int, kNumKeyence> Preprocessing::getKeyenceData(){
+  std::array<uint32_t, kNumKeyence> Preprocessing::getKeyenceData(){
     return keyence_data_;
   }
 

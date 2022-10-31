@@ -16,4 +16,23 @@ struct CanFrame {
   std::array<uint8_t, 8> data;
 };
 
+struct ImuData{
+  float imu0;
+  float imu1;
+  float imu2;
+  float imu3;
+};
+
+struct WheelEncoderData{
+  uint32_t encoder0;
+  uint32_t encoder1;
+  uint32_t encoder2;
+  uint32_t encoder3;
+};
+
+struct KeyenceData{
+  uint32_t keyence0;
+  uint32_t keyence1;
+};
+
 }  // namespace hyped::core

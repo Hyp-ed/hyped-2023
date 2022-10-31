@@ -42,21 +42,21 @@ namespace hyped::navigation{
      * 
      * @return std::array<int, kNumEncoders> 
      */
-    std::array<int, kNumEncoders> getEncoderData();
+    std::array<uint32_t, kNumEncoders> getEncoderData();
 
     /**
      * @brief Get the Keyence Data object
      * 
      * @return std::array<int, kNumKeyence> 
      */
-    std::array<int, kNumKeyence> getKeyenceData();
+    std::array<uint32_t, kNumKeyence> getKeyenceData();
     
     private:
     
     //current data values for imus, encdoers and keyence
     std::array<nav_t, kNumImus> imu_data_;
-    std::array<int, kNumEncoders> encoder_data_;
-    std::array<int, kNumKeyence> keyence_data_;
+    std::array<uint32_t, kNumEncoders> encoder_data_;
+    std::array<uint32_t, kNumKeyence> keyence_data_;
     //TODO: Some form of camera data? Need to get camera idea going first.
 
     /**
