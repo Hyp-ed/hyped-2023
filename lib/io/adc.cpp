@@ -5,7 +5,7 @@
 
 namespace hyped::io {
 
-Adc::Adc(const uint32_t pin) : pin_(pin)
+Adc::Adc(const uint8_t pin) : pin_(pin)
 {
   char buf[100];
   snprintf(buf, sizeof(buf), "/sys/bus/iio/devices/iio:device0/in_voltage%i_raw", pin_);

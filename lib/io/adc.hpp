@@ -12,7 +12,7 @@ class Adc {
   /**
    * @param pin is one of the 6 analogue input pins on the bbb
    */
-  Adc(const uint32_t pin);
+  Adc(const uint8_t pin);
   ~Adc();
 
   /**
