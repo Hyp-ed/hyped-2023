@@ -42,7 +42,7 @@ void testWrite(utils::DummyGpio &dummy_gpio,
   ASSERT_EQ(testing::internal::GetCapturedStdout(), expected_output);
 }
 
-TEST(DummyGpio, printToStderr)
+TEST(DummyGpio, printToStdout)
 {
   // dummy GPIO that prints to stdout whenever the interface is accessed
   utils::DummyGpio dummy_gpio(
