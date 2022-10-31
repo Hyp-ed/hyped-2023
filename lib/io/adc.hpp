@@ -14,7 +14,7 @@ class Adc {
   /**
    * @param pin is one of the 6 analogue input pins on the bbb
    */
-  Adc(const uint32_t pin, hyped::core::ILogger &logger);
+  Adc(const uint8_t pin, hyped::core::ILogger &logger);
   ~Adc();
 
   /**
@@ -33,7 +33,7 @@ class Adc {
 
  private:
   hyped::core::ILogger &logger_;
-  uint32_t pin_;
+  uint8_t pin_;
   int file_;
 };
 

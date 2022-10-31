@@ -5,7 +5,7 @@
 
 namespace hyped::io {
 
-Adc::Adc(const uint32_t pin, hyped::core::ILogger &logger) : pin_(pin), logger_(logger)
+Adc::Adc(const uint8_t pin, hyped::core::ILogger &logger) : pin_(pin), logger_(logger)
 {
   char buf[100];
   snprintf(buf, sizeof(buf), "/sys/bus/iio/devices/iio:device0/in_voltage%i_raw", pin_);
