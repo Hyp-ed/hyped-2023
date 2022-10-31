@@ -29,10 +29,10 @@ void Navigator::publishTrajectory(){
 }
 
 void Navigator::setImuData(const core::ImuData imu_data){
-  imu_data_.at(0) = imu_data.imu0;
-  imu_data_.at(1) = imu_data.imu1;
-  imu_data_.at(2) = imu_data.imu2;
-  imu_data_.at(3) = imu_data.imu3;
+  imu_data_.at(0) = static_cast<nav_t>(imu_data.imu0);
+  imu_data_.at(1) = static_cast<nav_t>(imu_data.imu1);
+  imu_data_.at(2) = static_cast<nav_t>(imu_data.imu2);
+  imu_data_.at(3) = static_cast<nav_t>(imu_data.imu3);
 }
 
 void Navigator::setEncoderData(const core::WheelEncoderData encoder_data){
