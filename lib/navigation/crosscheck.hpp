@@ -31,16 +31,6 @@ namespace hyped::navigation{
       bool checkEncoderImu();
 
       /**
-       * @brief Checks the integrated camera value of displacement against the 
-       * encoder value of displacement to some tolerance
-       * TODO: update comment with tolerance once updated
-       * 
-       * @return true Camera and wheel encoders agree
-       * @return false Camera and wheel encoders disagree
-       */
-      bool checkEncoderCamera();
-
-      /**
        * @brief Checks the keyence value of displacement against the 
        * encoder value of displacement to some tolerance
        * TODO: update comment with tolerance once updated

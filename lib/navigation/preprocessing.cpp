@@ -68,7 +68,7 @@ namespace hyped::navigation{
     */
   }
 
-  void Preprocessing::preprocessKeyence(){
+  std::array<uint32_t, kNumKeyence> Preprocessing::preprocessKeyence(const std::array<uint32_t, kNumKeyence> keyence_data){
     /*
     TODO: implement
     rough process:
@@ -84,13 +84,13 @@ namespace hyped::navigation{
     */
   }
 
-  void Preprocessing::preprocessImus(){
+  std::array<nav_t, kNumImus> Preprocessing::preprocessImus(const std::array<nav_t, kNumImus> imu_data){
 
     /*
     TODO: implement
     rough plan:
 
-    - check how we move data (should this be void, probably not)
+    - assign imu_data to class object
     - run imu outlier detection
     - run check imus reliable
     - get mean and run kalman filter
@@ -101,13 +101,13 @@ namespace hyped::navigation{
     */
   }
 
-  void Preprocessing::preprocessEncoders(){
+  std::array<uint32_t, kNumEncoders> Preprocessing::preprocessEncoders(const std::array<uint32_t, kNumEncoders> encoder_data){
 
     /*
     TODO: implement
     rough plan:
 
-    - check how we move data (should this be void, probably not)
+    - assign encoder data to class object
     - run encoder outlier detection
     - run check encoders reliable
     - update trajectory with mean

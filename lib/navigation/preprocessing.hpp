@@ -14,21 +14,21 @@ namespace hyped::navigation{
      * TODO: update comment with what we do with data once implemented
      * 
      */
-    void preprocessImus();
+    std::array<nav_t, kNumImus> preprocessImus(const std::array<nav_t, kNumImus> imu_data);
 
     /**
      * @brief runs outlier detection and sensor reliability on encoders data
      * TODO: update comment with what we do with data once implemented
      * 
      */
-    void preprocessEncoders();
+    std::array<uint32_t, kNumEncoders> Preprocessing::preprocessEncoders(const std::array<uint32_t, kNumEncoders> encoder_data);
 
     /**
      * @brief checks that keyence data is  consistent
      * TODO: update comment with what we do with data once implemented
      * 
      */
-    void preprocessKeyence();
+    std::array<uint32_t, kNumKeyence> Preprocessing::preprocessKeyence(const std::array<uint32_t, kNumKeyence> keyence_data);
 
     /**
      * @brief Get the Imu Data object

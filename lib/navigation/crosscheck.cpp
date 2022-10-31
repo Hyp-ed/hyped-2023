@@ -11,9 +11,11 @@ namespace hyped::navigation{
     TODO: implement
     basically:
       - checkEncoderImu
-      - checkEncoderCamera
       - checkEncooderKeyence
       - if all good, return true. else false and fail state
+
+      Also need to figure out how data flow is going to work with the historic data and what we use.
+      The basic infrastrucutre is there for now so will be a problem for another day.
     */
    return true;
   }
@@ -28,18 +30,6 @@ namespace hyped::navigation{
     - otherwise all good, return true
     */
    return true;
-  }
-
-  bool checkEncoderCamera(){
-    /*
-    TODO: implement.
-    plan:
-    - integrate camera values (also todo)
-    - if absolute diff between encoder displacement and
-    camera displacement too high, fail state and return false
-    - otherwise all good, return true
-    */
-    return true;
   }
 
   bool checkEncoderKeyence(){
