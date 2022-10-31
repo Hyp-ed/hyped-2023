@@ -5,7 +5,7 @@
 
 #ifndef LINUX
 #include <linux/can.h>
-struct CanFrame = can_frame;
+#define CanFrame can_frame
 #else
 struct CanFrame {
   uint32_t can_id; /* 32 bit CAN_ID + EFF/RTR/ERR flags */
@@ -23,8 +23,8 @@ class Can {
  public:
   Can(core::ILogger &logger);
   CanResult initialise(const std::string &can_network_interface);
-  CanResult sendCanFrame(const core::CanFrame &message);
-  std::optional<core::CanFrame> receiveCanFrame();
+  CanResult sendCanFrame(const CanFrame &message);
+  std::optional<CanFrame> receiveCanFrame();
 
  private:
   int socket_;
