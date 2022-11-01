@@ -1,10 +1,11 @@
-on: [push]
+name: Linter
+
+on: push
 
 jobs:
   clang-format:
     runs-on: ubuntu-latest
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
       - name: Run clang-format style check
         uses: jidicula/clang-format-action@v4.9.0
@@ -15,7 +16,6 @@ jobs:
   find-todos-fixme:
     runs-on: ubuntu-latest
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
       - name: Run todo check
         run: | 
