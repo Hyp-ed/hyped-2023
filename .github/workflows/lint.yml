@@ -19,7 +19,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Run todo check
         run: | 
-         if grep --exclude-dir={.git,.github} -rE "TODO|FIXME"; then
+         if grep -rE -n 'TODO|FIXME' * | grep -v 'TODOLater'; then
           exit 1
          else
           echo "All good"
