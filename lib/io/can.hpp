@@ -1,4 +1,8 @@
+#include <cstdint>
+#include <memory>
 #include <string>
+#include <unordered_map>
+#include <vector>
 
 #include <core/logger.hpp>
 #include <core/types.hpp>
@@ -23,10 +27,18 @@ struct CanFrame {
 
 enum class CanResult { kFailure, kSuccess };
 
+class ICanProcessor {
+ public:
+  virtual void processMessage(const io::CanFrame frame);
+};
+
 class ICan {
+ public:
   virtual CanResult initialise(const std::string &can_network_interface);
   virtual CanResult send(const CanFrame &message);
   virtual std::optional<CanFrame> receive();
+  virtual CanResult addCanProcessor(uint16_t ID, ICanProcessor processor);
+  virtual CanResult removeCanProcessor(ICanProcessor processor);
 };
 
 class Can : ICan {
@@ -39,5 +51,6 @@ class Can : ICan {
  private:
   int socket_;
   hyped::core::ILogger &logger_;
+  std::unordered_map<uint32_t, std::vector<std::shared_ptr<ICanProcessor>>> processors_;
 };
 }  // namespace hyped::io

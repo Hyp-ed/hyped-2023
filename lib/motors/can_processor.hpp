@@ -7,7 +7,7 @@
 
 namespace hyped::motors {
 
-class CanProcessor {
+class CanProcessor : io::ICanProcessor {
  public:
   CanProcessor();
 
