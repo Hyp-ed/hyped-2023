@@ -18,7 +18,8 @@ I2c::I2c(const uint8_t bus_address, hyped::core::ILogger &log) : sensor_address_
   char path[13];  // up to "/dev/i2c-2"
   sprintf(path, "/dev/i2c-%d", bus_address);
   file_descriptor_ = open(path, O_RDWR, 0);
-  if (file_descriptor_ < 0) { /* log "Could not open i2c device" */ };
+  if (file_descriptor_ < 0) { /* log "Could not open i2c device" */
+  };
 }
 
 I2c::~I2c()
@@ -29,7 +30,8 @@ I2c::~I2c()
 void I2c::setSensorAddress(const uint8_t device_address)
 {
   if (file_descriptor_ < 0) {
-    log_.log(hyped::core::LogLevel::kFatal, "Could not find i2c device while setting sensor address");
+    log_.log(hyped::core::LogLevel::kFatal,
+             "Could not find i2c device while setting sensor address");
     return;
   }
   sensor_address_        = device_address;
@@ -65,7 +67,8 @@ std::optional<uint8_t> I2c::readByte(const uint8_t device_address, const uint8_t
   return read_buffer[0];
 }
 
-I2cWriteResult I2c::writeByte(const uint8_t device_address, const uint8_t register_address,
+I2cWriteResult I2c::writeByte(const uint8_t device_address,
+                              const uint8_t register_address,
                               const uint8_t data)
 {
   if (file_descriptor_ < 0) {
