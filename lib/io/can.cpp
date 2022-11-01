@@ -74,6 +74,19 @@ std::optional<CanFrame> Can::receive()
     logger_.log(core::LogLevel::kFatal, "Failed to receive CAN message");
     return std::nullopt;
   }
+  // TODO make logger more elegant
+  logger_.log(core::LogLevel::kDebug,
+              "CAN message received, ID:%i, DATA: %i %i %i %i %i %i %i %i",
+              static_cast<int>(received_message.can_id),
+              static_cast<int>(received_message.data[0]),
+              static_cast<int>(received_message.data[1]),
+              static_cast<int>(received_message.data[2]),
+              static_cast<int>(received_message.data[3]),
+              static_cast<int>(received_message.data[4]),
+              static_cast<int>(received_message.data[5]),
+              static_cast<int>(received_message.data[6]),
+              static_cast<int>(received_message.data[7]));
+  
   return received_message;
 }
 }  // namespace hyped::io
