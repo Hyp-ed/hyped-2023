@@ -22,7 +22,14 @@ struct CanFrame {
 #endif
 
 enum class CanResult { kFailure, kSuccess };
-class Can {
+
+class ICan {
+  virtual CanResult initialise(const std::string &can_network_interface);
+  virtual CanResult send(const CanFrame &message);
+  virtual std::optional<CanFrame> receive();
+};
+
+class Can: ICan {
  public:
   Can(core::ILogger &logger);
   CanResult initialise(const std::string &can_network_interface);
