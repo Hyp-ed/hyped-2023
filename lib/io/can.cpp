@@ -17,7 +17,7 @@ CanResult Can::initialise(const std::string &can_network_interface)
   socket_ = socket(PF_CAN, SOCK_RAW, CAN_RAW);
   if (socket_ < 0) {
     logger_.log(core::LogLevel::kFatal, "Unable to open CAN socket");
-    return hyped::io::CanResult::kFailure;
+    return io::CanResult::kFailure;
   }
   sockaddr_can socket_address;
   socket_address.can_family  = AF_CAN;
@@ -26,7 +26,7 @@ CanResult Can::initialise(const std::string &can_network_interface)
     logger_.log(core::LogLevel::kFatal, "Unable to find CAN1 network interface");
     close(socket_);
     socket_ = -1;
-    return hyped::io::CanResult::kFailure;
+    return io::CanResult::kFailure;
   }
   const int bind_status
     = bind(socket_, reinterpret_cast<sockaddr *>(&socket_address), sizeof(socket_address));
@@ -34,21 +34,22 @@ CanResult Can::initialise(const std::string &can_network_interface)
     logger_.log(core::LogLevel::kFatal, "Unable to bind CAN socket");
     close(socket_);
     socket_ = -1;
-    return hyped::io::CanResult::kFailure;
+    return io::CanResult::kFailure;
   }
   logger_.log(core::LogLevel::kInfo, "CAN socket successfully created");
-  return hyped::io::CanResult::kSuccess;
+  return io::CanResult::kSuccess;
 }
 
 CanResult Can::send(const CanFrame &message)
 {
   if (socket_ < 0) {
     logger_.log(core::LogLevel::kFatal, "Trying to send CAN message but no CAN socket found");
-    return hyped::io::CanResult::kFailure;
+    return io::CanResult::kFailure;
   }
   const int num_bytes_written = write(socket_, &message, sizeof(can_frame));
   if (num_bytes_written != sizeof(can_frame)) {
     logger_.log(core::LogLevel::kFatal, "Failed to send CAN message");
+    return io::CanResult::kFailure;
   }
   // TODO make logger more elegant
   logger_.log(core::LogLevel::kDebug,
@@ -62,7 +63,7 @@ CanResult Can::send(const CanFrame &message)
               static_cast<int>(message.data[5]),
               static_cast<int>(message.data[6]),
               static_cast<int>(message.data[7]));
-  return hyped::io::CanResult::kSuccess;
+  return io::CanResult::kSuccess;
 }
 
 std::optional<CanFrame> Can::receive()
