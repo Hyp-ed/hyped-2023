@@ -46,8 +46,8 @@ CanResult Can::send(const CanFrame &message)
     logger_.log(core::LogLevel::kFatal, "Trying to send CAN message but no CAN socket found");
     return io::CanResult::kFailure;
   }
-  const int num_bytes_written = write(socket_, &message, sizeof(can_frame));
-  if (num_bytes_written != sizeof(can_frame)) {
+  const int num_bytes_written = write(socket_, &message, sizeof(CanFrame));
+  if (num_bytes_written != sizeof(CanFrame)) {
     logger_.log(core::LogLevel::kFatal, "Failed to send CAN message");
     return io::CanResult::kFailure;
   }
@@ -69,8 +69,12 @@ CanResult Can::send(const CanFrame &message)
 std::optional<CanFrame> Can::receive()
 {
   CanFrame received_message;
-  const int num_bytes_read = read(socket_, &received_message, sizeof(can_frame));
-  if (num_bytes_read < sizeof(can_frame)) {
+  if (ioctl(socket_, FIONREAD) < sizeof(CanFrame)) {
+    logger_.log(core::LogLevel::kDebug, "No can message in rx queue");
+    return std::nullopt;
+  }
+  const int num_bytes_read = read(socket_, &received_message, sizeof(CanFrame));
+  if (num_bytes_read < sizeof(CanFrame)) {
     logger_.log(core::LogLevel::kFatal, "Failed to receive CAN message");
     return std::nullopt;
   }
@@ -86,7 +90,7 @@ std::optional<CanFrame> Can::receive()
               static_cast<int>(received_message.data[5]),
               static_cast<int>(received_message.data[6]),
               static_cast<int>(received_message.data[7]));
-  
+
   return received_message;
 }
 }  // namespace hyped::io

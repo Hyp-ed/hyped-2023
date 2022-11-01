@@ -29,7 +29,7 @@ class ICan {
   virtual std::optional<CanFrame> receive();
 };
 
-class Can: ICan {
+class Can : ICan {
  public:
   Can(core::ILogger &logger);
   CanResult initialise(const std::string &can_network_interface);
