@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <unordered_map>
+#include <map>
 
 #include <core/logger.hpp>
 #include <io/adc.hpp>
@@ -12,7 +12,7 @@ namespace hyped::debug {
 struct Command {
   std::string name;
   std::string description;
-  std::function<void(void)> callback;
+  std::function<void(void)> handler;
 };
 
 class Repl {
@@ -29,8 +29,7 @@ class Repl {
 
   void addAdcCommands(const uint8_t pin);
 
-  std::vector<Command> commands_;
   hyped::core::ILogger &log_;
-  std::unordered_map<std::string, Command> command_map_;
+  std::map<std::string, Command> command_map_;
 };
 }  // namespace hyped::debug
