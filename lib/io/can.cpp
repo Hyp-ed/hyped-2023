@@ -10,6 +10,7 @@
 namespace hyped::io {
 Can::Can(core::ILogger &logger) : logger_(logger)
 {
+  processors_ = {};
 }
 
 CanResult Can::initialise(const std::string &can_network_interface)
@@ -94,8 +95,9 @@ std::optional<CanFrame> Can::receive()
   return received_message;
 }
 
-CanResult addCanProcessor(const uint16_t id, std::shared_ptr<ICanProcessor> processor)
+void Can::addCanProcessor(const uint16_t id, std::shared_ptr<ICanProcessor> processor)
 {
-  return io::CanResult::kFailure;
+  processors_[id].push_back(processor);
+  logger_.log(core::LogLevel::kInfo, "Added processor for id %i", id);
 }
 }  // namespace hyped::io
