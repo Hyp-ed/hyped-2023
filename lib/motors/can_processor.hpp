@@ -11,7 +11,7 @@ class CanProcessor : io::ICanProcessor {
  public:
   CanProcessor();
 
-  void processMessage(const io::CanFrame frame);
+  void processMessage(const io::CanFrame &frame);
 };
 
 }  // namespace hyped::motors

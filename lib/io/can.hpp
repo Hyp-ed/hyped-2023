@@ -29,16 +29,15 @@ enum class CanResult { kFailure, kSuccess };
 
 class ICanProcessor {
  public:
-  virtual void processMessage(const io::CanFrame frame);
+  virtual void processMessage(const io::CanFrame &frame) = 0;
 };
 
 class ICan {
  public:
-  virtual CanResult initialise(const std::string &can_network_interface);
-  virtual CanResult send(const CanFrame &message);
-  virtual std::optional<CanFrame> receive();
-  virtual CanResult addCanProcessor(uint16_t ID, ICanProcessor processor);
-  virtual CanResult removeCanProcessor(ICanProcessor processor);
+  virtual CanResult initialise(const std::string &can_network_interface)   = 0;
+  virtual CanResult send(const CanFrame &message)                          = 0;
+  virtual std::optional<CanFrame> receive()                                = 0;
+  virtual CanResult addCanProcessor(uint16_t ID, ICanProcessor &processor) = 0;
 };
 
 class Can : ICan {
@@ -47,6 +46,7 @@ class Can : ICan {
   CanResult initialise(const std::string &can_network_interface);
   CanResult send(const CanFrame &message);
   std::optional<CanFrame> receive();
+  CanResult addCanProcessor(const uint16_t id, std::shared_ptr<ICanProcessor> processor);
 
  private:
   int socket_;

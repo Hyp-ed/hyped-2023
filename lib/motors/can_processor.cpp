@@ -7,7 +7,7 @@ CanProcessor::CanProcessor()
   // TODO implement
 }
 
-void CanProcessor::processMessage(const io::CanFrame frame)
+void CanProcessor::processMessage(const io::CanFrame &frame)
 {
   // TODO implement
   return;

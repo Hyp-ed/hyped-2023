@@ -93,4 +93,9 @@ std::optional<CanFrame> Can::receive()
 
   return received_message;
 }
+
+CanResult addCanProcessor(const uint16_t id, std::shared_ptr<ICanProcessor> processor)
+{
+  return io::CanResult::kFailure;
+}
 }  // namespace hyped::io
