@@ -5,7 +5,6 @@
 
 namespace hyped::test {
 
-/*
 TEST(Trajectory, equality)
 { 
   core::Trajectory reference = {100.0, 10.0, 1.0};
@@ -26,6 +25,5 @@ TEST(Trajectory, equality)
     ASSERT_NE(reference, other);
   }
 }
-*/
 
 }  // namespace hyped::test

@@ -6,7 +6,7 @@ namespace hyped::navigation{
     //TODO: implement
   }
 
-  bool Crosscheck::checkTrajectoryAgreement(const core::ImuData imu_data,
+    SensorChecks Crosscheck::checkTrajectoryAgreement(const core::ImuData imu_data,
       const core::EncoderData encoders_data,
       const core::KeyenceData keyence_data){
     /*
@@ -19,10 +19,10 @@ namespace hyped::navigation{
       Also need to figure out how data flow is going to work with the historic data and what we use.
       The basic infrastrucutre is there for now so will be a problem for another day.
     */
-   return true;
+   return SensorChecks::kAcceptable;
   }
 
-  bool checkEncoderImu(const core::ImuData imu_data,
+  SensorChecks checkEncoderImu(const core::ImuData imu_data,
       const core::EncoderData encoders_data){
     /*
     TODO: implement.
@@ -32,10 +32,10 @@ namespace hyped::navigation{
     imu displacement too high, fail state and return false
     - otherwise all good, return true
     */
-   return true;
+   return SensorChecks::kAcceptable;
   }
 
-  bool checkEncoderKeyence(const core::EncoderData encoder_data,
+  SensorChecks checkEncoderKeyence(const core::EncoderData encoder_data,
       const core::KeyenceData keyence_data){
     /*
     TODO: implement.
@@ -44,6 +44,6 @@ namespace hyped::navigation{
     keyence displacement too high, fail state and return false
     - otherwise all good, return true
     */
-   return true;
+   return SensorChecks::kAcceptable;
   }
 }

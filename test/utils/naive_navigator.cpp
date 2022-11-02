@@ -5,7 +5,6 @@
 
 namespace hyped::test {
 
-/*
 void test_with_trajectory(utils::NaiveNavigator &naive_navigator,
                           const core::Trajectory &trajectory)
 {
@@ -21,6 +20,5 @@ TEST(NaiveNavigator, basic)
   test_with_trajectory(naive_navigator, {121, 13, -4});
   test_with_trajectory(naive_navigator, {134, 9, -10});
 }
-*/
 
 }  // namespace hyped::test

@@ -18,7 +18,7 @@ namespace hyped::navigation{
        * @return true signifies trajectory agreement
        * @return false signifies trajectory disagreement. We enter fail state
        */
-      bool checkTrajectoryAgreement(const core::ImuData imu_data,
+      SensorChecks checkTrajectoryAgreement(const core::ImuData imu_data,
       const core::EncoderData encoders_data, 
       const core::KeyenceData keyence_data);
 
@@ -32,7 +32,7 @@ namespace hyped::navigation{
        * @return true IMU and wheel encoders agree
        * @return false IMU and wheel encoders disagree
        */
-      bool checkEncoderImu(const core::ImuData imu_data,
+      SensorChecks checkEncoderImu(const core::ImuData imu_data,
       const core::EncoderData encoders_data);
 
       /**
@@ -43,7 +43,7 @@ namespace hyped::navigation{
        * @return true Keyence and wheel encoders agree
        * @return false Keyence and wheel encoders disagree
        */
-      bool checkEncooderKeyence(const core::EncoderData encoder_data,
+      SensorChecks checkEncooderKeyence(const core::EncoderData encoder_data,
       const core::KeyenceData keyence_data);
 
   };
