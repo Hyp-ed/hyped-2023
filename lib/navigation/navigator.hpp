@@ -15,24 +15,18 @@ class Navigator{
   void navigate();
 
   /**
-  * @brief Publishes the current navigation trajectory to wherever it goes
-  * TODO: make this more informative once implemented
-  */
-  void publishTrajectory();
-
-  /**
    * @brief Set Imu Data from sensors
    * 
    * @param imu_data 
    */
-  void setImuData(const core::ImuData imu_data);
+  void setImuData(const core::RawImuData imu_data);
 
   /**
    * @brief Set Encoder Data from sensors
    * 
    * @param encoder_data 
    */
-  void setEncoderData(const core::WheelEncoderData encoder_data);
+  void setEncoderData(const core::EncoderData encoder_data);
 
   /**
    * @brief Set Keyence Data from sensors
@@ -43,13 +37,16 @@ class Navigator{
 
   private:
 
-  std::array<nav_t, kNumImus> imu_data_;
-  std::array<int32_t, kNumEncoders> encoder_data_;
-  std::array<int32_t, kNumKeyence> keyence_data_;
+  core::RawImuData raw_imu_data_;
+  core::EncoderData raw_encoder_data_;
+  core::KeyenceData raw_keyence_data_;
 
-  
+  core::ImuData imu_data_;
+  core::EncoderData encoder_data_;
+  core::KeyenceData keyence_data_;
+
   //current navigation trajectory
-  Trajectory trajectory_;
+  core::Trajectory trajectory_;
 
   //current keyence value for displacement
   int keyenceDisplacement_;

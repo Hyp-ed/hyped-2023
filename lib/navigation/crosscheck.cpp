@@ -6,9 +6,9 @@ namespace hyped::navigation{
     //TODO: implement
   }
 
-  bool Crosscheck::checkTrajectoryAgreement(const std::array<nav_t, kNumImus> imu_data,
-      const std::array<nav_t, kNumEncoders> encoders_data, 
-      const std::array<nav_t, kNumKeyence> keyence_data){
+  bool Crosscheck::checkTrajectoryAgreement(const core::ImuData imu_data,
+      const core::EncoderData encoders_data,
+      const core::KeyenceData keyence_data){
     /*
     TODO: implement
     basically:
@@ -22,8 +22,8 @@ namespace hyped::navigation{
    return true;
   }
 
-  bool checkEncoderImu(const std::array<nav_t, kNumImus> imu_data,
-      const std::array<nav_t, kNumEncoders> encoders_data){
+  bool checkEncoderImu(const core::ImuData imu_data,
+      const core::EncoderData encoders_data){
     /*
     TODO: implement.
     plan:
@@ -35,8 +35,8 @@ namespace hyped::navigation{
    return true;
   }
 
-  bool checkEncoderKeyence(const std::array<nav_t, kNumImus> imu_data,
-      const std::array<nav_t, kNumKeyence> keyence_data){
+  bool checkEncoderKeyence(const core::EncoderData encoder_data,
+      const core::KeyenceData keyence_data){
     /*
     TODO: implement.
     plan:

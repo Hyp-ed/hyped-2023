@@ -16,23 +16,23 @@ struct CanFrame {
   std::array<uint8_t, 8> data;
 };
 
-struct ImuData{
-  float imu0;
-  float imu1;
-  float imu2;
-  float imu3;
+//current trajectory struct
+  struct Trajectory {
+  Float displacement;
+  Float velocity;
+  Float acceleration;
 };
 
-struct WheelEncoderData{
-  uint32_t encoder0;
-  uint32_t encoder1;
-  uint32_t encoder2;
-  uint32_t encoder3;
-};
+//number of each type of sensors
+static constexpr uint8_t kNumImus      = 4;
+static constexpr uint8_t kNumImuAxis   = 3;
+static constexpr uint8_t kNumEncoders  = 4;
+static constexpr uint8_t kNumKeyence   = 2;
 
-struct KeyenceData{
-  uint32_t keyence0;
-  uint32_t keyence1;
-};
+//data format for raw sensor data
+using RawImuData  = std::array<std::array<Float, kNumImuAxis>, kNumImus>; 
+using ImuData     = std::array<Float, kNumImus>;
+using EncoderData = std::array<int, kNumEncoders>; 
+using KeyenceData = std::array<int, kNumKeyence>; 
 
 }  // namespace hyped::core

@@ -1,5 +1,6 @@
 #include <array>
 #include "consts.hpp"
+#include "core/types.hpp"
 
 namespace hyped::navigation{
 
@@ -14,49 +15,33 @@ namespace hyped::navigation{
      * TODO: update comment with what we do with data once implemented
      * 
      */
-    std::array<nav_t, kNumImus> preprocessImus(const std::array<nav_t, kNumImus> imu_data);
+    core::ImuData preprocessImus(const core::RawImuData imu_data);
 
     /**
      * @brief runs outlier detection and sensor reliability on encoders data
      * TODO: update comment with what we do with data once implemented
      * 
      */
-    std::array<uint32_t, kNumEncoders> preprocessEncoders(const std::array<uint32_t, kNumEncoders> encoder_data);
+    core::EncoderData preprocessEncoders(const core::EncoderData encoder_data);
 
     /**
      * @brief checks that keyence data is  consistent
      * TODO: update comment with what we do with data once implemented
      * 
      */
-    std::array<uint32_t, kNumKeyence> preprocessKeyence(const std::array<uint32_t, kNumKeyence> keyence_data);
-
-    /**
-     * @brief Get the Imu Data object
-     * 
-     * @return std::array<nav_t, kNumImus> 
-     */
-    std::array<nav_t, kNumImus> getImuData();
-
-    /**
-     * @brief Get the Encoder Data object
-     * 
-     * @return std::array<int, kNumEncoders> 
-     */
-    std::array<uint32_t, kNumEncoders> getEncoderData();
-
-    /**
-     * @brief Get the Keyence Data object
-     * 
-     * @return std::array<int, kNumKeyence> 
-     */
-    std::array<uint32_t, kNumKeyence> getKeyenceData();
+    core::KeyenceData preprocessKeyence(const core::KeyenceData keyence_data);
     
     private:
+
+    //raw sensor data
+    core::RawImuData raw_imu_data_;
+    core::EncoderData raw_encoder_data_;
+    core::KeyenceData raw_keyence_data_;
     
-    //current data values for imus, encdoers and keyence
-    std::array<nav_t, kNumImus> imu_data_;
-    std::array<uint32_t, kNumEncoders> encoder_data_;
-    std::array<uint32_t, kNumKeyence> keyence_data_;
+    //processed sensor data
+    core::ImuData imu_data_;
+    core::EncoderData encoder_data_;
+    core::KeyenceData keyence_data_;
     //TODO: Some form of camera data? Need to get camera idea going first.
 
     /**
@@ -85,12 +70,12 @@ namespace hyped::navigation{
     void checkEncodersReliable();
 
     //arrays denoting which sensors are reliable
-    std::array<bool, kNumImus> reliable_imus_;
-    std::array<bool, kNumEncoders> reliable_encoders_;
+    std::array<bool, core::kNumImus> reliable_imus_;
+    std::array<bool, core::kNumEncoders> reliable_encoders_;
 
     //arrays to keep track of how many times a sensor has been an outlier consecutively
-    std::array<int, kNumImus> outlier_imus_ = {0, 0, 0, 0};
-    std::array<int, kNumEncoders> oultier_encoders_ = {0, 0, 0, 0};
+    std::array<int, core::kNumImus> outlier_imus_ = {0, 0, 0, 0};
+    std::array<int, core::kNumEncoders> oultier_encoders_ = {0, 0, 0, 0};
 
     //flag for if keyence sensors are in disagreement
     bool keyence_disagreement_;

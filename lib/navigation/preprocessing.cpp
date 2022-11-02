@@ -68,10 +68,11 @@ namespace hyped::navigation{
     */
   }
 
-  std::array<uint32_t, kNumKeyence> Preprocessing::preprocessKeyence(const std::array<uint32_t, kNumKeyence> keyence_data){
+  core::KeyenceData Preprocessing::preprocessKeyence(const core::KeyenceData keyence_data){
     /*
     TODO: implement
     rough process:
+    - set as class member (?)
     - check if keyence sensors agree
     - if they agree, set keyence disgreeemnt to false
     - if they disagree and keyenece_disagreement = false, set to true
@@ -85,12 +86,12 @@ namespace hyped::navigation{
    return {0, 0};
   }
 
-  std::array<nav_t, kNumImus> Preprocessing::preprocessImus(const std::array<nav_t, kNumImus> imu_data){
+  core::ImuData Preprocessing::preprocessImus(const core::RawImuData imu_data){
 
     /*
     TODO: implement
     rough plan:
-
+    - set raw data as class member
     - assign imu_data to class object
     - run imu outlier detection
     - run check imus reliable
@@ -103,7 +104,7 @@ namespace hyped::navigation{
    return {0.0, 0.0, 0.0, 0.0};
   }
 
-  std::array<uint32_t, kNumEncoders> Preprocessing::preprocessEncoders(const std::array<uint32_t, kNumEncoders> encoder_data){
+  core::EncoderData Preprocessing::preprocessEncoders(const core::EncoderData encoder_data){
 
     /*
     TODO: implement
@@ -119,17 +120,4 @@ namespace hyped::navigation{
     */
    return {0, 0, 0, 0};
   }
-
-  std::array<nav_t, kNumImus> Preprocessing::getImuData(){
-    return imu_data_;
-  }
-
-  std::array<uint32_t, kNumEncoders> Preprocessing::getEncoderData(){
-    return encoder_data_;
-  }
-
-  std::array<uint32_t, kNumKeyence> Preprocessing::getKeyenceData(){
-    return keyence_data_;
-  }
-
 }

@@ -1,17 +1,18 @@
 #pragma once
 
 #include <navigation/navigator.hpp>
+#include "core/types.hpp"
 
 namespace hyped::utils {
 
-class NaiveNavigator : public navigation::INavigator<navigation::Trajectory> {
+class NaiveNavigator : public navigation::INavigator<core::Trajectory> {
  public:
   NaiveNavigator();
-  virtual navigation::Trajectory currentTrajectory();
-  virtual void update(const navigation::Trajectory &current_trajectory);
+  virtual core::Trajectory currentTrajectory();
+  virtual void update(const core::Trajectory &current_trajectory);
 
  private:
-  navigation::Trajectory current_trajectory_;
+  core::Trajectory current_trajectory_;
 };
 
 }  // namespace hyped::utils
