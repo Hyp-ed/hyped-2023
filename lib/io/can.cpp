@@ -13,7 +13,7 @@ Can::Can(core::ILogger &logger) : logger_(logger)
   processors_ = {};
 }
 
-CanResult Can::initialise(const std::string &can_network_interface)
+io::CanResult Can::initialise(const std::string &can_network_interface)
 {
   socket_ = socket(PF_CAN, SOCK_RAW, CAN_RAW);
   if (socket_ < 0) {
@@ -41,7 +41,7 @@ CanResult Can::initialise(const std::string &can_network_interface)
   return io::CanResult::kSuccess;
 }
 
-CanResult Can::send(const CanFrame &message)
+io::CanResult Can::send(const io::CanFrame &message)
 {
   if (socket_ < 0) {
     logger_.log(core::LogLevel::kFatal, "Trying to send CAN message but no CAN socket found");
@@ -93,6 +93,19 @@ std::optional<CanFrame> Can::receive()
               static_cast<int>(received_message.data[7]));
 
   return received_message;
+}
+
+void Can::listen()
+{
+  const std::optional<CanFrame> data;
+  if (ioctl(socket_, FIONREAD) >= sizeof(CanFrame)) { data = receive(); }
+  if (data == std::nullopt) { return; }
+  if (!processors_.contains(data.can_id)) {
+    logger_.log(core::LogLevel::kInfo, "No CanProccessor associated with id %i", data.can_id);
+  }
+  for (uint8_t i = 0; i < processors_[data.can_id].length; i++) {
+    processors_[data.can_id][i]->processMessage();
+  }
 }
 
 void Can::addCanProcessor(const uint16_t id, std::shared_ptr<ICanProcessor> processor)
