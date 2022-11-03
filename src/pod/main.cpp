@@ -6,8 +6,6 @@
 #include <core/wall_clock.hpp>
 #include <io/hardware_gpio.hpp>
 
-
-
 int main(int argc, char **argv)
 {
   hyped::core::WallClock time;
