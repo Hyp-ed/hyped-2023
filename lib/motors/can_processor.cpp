@@ -1,6 +1,6 @@
 #include "can_processor.hpp"
 
-namespace hyped::motorcontrollers {
+namespace hyped::motors {
 
 CanProcessor::CanProcessor()
 {
@@ -19,4 +19,4 @@ void CanProcessor::processMessage(const core::CanFrame frame)
   return;
 }
 
-}  // namespace hyped::motorcontrollers
+}  // namespace hyped::motors

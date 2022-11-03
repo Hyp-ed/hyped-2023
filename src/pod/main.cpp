@@ -6,17 +6,21 @@
 #include <core/wall_clock.hpp>
 #include <io/gpio.hpp>
 
+
 int main(int argc, char **argv)
 {
   hyped::core::WallClock time;
   hyped::core::Timer timer(time);
   const auto execution_time = timer.measure_execution_time([time]() {
     hyped::core::Logger logger("GPIO", hyped::core::LogLevel::kDebug, time);
-    hyped::io::Gpio gpio(logger);
+    hyped::io::HardwareGpio gpio(logger);
     auto gpio_reader_opt = gpio.getReader(0);
     if (!gpio_reader_opt) {
       logger.log(hyped::core::LogLevel::kFatal, "Error");
-    } else if (gpio_reader_opt->read() == hyped::core::DigitalSignal::kHigh) {
+      return;
+    }
+    auto gpio_reader = *gpio_reader_opt;
+    if (gpio_reader->read() == hyped::core::DigitalSignal::kHigh) {
       logger.log(hyped::core::LogLevel::kInfo, "High");
     } else {
       logger.log(hyped::core::LogLevel::kInfo, "Low");

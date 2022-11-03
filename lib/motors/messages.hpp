@@ -3,7 +3,7 @@
 #include <array>
 #include <cstdint>
 
-namespace hyped::motorcontrollers {
+namespace hyped::motors {
 
 using ControllerMessage = std::array<uint8_t, 8>;
 
@@ -11,4 +11,4 @@ using ControllerMessage = std::array<uint8_t, 8>;
 static constexpr ControllerMessage kExampleMessage
   = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
-}  // namespace hyped::motorcontrollers
+}  // namespace hyped::motors
