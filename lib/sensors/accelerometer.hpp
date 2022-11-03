@@ -21,7 +21,7 @@ class Accelerometer : II2cSensor<float> {
 
   private:
     hyped::core::ILogger &log_; 
-    hyped::io::I2c &i2c_; // I2c object for the temperature sensor
+    hyped::io::I2c &i2c_; 
 
 };
 
