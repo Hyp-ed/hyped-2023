@@ -46,11 +46,8 @@ void Repl::addAdcCommands(const uint8_t pin)
 void Repl::printCommands()
 {
   log_.log(hyped::core::LogLevel::kInfo, "Available commands:");
-  for (const auto &command : command_map_) {
-    log_.log(hyped::core::LogLevel::kInfo,
-             "%s: %s",
-             command.first.c_str(),
-             command.second.description.c_str());
+  for (const auto &[name, command] : command_map_) {
+    log_.log(hyped::core::LogLevel::kInfo, "  %s: %s", name.c_str(), command.description.c_str());
   }
 }
 
