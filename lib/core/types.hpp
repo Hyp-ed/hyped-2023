@@ -32,7 +32,7 @@ static constexpr uint8_t kNumKeyence   = 2;
 //data format for raw sensor data
 using RawImuData  = std::array<std::array<Float, kNumImuAxis>, kNumImus>; 
 using ImuData     = std::array<Float, kNumImus>;
-using EncoderData = std::array<int, kNumEncoders>; 
-using KeyenceData = std::array<int, kNumKeyence>; 
+using EncoderData = std::array<uint32_t, kNumEncoders>; 
+using KeyenceData = std::array<uint32_t, kNumKeyence>; 
 
 }  // namespace hyped::core
