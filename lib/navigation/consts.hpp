@@ -14,19 +14,6 @@ static constexpr core::Float kStripeDistance    = 10.0;       // m TODO:check!
 // define sensor checks return type
 enum class SensorChecks { kUnacceptable = 0, kAcceptable };
 
-// inline trajectory equal to oprator for use in testing
-inline bool operator==(const core::Trajectory &lhs, const core::Trajectory &rhs)
-{
-  return lhs.displacement == rhs.displacement && lhs.velocity == rhs.velocity
-         && lhs.acceleration == rhs.acceleration;
-}
-
-// inline trajectory not equal to oprator for use in testing
-inline bool operator!=(const core::Trajectory &lhs, const core::Trajectory &rhs)
-{
-  return !(lhs == rhs);
-}
-
 // explicitly define zero trajectory
 inline core::Trajectory zero_trajectory = {0, 0, 0};
 

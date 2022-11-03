@@ -3,6 +3,8 @@
 #include <cstdint>
 namespace hyped::core {
 
+static constexpr float kEpsilon = 0.0001;
+
 enum class DigitalSignal { kLow = 0, kHigh };
 
 using Float = float;

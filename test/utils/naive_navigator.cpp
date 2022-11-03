@@ -9,7 +9,10 @@ void test_with_trajectory(utils::NaiveNavigator &naive_navigator,
                           const core::Trajectory &trajectory)
 {
   naive_navigator.update(trajectory);
-  ASSERT_EQ(naive_navigator.currentTrajectory(), trajectory);
+  const core::Trajectory &current_trajectory = naive_navigator.currentTrajectory();
+  ASSERT_FLOAT_EQ(current_trajectory.acceleration, trajectory.acceleration);
+  ASSERT_FLOAT_EQ(current_trajectory.velocity, trajectory.velocity);
+  ASSERT_FLOAT_EQ(current_trajectory.displacement, trajectory.displacement);
 }
 
 TEST(NaiveNavigator, basic)
