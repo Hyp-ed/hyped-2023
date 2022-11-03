@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
-#include <utils/naive_navigator.hpp>
 #include <core/types.hpp>
+#include <utils/naive_navigator.hpp>
 
 namespace hyped::test {
 

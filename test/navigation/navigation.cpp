@@ -1,12 +1,12 @@
 #include <gtest/gtest.h>
 
-#include <navigation/consts.hpp>
 #include <core/types.hpp>
+#include <navigation/consts.hpp>
 
 namespace hyped::test {
 
 TEST(Trajectory, equality)
-{ 
+{
   core::Trajectory reference = {100.0, 10.0, 1.0};
   {
     core::Trajectory other = {100.0, 10.0, 1.0};
