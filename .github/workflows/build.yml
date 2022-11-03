@@ -22,6 +22,8 @@ jobs:
       - name: CMake
         run: cmake -S . -B build -DCMAKE_CXX_COMPILER=$(which clang++)
       - name: Build hyped
-        run: cd build; make -j
+        run: make -j
+        working-directory: build
       - name: Test
-        run: cd build; ctest
+        run: ctest
+        working-directory: build
