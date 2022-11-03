@@ -32,7 +32,7 @@ void Preprocessing::encoderOutlierDetection()
   - get q1, median, q3 of encoder array
   - define upper & lower bounds as (-)1.5*inter-quatrile range
   - if any datapoint outwith this, set
-  outlier_imus_[i] += 1
+  outlier_encoders_[i] += 1
   -set outlier points as median
 
   -also has to be able to handle 1 unreliable sensor

@@ -1,5 +1,7 @@
 #include "navigator.hpp"
 
+#include <cstdint>
+
 namespace hyped::navigation {
 
 Navigator::Navigator()

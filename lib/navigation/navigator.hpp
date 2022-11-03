@@ -48,6 +48,7 @@ class Navigator {
   core::Trajectory trajectory_;
 
   // current keyence value for displacement
-  int keyenceDisplacement_;
+  int32_t keyenceDisplacement_;
 };
+
 }  // namespace hyped::navigation
