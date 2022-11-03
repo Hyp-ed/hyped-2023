@@ -13,14 +13,14 @@ namespace hyped::sensors {
 
     std::optional<uint16_t> Temperature::read() 
     {
-        // TODOlater: read from i2c
+        // TODOLater: read from i2c
         log_.log(hyped::core::LogLevel::kFatal, "Temperature read not implemented");
         return std::nullopt;
     }
 
     bool Temperature::configure()
     {
-        // TODOlater: configure i2c
+        // TODOLater: configure i2c
         log_.log(hyped::core::LogLevel::kFatal, "Temperature configure not implemented");
         return false; 
     }
