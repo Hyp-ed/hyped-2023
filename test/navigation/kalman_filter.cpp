@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
-#include <utils/manual_time.hpp>
 #include <navigation/kalman_filter.hpp>
+#include <utils/manual_time.hpp>
 
 namespace hyped::test {
 

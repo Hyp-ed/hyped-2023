@@ -16,10 +16,10 @@ inline bool operator==(const Trajectory &lhs, const Trajectory &rhs)
          && lhs.acceleration == rhs.acceleration;
 }
 
-//Explicitly defined not equal to operator because gtest got sad
+// Explicitly defined not equal to operator because gtest got sad
 inline bool operator!=(const Trajectory &lhs, const Trajectory &rhs)
 {
- return !(lhs == rhs);
+  return !(lhs == rhs);
 }
 
 inline Trajectory zero_trajectory = {0, 0, 0};

@@ -9,7 +9,7 @@ namespace hyped::sensors {
 /**
  * If a sensor is to be used with an I2C mux, it must inherit from this abstract class.
  */
-template <typename T>
+template<typename T>
 class II2cSensor {
  public:
   /*
