@@ -16,7 +16,8 @@ class I2c {
   ~I2c();
 
   std::optional<uint8_t> readByte(const uint8_t device_address, const uint8_t register_address);
-  I2cWriteResult writeByte(const uint8_t device_address, const uint8_t register_address,
+  I2cWriteResult writeByte(const uint8_t device_address,
+                           const uint8_t register_address,
                            uint8_t data);
 
  private:
