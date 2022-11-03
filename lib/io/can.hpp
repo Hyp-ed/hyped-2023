@@ -12,6 +12,7 @@
 #endif
 namespace hyped::io {
 
+
 #ifndef LINUX
 using CanFrame = can_frame;
 #else
@@ -55,4 +56,5 @@ class Can : ICan {
   hyped::core::ILogger &logger_;
   std::unordered_map<uint32_t, std::vector<std::shared_ptr<ICanProcessor>>> processors_;
 };
+
 }  // namespace hyped::io

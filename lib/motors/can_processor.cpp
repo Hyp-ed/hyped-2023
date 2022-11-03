@@ -4,12 +4,12 @@ namespace hyped::motors {
 
 CanProcessor::CanProcessor()
 {
-  // TODO implement
+  // TODOLater implement
 }
 
 void CanProcessor::processMessage(const io::CanFrame &frame)
 {
-  // TODO implement
+  // TODOLater implement
   return;
 }
 

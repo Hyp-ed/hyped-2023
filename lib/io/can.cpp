@@ -8,6 +8,7 @@
 #include <sys/socket.h>
 
 namespace hyped::io {
+
 Can::Can(core::ILogger &logger) : logger_(logger)
 {
   processors_ = {};
@@ -113,4 +114,5 @@ void Can::addCanProcessor(const uint16_t id, std::shared_ptr<ICanProcessor> proc
   processors_[id].push_back(processor);
   logger_.log(core::LogLevel::kInfo, "Added processor for id %i", id);
 }
+
 }  // namespace hyped::io
