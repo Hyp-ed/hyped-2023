@@ -13,14 +13,14 @@ namespace hyped::sensors {
 
     std::optional<float> Accelerometer::read() 
     {
-        // TODOlater: read from i2c
+        // TODOLater: read from i2c
         log_.log(hyped::core::LogLevel::kFatal, "Accelerometer read not implemented");
         return std::nullopt;
     }
 
     bool Accelerometer::configure()
     {
-        // TODOlater: configure i2c
+        // TODOLater: configure i2c
         log_.log(hyped::core::LogLevel::kFatal, "Accelerometer configure not implemented");
         return false; 
     }
