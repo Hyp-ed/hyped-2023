@@ -24,19 +24,19 @@ void Navigator::navigate()
   */
 }
 
-void Navigator::setImuData(const core::RawImuData imu_data)
+void Navigator::recordImuData(const core::RawImuData imu_data)
 {
-  for (size_t i = 0; i < core::kNumImus; ++i) {
+  for (std::size_t i = 0; i < core::kNumImus; ++i) {
     raw_imu_data_.at(i) = imu_data.at(i);
   }
 }
 
-void Navigator::setEncoderData(const core::EncoderData encoder_data)
+void Navigator::recordEncoderData(const core::EncoderData encoder_data)
 {
   raw_encoder_data_ = encoder_data;
 }
 
-void Navigator::setKeyenceData(const core::KeyenceData keyence_data)
+void Navigator::recordKeyenceData(const core::KeyenceData keyence_data)
 {
   raw_keyence_data_ = keyence_data;
 }
