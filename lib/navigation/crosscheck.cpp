@@ -4,7 +4,7 @@ namespace hyped::navigation {
 
 Crosscheck::Crosscheck()
 {
-  // TODO: implement
+  // TODOLater: implement
 }
 
 SensorChecks Crosscheck::checkTrajectoryAgreement(const core::ImuData imu_data,
@@ -12,7 +12,7 @@ SensorChecks Crosscheck::checkTrajectoryAgreement(const core::ImuData imu_data,
                                                   const core::KeyenceData keyence_data)
 {
   /*
-  TODO: implement
+  TODOLater: implement
   basically:
     - checkEncoderImu
     - checkEncooderKeyence
@@ -27,9 +27,9 @@ SensorChecks Crosscheck::checkTrajectoryAgreement(const core::ImuData imu_data,
 SensorChecks checkEncoderImu(const core::ImuData imu_data, const core::EncoderData encoders_data)
 {
   /*
-  TODO: implement.
+  TODOLater: implement.
   plan:
-  - double integrate imu values (also todo)
+  - double integrate imu values (also TODOLater)
   - if absolute diff between encoder displacement and
   imu displacement too high, fail state and return false
   - otherwise all good, return true
@@ -41,7 +41,7 @@ SensorChecks checkEncoderKeyence(const core::EncoderData encoder_data,
                                  const core::KeyenceData keyence_data)
 {
   /*
-  TODO: implement.
+  TODOLater: implement.
   plan:
   - if absolute diff between encoder displacement and
   keyence displacement too high, fail state and return false

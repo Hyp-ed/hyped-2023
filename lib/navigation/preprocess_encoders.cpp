@@ -4,13 +4,13 @@ namespace hyped::navigation {
 
 PreprocessEncoders::PreprocessEncoders()
 {
-  // TODO: implement
+  // TODOLater: implement
 }
 
 core::EncoderData PreprocessEncoders::processData(const core::EncoderData)
 {
   /*
-  TODO: implement
+  TODOLater: implement
   basic plan:
   - call encodersOutlierDetection. Return of that function is return of this function
   - call checkEncodersRelaible
@@ -22,7 +22,7 @@ core::EncoderData PreprocessEncoders::processData(const core::EncoderData)
 core::EncoderData PreprocessEncoders::encodersOutlierDetection(const core::EncoderData encoder_data)
 {
   /*
-  TODO: implement
+  TODOLater: implement
   rough process:
   - get q1, median, q3 of encoder array
   - define upper & lower bounds as (-)1.5*inter-quatrile range
@@ -40,7 +40,7 @@ core::EncoderData PreprocessEncoders::encodersOutlierDetection(const core::Encod
 void PreprocessEncoders::checkEncodersReliable(const core::EncoderData encoder_data)
 {
   /*
-  TODO: implement
+  TODOLater: implement
   rough process:
   - check how many times an individual encoder
   has been an outlier in a row (outlier encoders)

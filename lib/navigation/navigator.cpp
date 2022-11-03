@@ -6,13 +6,13 @@ namespace hyped::navigation {
 
 Navigator::Navigator()
 {
-  // TODO: impement
+  // TODOLater: impement
 }
 
 void Navigator::navigate()
 {
   /*
-  TODO: implement
+  TODOLater: implement
 
   main navigation control:
 

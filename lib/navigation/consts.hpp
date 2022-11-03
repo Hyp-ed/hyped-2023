@@ -6,10 +6,10 @@
 namespace hyped::navigation {
 
 static constexpr core::Float kTrackLength       = 100.0;  // m
-static constexpr core::Float kBrakingDistance   = 20.0;   // m TODO:check!
+static constexpr core::Float kBrakingDistance   = 20.0;   // m TODOLater:check!
 static constexpr core::Float kPi                = 3.14159265359;
-static constexpr core::Float kWheelCicumference = kPi * 0.1;  // m TODO: check!
-static constexpr core::Float kStripeDistance    = 10.0;       // m TODO:check!
+static constexpr core::Float kWheelCicumference = kPi * 0.1;  // m TODOLater: check!
+static constexpr core::Float kStripeDistance    = 10.0;       // m TODOLater:check!
 
 // define sensor checks return type
 enum class SensorChecks { kUnacceptable = 0, kAcceptable };
