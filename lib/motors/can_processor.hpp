@@ -4,7 +4,7 @@
 
 #include <core/types.hpp>
 
-namespace hyped::motorcontrollers {
+namespace hyped::motors {
 
 class CanProcessor {
  public:
@@ -13,4 +13,5 @@ class CanProcessor {
   bool sendMessage(const core::CanFrame frame);
   void processMessage(const core::CanFrame frame);
 };
-}  // namespace hyped::motorcontrollers
+
+}  // namespace hyped::motors
