@@ -9,6 +9,8 @@ void testStdoutLog(const core::LogLevel level,
                    const utils::ManualTime &manual_time,
                    const std::string expected_output)
 {
+  setenv("TZ", "Europe/London", 1);
+  tzset();
   testing::internal::CaptureStdout();
   core::Logger logger("test", level, manual_time);
   logger.log(level, "test");
@@ -19,6 +21,8 @@ void testStderrLog(const core::LogLevel level,
                    const utils::ManualTime &manual_time,
                    const std::string expected_output)
 {
+  setenv("TZ", "Europe/London", 1);
+  tzset();
   testing::internal::CaptureStderr();
   core::Logger logger("test", level, manual_time);
   logger.log(level, "test");
