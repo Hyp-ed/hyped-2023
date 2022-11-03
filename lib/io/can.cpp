@@ -53,7 +53,7 @@ io::CanResult Can::send(const io::CanFrame &message)
     logger_.log(core::LogLevel::kFatal, "Failed to send CAN message");
     return io::CanResult::kFailure;
   }
-  // TODO make logger more elegant
+  // TODOLater make logger more elegant
   logger_.log(core::LogLevel::kDebug,
               "CAN message sent, ID:%i, DATA: %i %i %i %i %i %i %i %i",
               static_cast<int>(message.can_id),
@@ -80,7 +80,7 @@ std::optional<CanFrame> Can::receive()
     logger_.log(core::LogLevel::kFatal, "Failed to receive CAN message");
     return std::nullopt;
   }
-  // TODO make logger more elegant
+  // TODOLater make logger more elegant
   logger_.log(core::LogLevel::kDebug,
               "CAN message received, ID:%i, DATA: %i %i %i %i %i %i %i %i",
               static_cast<int>(received_message.can_id),

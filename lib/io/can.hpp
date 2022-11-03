@@ -12,7 +12,6 @@
 #endif
 namespace hyped::io {
 
-
 #ifndef LINUX
 using CanFrame = can_frame;
 #else
@@ -35,11 +34,11 @@ class ICanProcessor {
 
 class ICan {
  public:
-  virtual CanResult initialise(const std::string &can_network_interface)   = 0;
-  virtual CanResult send(const CanFrame &message)                          = 0;
-  virtual std::optional<CanFrame> receive()                                = 0;
-  virtual void listen()                                                    = 0;
-  virtual void addCanProcessor(uint16_t ID, ICanProcessor &processor)      = 0;
+  virtual CanResult initialise(const std::string &can_network_interface) = 0;
+  virtual CanResult send(const CanFrame &message)                        = 0;
+  virtual std::optional<CanFrame> receive()                              = 0;
+  virtual void listen()                                                  = 0;
+  virtual void addCanProcessor(uint16_t ID, ICanProcessor &processor)    = 0;
 };
 
 class Can : ICan {
