@@ -6,6 +6,7 @@
 #include <core/logger.hpp>
 #include <io/adc.hpp>
 #include <io/i2c.hpp>
+#include <io/hardware_gpio.hpp>
 
 namespace hyped::debug {
 
@@ -22,12 +23,13 @@ class Repl {
 
  private:
   void printCommands();
+  void handleCommand();
   void addCommand(const Command &cmd);
+
   void addQuitCommand();
   void addHelpCommand();
-  void handleCommand();
-
   void addAdcCommands(const uint8_t pin);
+  void addI2cCommands(const uint8_t channel);
 
   hyped::core::ILogger &log_;
   std::map<std::string, Command> command_map_;
