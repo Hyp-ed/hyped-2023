@@ -4,13 +4,13 @@ namespace hyped::navigation {
 
 PreprocessImus::PreprocessImus()
 {
-  // TODO: implement
+  // TODOLater: implement
 }
 
 core::ImuData PreprocessImus::processData(const core::RawImuData raw_imu_data)
 {
   /*
-  TODO: implement
+  TODOLater: implement
   basic plan:
   - call encodersOutlierDetection. Return of that function is return of this function
   - call checkEncodersRelaible
@@ -22,7 +22,7 @@ core::ImuData PreprocessImus::processData(const core::RawImuData raw_imu_data)
 core::ImuData PreprocessImus::imuOutlierDetection(const core::RawImuData imu_data)
 {
   /*
-  TODO: implement
+  TODOLater: implement
   rough process:
   - get q1, median, q3 of encoder array
   - define upper & lower bounds as (-)1.5*inter-quatrile range
@@ -40,7 +40,7 @@ core::ImuData PreprocessImus::imuOutlierDetection(const core::RawImuData imu_dat
 void PreprocessImus::checkImusReliable(const core::ImuData imu_data)
 {
   /*
-  TODO: implement
+  TODOLater: implement
   rough process:
   - check how many times an individual encoder
   has been an outlier in a row (outlier encoders)

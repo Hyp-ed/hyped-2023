@@ -26,7 +26,7 @@ class Crosscheck {
   /**
    * @brief Checks the double integrated IMU value of displacement against
    * the encoder value of displacement to some tolerance
-   * TODO: update comment with tolerance once updated
+   * TODOLater: update comment with tolerance once updated
    *
    * @return true IMU and wheel encoders agree
    * @return false IMU and wheel encoders disagree
@@ -36,7 +36,7 @@ class Crosscheck {
   /**
    * @brief Checks the keyence value of displacement against the
    * encoder value of displacement to some tolerance
-   * TODO: update comment with tolerance once updated
+   * TODOLater: update comment with tolerance once updated
    *
    * @return true Keyence and wheel encoders agree
    * @return false Keyence and wheel encoders disagree

@@ -4,13 +4,13 @@ namespace hyped::navigation {
 
 PreprocessKeyence::PreprocessKeyence()
 {
-  // TODO: implement
+  // TODOLater: implement
 }
 
 SensorChecks checkKeyenceAgrees(const core::KeyenceData keyence_data)
 {
   /*
-   TODO: implement:
+   TODOLater: implement:
    roughly:
    - if keyence data disagrees and does_keyence_agree_ is false, fail state, return kUnacceptable
    - if keyence data disagrees and does_keyence_agree_ is true, set does_keyence_agree_ false return
