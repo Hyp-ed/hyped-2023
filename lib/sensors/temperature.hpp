@@ -12,17 +12,16 @@
 namespace hyped::sensors {
 
 class Temperature : public II2cSensor<uint16_t> {
-  public:
-    Temperature(hyped::io::I2c &i2c, hyped::core::ILogger &log);
-    ~Temperature();
+ public:
+  Temperature(hyped::io::I2c &i2c, hyped::core::ILogger &log);
+  ~Temperature();
 
-    bool configure(); 
-    std::optional<uint16_t> read();
+  bool configure();
+  std::optional<uint16_t> read();
 
-  private:
-    hyped::core::ILogger &log_; 
-    hyped::io::I2c &i2c_;       
-
+ private:
+  hyped::core::ILogger &log_;
+  hyped::io::I2c &i2c_;
 };
 
 }  // namespace hyped::sensors
