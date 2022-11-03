@@ -19,21 +19,21 @@ class Navigator {
    *
    * @param imu_data
    */
-  void setImuData(const core::RawImuData imu_data);
+  void recordImuData(const core::RawImuData imu_data);
 
   /**
    * @brief Set Encoder Data from sensors
    *
    * @param encoder_data
    */
-  void setEncoderData(const core::EncoderData encoder_data);
+  void recordEncoderData(const core::EncoderData encoder_data);
 
   /**
    * @brief Set Keyence Data from sensors
    *
    * @param keyence_data
    */
-  void setKeyenceData(const core::KeyenceData keyence_data);
+  void recordKeyenceData(const core::KeyenceData keyence_data);
 
  private:
   core::RawImuData raw_imu_data_;

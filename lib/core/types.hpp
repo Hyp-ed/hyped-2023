@@ -25,12 +25,12 @@ struct Trajectory {
 
 // number of each type of sensors
 static constexpr uint8_t kNumImus     = 4;
-static constexpr uint8_t kNumImuAxis  = 3;
+static constexpr uint8_t kNumAxis  = 3;
 static constexpr uint8_t kNumEncoders = 4;
 static constexpr uint8_t kNumKeyence  = 2;
 
 // data format for raw sensor data
-using RawImuData  = std::array<std::array<Float, kNumImuAxis>, kNumImus>;
+using RawImuData  = std::array<std::array<Float, kNumAxis>, kNumImus>;
 using ImuData     = std::array<Float, kNumImus>;
 using EncoderData = std::array<uint32_t, kNumEncoders>;
 using KeyenceData = std::array<uint32_t, kNumKeyence>;
