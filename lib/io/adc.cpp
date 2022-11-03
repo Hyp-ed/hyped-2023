@@ -10,7 +10,7 @@ Adc::Adc(const uint8_t pin, hyped::core::ILogger &logger) : pin_(pin), logger_(l
   char buf[100];
   snprintf(buf, sizeof(buf), "/sys/bus/iio/devices/iio:device0/in_voltage%i_raw", pin_);
   file_ = open(buf, O_RDONLY);
-  if (file_ < 0) { logger_.log(hyped::core::LogLevel::kFatal, "Unable to open ADC file");}
+  if (file_ < 0) { logger_.log(hyped::core::LogLevel::kFatal, "Unable to open ADC file"); }
 }
 
 Adc::~Adc()

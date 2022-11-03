@@ -17,6 +17,7 @@ enum class SensorChecks { kUnacceptable = 0, kAcceptable };
 // explicitly define zero trajectory
 inline core::Trajectory zero_trajectory = {0, 0, 0};
 
+//TODOLater fix this
 template<typename SensorData>
 class INavigator {
  public:
