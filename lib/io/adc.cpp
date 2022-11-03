@@ -5,14 +5,12 @@
 
 namespace hyped::io {
 
-Adc::Adc(const uint32_t pin) : pin_(pin)
+Adc::Adc(const uint32_t pin, hyped::core::ILogger &logger) : pin_(pin), logger_(logger)
 {
   char buf[100];
   snprintf(buf, sizeof(buf), "/sys/bus/iio/devices/iio:device0/in_voltage%i_raw", pin_);
   file_ = open(buf, O_RDONLY);
-  if (file_ < 0) { /* TODO: log that there is a problem reading raw voltage for pin_*/
-    ;
-  }
+  if (file_ < 0) { logger_.log(hyped::core::LogLevel::kFatal, "Unable to open ADC file");}
 }
 
 Adc::~Adc()

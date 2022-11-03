@@ -5,6 +5,8 @@
 #include <cstdlib>  // for atoi
 #include <optional>
 
+#include <core/logger.hpp>
+
 namespace hyped::io {
 
 class Adc {
@@ -12,7 +14,7 @@ class Adc {
   /**
    * @param pin is one of the 6 analogue input pins on the bbb
    */
-  Adc(const uint32_t pin);
+  Adc(const uint32_t pin, hyped::core::ILogger &logger);
   ~Adc();
 
   /**
@@ -30,6 +32,7 @@ class Adc {
   std::optional<uint16_t> resetAndRead4(const int file_descriptor);
 
  private:
+  hyped::core::ILogger &logger_;
   uint32_t pin_;
   int file_;
 };
