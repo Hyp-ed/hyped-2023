@@ -1,0 +1,12 @@
+{
+	"debugger": {
+		"adc": {
+			"enabled": true,
+			"pins": []
+		},
+		"i2c": {
+			"enabled": true,
+			"channels": []
+		}
+	}
+}

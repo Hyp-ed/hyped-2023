@@ -20,6 +20,7 @@ class Repl {
  public:
   Repl(hyped::core::ILogger &log);
   void run();
+  std::optional<std::unique_ptr<Repl>> fromFile(const std::string &filename);
 
  private:
   void printCommands();
