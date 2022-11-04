@@ -5,8 +5,7 @@
 
 namespace hyped::test {
 
-void test_with_trajectory(utils::NaiveNavigator &naive_navigator,
-                          const core::Trajectory &trajectory)
+void testWithTrajectory(utils::NaiveNavigator &naive_navigator, const core::Trajectory &trajectory)
 {
   naive_navigator.update(trajectory);
   const core::Trajectory &current_trajectory = naive_navigator.currentTrajectory();
@@ -18,10 +17,10 @@ void test_with_trajectory(utils::NaiveNavigator &naive_navigator,
 TEST(NaiveNavigator, basic)
 {
   utils::NaiveNavigator naive_navigator;
-  test_with_trajectory(naive_navigator, {100, 10, 1});
-  test_with_trajectory(naive_navigator, {110, 11, 2});
-  test_with_trajectory(naive_navigator, {121, 13, -4});
-  test_with_trajectory(naive_navigator, {134, 9, -10});
+  testWithTrajectory(naive_navigator, {100, 10, 1});
+  testWithTrajectory(naive_navigator, {110, 11, 2});
+  testWithTrajectory(naive_navigator, {121, 13, -4});
+  testWithTrajectory(naive_navigator, {134, 9, -10});
 }
 
 }  // namespace hyped::test
