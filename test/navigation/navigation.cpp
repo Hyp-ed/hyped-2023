@@ -5,7 +5,7 @@
 
 namespace hyped::test {
 
-bool is_float_eq(float a, float b)
+bool checkFlaotEquality(float a, float b)
 {
   return ((a - b) < core::kEpsilon) && ((b - a) < core::kEpsilon);
 }
@@ -14,9 +14,10 @@ void checkTrajectoriesEquality(const core::Trajectory &trajectory1,
                                const core::Trajectory &trajectory2,
                                bool equality)
 {
-  const bool comparision = is_float_eq(trajectory1.acceleration, trajectory2.acceleration)
-                           && is_float_eq(trajectory1.velocity, trajectory2.velocity)
-                           && is_float_eq(trajectory1.displacement, trajectory2.displacement);
+  const bool comparision
+    = checkFlaotEquality(trajectory1.acceleration, trajectory2.acceleration)
+      && checkFlaotEquality(trajectory1.velocity, trajectory2.velocity)
+      && checkFlaotEquality(trajectory1.displacement, trajectory2.displacement);
   ASSERT_EQ(equality, comparision);
 }
 
