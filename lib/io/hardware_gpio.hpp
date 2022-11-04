@@ -69,8 +69,8 @@ class HardwareGpio {
  private:
   hyped::core::ILogger &log_;
   const off_t bankAddresses[4] = {0x44e07000, 0x4804c000, 0x481ac000, 0x481ae000};
-  std::unordered_map<uint8_t, bool> InitializedWriters;
-  std::unordered_map<uint8_t, bool> InitializedReaders;
+  std::unordered_map<uint8_t, std::shared_ptr<IGpioWriter>> InitializedWriters;
+  std::unordered_map<uint8_t, std::shared_ptr<IGpioReader>> InitializedReaders;
   
   static constexpr unsigned int pinSize     = 0x1000;
   static constexpr unsigned int pinRead     = 0x138;

@@ -44,6 +44,7 @@ HardwareGpio::HardwareGpio(hyped::core::ILogger &log) : log_(log)
 std::optional<std::shared_ptr<IGpioReader>> HardwareGpio::getReader(const uint8_t pin)
 {
   //What happens if all shared pointers are removed and this is called?
+  //Map solves this, GPIO will always hold one pointer so it dosen't get destroyed.
   if (InitializedReaders.count(pin) != 0) {
     std::shared_ptr<HardwareGpioReader> reader;
     return reader;
@@ -61,8 +62,8 @@ std::optional<std::shared_ptr<IGpioReader>> HardwareGpio::getReader(const uint8_
   gpio_addr = mmap(0, pinSize , PROT_READ | PROT_WRITE, MAP_SHARED, fd, pinAddress);
   gpio_read = static_cast<volatile unsigned int*>(gpio_addr) + pinRead;
   
-  auto reader = std::shared_ptr<HardwareGpioReader>(new HardwareGpioReader(pinMAP, gpio_read));
-  InitializedReaders[pin] = true;
+  InitializedReaders[pin] = std::shared_ptr<HardwareGpioReader>(new HardwareGpioReader(pinMAP, gpio_read));
+  std::shared_ptr<HardwareGpioReader> reader;
   return reader;
 }
 
@@ -87,8 +88,8 @@ std::optional<std::shared_ptr<IGpioWriter>> HardwareGpio::getWriter(const uint8_
   gpio_addr = mmap(0, pinSize , PROT_READ | PROT_WRITE, MAP_SHARED, fd, pinAddress);
   gpio_set =   static_cast<volatile unsigned int*>(gpio_addr) + pinSet;
   gpio_clear = static_cast<volatile unsigned int*>(gpio_addr) + pinClear;
-  auto writer = std::shared_ptr<HardwareGpioWriter>(new HardwareGpioWriter(pinMAP, gpio_set, gpio_clear));
-  InitializedWriters[pin] = true;
+  InitializedWriters[pin] = std::shared_ptr<HardwareGpioWriter>(new HardwareGpioWriter(pinMAP, gpio_set, gpio_clear));
+  std::shared_ptr<HardwareGpioWriter> writer;
   return writer;
 }
 
