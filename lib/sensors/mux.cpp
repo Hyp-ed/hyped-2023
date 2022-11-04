@@ -19,7 +19,7 @@ Mux<T>::~Mux()
 template<typename T>
 bool Mux<T>::selectMode(Mode io_mode)
 {
-  // TODOlater: select mode
+  // TODOLater: select mode
   log_.log(hyped::core::LogLevel::kFatal, "Mux select mode not implemented");
   return false;
 }
@@ -27,7 +27,7 @@ bool Mux<T>::selectMode(Mode io_mode)
 template<typename T>
 MuxWriteResult Mux<T>::write(uint8_t data)
 {
-  // TODOlater: write to mux
+  // TODOLater: write to mux
   log_.log(hyped::core::LogLevel::kFatal, "Mux write not implemented");
   return MuxWriteResult::kFailure;
 }
@@ -35,7 +35,7 @@ MuxWriteResult Mux<T>::write(uint8_t data)
 template<typename T>
 std::optional<std::vector<T>> Mux<T>::readAll()
 {
-  // TODOlater: read from mux
+  // TODOLater: read from mux
   log_.log(hyped::core::LogLevel::kFatal, "Mux read not implemented");
   return std::nullopt;
 }
