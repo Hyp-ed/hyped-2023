@@ -17,6 +17,8 @@ class II2cSensor {
    */
   virtual bool configure()        = 0;
   virtual std::optional<T> read() = 0;
+
+  virtual ~II2cSensor() {}
 };
 
 }  // namespace hyped::sensors

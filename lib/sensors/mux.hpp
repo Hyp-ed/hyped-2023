@@ -4,6 +4,7 @@
 
 #include <cstdint>
 #include <cstdio>
+#include <memory>
 #include <optional>
 #include <vector>
 
@@ -20,7 +21,7 @@ class Mux {
  public:
   Mux(hyped::io::I2c &i2c,
       const uint8_t mux_address,
-      II2cSensor<T> &sensor,
+      std::vector<std::unique_ptr<II2cSensor<T>>> sensors,
       hyped::core::ILogger &log);
   ~Mux();
 
@@ -32,6 +33,7 @@ class Mux {
  private:
   hyped::core::ILogger &log_;
   hyped::io::I2c i2c_;
+  std::vector<std::unique_ptr<II2cSensor<T>>> sensors_;
 };
 
 }  // namespace hyped::sensors

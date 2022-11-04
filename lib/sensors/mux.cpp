@@ -4,10 +4,11 @@ namespace hyped::sensors {
 template<typename T>
 Mux<T>::Mux(hyped::io::I2c &i2c,
             const uint8_t mux_address,
-            II2cSensor<T> &sensor,
+            std::vector<std::unique_ptr<II2cSensor<T>>> sensors,
             hyped::core::ILogger &log)
     : log_(log),
-      i2c_(i2c)
+      i2c_(i2c),
+      sensors_(std::move(sensors))
 {
 }
 
