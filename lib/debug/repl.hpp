@@ -1,12 +1,13 @@
+#include <functional>
 #include <iostream>
+#include <map>
 #include <string>
 #include <vector>
-#include <map>
 
 #include <core/logger.hpp>
 #include <io/adc.hpp>
-#include <io/i2c.hpp>
 #include <io/hardware_gpio.hpp>
+#include <io/i2c.hpp>
 
 namespace hyped::debug {
 
