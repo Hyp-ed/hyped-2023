@@ -1,12 +1,12 @@
 #pragma once
 
-#include "sensors.hpp"
+#include "i2c_sensors.hpp"
 
+#include <array>
 #include <cstdint>
 #include <cstdio>
 #include <memory>
 #include <optional>
-#include <vector>
 
 #include <core/logger.hpp>
 #include <io/i2c.hpp>
@@ -16,24 +16,24 @@ namespace hyped::sensors {
 enum class Mode { kWrite = 0, kRead };
 enum class MuxWriteResult { kFailure = 0, kSuccess };
 
-template<class T>
+template<class T, std::size_t size>
 class Mux {
  public:
   Mux(hyped::io::I2c &i2c,
       const uint8_t mux_address,
-      std::vector<std::unique_ptr<II2cSensor<T>>> sensors,
+      const std::array<std::unique_ptr<II2cSensor<T>>, size> sensors,
       hyped::core::ILogger &log);
   ~Mux();
 
-  bool selectMode(Mode io_mode);
-  MuxWriteResult write(uint8_t data);
-  std::optional<std::vector<T>> readAll();
-  bool selecChannel(uint8_t channel);
+  bool selectMode(const Mode io_mode);
+  MuxWriteResult write(const uint8_t data);
+  std::optional<std::array<T, size>> readAll();
+  bool selectChannel(const uint8_t channel);
 
  private:
   hyped::core::ILogger &log_;
   hyped::io::I2c i2c_;
-  std::vector<std::unique_ptr<II2cSensor<T>>> sensors_;
+  const std::array<std::unique_ptr<II2cSensor<T>>, size> sensors_;
 };
 
 }  // namespace hyped::sensors
