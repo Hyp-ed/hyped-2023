@@ -2,7 +2,7 @@
 #include <core/wall_clock.hpp>
 #include <debug/repl.hpp>
 
-int main(int argc, char **argv)
+int main(const int argc, char **argv)
 {
   hyped::core::WallClock time;
   hyped::core::Logger logger("Debugger", hyped::core::LogLevel::kDebug, time);

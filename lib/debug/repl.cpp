@@ -7,8 +7,6 @@
 #include <rapidjson/document.h>
 #include <rapidjson/error/en.h>
 #include <rapidjson/istreamwrapper.h>
-#include <rapidjson/stringbuffer.h>
-#include <rapidjson/writer.h>
 
 namespace hyped::debug {
 Repl::Repl(hyped::core::ILogger &log) : log_(log)
