@@ -26,12 +26,12 @@ void Repl::run()
 
 std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
 {
-  // open file and parse json
   std::ifstream input_stream(path);
   if (!input_stream.is_open()) {
     log_.log(hyped::core::LogLevel::kFatal, "Failed to open file %s", path.c_str());
     return std::nullopt;
   }
+
   rapidjson::IStreamWrapper input_stream_wrapper(input_stream);
   rapidjson::Document document;
   rapidjson::ParseResult result = document.ParseStream(input_stream_wrapper);
@@ -41,44 +41,68 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
              rapidjson::GetParseError_En(document.GetParseError()));
     return std::nullopt;
   }
-  // get debugger
+
   if (!document.HasMember("debugger")) {
     log_.log(hyped::core::LogLevel::kFatal,
              "Missing required field 'debugger' in configuration file at %s",
              path.c_str());
     return std::nullopt;
   }
-  auto repl           = std::make_unique<Repl>(log_);
   const auto debugger = document["debugger"].GetObject();
-  if (!debugger.HasMember("adc")) {
+  auto repl           = std::make_unique<Repl>(log_);
+
+  if (!debugger.HasMember("io")) {
     log_.log(hyped::core::LogLevel::kFatal,
-             "Missing required field 'adc' in configuration file at %s",
+             "Missing required field 'debugger.io' in configuration file at %s",
              path.c_str());
     return std::nullopt;
   }
-  const auto adc = debugger["adc"].GetObject();
+  auto io = debugger["io"].GetObject();
+
+  if (!io.HasMember("adc")) {
+    log_.log(hyped::core::LogLevel::kFatal,
+             "Missing required field 'io.adc' in configuration file");
+    return std::nullopt;
+  }
+  auto adc = io["adc"].GetObject();
   if (!adc.HasMember("enabled")) {
     log_.log(hyped::core::LogLevel::kFatal,
-             "Missing required field 'adc.enabled' in configuration file at %s",
-             path.c_str());
+             "Missing required field 'io.adc.enabled' in configuration file");
     return std::nullopt;
   }
-  const auto adc_enabled = adc["enabled"].GetBool();
-  if (!adc.HasMember("pins")) {
+  if (adc["enabled"].GetBool()) {
+    if (!adc.HasMember("pins")) {
+      log_.log(hyped::core::LogLevel::kFatal,
+               "Missing required field 'io.adc.pins' in configuration file");
+      return std::nullopt;
+    }
+    auto pins = adc["pins"].GetArray();
+    for (auto &pin : pins) {
+      repl->addAdcCommands(pin.GetUint());
+    }
+  }
+
+  if (!io.HasMember("i2c")) {
     log_.log(hyped::core::LogLevel::kFatal,
-             "Missing required field 'adc.pins' in configuration file at %s",
-             path.c_str());
+             "Missing required field 'io.i2c' in configuration file");
     return std::nullopt;
   }
-  const auto adc_pins = adc["pins"].GetArray();
-  if (adc_pins.Empty()) {
+  auto i2c = io["i2c"].GetObject();
+  if (!i2c.HasMember("enabled")) {
     log_.log(hyped::core::LogLevel::kFatal,
-             "Empty array 'adc.pins' in configuration file at %s",
-             path.c_str());
+             "Missing required field 'io.i2c.enabled' in configuration file");
     return std::nullopt;
   }
-  for (auto it = adc_pins.Begin(); it != adc_pins.End(); ++it) {
-    repl->addAdcCommands(it->GetUint());
+  if (i2c["enabled"].GetBool()) {
+    if (!i2c.HasMember("channels")) {
+      log_.log(hyped::core::LogLevel::kFatal,
+               "Missing required field 'io.i2c.channels' in configuration file");
+      return std::nullopt;
+    }
+    auto channels = i2c["channels"].GetArray();
+    for (auto &channel : channels) {
+      repl->addI2cCommands(channel.GetUint());
+    }
   }
   return repl;
 }

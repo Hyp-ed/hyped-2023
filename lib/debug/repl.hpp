@@ -28,6 +28,8 @@ class Repl {
   void handleCommand();
   void addCommand(const Command &cmd);
 
+  // std::optional<Repl> parseIO(rapidjson::Value::Object &io_object, Repl *repl);
+
   void addQuitCommand();
   void addHelpCommand();
   void addAdcCommands(const uint8_t pin);
