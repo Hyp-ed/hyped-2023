@@ -1,3 +1,5 @@
+#include <numeric>
+
 #include <gtest/gtest.h>
 
 #include <core/types.hpp>
@@ -5,22 +7,45 @@
 
 namespace hyped::test {
 
-void testWithTrajectory(utils::NaiveNavigator &naive_navigator, const core::Trajectory &trajectory)
+void testWithTrajectory(utils::NaiveNavigator &naive_navigator,
+                        const core::RawImuData imu_data,
+                        const core::EncoderData encoder_data,
+                        const core::KeyenceData keyence_data)
 {
-  naive_navigator.update(trajectory);
+  naive_navigator.imuUpdate(imu_data);
+  naive_navigator.encoderUpdate(encoder_data);
+  naive_navigator.keyenceUpdate(keyence_data);
+
+  core::Float sum_imu = 0;
+  for (size_t i = 0; i < core::kNumImus; ++i) {
+    for (size_t j = 0; j < core::kNumAxis; ++j) {
+      sum_imu += imu_data.at(i).at(j);
+    }
+  }
+  core::Float new_acceleration = sum_imu / core::kNumImus;
+  core::Float new_velocity     = 0;
+  core::Float new_displacement
+    = std::accumulate(encoder_data.begin(), encoder_data.end(), 0.0) / core::kNumEncoders;
+
   const core::Trajectory &current_trajectory = naive_navigator.currentTrajectory();
-  ASSERT_FLOAT_EQ(current_trajectory.acceleration, trajectory.acceleration);
-  ASSERT_FLOAT_EQ(current_trajectory.velocity, trajectory.velocity);
-  ASSERT_FLOAT_EQ(current_trajectory.displacement, trajectory.displacement);
+  ASSERT_FLOAT_EQ(current_trajectory.acceleration, new_acceleration);
+  ASSERT_FLOAT_EQ(current_trajectory.velocity, new_velocity);
+  ASSERT_FLOAT_EQ(current_trajectory.displacement, new_displacement);
 }
 
 TEST(NaiveNavigator, basic)
 {
   utils::NaiveNavigator naive_navigator;
-  testWithTrajectory(naive_navigator, {100, 10, 1});
-  testWithTrajectory(naive_navigator, {110, 11, 2});
-  testWithTrajectory(naive_navigator, {121, 13, -4});
-  testWithTrajectory(naive_navigator, {134, 9, -10});
+  testWithTrajectory(naive_navigator,
+                     {{{0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}}},
+                     {0, 0, 0, 0},
+                     {0, 0});
+  testWithTrajectory(
+    naive_navigator, {{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}, {10, 11, 12}}}, {1, 2, 3, 4}, {1, 2});
+  testWithTrajectory(
+    naive_navigator, {{{10, 5, 1}, {0, 100, 3}, {2, 3, 2}, {50, 1, 200}}}, {20, 30, 1, 5}, {30, 2});
+  testWithTrajectory(
+    naive_navigator, {{{1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1}}}, {1, 1, 1, 1}, {1, 1});
 }
 
 }  // namespace hyped::test

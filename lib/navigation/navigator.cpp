@@ -9,31 +9,44 @@ Navigator::Navigator()
   // TODOLater: impement
 }
 
-void Navigator::navigate()
+core::Trajectory Navigator::currentTrajectory()
 {
   /*
-  TODOLater: implement
+  TODOLater: call cross-checker now to ensure return
+  trajectory is accurate and delicious.
 
-  main navigation control:
+  Cross checker will (until camera is up and running) have
+  to add integrated/differentiated value for velocity for now
+  */
+  return trajectory_;
+}
 
-  - look at new data
-  - preprocess
-  - check sensor agreement
-  - calculate current trajecotory
-  - update current trajectory
+void Navigator::keyenceUpdate(const core::KeyenceData &keyence_data)
+{
+  /*
+  TODOLater:
+  - ensure keyence data is strictly increasing
+  - run preprocessing on keyence data (basically an agreement check)
   */
 }
 
-void Navigator::recordImuData(const core::RawImuData imu_data)
+void Navigator::encoderUpdate(const core::EncoderData &encoder_data)
 {
+  /*
+  TODOLater:
+  - ensure encoder data is strictly increasing
+  - run preprocessing
+  - update trajectory_.displacement with mean of processed data
+  */
 }
 
-void Navigator::recordEncoderData(const core::EncoderData encoder_data)
+void Navigator::imuUpdate(const core::RawImuData &imu_data)
 {
-}
-
-void Navigator::recordKeyenceData(const core::KeyenceData keyence_data)
-{
+  /*
+  TODOLater:
+  - run preprocessing
+  - update trajectory_.acceleration with kalman estimate
+  */
 }
 
 }  // namespace hyped::navigation

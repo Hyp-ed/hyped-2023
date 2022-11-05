@@ -5,11 +5,13 @@
 
 namespace hyped::utils {
 
-class NaiveNavigator : public navigation::INavigator<core::Trajectory> {
+class NaiveNavigator : public navigation::INavigator {
  public:
   NaiveNavigator();
   virtual core::Trajectory currentTrajectory();
-  virtual void update(const core::Trajectory &current_trajectory);
+  virtual void keyenceUpdate(const core::KeyenceData &keyence_data);
+  virtual void encoderUpdate(const core::EncoderData &encoder_data);
+  virtual void imuUpdate(const core::RawImuData &imu_data);
 
  private:
   core::Trajectory current_trajectory_;

@@ -4,51 +4,41 @@
 
 namespace hyped::navigation {
 
-class Navigator {
+class Navigator : public INavigator {
  public:
   Navigator();
 
   /**
-   *@brief Does navigation. Combines all navigation functionality to produce the best
-   *current estimate of trajectory
+   *@brief runs cross checking and returns trajectory
    */
-  void navigate();
+  core::Trajectory currentTrajectory();
 
   /**
-   * @brief Set Imu Data from sensors
-   *
-   * @param imu_data
-   */
-  void recordImuData(const core::RawImuData imu_data);
-
-  /**
-   * @brief Set Encoder Data from sensors
-   *
-   * @param encoder_data
-   */
-  void recordEncoderData(const core::EncoderData encoder_data);
-
-  /**
-   * @brief Set Keyence Data from sensors
+   * @brief preprocesses keyence data and updates trajectory
    *
    * @param keyence_data
    */
-  void recordKeyenceData(const core::KeyenceData keyence_data);
+  void keyenceUpdate(const core::KeyenceData &keyence_data);
+  /**
+   * @brief preprocesses encoder data and updates trajectory
+   *
+   * @param encoder_data
+   */
+  void encoderUpdate(const core::EncoderData &encoder_data);
+  /**
+   * @brief preprocesses imu data and updates trajectory
+   *
+   * @param imu_data
+   */
+  void imuUpdate(const core::RawImuData &imu_data);
 
  private:
-  core::RawImuData raw_imu_data_;
-  core::EncoderData raw_encoder_data_;
-  core::KeyenceData raw_keyence_data_;
-
-  core::ImuData imu_data_;
+  // previous readings
   core::EncoderData encoder_data_;
   core::KeyenceData keyence_data_;
 
   // current navigation trajectory
   core::Trajectory trajectory_;
-
-  // current keyence value for displacement
-  int32_t keyenceDisplacement_;
 };
 
 }  // namespace hyped::navigation
