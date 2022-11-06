@@ -14,7 +14,7 @@
 namespace hyped::sensors {
 
 enum class Mode { kWrite = 0, kRead };
-enum class MuxWriteResult { kFailure = 0, kSuccess };
+enum class MuxOperationResult { kFailure = 0, kSuccess };
 
 template<class T, std::size_t size>
 class Mux {
@@ -25,10 +25,10 @@ class Mux {
       hyped::core::ILogger &log);
   ~Mux();
 
-  bool selectMode(const Mode io_mode);
-  MuxWriteResult write(const uint8_t data);
+  MuxOperationResult selectMode(const Mode io_mode);
+  MuxOperationResult write(const uint8_t data);
   std::optional<std::array<T, size>> readAll();
-  bool selectChannel(const uint8_t channel);
+  MuxOperationResult selectChannel(const uint8_t channel);
 
  private:
   hyped::core::ILogger &log_;

@@ -18,27 +18,27 @@ Mux<T, size>::~Mux()
 }
 
 template<typename T, std::size_t size>
-bool Mux<T, size>::selectMode(const Mode io_mode)
+MuxOperationResult Mux<T, size>::selectMode(const Mode io_mode)
 {
   // TODOLater: select mode
   log_.log(hyped::core::LogLevel::kFatal, "Mux select mode not implemented");
-  return false;
+  return MuxOperationResult::kFailure;
 }
 
 template<typename T, std::size_t size>
-bool Mux<T, size>::selectChannel(const uint8_t channel)
+MuxOperationResult Mux<T, size>::selectChannel(const uint8_t channel)
 {
   // TODOLater: select channel
   log_.log(hyped::core::LogLevel::kFatal, "Mux select channel not implemented");
-  return false;
+  return MuxOperationResult::kFailure;
 }
 
 template<typename T, std::size_t size>
-MuxWriteResult Mux<T, size>::write(const uint8_t data)
+MuxOperationResult Mux<T, size>::write(const uint8_t data)
 {
   // TODOLater: write to mux
   log_.log(hyped::core::LogLevel::kFatal, "Mux write not implemented");
-  return MuxWriteResult::kFailure;
+  return MuxOperationResult::kFailure;
 }
 
 template<typename T, std::size_t size>
