@@ -17,7 +17,6 @@ enum class SensorChecks { kUnacceptable = 0, kAcceptable };
 
 inline core::Trajectory zero_trajectory = {0, 0, 0};
 
-// Navigator interface
 class INavigator {
  public:
   virtual std::optional<core::Trajectory> currentTrajectory()       = 0;
