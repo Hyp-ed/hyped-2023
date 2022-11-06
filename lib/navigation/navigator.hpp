@@ -1,5 +1,7 @@
 #include "consts.hpp"
 
+#include <optional>
+
 #include "core/types.hpp"
 
 namespace hyped::navigation {
@@ -11,7 +13,7 @@ class Navigator : public INavigator {
   /**
    *@brief runs cross checking and returns trajectory
    */
-  core::Trajectory currentTrajectory();
+  std::optional<core::Trajectory> currentTrajectory();
 
   /**
    * @brief preprocesses keyence data and updates trajectory
@@ -34,8 +36,8 @@ class Navigator : public INavigator {
 
  private:
   // previous readings
-  core::EncoderData encoder_data_;
-  core::KeyenceData keyence_data_;
+  core::EncoderData previous_encoder_reading_;
+  core::KeyenceData previous_keyence_reading_;
 
   // current navigation trajectory
   core::Trajectory trajectory_;

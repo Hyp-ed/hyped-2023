@@ -8,7 +8,7 @@ NaiveNavigator::NaiveNavigator() : current_trajectory_{}
 {
 }
 
-core::Trajectory NaiveNavigator::currentTrajectory()
+std::optional<core::Trajectory> NaiveNavigator::currentTrajectory()
 {
   return current_trajectory_;
 }
@@ -21,7 +21,7 @@ void NaiveNavigator::keyenceUpdate(const core::KeyenceData &keyence_data)
 void NaiveNavigator::encoderUpdate(const core::EncoderData &encoder_data)
 {
   core::Float sum                  = std::accumulate(encoder_data.begin(), encoder_data.end(), 0.0);
-  core::Float encoder_average      = sum / core::kNumEncoders;
+  core::Float encoder_average      = static_cast<core::Float>(sum / core::kNumEncoders);
   current_trajectory_.displacement = encoder_average;
 }
 
@@ -33,7 +33,7 @@ void NaiveNavigator::imuUpdate(const core::RawImuData &imu_data)
       sum += imu_data.at(i).at(j);
     }
   }
-  core::Float imu_average          = sum / core::kNumImus;
+  core::Float imu_average          = static_cast<core::Float>(sum / core::kNumImus);
   current_trajectory_.acceleration = imu_average;
   // TODOLater: improve this...
   current_trajectory_.velocity = 0;

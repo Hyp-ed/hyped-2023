@@ -9,7 +9,7 @@ Navigator::Navigator()
   // TODOLater: impement
 }
 
-core::Trajectory Navigator::currentTrajectory()
+std::optional<core::Trajectory> Navigator::currentTrajectory()
 {
   /*
   TODOLater: call cross-checker now to ensure return

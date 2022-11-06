@@ -27,10 +27,12 @@ void testWithTrajectory(utils::NaiveNavigator &naive_navigator,
   core::Float new_displacement
     = std::accumulate(encoder_data.begin(), encoder_data.end(), 0.0) / core::kNumEncoders;
 
-  const core::Trajectory &current_trajectory = naive_navigator.currentTrajectory();
-  ASSERT_FLOAT_EQ(current_trajectory.acceleration, new_acceleration);
-  ASSERT_FLOAT_EQ(current_trajectory.velocity, new_velocity);
-  ASSERT_FLOAT_EQ(current_trajectory.displacement, new_displacement);
+  const auto &current_trajectory = naive_navigator.currentTrajectory();
+  if(current_trajectory.has_value()){
+    ASSERT_FLOAT_EQ(current_trajectory.value().acceleration, new_acceleration);
+    ASSERT_FLOAT_EQ(current_trajectory.value().velocity, new_velocity);
+    ASSERT_FLOAT_EQ(current_trajectory.value().displacement, new_displacement);
+  }
 }
 
 TEST(NaiveNavigator, basic)

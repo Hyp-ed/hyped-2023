@@ -1,5 +1,6 @@
 #include <array>
 #include <cstdint>
+#include <optional>
 
 #include "core/types.hpp"
 
@@ -17,9 +18,10 @@ enum class SensorChecks { kUnacceptable = 0, kAcceptable };
 // explicitly define zero trajectory
 inline core::Trajectory zero_trajectory = {0, 0, 0};
 
-class INavigator : public core::KeyenceData, core::EncoderData, core::RawImuData {
+// Navigator interface
+class INavigator {
  public:
-  virtual core::Trajectory currentTrajectory()                      = 0;
+  virtual std::optional<core::Trajectory> currentTrajectory()       = 0;
   virtual void keyenceUpdate(const core::KeyenceData &keyence_data) = 0;
   virtual void encoderUpdate(const core::EncoderData &encoder_data) = 0;
   virtual void imuUpdate(const core::RawImuData &imu_data)          = 0;
