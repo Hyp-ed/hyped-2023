@@ -15,7 +15,6 @@ static constexpr core::Float kStripeDistance    = 10.0;       // m TODOLater:che
 // define sensor checks return type
 enum class SensorChecks { kUnacceptable = 0, kAcceptable };
 
-// explicitly define zero trajectory
 inline core::Trajectory zero_trajectory = {0, 0, 0};
 
 // Navigator interface
