@@ -4,17 +4,22 @@
 #include <cstdint>
 
 #include "core/types.hpp"
+#include "core/logger.hpp"
 
 namespace hyped::navigation {
 
 class KeyencePreprocessor {
  public:
-  KeyencePreprocessor();
+ /**
+  * @brief Construct a new Keyence Preprocessor object
+  */
+  KeyencePreprocessor(hyped::core::ILogger &logger);
 
   SensorChecks checkKeyenceAgrees(const core::KeyenceData &keyence_data);
 
  private:
-  bool is_keyence_agreeing_;
+  hyped::core::ILogger &logger_;
+  bool has_keyence_disagreed_;
 };
 
 }  // namespace hyped::navigation
