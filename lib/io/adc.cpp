@@ -42,6 +42,7 @@ std::optional<uint16_t> Adc::resetAndRead4(const int file_descriptor)
            sizeof(read_buffer));  // actually consume new data, changes value in buffer
   if (num_bytes_read != sizeof(read_buffer)) {
     logger_.log(hyped::core::LogLevel::kFatal, "Failed to read 4 bytes");
+
     return std::nullopt;  // returning NULL since we did not get any value
   }
   const int raw_voltage = std::atoi(read_buffer);

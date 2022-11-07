@@ -1,27 +1,44 @@
 #include <gtest/gtest.h>
 
-#include <navigation/navigator.hpp>
+#include <core/types.hpp>
+#include <navigation/consts.hpp>
 
 namespace hyped::test {
 
+bool checkFloatEquality(float a, float b)
+{
+  return ((a - b) < core::kEpsilon) && ((b - a) < core::kEpsilon);
+}
+
+void checkTrajectoriesEquality(const core::Trajectory &trajectory1,
+                               const core::Trajectory &trajectory2,
+                               bool equality)
+{
+  const bool comparision
+    = checkFloatEquality(trajectory1.acceleration, trajectory2.acceleration)
+      && checkFloatEquality(trajectory1.velocity, trajectory2.velocity)
+      && checkFloatEquality(trajectory1.displacement, trajectory2.displacement);
+  ASSERT_EQ(equality, comparision);
+}
+
 TEST(Trajectory, equality)
 {
-  navigation::Trajectory reference = {100.0, 10.0, 1.0};
+  const core::Trajectory reference = {100.0, 10.0, 1.0};
   {
-    navigation::Trajectory other = {100.0, 10.0, 1.0};
-    ASSERT_EQ(reference, other);
+    const core::Trajectory other = {100.0, 10.0, 1.0};
+    checkTrajectoriesEquality(reference, other, true);
   }
   {
-    navigation::Trajectory other = {200.0, 10.0, 1.0};
-    ASSERT_NE(reference, other);
+    const core::Trajectory other = {200.0, 10.0, 1.0};
+    checkTrajectoriesEquality(reference, other, false);
   }
   {
-    navigation::Trajectory other = {100.0, 20.0, 1.0};
-    ASSERT_NE(reference, other);
+    core::Trajectory other = {100.0, 20.0, 1.0};
+    checkTrajectoriesEquality(reference, other, false);
   }
   {
-    navigation::Trajectory other = {100.0, 10.0, 2.0};
-    ASSERT_NE(reference, other);
+    core::Trajectory other = {100.0, 10.0, 2.0};
+    checkTrajectoriesEquality(reference, other, false);
   }
 }
 
