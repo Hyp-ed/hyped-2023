@@ -56,11 +56,13 @@ std::optional<std::shared_ptr<IGpioReader>> HardwareGpio::getReader(const uint8_
 
   int fd = open("/dev/mem", O_RDWR);
   if (fd < 0) {
+    log_.log(hyped::core::LogLevel::kFatal, "opening /dev/mem failed");
     return std::nullopt;
   }
   
   gpio_addr = mmap(0, pinSize , PROT_READ | PROT_WRITE, MAP_SHARED, fd, pinAddress);
   if (gpio_addr == MAP_FAILED) {
+    log_.log(hyped::core::LogLevel::kFatal, "mmap failed");
     return std::nullopt;
   }
 
