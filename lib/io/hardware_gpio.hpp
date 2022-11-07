@@ -40,23 +40,8 @@ class HardwareGpioWriter : public IGpioWriter {
   friend class HardwareGpio;
 };
 
-/**
- * Hardware GPIO interface, requires physical GPIO pins to be present. This should only
- * be instantiated at the top level and then provided to users through the IGpio interface.
- */
 
-//GPIO  Start Addr   End Addr
-//GPIO0 0x44E0_7000  0x44E0_7FFF
-//GPIO1 0x4804_C000  0x4804_CFFF
-//GPIO2 0x481A_C000  0x481A_CFFF
-//GPIO3 0x481A_E000  0x481A_EFFF
 
-//GPIO_DATAIN (READ) 0x138h
-//GPIO_DATAOUT 0x13c
-//SET 0x194
-//CLEAR 0x190
-
-//Page 211 - 213 P8 Header Pins
 
 class HardwareGpio {
  public:
@@ -67,6 +52,9 @@ class HardwareGpio {
 
  private:
   hyped::core::ILogger &log_;
+  //Bank Addresses are header base addresses. 
+  //Page 211-213 Figure 6-7/8 P8 Header Pins Beaglebone Bible
+
   const off_t bankAddresses[4] = {0x44e07000, 0x4804c000, 0x481ac000, 0x481ae000};
   std::unordered_map<uint8_t, std::shared_ptr<IGpioWriter>> InitializedWriters;
   std::unordered_map<uint8_t, std::shared_ptr<IGpioReader>> InitializedReaders;
