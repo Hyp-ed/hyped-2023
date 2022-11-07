@@ -19,7 +19,7 @@ class EncodersPreprocessor {
   std::array<uint16_t, core::kNumEncoders> num_outliers_per_encoder_;
 
   // initialised as all true, bool mask of reliable sensors
-  std::array<bool, core::kNumEncoders> is_encoder_reliable_;
+  std::array<bool, core::kNumEncoders> are_encoders_reliable_;
 };
 
 }  // namespace hyped::navigation

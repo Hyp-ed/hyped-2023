@@ -19,7 +19,7 @@ class ImuPreprocessor {
   std::array<uint16_t, core::kNumImus> num_outliers_per_imu_;
 
   // initialised as all true, bool mask of reliable sensors
-  std::array<bool, core::kNumImus> is_imu_reliable_;
+  std::array<bool, core::kNumImus> are_imus_reliable_;
 };
 
 }  // namespace hyped::navigation
