@@ -55,9 +55,8 @@ class HardwareGpioWriter : public IGpioWriter {
 //GPIO_DATAOUT 0x13c
 //SET 0x194
 //CLEAR 0x190
-//  const uint8_t bank   = pin_ / 32;  // offset: GPIO_0,1,2,3
-//  const uint8_t pin_id = pin_ % 32;
 
+//Page 211 - 213 P8 Header Pins
 
 class HardwareGpio {
  public:

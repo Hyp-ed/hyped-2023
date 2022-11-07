@@ -30,8 +30,6 @@ GpioWriteResult HardwareGpioWriter::write(const core::DigitalSignal state)
   } else {
     *gpio_clearAddr &= ~pinMAP;
   }
-
-  throw -1;
 }
 
 HardwareGpio::HardwareGpio(hyped::core::ILogger &log) : log_(log)
@@ -47,6 +45,7 @@ std::optional<std::shared_ptr<IGpioReader>> HardwareGpio::getReader(const uint8_
   //Map solves this, GPIO will always hold one pointer so it dosen't get destroyed.
   if (InitializedReaders.count(pin) != 0) {
     std::shared_ptr<HardwareGpioReader> reader;
+    reader = InitializedWriters[pin];
     return reader;
   }
   const uint8_t bank = pin / 32;
@@ -64,6 +63,7 @@ std::optional<std::shared_ptr<IGpioReader>> HardwareGpio::getReader(const uint8_
   
   InitializedReaders[pin] = std::shared_ptr<HardwareGpioReader>(new HardwareGpioReader(pinMAP, gpio_read));
   std::shared_ptr<HardwareGpioReader> reader;
+  reader = InitializedReader[pin];
   return reader;
 }
 
@@ -71,6 +71,7 @@ std::optional<std::shared_ptr<IGpioWriter>> HardwareGpio::getWriter(const uint8_
 {
   if (InitializedWriters.count(pin) != 0) {
     std::shared_ptr<HardwareGpioWriter> writer;
+    writer = InitializedWriters[pin];
     return writer;
   }
 
@@ -90,7 +91,9 @@ std::optional<std::shared_ptr<IGpioWriter>> HardwareGpio::getWriter(const uint8_
   gpio_clear = static_cast<volatile unsigned int*>(gpio_addr) + pinClear;
   InitializedWriters[pin] = std::shared_ptr<HardwareGpioWriter>(new HardwareGpioWriter(pinMAP, gpio_set, gpio_clear));
   std::shared_ptr<HardwareGpioWriter> writer;
+  writer = InitializedWriters[pin];
   return writer;
 }
 
 }  // namespace hyped::io
+//hello world
