@@ -2,12 +2,12 @@
 
 namespace hyped::navigation {
 
-PreprocessKeyence::PreprocessKeyence()
+KeyencePreprocessor::KeyencePreprocessor()
 {
   // TODOLater: implement
 }
 
-SensorChecks checkKeyenceAgrees(const core::KeyenceData keyence_data)
+SensorChecks checkKeyenceAgrees(const core::KeyenceData &keyence_data)
 {
   /*
    TODOLater: implement:

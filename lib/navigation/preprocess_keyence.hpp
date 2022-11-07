@@ -7,11 +7,11 @@
 
 namespace hyped::navigation {
 
-class PreprocessKeyence {
+class KeyencePreprocessor {
  public:
-  PreprocessKeyence();
+  KeyencePreprocessor();
 
-  SensorChecks checkKeyenceAgrees(const core::KeyenceData keyence_data);
+  SensorChecks checkKeyenceAgrees(const core::KeyenceData &keyence_data);
 
  private:
   bool is_keyence_agreeing_;

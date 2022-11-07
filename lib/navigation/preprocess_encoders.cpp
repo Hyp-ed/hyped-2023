@@ -2,24 +2,24 @@
 
 namespace hyped::navigation {
 
-PreprocessEncoders::PreprocessEncoders()
+EncodersPreprocessor::EncodersPreprocessor()
 {
   // TODOLater: implement
 }
 
-core::EncoderData PreprocessEncoders::processData(const core::EncoderData)
+core::EncoderData EncodersPreprocessor::processData(const core::EncoderData)
 {
   /*
   TODOLater: implement
   basic plan:
-  - call encodersOutlierDetection. Return of that function is return of this function
-  - call checkEncodersRelaible
+  - call detectOutliers. Return of that function is return of this function
+  - call checkRelaible
 
   */
   return {0, 0, 0, 0};
 }
 
-core::EncoderData PreprocessEncoders::encodersOutlierDetection(const core::EncoderData encoder_data)
+core::EncoderData EncodersPreprocessor::detectOutliers(const core::EncoderData encoder_data)
 {
   /*
   TODOLater: implement
@@ -27,7 +27,7 @@ core::EncoderData PreprocessEncoders::encodersOutlierDetection(const core::Encod
   - get q1, median, q3 of encoder array
   - define upper & lower bounds as (-)1.5*inter-quatrile range
   - if any datapoint outwith this, set
-  outlier_encoders_[i] += 1
+  num_outliers_per_encoder_[i] += 1
   -set outlier points as median
 
   -also has to be able to handle 1 unreliable sensor
@@ -37,16 +37,16 @@ core::EncoderData PreprocessEncoders::encodersOutlierDetection(const core::Encod
   return {0, 0, 0, 0};
 }
 
-void PreprocessEncoders::checkEncodersReliable(const core::EncoderData encoder_data)
+void EncodersPreprocessor::checkReliable(const core::EncoderData &encoder_data)
 {
   /*
   TODOLater: implement
   rough process:
   - check how many times an individual encoder
   has been an outlier in a row (outlier encoders)
-  -if outlier_encoders_[i] > n (tbd), mark imu as unreliable
-  in reliable imus.
-  -if number unreliable in reliable_imus > 1, fail state
+  -if num_outliers_per_encoder_[i] > n (tbd), mark encoder as unreliable
+  in reliable encoders.
+  -if number unreliable in reliable_encoders > 1, fail state
 
   -also figure out return type/ what we update and update
   documentation as appropriate
