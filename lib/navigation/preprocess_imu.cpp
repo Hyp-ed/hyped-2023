@@ -34,6 +34,13 @@ core::ImuData ImuPreprocessor::detectOutliers(const core::RawImuData imu_data)
   -also figure out return type/ what we update and update
   documentation as appropriate
   */
+  const uint8_t num_reliable_imus = std::accumulate(are_imus_reliable_.start(), are_imus_reliable_.end(), 0);
+  if (num_reliable_imus == 4) {
+  std::sort(imu_data.start(), imu_data.end());
+  const float q1 = (imu_data.at(0) + imu_data.at(1))/2.0;
+  const float median = (imu_data.at(1) + imu_data.at(2))/2.0;
+  const float q3 = (imu_data.at(2) + imu_data.at(3))/2.0;
+  } 
   return {0, 0, 0, 0};
 }
 
