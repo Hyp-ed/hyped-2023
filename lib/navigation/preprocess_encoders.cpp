@@ -1,4 +1,6 @@
 #include "preprocess_encoders.hpp"
+#include "core/types.hpp"
+
 
 namespace hyped::navigation {
 
@@ -34,7 +36,8 @@ core::EncoderData EncodersPreprocessor::detectOutliers(const core::EncoderData e
   -also figure out return type/ what we update and update
   documentation as appropriate
   */
-  return {0, 0, 0, 0};
+ std::sort(encoder_data);
+ return {0, 0, 0, 0};
 }
 
 void EncodersPreprocessor::checkReliable(const core::EncoderData &encoder_data)
