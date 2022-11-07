@@ -11,6 +11,14 @@
 
 namespace hyped::sensors {
 
+const uint8_t CTRL = 0x04;
+const uint8_t TEMPERATURE_1 = 0x38;
+const uint8_t TEMPERATURE_2 = 0x3f;
+const uint8_t TEMP_H = 0x07;
+const uint8_t TEMP_L = 0x06;
+const uint8_t STATUS = 0x05;
+
+
 class Temperature : public II2cSensor<uint16_t> {
  public:
   Temperature(hyped::io::I2c &i2c, hyped::core::ILogger &log);
