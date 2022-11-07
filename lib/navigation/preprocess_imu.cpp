@@ -1,63 +1,77 @@
 #include "preprocess_imu.hpp"
 
-namespace hyped::navigation {
-
-ImuPreprocessor::ImuPreprocessor()
+namespace hyped::navigation
 {
-  // TODOLater: implement
-}
 
-core::ImuData ImuPreprocessor::processData(const core::RawImuData raw_imu_data)
-{
-  /*
-  TODOLater: implement
-  basic plan:
-  - call detectOutliers. Return of that function is return of this function
-  - call checkReliable
+  ImuPreprocessor::ImuPreprocessor()
+  {
+    // TODOLater: implement
+  }
 
-  */
-  return {0, 0, 0, 0};
-}
+  core::ImuData ImuPreprocessor::processData(const core::RawImuData raw_imu_data)
+  {
+    /*
+    TODOLater: implement
+    basic plan:
+    - call detectOutliers. Return of that function is return of this function
+    - call checkReliable
 
-core::ImuData ImuPreprocessor::detectOutliers(const core::RawImuData imu_data)
-{
-  /*
-  TODOLater: implement
-  rough process:
-  - get q1, median, q3 of encoder array
-  - define upper & lower bounds as (-)1.5*inter-quatrile range
-  - if any datapoint outwith this, set
-  outlier_imus_[i] += 1
-  -set outlier points as median
+    */
+    return {0, 0, 0, 0};
+  }
 
-  -also has to be able to handle 1 unreliable sensor
-  -also figure out return type/ what we update and update
-  documentation as appropriate
-  */
-  const uint8_t num_reliable_imus = std::accumulate(are_imus_reliable_.start(), are_imus_reliable_.end(), 0);
-  if (num_reliable_imus == 4) {
-  std::sort(imu_data.start(), imu_data.end());
-  const float q1 = (imu_data.at(0) + imu_data.at(1))/2.0;
-  const float median = (imu_data.at(1) + imu_data.at(2))/2.0;
-  const float q3 = (imu_data.at(2) + imu_data.at(3))/2.0;
-  } 
-  return {0, 0, 0, 0};
-}
+  core::ImuData ImuPreprocessor::detectOutliers(const core::RawImuData imu_data)
+  {
+    /*
+    TODOLater: implement
+    rough process:
+    - get q1, median, q3 of encoder array
+    - define upper & lower bounds as (-)1.5*inter-quatrile range
+    - if any datapoint outwith this, set
+    outlier_imus_[i] += 1
+    -set outlier points as median
 
-void ImuPreprocessor::checkReliable(const core::ImuData &imu_data)
-{
-  /*
-  TODOLater: implement
-  rough process:
-  - check how many times an individual imu
-  has been an outlier in a row (outlier imus)
-  -if outlier_imus_[i] > n (tbd), mark imu as unreliable
-  in reliable imus.
-  -if number unreliable in reliable_imus > 1, fail state
+    -also has to be able to handle 1 unreliable sensor
+    -also figure out return type/ what we update and update
+    documentation as appropriate
+    */
+    core::ImuData clean_imu_data;
+    core::Float magnitude;
+    for (size_t i = 0; i < core::kNumImus; ++i)
+    {
+      magnitude = 0;
+      for (size_t j = 0; j < 3; ++j)
+      {
+        magnitude += std::pow(imu_data.at(i).at(j), 2);
+      }
+      // TODO change to sqrt function
+      clean_imu_data.at(i) = std::pow(magnitude, 0.5);
+    }
+    const uint8_t num_reliable_imus = std::accumulate(are_imus_reliable_.begin(), are_imus_reliable_.end(), 0);
+    if (num_reliable_imus == 4)
+    {
+      std::sort(imu_data.start(), imu_data.end());
+      const core::Float q1 = (imu_data.at(0) + imu_data.at(1)) / 2.0;
+      const core::Float median = (imu_data.at(1) + imu_data.at(2)) / 2.0;
+      const core::Float q3 = (imu_data.at(2) + imu_data.at(3)) / 2.0;
+    }
+    return {0, 0, 0, 0};
+  }
 
-  -also figure out return type/ what we update and update
-  documentation as appropriate
-  */
-}
+  void ImuPreprocessor::checkReliable(const core::ImuData &imu_data)
+  {
+    /*
+    TODOLater: implement
+    rough process:
+    - check how many times an individual imu
+    has been an outlier in a row (outlier imus)
+    -if outlier_imus_[i] > n (tbd), mark imu as unreliable
+    in reliable imus.
+    -if number unreliable in reliable_imus > 1, fail state
 
-}  // namespace hyped::navigation
+    -also figure out return type/ what we update and update
+    documentation as appropriate
+    */
+  }
+
+} // namespace hyped::navigation
