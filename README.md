@@ -1,5 +1,7 @@
 # HYPED 2023
 
+![](https://img.shields.io/github/workflow/status/hyp-ed/hyped-2023/Build) ![](https://img.shields.io/github/search/hyp-ed/hyped-2023/TODOLater?color=red&label=TODO%20counter)
+
 ## Dependencies
 
 - `clang`
