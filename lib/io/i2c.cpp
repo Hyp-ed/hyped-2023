@@ -67,9 +67,9 @@ std::optional<uint8_t> I2c::readByte(const uint8_t device_address, const uint8_t
   return read_buffer[0];
 }
 
-I2cWriteResult I2c::writeByte(const uint8_t device_address,
-                              const uint8_t register_address,
-                              const uint8_t data)
+I2cWriteResult I2c::writeByteToRegister(const uint8_t device_address,
+                                        const uint8_t register_address,
+                                        const uint8_t data)
 {
   if (file_descriptor_ < 0) {
     log_.log(hyped::core::LogLevel::kFatal, "Could not find i2c device while writing");
@@ -79,6 +79,22 @@ I2cWriteResult I2c::writeByte(const uint8_t device_address,
   const uint8_t write_buffer[2] = {register_address, data};
   const auto num_bytes_written  = write(file_descriptor_, write_buffer, 2);
   if (num_bytes_written != 2) {
+    log_.log(hyped::core::LogLevel::kFatal, "Could not write to i2c device");
+    return I2cWriteResult::kFailure;
+  }
+  return I2cWriteResult::kSuccess;
+}
+
+I2cWriteResult I2c::writeByte(const uint8_t device_address, const uint8_t data)
+{
+  if (file_descriptor_ < 0) {
+    log_.log(hyped::core::LogLevel::kFatal, "Could not find i2c device while writing");
+    return I2cWriteResult::kFailure;
+  }
+  if (sensor_address_ != device_address) { setSensorAddress(device_address); }
+  const uint8_t write_buffer[1] = {data};
+  const auto num_bytes_written  = write(file_descriptor_, write_buffer, 1);
+  if (num_bytes_written != 1) {
     log_.log(hyped::core::LogLevel::kFatal, "Could not write to i2c device");
     return I2cWriteResult::kFailure;
   }

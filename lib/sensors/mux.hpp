@@ -13,7 +13,8 @@
 
 namespace hyped::sensors {
 
-enum class Mode { kWrite = 0, kRead };
+static constexpr uint8_t kDefaultMuxAddress = 0x70;
+
 enum class MuxOperationResult { kFailure = 0, kSuccess };
 
 template<class T, std::size_t size>
@@ -21,19 +22,19 @@ class Mux {
  public:
   Mux(hyped::io::I2c &i2c,
       const uint8_t mux_address,
-      const std::array<std::unique_ptr<II2cSensor<T>>, size> sensors,
+      const std::array<std::unique_ptr<II2cMuxSensor<T>>, size> sensors,
       hyped::core::ILogger &log);
   ~Mux();
 
-  MuxOperationResult selectMode(const Mode io_mode);
-  MuxOperationResult write(const uint8_t data);
-  std::optional<std::array<T, size>> readAll();
-  MuxOperationResult selectChannel(const uint8_t channel);
+  std::optional<std::array<T, size>> readAllChannels();
 
  private:
+  MuxOperationResult selectChannel(const uint8_t channel);
+  MuxOperationResult closeAllChannels();
   hyped::core::ILogger &log_;
   hyped::io::I2c i2c_;
-  const std::array<std::unique_ptr<II2cSensor<T>>, size> sensors_;
+  const uint8_t mux_address_;
+  const std::array<std::unique_ptr<II2cMuxSensor<T>>, size> sensors_;
 };
 
 }  // namespace hyped::sensors
