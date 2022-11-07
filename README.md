@@ -43,6 +43,7 @@ All the C++ code should follow the [Google C++ Style Guide](https://google.githu
 
 Further, we aim to maintain the following rules which are based on the [NASA's Ten Rules for Safety Critical Coding](https://pixelscommander.com/wp-content/uploads/2014/12/P10.pdf).
 
+```
   1. All loops must have a fixed upper-bound. It must be trivially possible for a checking tool to prove statically that a preset upper-bound on the number of iterations of a loop cannot be exceeded. If the loop-bound cannot be proven statically, the rule is considered violated.
   2. Do not use dynamic memory allocation after initialisation.
   3. No function should be longer than 60 lines of code.
@@ -52,3 +53,4 @@ Further, we aim to maintain the following rules which are based on the [NASA's T
   7. The use of the preprocessor must be limited to the inclusion of header files and  compile time arguments. (e.g. operating system and architecture)
   8. The use of pointers should be restricted. In particular, the keywords `new` and `delete`  shall never be used and raw pointers shall only be viable as an alternative to `std::optional<T&>`, which is ambiguous and therefore an illegal type.
   9. All code must be compiled, from the first day of development, with all compiler warnings enabled  at the compiler’s most pedantic setting. All code must compile with these setting without any warnings. All code must be checked daily with at least one, but preferably more than one, state-of-the-art static  source code analyzer and should pass the analyses with zero warnings.
+```
