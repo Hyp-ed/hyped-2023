@@ -55,14 +55,14 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
              path.c_str());
     return std::nullopt;
   }
-  auto io = debugger["io"].GetObject();
+  const auto io = debugger["io"].GetObject();
 
   if (!io.HasMember("adc")) {
     log_.log(hyped::core::LogLevel::kFatal,
              "Missing required field 'io.adc' in configuration file");
     return std::nullopt;
   }
-  auto adc = io["adc"].GetObject();
+  const auto adc = io["adc"].GetObject();
   if (!adc.HasMember("enabled")) {
     log_.log(hyped::core::LogLevel::kFatal,
              "Missing required field 'io.adc.enabled' in configuration file");
@@ -74,7 +74,7 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
                "Missing required field 'io.adc.pins' in configuration file");
       return std::nullopt;
     }
-    auto pins = adc["pins"].GetArray();
+    const auto pins = adc["pins"].GetArray();
     for (auto &pin : pins) {
       repl->addAdcCommands(pin.GetUint());
     }
@@ -85,7 +85,7 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
              "Missing required field 'io.i2c' in configuration file");
     return std::nullopt;
   }
-  auto i2c = io["i2c"].GetObject();
+  const auto i2c = io["i2c"].GetObject();
   if (!i2c.HasMember("enabled")) {
     log_.log(hyped::core::LogLevel::kFatal,
              "Missing required field 'io.i2c.enabled' in configuration file");
@@ -97,7 +97,7 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
                "Missing required field 'io.i2c.channels' in configuration file");
       return std::nullopt;
     }
-    auto channels = i2c["channels"].GetArray();
+    const auto channels = i2c["channels"].GetArray();
     for (auto &channel : channels) {
       repl->addI2cCommands(channel.GetUint());
     }
@@ -145,20 +145,18 @@ void Repl::addHelpCommand()
 void Repl::addAdcCommands(const uint8_t pin)
 {
   const auto adc = std::make_shared<hyped::io::Adc>(pin, log_);
-  {
-    Command adc_read_command;
-    std::stringstream identifier;
-    identifier << "adc " << static_cast<int>(pin) << " read";
-    adc_read_command.name = identifier.str();
-    std::stringstream description;
-    description << "Read from ADC pin " << static_cast<int>(pin);
-    adc_read_command.description = description.str();
-    adc_read_command.handler     = [this, adc]() {
-      const auto value = adc->readValue();
-      if (value) { log_.log(hyped::core::LogLevel::kInfo, "ADC value: %d", *value); }
-    };
-    addCommand(adc_read_command);
-  }
+  Command adc_read_command;
+  std::stringstream identifier;
+  identifier << "adc " << static_cast<int>(pin) << " read";
+  adc_read_command.name = identifier.str();
+  std::stringstream description;
+  description << "Read from ADC pin " << static_cast<int>(pin);
+  adc_read_command.description = description.str();
+  adc_read_command.handler     = [this, adc]() {
+    const auto value = adc->readValue();
+    if (value) { log_.log(hyped::core::LogLevel::kInfo, "ADC value: %d", *value); }
+  };
+  addCommand(adc_read_command);
 }
 
 void Repl::addI2cCommands(const uint8_t channel)
