@@ -15,7 +15,8 @@ class I2c {
   I2c(const std::uint8_t bus_address, hyped::core::ILogger &log);
   ~I2c();
 
-  std::optional<std::uint8_t> readByte(const std::uint8_t device_address, const std::uint8_t register_address);
+  std::optional<std::uint8_t> readByte(const std::uint8_t device_address,
+                                       const std::uint8_t register_address);
   I2cWriteResult writeByte(const std::uint8_t device_address,
                            const std::uint8_t register_address,
                            const std::uint8_t data);
