@@ -12,30 +12,31 @@ enum class I2cWriteResult { kSuccess, kFailure };
 
 class I2c {
  public:
-  I2c(const uint8_t bus_address, hyped::core::ILogger &log);
+  I2c(const std::uint8_t bus_address, hyped::core::ILogger &log);
   ~I2c();
 
   /**
    * @brief      Reads a byte from some device on the I2C bus.
    */
-  std::optional<uint8_t> readByte(const uint8_t device_address, const uint8_t register_address);
+  std::optional<std::uint8_t> readByte(const std::uint8_t device_address,
+                                       const std::uint8_t register_address);
   /**
    * @brief      General function to write a byte to a register to some device on the I2C bus
    */
-  I2cWriteResult writeByteToRegister(const uint8_t device_address,
-                                     const uint8_t register_address,
-                                     const uint8_t data);
+  I2cWriteResult writeByteToRegister(const std::uint8_t device_address,
+                                     const std::uint8_t register_address,
+                                     const std::uint8_t data);
   /**
    * @brief      Writes a byte to single register devices such as the mux
    */
-  I2cWriteResult writeByte(const uint8_t device_address, uint8_t data);
+  I2cWriteResult writeByte(const std::uint8_t device_address, std::uint8_t data);
 
  private:
-  void setSensorAddress(uint8_t device_address);
+  void setSensorAddress(const std::uint8_t device_address);
 
  private:
   int file_descriptor_;
-  uint8_t sensor_address_;
+  std::uint8_t sensor_address_;
   hyped::core::ILogger &log_;
 };
 

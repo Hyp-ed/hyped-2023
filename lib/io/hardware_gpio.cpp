@@ -19,14 +19,14 @@ HardwareGpio::HardwareGpio(hyped::core::ILogger &log) : log_(log)
   // TODOLater: implement
 }
 
-std::optional<std::shared_ptr<IGpioReader>> HardwareGpio::getReader(const uint8_t pin)
+std::optional<std::shared_ptr<IGpioReader>> HardwareGpio::getReader(const std::uint8_t pin)
 {
   // TODOLater: implement
   log_.log(hyped::core::LogLevel::kFatal, "GPIO reader not implemented");
   return std::nullopt;
 }
 
-std::optional<std::shared_ptr<IGpioWriter>> HardwareGpio::getWriter(const uint8_t pin)
+std::optional<std::shared_ptr<IGpioWriter>> HardwareGpio::getWriter(const std::uint8_t pin)
 {
   // TODOLater: implement
   log_.log(hyped::core::LogLevel::kFatal, "GPIO writer not implemented");
