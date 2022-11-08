@@ -1,24 +1,29 @@
 #include <iostream>
 
+#include <core/logger.hpp>
 #include <core/timer.hpp>
 #include <core/types.hpp>
 #include <core/wall_clock.hpp>
-#include <io/gpio.hpp>
+#include <io/hardware_gpio.hpp>
 
 int main(int argc, char **argv)
 {
   hyped::core::WallClock time;
   hyped::core::Timer timer(time);
-  const auto execution_time = timer.measure_execution_time([]() {
-    hyped::io::Gpio gpio;
+  const auto execution_time = timer.measure_execution_time([time]() {
+    hyped::core::Logger logger("GPIO", hyped::core::LogLevel::kDebug, time);
+    hyped::io::HardwareGpio gpio(logger);
     auto gpio_reader_opt = gpio.getReader(0);
     if (!gpio_reader_opt) {
-      std::cout << "Error" << std::endl;
-    } else if (gpio_reader_opt->read() == hyped::core::DigitalSignal::kHigh) {
-      std::cout << "Pin is high" << std::endl;
-    } else {
-      std::cout << "Pin is low" << std::endl;
+      logger.log(hyped::core::LogLevel::kFatal, "Error");
+      return;
     }
+    auto gpio_reader = *gpio_reader_opt;
+    if (gpio_reader->read() == hyped::core::DigitalSignal::kHigh) {
+      logger.log(hyped::core::LogLevel::kInfo, "High");
+    } else {
+      logger.log(hyped::core::LogLevel::kInfo, "Low");
+    };
   });
   std::cout << "Ran for " << execution_time.count() << " ns" << std::endl;
 }
