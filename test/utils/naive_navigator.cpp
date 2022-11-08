@@ -18,8 +18,8 @@ void testWithTrajectory(utils::NaiveNavigator &naive_navigator,
   naive_navigator.keyenceUpdate(keyence_data);
 
   core::Float sum_imu = 0;
-  for (size_t i = 0; i < core::kNumImus; ++i) {
-    for (size_t j = 0; j < core::kNumAxis; ++j) {
+  for (std::size_t i = 0; i < core::kNumImus; ++i) {
+    for (std::size_t j = 0; j < core::kNumAxis; ++j) {
       sum_imu += imu_data.at(i).at(j);
     }
   }

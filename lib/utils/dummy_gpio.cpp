@@ -32,12 +32,12 @@ DummyGpio::DummyGpio(DummyGpioReader::ReadHandler read_handler,
 {
 }
 
-std::optional<std::shared_ptr<io::IGpioReader>> DummyGpio::getReader(const uint8_t pin)
+std::optional<std::shared_ptr<io::IGpioReader>> DummyGpio::getReader(const std::uint8_t pin)
 {
   return std::make_shared<DummyGpioReader>(DummyGpioReader(pin, read_handler_));
 }
 
-std::optional<std::shared_ptr<io::IGpioWriter>> DummyGpio::getWriter(const uint8_t pin)
+std::optional<std::shared_ptr<io::IGpioWriter>> DummyGpio::getWriter(const std::uint8_t pin)
 {
   return std::make_shared<DummyGpioWriter>(DummyGpioWriter(pin, write_handler_));
 }

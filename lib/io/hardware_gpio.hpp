@@ -20,7 +20,7 @@ class HardwareGpioWriter : public IGpioWriter {
   virtual GpioWriteResult write(const core::DigitalSignal state);
 
  private:
-  HardwareGpioWriter(const uint8_t pin);
+  HardwareGpioWriter(const std::uint8_t pin);
   friend class HardwareGpio;
 };
 
