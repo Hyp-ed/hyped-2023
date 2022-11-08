@@ -19,7 +19,7 @@ class II2cMuxSensor {
    */
   virtual I2cConfigureResult configure() = 0;
   virtual std::optional<T> read()        = 0;
-  virtual uint8_t getChannel()           = 0;
+  virtual std::uint8_t getChannel()      = 0;
   virtual ~II2cMuxSensor() {}
 };
 

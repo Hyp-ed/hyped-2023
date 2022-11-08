@@ -3,7 +3,7 @@
 namespace hyped::sensors {
 template<typename T, std::size_t size>
 Mux<T, size>::Mux(hyped::io::I2c &i2c,
-                  const uint8_t mux_address,
+                  const std::uint8_t mux_address,
                   const std::array<std::unique_ptr<II2cMuxSensor<T>>, size> sensors,
                   hyped::core::ILogger &log)
     : log_(log),
@@ -18,9 +18,9 @@ Mux<T, size>::~Mux()
 }
 
 template<typename T, std::size_t size>
-MuxOperationResult Mux<T, size>::selectChannel(const uint8_t channel)
+MuxOperationResult Mux<T, size>::selectChannel(const std::uint8_t channel)
 {
-  const uint8_t channel_buffer                     = 1 << channel;
+  const std::uint8_t channel_buffer                = 1 << channel;
   const hyped::io::I2cWriteResult i2c_write_result = i2c_.writeByte(mux_address_, channel_buffer);
   if (i2c_write_result == hyped::io::I2cWriteResult::kSuccess) {
     log_.log(hyped::core::LogLevel::kInfo, "Mux : Channel %d selected", channel);
@@ -34,7 +34,7 @@ MuxOperationResult Mux<T, size>::selectChannel(const uint8_t channel)
 template<typename T, std::size_t size>
 MuxOperationResult Mux<T, size>::closeAllChannels()
 {
-  const uint8_t clear_channel_buffer = 0x00;
+  const std::uint8_t clear_channel_buffer = 0x00;
   const hyped::io::I2cWriteResult i2c_write_result
     = i2c_.writeByte(mux_address_, clear_channel_buffer);
   if (i2c_write_result == hyped::io::I2cWriteResult::kSuccess) {
@@ -51,8 +51,8 @@ std::optional<std::array<T, size>> Mux<T, size>::readAllChannels()
 {
   std::array<T, size> mux_data;
   for (size_t i = 0; i < size; ++i) {
-    const auto sensor     = sensors_[i];
-    const uint8_t channel = sensor->getChannel();
+    const auto sensor          = sensors_[i];
+    const std::uint8_t channel = sensor->getChannel();
     // First ensure correct channel is selected
     const MuxOperationResult channel_select_result = selectChannel(channel);
     if (channel_select_result == MuxOperationResult::kFailure) {
