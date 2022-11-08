@@ -1,13 +1,22 @@
 #include "controller.hpp"
+#include <vector>
 
 namespace hyped::motorcontrollers {
+
+  
+
 Controller::Controller(core::ILogger &logger) : logger_(logger))
 {
   //TODO: Implement Enum for warning codes
   // Implement function to iterate through warning codes given a warning bit selection
   // and output a vector of enums
+  enum warnings {ControllerTemperatureExceeded, MotorTemperatureExceeded, DCLinkUnderVoltage, 
+                  DCLinkOverVoltage, DCLinkOverCurrent, StallProtectionActive, 
+                  MaxVelocityExceeded, BMSProposedPower, CapacitorTemperatureExceeded, 
+                  I2TProtection, FieldWeakeningActive};
+                  
+  void processErrorMessage(const uint16_t error_code){
 
-  void processErrorMessage(const uint16_t error_code) {
     switch (error_code) 
     {
       case 0xFF01:
@@ -65,5 +74,57 @@ Controller::Controller(core::ILogger &logger) : logger_(logger))
         logger_.log("GENERIC_ERROR: Unspecific error occurred");
         break;
     }
-  }
+
+  std::vector<warnings> processWarningMessage(const uint8_t warning_code){
+
+    std::vector<warnings> flagged_warnings;
+
+    //Flag specific warnings in binary
+    if ((warning_code & 0b0000'0001) == 0b0000'0001){
+      flagged_warnings.push_back(warnings(0));
+    }
+    if ((warning_code & 0b0000'0000'0010) == 0b0000'0000'0010)
+    {
+      flagged_warnings.push_back(warnings(1));
+    }
+    if ((warning_code & 0b0000'0000'0100) == 0b0000'0000'0100)
+    {
+      flagged_warnings.push_back(warnings(2));
+    }
+    if ((warning_code & 0b0000'0000'1000) == 0b0000'0000'1000)
+    {
+      flagged_warnings.push_back(warnings(3));
+    }
+    if ((warning_code & 0b0000'0001'0000) == 0b0000'0001'0000)
+    {
+      flagged_warnings.push_back(warnings(4));
+    }
+    if ((warning_code & 0b0000'0010'0000) == 0b0000'0010'0000)
+    {
+      flagged_warnings.push_back(warnings(5));
+    }
+    if ((warning_code & 0b0000'0100'0000) == 0b0000'0100'0000)
+    {
+      flagged_warnings.push_back(warnings(6));
+    }
+    if ((warning_code & 0b0000'1000'0000) == 0b0000'1000'0000)
+    {
+      flagged_warnings.push_back(warnings(7));
+    }
+    if ((warning_code & 0b0001'0000'0000) == 0b0001'0000'0000)
+    {
+      flagged_warnings.push_back(warnings(8));
+    }
+    if ((warning_code & 0b0010'0000'0000) == 0b0010'0000'0000)
+    {
+      flagged_warnings.push_back(warnings(9));
+    }
+    if ((warning_code & 0b0100'0000'0000) == 0b0100'0000'0000)
+    {
+      flagged_warnings.push_back(warnings(10));
+    }
+
+    return flagged_warnings;
+  }
 }  // namespace hyped::motorcontrollers
+
