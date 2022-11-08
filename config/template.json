@@ -2,19 +2,12 @@
 	"debugger": {
 		"io": {
 			"adc": {
-				"enabled": true,
-				"pins": [
-					32,
-					43,
-					44
-				]
+				"enabled": false,
+				"pins": []
 			},
 			"i2c": {
 				"enabled": true,
-				"channels": [
-					0,
-					1
-				]
+				"buses": []
 			}
 		}
 	}

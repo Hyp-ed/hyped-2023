@@ -33,7 +33,7 @@ class Repl {
   void addQuitCommand();
   void addHelpCommand();
   void addAdcCommands(const uint8_t pin);
-  void addI2cCommands(const uint8_t channel);
+  void addI2cCommands(const uint8_t bus);
 
   hyped::core::ILogger &log_;
   std::map<std::string, Command> command_map_;

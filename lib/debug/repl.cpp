@@ -11,8 +11,6 @@
 namespace hyped::debug {
 Repl::Repl(hyped::core::ILogger &log) : log_(log)
 {
-  addQuitCommand();
-  addHelpCommand();
 }
 
 void Repl::run()
@@ -48,6 +46,8 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
   }
   const auto debugger = document["debugger"].GetObject();
   auto repl           = std::make_unique<Repl>(log_);
+  repl->addHelpCommand();
+  repl->addQuitCommand();
 
   if (!debugger.HasMember("io")) {
     log_.log(hyped::core::LogLevel::kFatal,
@@ -92,14 +92,14 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
     return std::nullopt;
   }
   if (i2c["enabled"].GetBool()) {
-    if (!i2c.HasMember("channels")) {
+    if (!i2c.HasMember("buses")) {
       log_.log(hyped::core::LogLevel::kFatal,
-               "Missing required field 'io.i2c.channels' in configuration file");
+               "Missing required field 'io.i2c.buses' in configuration file");
       return std::nullopt;
     }
-    const auto channels = i2c["channels"].GetArray();
-    for (auto &channel : channels) {
-      repl->addI2cCommands(channel.GetUint());
+    const auto buses = i2c["buses"].GetArray();
+    for (auto &bus : buses) {
+      repl->addI2cCommands(bus.GetUint());
     }
   }
   return repl;
@@ -159,16 +159,16 @@ void Repl::addAdcCommands(const uint8_t pin)
   addCommand(adc_read_command);
 }
 
-void Repl::addI2cCommands(const uint8_t channel)
+void Repl::addI2cCommands(const uint8_t bus)
 {
-  const auto i2c = std::make_shared<hyped::io::I2c>(channel, log_);
+  const auto i2c = std::make_shared<hyped::io::I2c>(bus, log_);
   {
     Command i2c_read_command;
     std::stringstream identifier;
-    identifier << "i2c " << static_cast<int>(channel) << " read";
+    identifier << "i2c " << static_cast<int>(bus) << " read";
     i2c_read_command.name = identifier.str();
     std::stringstream description;
-    description << "Read from I2C channel " << static_cast<int>(channel);
+    description << "Read from I2C bus " << static_cast<int>(bus);
     i2c_read_command.description = description.str();
     i2c_read_command.handler     = [this, i2c]() {
       uint8_t device_address, register_address;
@@ -185,10 +185,10 @@ void Repl::addI2cCommands(const uint8_t channel)
   {
     Command i2c_write_command;
     std::stringstream identifier;
-    identifier << "i2c " << static_cast<int>(channel) << " write";
+    identifier << "i2c " << static_cast<int>(bus) << " write";
     i2c_write_command.name = identifier.str();
     std::stringstream description;
-    description << "Write to I2C channel " << static_cast<int>(channel);
+    description << "Write to I2C bus " << static_cast<int>(bus);
     i2c_write_command.description = description.str();
     i2c_write_command.handler     = [this, i2c]() {
       uint32_t device_address, register_address, data;
