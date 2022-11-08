@@ -94,7 +94,7 @@ I2cWriteResult I2c::writeByte(const std::uint8_t device_address, const std::uint
   }
   if (sensor_address_ != device_address) { setSensorAddress(device_address); }
   const std::uint8_t write_buffer[1] = {data};
-  const auto num_bytes_written  = write(file_descriptor_, write_buffer, 1);
+  const auto num_bytes_written       = write(file_descriptor_, write_buffer, 1);
   if (num_bytes_written != 1) {
     log_.log(hyped::core::LogLevel::kFatal, "Could not write to i2c device");
     return I2cWriteResult::kFailure;
