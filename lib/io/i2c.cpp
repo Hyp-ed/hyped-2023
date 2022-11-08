@@ -86,7 +86,7 @@ I2cWriteResult I2c::writeByteToRegister(const std::uint8_t device_address,
   return I2cWriteResult::kSuccess;
 }
 
-I2cWriteResult I2c::writeByte(const uint8_t device_address, const uint8_t data)
+I2cWriteResult I2c::writeByte(const std::uint8_t device_address, const std::uint8_t data)
 {
   if (file_descriptor_ < 0) {
     log_.log(hyped::core::LogLevel::kFatal, "Could not find i2c device while writing");
