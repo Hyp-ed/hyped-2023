@@ -210,7 +210,10 @@ void Repl::addI2cCommands(const std::uint8_t bus)
       const hyped::io::I2cWriteResult result
         = i2c->writeByte(device_address, register_address, data);
       if (result == hyped::io::I2cWriteResult::kSuccess) {
-        log_.log(hyped::core::LogLevel::kInfo, "I2C write successful to device %d on %d", device_address, bus);
+        log_.log(hyped::core::LogLevel::kInfo,
+                 "I2C write successful to device %d on %d",
+                 device_address,
+                 bus);
       } else {
         log_.log(hyped::core::LogLevel::kFatal, "Failed to write to I2C bus: %d", bus);
       }
