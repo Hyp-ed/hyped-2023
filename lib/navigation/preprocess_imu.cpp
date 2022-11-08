@@ -39,10 +39,10 @@ namespace hyped::navigation
     */
     core::ImuData clean_accelerometer_data;
     core::Float magnitude;
-    for (size_t i = 0; i < core::kNumImus; ++i)
+    for (std::size_t i = 0; i < core::kNumImus; ++i)
     {
       magnitude = 0;
-      for (size_t j = 0; j < 3; ++j)
+      for (std::size_t j = 0; j < 3; ++j)
       {
         magnitude += std::pow(imu_data.at(i).at(j), 2);
       }
@@ -51,15 +51,17 @@ namespace hyped::navigation
     const uint8_t num_reliable_accelerometers = std::accumulate(are_imus_reliable_.begin(), are_imus_reliable_.end(), 0);
     if (num_reliable_accelerometers == 4)
     { 
-      core::ImuData clean_accelerometer_data_copy = std::copy(clean_accelerometer_data);
+      core::ImuData clean_accelerometer_data_copy = std::copy(clean_accelerometer_data.begin(), clean_accelerometer_data.end());
       std::sort(clean_accelerometer_data_copy.begin(), clean_accelerometer_data_copy.end());
       const core::Float q1 = (clean_accelerometer_data_copy.at(0) + clean_accelerometer_data_copy.at(1)) / 2.0;
       const core::Float median = (clean_accelerometer_data_copy.at(1) + clean_accelerometer_data_copy.at(2)) / 2.0;
       const core::Float q3 = (clean_accelerometer_data_copy.at(2) + clean_accelerometer_data_copy.at(3)) / 2.0;
       const core::Float iqr = q3 - q1;
+      const core::Float upper_bound = q3 + 1.5*iqr;
+      const core::Float lower_bound = q1 - 1.5*iqr;
 
-      for (int i = 0; i < core::kNumImus; ++i) {
-        if (clean_accelerometer_data.at(i) > q3 + 1.5*iqr || clean_accelerometer_data.at(i) < q1 - 1.5*iqr) {
+      for (std::size_t i = 0; i < core::kNumImus; ++i) {
+        if (clean_accelerometer_data.at(i) > upper_bound || clean_accelerometer_data.at(i) < lower_bound) {
             clean_accelerometer_data.at(i) = median;
             num_outliers_per_imu_.at(i) += 1;
         } else {
@@ -67,8 +69,8 @@ namespace hyped::navigation
         }
       }
     } else if (num_reliable_accelerometers == 3) {
-      core::ImuData clean_accelerometer_data_copy = std::copy(clean_accelerometer_data);
-      for (int i = 0; i < core::kNumImus; ++i) {
+      core::ImuData clean_accelerometer_data_copy = std::copy(clean_accelerometer_data.begin(), clean_accelerometer_data.end());
+      for (std::size_t i = 0; i < core::kNumImus; ++i) {
         if (are_imus_reliable_.at(i) == false) {
           clean_accelerometer_data_copy.at(i) = -1;
         }
@@ -78,12 +80,14 @@ namespace hyped::navigation
       const core::Float median = clean_accelerator_data_copy.at(2);
       const core::Float q3 = (clean_accelerometer_data_copy.at(2) + clean_accelerometer_data_copy.at(3)) / 2.0;
       const core::Float iqr = q3 - q1;
-      
-      for (int i = 0; i < core::kNumImus; ++i) {
+      const core::Float upper_bound = q3 + 1.5*iqr;
+      const core::Float lower_bound = q1 - 1.5*iqr;
+
+      for (std::size_t i = 0; i < core::kNumImus; ++i) {
         if (are_imus_reliable_.at(i) == false) {
           clean_accelerometer_data.at(i) = median;
         } else {
-          if (clean_accelerometer_data.at(i) > q3 + 1.5*iqr || clean_accelerometer_data.at(i) < q1 - 1.5*iqr) {
+          if (clean_accelerometer_data.at(i) > upper_bound || clean_accelerometer_data.at(i) < lower_bound) {
             clean_accelerometer_data.at(i) = median;
             num_outliers_per_imu_.at(i) += 1;
           } else {
