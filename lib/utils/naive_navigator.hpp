@@ -1,17 +1,20 @@
 #pragma once
 
+#include "core/types.hpp"
 #include <navigation/navigator.hpp>
 
 namespace hyped::utils {
 
-class NaiveNavigator : public navigation::INavigator<navigation::Trajectory> {
+class NaiveNavigator : public navigation::INavigator {
  public:
   NaiveNavigator();
-  virtual navigation::Trajectory currentTrajectory();
-  virtual void update(const navigation::Trajectory &current_trajectory);
+  virtual std::optional<core::Trajectory> currentTrajectory();
+  virtual void keyenceUpdate(const core::KeyenceData &keyence_data);
+  virtual void encoderUpdate(const core::EncoderData &encoder_data);
+  virtual void imuUpdate(const core::RawImuData &imu_data);
 
  private:
-  navigation::Trajectory current_trajectory_;
+  core::Trajectory current_trajectory_;
 };
 
 }  // namespace hyped::utils
