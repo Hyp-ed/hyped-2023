@@ -142,7 +142,7 @@ void Repl::addHelpCommand()
   addCommand(Command{"help", "Print this help message", [this]() { printCommands(); }});
 }
 
-void Repl::addAdcCommands(const uint8_t pin)
+void Repl::addAdcCommands(const std::uint8_t pin)
 {
   const auto adc = std::make_shared<hyped::io::Adc>(pin, log_);
   Command adc_read_command;
@@ -159,7 +159,7 @@ void Repl::addAdcCommands(const uint8_t pin)
   addCommand(adc_read_command);
 }
 
-void Repl::addI2cCommands(const uint8_t bus)
+void Repl::addI2cCommands(const std::uint8_t bus)
 {
   const auto i2c = std::make_shared<hyped::io::I2c>(bus, log_);
   {
@@ -171,7 +171,7 @@ void Repl::addI2cCommands(const uint8_t bus)
     description << "Read from I2C bus " << static_cast<int>(bus);
     i2c_read_command.description = description.str();
     i2c_read_command.handler     = [this, i2c]() {
-      uint8_t device_address, register_address;
+      std::uint8_t device_address, register_address;
       std::cout << "Device address: ";
       std::cin >> device_address;
       std::cout << "Register address: ";
@@ -191,7 +191,7 @@ void Repl::addI2cCommands(const uint8_t bus)
     description << "Write to I2C bus " << static_cast<int>(bus);
     i2c_write_command.description = description.str();
     i2c_write_command.handler     = [this, i2c]() {
-      uint32_t device_address, register_address, data;
+      std::uint32_t device_address, register_address, data;
       std::cout << "Device address: ";
       std::cin >> std::hex >> device_address;
       std::cout << "Register address: ";

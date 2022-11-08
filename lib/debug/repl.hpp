@@ -28,12 +28,10 @@ class Repl {
   void handleCommand();
   void addCommand(const Command &cmd);
 
-  // std::optional<Repl> parseIO(rapidjson::Value::Object &io_object, Repl *repl);
-
   void addQuitCommand();
   void addHelpCommand();
-  void addAdcCommands(const uint8_t pin);
-  void addI2cCommands(const uint8_t bus);
+  void addAdcCommands(const std::uint8_t pin);
+  void addI2cCommands(const std::uint8_t bus);
 
   hyped::core::ILogger &log_;
   std::map<std::string, Command> command_map_;
