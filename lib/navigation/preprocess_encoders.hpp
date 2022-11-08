@@ -16,7 +16,7 @@ class EncodersPreprocessor {
   void checkReliable(const core::EncoderData &encoder_data);
 
   // initialised as {0, 0, 0, 0}, count of consecutive outliers
-  std::array<uint16_t, core::kNumEncoders> num_outliers_per_encoder_;
+  std::array<std::uint16_t, core::kNumEncoders> num_outliers_per_encoder_;
 
   // initialised as all true, bool mask of reliable sensors
   std::array<bool, core::kNumEncoders> are_encoders_reliable_;

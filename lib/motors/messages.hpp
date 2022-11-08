@@ -5,7 +5,7 @@
 
 namespace hyped::motors {
 
-using ControllerMessage = std::array<uint8_t, 8>;
+using ControllerMessage = std::array<std::uint8_t, 8>;
 
 // TODOLater add needed messages in below format
 static constexpr ControllerMessage kExampleMessage
