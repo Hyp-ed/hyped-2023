@@ -7,7 +7,7 @@
 			},
 			"i2c": {
 				"enabled": true,
-				"buses": []
+				"buses": [12]
 			}
 		}
 	}

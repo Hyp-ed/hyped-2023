@@ -152,9 +152,13 @@ void Repl::addAdcCommands(const std::uint8_t pin)
   std::stringstream description;
   description << "Read from ADC pin " << static_cast<int>(pin);
   adc_read_command.description = description.str();
-  adc_read_command.handler     = [this, adc]() {
+  adc_read_command.handler     = [this, adc, pin]() {
     const auto value = adc->readValue();
-    if (value) { log_.log(hyped::core::LogLevel::kInfo, "ADC value: %d", *value); }
+    if (value) {
+      log_.log(hyped::core::LogLevel::kInfo, "ADC value from pin %d: %d", pin, *value);
+    } else {
+      log_.log(hyped::core::LogLevel::kFatal, "Failed to read from ADC pin %d", pin);
+    }
   };
   addCommand(adc_read_command);
 }
@@ -170,7 +174,7 @@ void Repl::addI2cCommands(const std::uint8_t bus)
     std::stringstream description;
     description << "Read from I2C bus " << static_cast<int>(bus);
     i2c_read_command.description = description.str();
-    i2c_read_command.handler     = [this, i2c]() {
+    i2c_read_command.handler     = [this, i2c, bus]() {
       std::uint8_t device_address, register_address;
       std::cout << "Device address: ";
       std::cin >> device_address;
@@ -178,7 +182,11 @@ void Repl::addI2cCommands(const std::uint8_t bus)
       std::cin >> register_address;
       std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
       const auto value = i2c->readByte(device_address, register_address);
-      if (value) { log_.log(hyped::core::LogLevel::kInfo, "I2C value: %d", *value); }
+      if (value) {
+        log_.log(hyped::core::LogLevel::kInfo, "I2C value from bus %d: %d", bus, *value);
+      } else {
+        log_.log(hyped::core::LogLevel::kFatal, "Failed to read from I2C bus %d", bus);
+      }
     };
     addCommand(i2c_read_command);
   }
@@ -190,7 +198,7 @@ void Repl::addI2cCommands(const std::uint8_t bus)
     std::stringstream description;
     description << "Write to I2C bus " << static_cast<int>(bus);
     i2c_write_command.description = description.str();
-    i2c_write_command.handler     = [this, i2c]() {
+    i2c_write_command.handler     = [this, i2c, bus]() {
       std::uint32_t device_address, register_address, data;
       std::cout << "Device address: ";
       std::cin >> std::hex >> device_address;
@@ -202,7 +210,9 @@ void Repl::addI2cCommands(const std::uint8_t bus)
       const hyped::io::I2cWriteResult result
         = i2c->writeByte(device_address, register_address, data);
       if (result == hyped::io::I2cWriteResult::kSuccess) {
-        log_.log(hyped::core::LogLevel::kInfo, "I2C value %d written succesfully", data);
+        log_.log(hyped::core::LogLevel::kInfo, "I2C write successful to device %d on %d", device_address, bus);
+      } else {
+        log_.log(hyped::core::LogLevel::kFatal, "Failed to write to I2C bus: %d", bus);
       }
     };
     addCommand(i2c_write_command);
