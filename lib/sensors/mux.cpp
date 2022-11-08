@@ -50,7 +50,7 @@ template<typename T, std::size_t size>
 std::optional<std::array<T, size>> Mux<T, size>::readAllChannels()
 {
   std::array<T, size> mux_data;
-  for (size_t i = 0; i < size; ++i) {
+  for (std::size_t i = 0; i < size; ++i) {
     const auto sensor          = sensors_[i];
     const std::uint8_t channel = sensor->getChannel();
     // First ensure correct channel is selected
