@@ -60,7 +60,7 @@ std::optional<std::array<T, size>> Mux<T, size>::readAllChannels()
       return std::nullopt;
     }
     // Next ensure sensor is configured for operation
-    const I2cConfigureResult configure_result = sensor->configure();
+    const auto configure_result = sensor->configure();
     if (configure_result == I2cConfigureResult::kFailure) {
       log_.log(
         hyped::core::LogLevel::kFatal, "Mux : Failed to configure sensor at channel %d", channel);
@@ -74,7 +74,11 @@ std::optional<std::array<T, size>> Mux<T, size>::readAllChannels()
       log_.log(hyped::core::LogLevel::kFatal, "Mux : Failed to get data from channel %d", channel);
       return std::nullopt;
     }
-    closeAllChannels();
+    const MuxOperationResult closing_channel_result = closeAllChannels();
+    if (closing_channel_result == MuxOperationResult::kFailure) {
+      log_.log(hyped::core::LogLevel::kFatal, "Mux : Failed to close all channels while reading");
+      return std::nullopt;
+    }
   }
   return mux_data;
 }
