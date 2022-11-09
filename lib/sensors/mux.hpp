@@ -3,12 +3,8 @@
 #include "i2c_sensors.hpp"
 
 #include <array>
-#include <cstdint>
-#include <cstdio>
 #include <memory>
-#include <optional>
 
-#include <core/logger.hpp>
 #include <io/i2c.hpp>
 
 namespace hyped::sensors {
