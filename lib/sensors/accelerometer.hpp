@@ -11,13 +11,21 @@
 
 namespace hyped::sensors {
 
+
+struct g_result {
+  float x;
+  float y;
+  float z;
+  std::chrono::time_point<std::chrono::system_clock> time;
+};
+
 class Accelerometer : II2cSensor<float> {
  public:
   Accelerometer(const std::uint8_t mux_address, io::I2c &i2c, hyped::core::ILogger &log);
   ~Accelerometer();
 
   bool configure();
-  std::optional<float> read();
+  std::optional<g_result> read();
 
  private:
   hyped::core::ILogger &log_;

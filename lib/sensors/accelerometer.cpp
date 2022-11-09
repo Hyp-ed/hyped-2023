@@ -49,7 +49,7 @@ std::optional<std::int16_t> getRawAccelerationZ()
   return rawX;
 }
 
-std::optional<float> Accelerometer::read()
+std::optional<g_result> Accelerometer::read()
 {
   /* check to see if the values are ready to be read*/
   std::optional<std::uint8_t> result = i2c_.readByte(ADDR, 0x27);
@@ -57,6 +57,8 @@ std::optional<float> Accelerometer::read()
   // todoLater: probably have to differentiate between the two tests. The reading failing completely
   // might need to retry configuring the sensor
   if (!result.hasValue() || result.value() == 0x00) { return std::nullopt; }
+
+  std::optional<g_result> result;
 
   std::optional<std::int16_t> resultX = getRawAccelerationX();
   if (!resultX.hasValue()) return std::nullopt;
@@ -66,7 +68,7 @@ std::optional<float> Accelerometer::read()
   XAcceleration       = XAcceleration / 1000; /* mg to g */
   XAcceleration = XAcceleration * 1.952;      /* Multiply with sensitivity 1.952 in high performance
                                                  mode, 14bit, and full scale +-16g */
-  printf("Acceleration X-axis %f g \r\n ", XAcceleration);
+  result.x = XAcceleration;
 
   std::optional<std::int16_t> resultY = getRawAccelerationY();
   if (!resultY.hasValue()) return std::nullopt;
@@ -74,7 +76,7 @@ std::optional<float> Accelerometer::read()
   float YAcceleration  = (float)(YRawAcc);
   YAcceleration        = YAcceleration / 1000;
   YAcceleration        = (YAcceleration * 1.952);
-  printf("Acceleration Y-axis %f g \r\n ", YAcceleration);
+  result.y = YAcceleration;
 
   std::optional<std::int16_t> resultZ = getRawAccelerationZ();
   if (!resultZ.hasValue()) return std::nullopt;
@@ -82,9 +84,11 @@ std::optional<float> Accelerometer::read()
   float ZAcceleration  = (float)(ZRawAcc);
   ZAcceleration        = ZAcceleration / 1000;
   ZAcceleration        = ZAcceleration * 1.952;
-  printf("Acceleration Z-axis %f g \r\n ", ZAcceleration);
+  result.z = ZAcceleration;
 
-  // todo: return the three values and the timestamp, ask navigation about this.
+  result.time = std::chrono::high_resolution_clock::now();
+  
+  return retult;
 }
 
 bool Accelerometer::configure()
