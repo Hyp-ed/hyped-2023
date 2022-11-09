@@ -69,8 +69,8 @@ std::optional<std::uint8_t> I2c::readByte(const std::uint8_t device_address,
 }
 
 hyped::core::Result I2c::writeByte(const std::uint8_t device_address,
-                              const std::uint8_t register_address,
-                              const std::uint8_t data)
+                                   const std::uint8_t register_address,
+                                   const std::uint8_t data)
 {
   if (file_descriptor_ < 0) {
     log_.log(hyped::core::LogLevel::kFatal, "Could not find i2c device while writing");
