@@ -2,14 +2,13 @@
 
 namespace hyped::sensors {
 
-    Accelerometer::Accelerometer(io::I2c &i2c, core::ILogger &log)
-        : log_(log), i2c_(i2c)
-    {
-    }
+Accelerometer::Accelerometer(io::I2c &i2c, core::ILogger &log) : log_(log), i2c_(i2c)
+{
+}
 
-    Accelerometer::~Accelerometer()
-    {
-    }
+Accelerometer::~Accelerometer()
+{
+}
 
     std::optional<float> Accelerometer::read() 
     {
@@ -52,4 +51,4 @@ namespace hyped::sensors {
         return true; 
     }
 
-} // namespace hyped::sensors
+}  // namespace hyped::sensors
