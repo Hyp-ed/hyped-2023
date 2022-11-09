@@ -24,7 +24,7 @@ SensorChecks KeyencePreprocessor::checkKeyenceAgrees(const core::KeyenceData &ke
    kAcceptable.
   */
   bool keyence_data_disagrees = false;
-  for (size_t i = 0; i < keyence_data.size() - 1; i++){
+  for (size_t i = 0; i < keyence_data.size() - 1; ++i){
     if (keyence_data.at(i) != keyence_data.at(i+1)){
       keyence_data_disagrees = true;
     }
