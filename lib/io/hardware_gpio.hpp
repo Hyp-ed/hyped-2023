@@ -17,10 +17,10 @@ class HardwareGpioReader : public IGpioReader {
 
 class HardwareGpioWriter : public IGpioWriter {
  public:
-  virtual GpioWriteResult write(const core::DigitalSignal state);
+  virtual hyped::core::Result write(const core::DigitalSignal state);
 
  private:
-  HardwareGpioWriter(const uint8_t pin);
+  HardwareGpioWriter(const std::uint8_t pin);
   friend class HardwareGpio;
 };
 

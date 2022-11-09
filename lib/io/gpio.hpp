@@ -18,15 +18,13 @@ class IGpioReader {
   virtual std::optional<core::DigitalSignal> read() = 0;
 };
 
-enum class GpioWriteResult { kSuccess = 0, kFailure };
-
 /**
  * An abstract interface to write to a GPIO pin. This is to be used whenever write access
  * to GPIO is required.
  */
 class IGpioWriter {
  public:
-  virtual GpioWriteResult write(const core::DigitalSignal state) = 0;
+  virtual hyped::core::Result write(const core::DigitalSignal state) = 0;
 };
 
 /**
