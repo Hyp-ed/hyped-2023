@@ -4,9 +4,9 @@
 #include <cstdio>
 #include <optional>
 
-namespace hyped::sensors {
+#include <core/types.hpp>
 
-enum class I2cConfigureResult { kFailure = 0, kSuccess };
+namespace hyped::sensors {
 
 /**
  * If a sensor is to be used with an I2C mux, it must inherit from this abstract class.
@@ -17,9 +17,9 @@ class II2cMuxSensor {
   /*
    * This function carries out the initilization steps for a particular sensor.
    */
-  virtual I2cConfigureResult configure() = 0;
-  virtual std::optional<T> read()        = 0;
-  virtual std::uint8_t getChannel()      = 0;
+  virtual hyped::core::Result configure() = 0;
+  virtual std::optional<T> read()         = 0;
+  virtual std::uint8_t getChannel()       = 0;
   virtual ~II2cMuxSensor() {}
 };
 

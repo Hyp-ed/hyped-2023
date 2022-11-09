@@ -5,10 +5,9 @@
 #include <optional>
 
 #include <core/logger.hpp>
+#include <core/types.hpp>
 
 namespace hyped::io {
-
-enum class I2cWriteResult { kSuccess, kFailure };
 
 class I2c {
  public:
@@ -23,13 +22,13 @@ class I2c {
   /**
    * @brief      General function to write a byte to a register to some device on the I2C bus
    */
-  I2cWriteResult writeByteToRegister(const std::uint8_t device_address,
-                                     const std::uint8_t register_address,
-                                     const std::uint8_t data);
+  hyped::core::Result writeByteToRegister(const std::uint8_t device_address,
+                                          const std::uint8_t register_address,
+                                          const std::uint8_t data);
   /**
    * @brief      Writes a byte to single register devices such as the mux
    */
-  I2cWriteResult writeByte(const std::uint8_t device_address, std::uint8_t data);
+  hyped::core::Result writeByte(const std::uint8_t device_address, std::uint8_t data);
 
  private:
   void setSensorAddress(const std::uint8_t device_address);

@@ -15,8 +15,6 @@ namespace hyped::sensors {
 
 static constexpr std::uint8_t kDefaultMuxAddress = 0x70;
 
-enum class MuxOperationResult { kFailure = 0, kSuccess };
-
 template<class T, std::size_t size>
 class Mux {
  public:
@@ -29,8 +27,8 @@ class Mux {
   std::optional<std::array<T, size>> readAllChannels();
 
  private:
-  MuxOperationResult selectChannel(const std::uint8_t channel);
-  MuxOperationResult closeAllChannels();
+  hyped::core::Result selectChannel(const std::uint8_t channel);
+  hyped::core::Result closeAllChannels();
   hyped::core::ILogger &log_;
   hyped::io::I2c i2c_;
   const std::uint8_t mux_address_;
