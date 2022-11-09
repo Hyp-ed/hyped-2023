@@ -13,7 +13,7 @@ SensorChecks KeyencePreprocessor::checkKeyenceAgrees(const core::KeyenceData &ke
   /*
    TODOLater: implement:
    roughly:
-    if 
+    if
    - if keyence data disagrees and does_keyence_agree_ is false, fail state, return kUnacceptable
 
    - if keyence data disagrees and does_keyence_agree_ is true, set does_keyence_agree_ false return
@@ -24,21 +24,16 @@ SensorChecks KeyencePreprocessor::checkKeyenceAgrees(const core::KeyenceData &ke
    kAcceptable.
   */
   bool keyence_data_disagrees = false;
-  for (size_t i = 0; i < keyence_data.size() - 1; ++i){
-    if (keyence_data.at(i) != keyence_data.at(i+1)){
-      keyence_data_disagrees = true;
-    }
+  for (size_t i = 0; i < keyence_data.size() - 1; ++i) {
+    if (keyence_data.at(i) != keyence_data.at(i + 1)) { keyence_data_disagrees = true; }
   }
-  if (keyence_data_disagrees && has_keyence_disagreed_){
+  if (keyence_data_disagrees && has_keyence_disagreed_) {
     logger_.log(hyped::core::LogLevel::kFatal, "Keyence disagreed more than once");
     return SensorChecks::kUnacceptable;
-  }
-  else if (keyence_data_disagrees && !(has_keyence_disagreed_)){
+  } else if (keyence_data_disagrees && !(has_keyence_disagreed_)) {
     has_keyence_disagreed_ = true;
-  }
-  else if (!(keyence_data_disagrees) && has_keyence_disagreed_){
+  } else if (!(keyence_data_disagrees) && has_keyence_disagreed_) {
     has_keyence_disagreed_ = false;
-
   }
   return SensorChecks::kAcceptable;
 }
