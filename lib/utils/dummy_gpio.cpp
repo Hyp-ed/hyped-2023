@@ -20,7 +20,7 @@ DummyGpioWriter::DummyGpioWriter(const std::uint8_t pin,
 {
 }
 
-io::GpioWriteResult DummyGpioWriter::write(const core::DigitalSignal state)
+hyped::core::Result DummyGpioWriter::write(const core::DigitalSignal state)
 {
   return write_handler_(pin_, state);
 }

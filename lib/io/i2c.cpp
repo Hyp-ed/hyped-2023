@@ -68,22 +68,22 @@ std::optional<std::uint8_t> I2c::readByte(const std::uint8_t device_address,
   return read_buffer[0];
 }
 
-I2cWriteResult I2c::writeByte(const std::uint8_t device_address,
+hyped::core::Result I2c::writeByte(const std::uint8_t device_address,
                               const std::uint8_t register_address,
                               const std::uint8_t data)
 {
   if (file_descriptor_ < 0) {
     log_.log(hyped::core::LogLevel::kFatal, "Could not find i2c device while writing");
-    return I2cWriteResult::kFailure;
+    return hyped::core::Result::kFailure;
   }
   if (sensor_address_ != device_address) { setSensorAddress(device_address); }
   const std::uint8_t write_buffer[2] = {register_address, data};
   const auto num_bytes_written       = write(file_descriptor_, write_buffer, 2);
   if (num_bytes_written != 2) {
     log_.log(hyped::core::LogLevel::kFatal, "Could not write to i2c device");
-    return I2cWriteResult::kFailure;
+    return hyped::core::Result::kFailure;
   }
-  return I2cWriteResult::kSuccess;
+  return hyped::core::Result::kSuccess;
 }
 
 }  // namespace hyped::io

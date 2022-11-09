@@ -8,7 +8,7 @@ std::optional<core::DigitalSignal> HardwareGpioReader::read()
   throw -1;
 }
 
-GpioWriteResult HardwareGpioWriter::write(const core::DigitalSignal state)
+hyped::core::Result HardwareGpioWriter::write(const core::DigitalSignal state)
 {
   // TODOLater: implement
   throw -1;
