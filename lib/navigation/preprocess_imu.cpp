@@ -130,7 +130,7 @@ namespace hyped::navigation
     -also figure out return type/ what we update and update
     documentation as appropriate
     */
-   uint8_t n = 100;
+   const uint8_t n = 100; // TODO : find good value of n
    uint8_t num_unreliable = 0;
    for (size_t i = 0; i < core::kNumImus; ++i){
       if (num_outliers_per_imu_.at(i) >= n) {
