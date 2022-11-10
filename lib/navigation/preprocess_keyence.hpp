@@ -13,7 +13,7 @@ class KeyencePreprocessor {
   /**
    * @brief Construct a new Keyence Preprocessor object
    */
-  KeyencePreprocessor(hyped::core::ILogger &logger);
+  KeyencePreprocessor(hyped::core::ILogger &log_);
 
   SensorChecks checkKeyenceAgrees(const core::KeyenceData &keyence_data);
 
