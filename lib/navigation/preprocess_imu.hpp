@@ -15,6 +15,8 @@ class ImuPreprocessor {
 
   void checkReliable(const core::ImuData &imu_data);
 
+  void getOutlierThresholds(const core::ImuData &imu_data);
+
   // initialised as {0, 0, 0, 0}, count of consecutive outliers
   std::array<uint16_t, core::kNumImus> num_outliers_per_imu_;
 
