@@ -11,12 +11,11 @@
 
 namespace hyped::sensors {
 
-const std::uint8_t CTRL          = 0x04;
-const std::uint8_t TEMPERATURE_1 = 0x38;
-const std::uint8_t TEMPERATURE_2 = 0x3f;
-const std::uint8_t TEMP_H        = 0x07;
-const std::uint8_t TEMP_L        = 0x06;
-const std::uint8_t STATUS        = 0x05;
+static constexpr std::uint8_t kMUX    = 0x70;
+static constexpr std::uint8_t kCTRL   = 0x04;
+static constexpr std::uint8_t kTEMP_H = 0x07;
+static constexpr std::uint8_t kTEMP_L = 0x06;
+static constexpr std::uint8_t kSTATUS = 0x05;
 
 class Temperature : public II2cSensor<std::uint16_t> {
  public:
