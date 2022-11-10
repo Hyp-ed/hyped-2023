@@ -5,12 +5,12 @@
 
 namespace hyped::io {
 
-Adc::Adc(const std::uint8_t pin, hyped::core::ILogger &logger) : pin_(pin), logger_(logger)
+Adc::Adc(const std::uint8_t pin, hyped::core::ILogger &log) : pin_(pin), log_(log)
 {
   char buf[100];
   snprintf(buf, sizeof(buf), "/sys/bus/iio/devices/iio:device0/in_voltage%i_raw", pin_);
   file_ = open(buf, O_RDONLY);
-  if (file_ < 0) { logger_.log(hyped::core::LogLevel::kFatal, "Unable to open ADC file"); }
+  if (file_ < 0) { log_.log(hyped::core::LogLevel::kFatal, "Unable to open ADC file"); }
 }
 
 Adc::~Adc()
@@ -22,7 +22,7 @@ std::optional<std::uint16_t> Adc::readValue()
 {
   const std::optional<std::uint16_t> raw_voltage = resetAndRead4(file_);
   if (raw_voltage) {
-    logger_.log(hyped::core::LogLevel::kDebug, "Raw voltage: %i", raw_voltage.value());
+    log_.log(hyped::core::LogLevel::kDebug, "Raw voltage: %i", raw_voltage.value());
     return *raw_voltage;
   }
   return std::nullopt;
@@ -32,7 +32,7 @@ std::optional<std::uint16_t> Adc::resetAndRead4(const int file_descriptor)
 {
   const auto offset = lseek(file_descriptor, 0, SEEK_SET);  // reset file pointer
   if (offset != 0) {
-    logger_.log(hyped::core::LogLevel::kFatal, "Failed to reset file offset");
+    log_.log(hyped::core::LogLevel::kFatal, "Failed to reset file offset");
     return std::nullopt;
   }
   char read_buffer[4];  // buffer size 4 for fs value
@@ -41,7 +41,7 @@ std::optional<std::uint16_t> Adc::resetAndRead4(const int file_descriptor)
            &read_buffer,
            sizeof(read_buffer));  // actually consume new data, changes value in buffer
   if (num_bytes_read != sizeof(read_buffer)) {
-    logger_.log(hyped::core::LogLevel::kFatal, "Failed to read 4 bytes");
+    log_.log(hyped::core::LogLevel::kFatal, "Failed to read 4 bytes");
 
     return std::nullopt;  // returning NULL since we did not get any value
   }
