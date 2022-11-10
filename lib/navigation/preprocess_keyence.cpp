@@ -28,7 +28,6 @@ SensorChecks KeyencePreprocessor::checkKeyenceAgrees(const core::KeyenceData &ke
   } else if (!(keyence_data_disagrees) && has_keyence_disagreed_) {
     has_keyence_disagreed_ = false;
 
-  } else {
     return SensorChecks::kAcceptable;
   }
 }

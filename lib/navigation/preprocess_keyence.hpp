@@ -7,6 +7,11 @@ namespace hyped::navigation {
 
 class KeyencePreprocessor {
  public:
+  /**
+   * @brief Construct a new Keyence Preprocessor object
+   *
+   * @param log_: Navigation logger
+   */
   KeyencePreprocessor(hyped::core::ILogger &log_);
 
   /**
@@ -16,7 +21,9 @@ class KeyencePreprocessor {
    * @return SensorChecks: enum indicating if Keyence Sensors have failed
    */
   SensorChecks checkKeyenceAgrees(const core::KeyenceData &keyence_data);
-
+  /**
+   *
+   */
  private:
   hyped::core::ILogger &log_;
   // Flag for if the previous keyence measurements disagreed.
