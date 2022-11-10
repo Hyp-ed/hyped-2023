@@ -15,7 +15,6 @@ class EncodersPreprocessor {
 
   void checkReliable(const core::EncoderData &encoder_data);
 
-  core::Float EncodersPreprocessor::calculating_median(const core::EncoderData encoder_data);
 
 
   // initialised as {0, 0, 0, 0}, count of consecutive outliers
@@ -23,7 +22,6 @@ class EncodersPreprocessor {
 
   // initialised as all true, bool mask of reliable sensors
   std::array<bool, core::kNumEncoders> are_encoders_reliable_;
-  ;
 };
 
 }  // namespace hyped::navigationcore::Float calculating_median(const core::EncoderData encoder_data)

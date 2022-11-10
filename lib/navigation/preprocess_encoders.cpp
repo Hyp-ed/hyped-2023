@@ -41,10 +41,10 @@ core::EncoderData EncodersPreprocessor::detectOutliers(const core::EncoderData e
  //core::EncoderData encoder_data_copy = std::copy(encoder_data.begin(), encoder_data.end(), std::back_inserter(encoder_data));
  //core::EncoderData encoder_data_copy = std::copy(encoder_data.begin(), encoder_data.end())
  core::EncoderData encoder_data_copy;
+ core::Float median = 0;
  for(int i = 0;i<core::kNumEncoders;i++){
   encoder_data_copy.at(i) = encoder_data.at(i);
  }
- core::Float median = calulate_value(encoder_data_copy);
  if(encoder_data.size() % 2 == 0){
     median =  ((encoder_data.at(encoder_data.size()/2) + encoder_data.at((encoder_data.size()/2) + 1))/2.0);
   }
@@ -52,13 +52,10 @@ core::EncoderData EncodersPreprocessor::detectOutliers(const core::EncoderData e
     median = encoder_data.at(encoder_data.size() + 1)/2.0;
   }
  core::Float q1 = encoder_data_copy.at(((encoder_data_copy.size() + 1)/4) -1);
- core::Float q3 = encoder_data_copy.at((3*(encoder_data_copy.size() + 1)/4) -1;
+ core::Float q3 = encoder_data_copy.at((3*(encoder_data_copy.size() + 1)/4) -1);
 
  return {0, 0, 0, 0};
 } 
-core::EncoderData EncodersPreprocessor::detectOutliers(const core::EncoderData encoder_data){
-
-}
 
 
 void EncodersPreprocessor::checkReliable(const core::EncoderData &encoder_data)
