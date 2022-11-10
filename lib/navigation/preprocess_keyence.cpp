@@ -12,7 +12,6 @@ KeyencePreprocessor::KeyencePreprocessor(hyped::core::ILogger &logger) : log_(lo
 
 SensorChecks KeyencePreprocessor::checkKeyenceAgrees(const core::KeyenceData &keyence_data)
 {
-  /***/
   bool keyence_data_disagrees = false;
   for (std::size_t i = 0; i < keyence_data.size() - 1; ++i) {
     if (keyence_data.at(i) != keyence_data.at(i + 1)) { keyence_data_disagrees = true; }
