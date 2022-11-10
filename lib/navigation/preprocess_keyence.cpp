@@ -28,7 +28,7 @@ SensorChecks KeyencePreprocessor::checkKeyenceAgrees(const core::KeyenceData &ke
     if (keyence_data.at(i) != keyence_data.at(i + 1)) { keyence_data_disagrees = true; }
   }
   if (keyence_data_disagrees && has_keyence_disagreed_) {
-    logger_.log(hyped::core::LogLevel::kFatal, "Keyence disagreed more than once");
+    log_.log(hyped::core::LogLevel::kFatal, "Keyence disagreed more than once");
     return SensorChecks::kUnacceptable;
   } else if (keyence_data_disagrees && !(has_keyence_disagreed_)) {
     has_keyence_disagreed_ = true;
