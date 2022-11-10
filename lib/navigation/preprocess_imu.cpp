@@ -130,6 +130,16 @@ namespace hyped::navigation
     -also figure out return type/ what we update and update
     documentation as appropriate
     */
+   uint8_t n = 100;
+   uint8_t num_unreliable = 0;
+   for (size_t i = 0; i < core::kNumImus; ++i){
+      if (num_outliers_per_imu_.at(i) >= n) {
+          are_imus_reliable_.at(i) = false
+      }
+   }
+   if (std::accumulate(are_imus_reliable_.begin(), are_imus_reliable_.end(), 0) < core::kNumImus - 1){
+      // TODO : Fail State implementation
+   }
   }
 
 } // namespace hyped::navigation
