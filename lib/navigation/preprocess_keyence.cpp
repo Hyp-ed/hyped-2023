@@ -1,5 +1,7 @@
 #include "preprocess_keyence.hpp"
 
+#include <cstdint>
+
 namespace hyped::navigation {
 
 KeyencePreprocessor::KeyencePreprocessor(hyped::core::ILogger &logger) : log_(logger)
@@ -10,21 +12,9 @@ KeyencePreprocessor::KeyencePreprocessor(hyped::core::ILogger &logger) : log_(lo
 
 SensorChecks KeyencePreprocessor::checkKeyenceAgrees(const core::KeyenceData &keyence_data)
 {
-  /*
-   TODOLater: implement:
-   roughly:
-    if
-   - if keyence data disagrees and does_keyence_agree_ is false, fail state, return kUnacceptable
-
-   - if keyence data disagrees and does_keyence_agree_ is true, set does_keyence_agree_ false return
-   kAcceptable
-   - if keyence data agrees and does_keyence_agree_ is false, et does_keyence_agree_ true return
-   kAcceptable
-   - if keyence data agrees and does_keyence_agree_ is true, all is good in the world, return
-   kAcceptable.
-  */
+  /***/
   bool keyence_data_disagrees = false;
-  for (size_t i = 0; i < keyence_data.size() - 1; ++i) {
+  for (std::size_t i = 0; i < keyence_data.size() - 1; ++i) {
     if (keyence_data.at(i) != keyence_data.at(i + 1)) { keyence_data_disagrees = true; }
   }
 
@@ -37,9 +27,10 @@ SensorChecks KeyencePreprocessor::checkKeyenceAgrees(const core::KeyenceData &ke
 
   } else if (!(keyence_data_disagrees) && has_keyence_disagreed_) {
     has_keyence_disagreed_ = false;
-  }
 
-  return SensorChecks::kAcceptable;
+  } else {
+    return SensorChecks::kAcceptable;
+  }
 }
 
 }  // namespace hyped::navigation
