@@ -23,8 +23,8 @@ class Mux {
   std::optional<std::array<T, N>> readAllChannels();
 
  private:
-  hyped::core::Result selectChannel(const std::uint8_t channel);
-  hyped::core::Result closeAllChannels();
+  core::Result selectChannel(const std::uint8_t channel);
+  core::Result closeAllChannels();
   hyped::core::ILogger &log_;
   hyped::io::I2c i2c_;
   const std::uint8_t mux_address_;

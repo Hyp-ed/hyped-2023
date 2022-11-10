@@ -18,30 +18,30 @@ Mux<T, N>::~Mux()
 }
 
 template<typename T, std::size_t N>
-hyped::core::Result Mux<T, N>::selectChannel(const std::uint8_t channel)
+core::Result Mux<T, N>::selectChannel(const std::uint8_t channel)
 {
   const std::uint8_t channel_buffer = 1 << channel;
   const auto i2c_write_result       = i2c_.writeByte(mux_address_, channel_buffer);
-  if (i2c_write_result == hyped::core::Result::kSuccess) {
+  if (i2c_write_result == core::Result::kSuccess) {
     log_.log(hyped::core::LogLevel::kInfo, "Mux : Channel %d selected", channel);
-    return hyped::core::Result::kSuccess;
+    return core::Result::kSuccess;
   } else {
     log_.log(hyped::core::LogLevel::kFatal, "Mux : Failed to select channel %d", channel);
-    return hyped::core::Result::kFailure;
+    return core::Result::kFailure;
   }
 }
 
 template<typename T, std::size_t N>
-hyped::core::Result Mux<T, N>::closeAllChannels()
+core::Result Mux<T, N>::closeAllChannels()
 {
   const std::uint8_t clear_channel_buffer = 0x00;
   const auto i2c_write_result             = i2c_.writeByte(mux_address_, clear_channel_buffer);
-  if (i2c_write_result == hyped::core::Result::kSuccess) {
+  if (i2c_write_result == core::Result::kSuccess) {
     log_.log(hyped::core::LogLevel::kInfo, "Mux : All channels closed");
-    return hyped::core::Result::kSuccess;
+    return core::Result::kSuccess;
   } else {
     log_.log(hyped::core::LogLevel::kFatal, "Mux : Failed to close all channels");
-    return hyped::core::Result::kFailure;
+    return core::Result::kFailure;
   }
 }
 
@@ -54,13 +54,13 @@ std::optional<std::array<T, N>> Mux<T, N>::readAllChannels()
     const std::uint8_t channel = sensor->getChannel();
     // First ensure correct channel is selected
     const auto channel_select_result = selectChannel(channel);
-    if (channel_select_result == hyped::core::Result::kFailure) {
+    if (channel_select_result == core::Result::kFailure) {
       log_.log(hyped::core::LogLevel::kFatal, "Mux : Failed to select channel %d", channel);
       return std::nullopt;
     }
     // Next ensure sensor is configured for operation
     const auto configure_result = sensor->configure();
-    if (configure_result == hyped::core::Result::kFailure) {
+    if (configure_result == core::Result::kFailure) {
       log_.log(
         hyped::core::LogLevel::kFatal, "Mux : Failed to configure sensor at channel %d", channel);
       return std::nullopt;
@@ -74,7 +74,7 @@ std::optional<std::array<T, N>> Mux<T, N>::readAllChannels()
       return std::nullopt;
     }
     const auto closing_channel_result = closeAllChannels();
-    if (closing_channel_result == hyped::core::Result::kFailure) {
+    if (closing_channel_result == core::Result::kFailure) {
       log_.log(hyped::core::LogLevel::kFatal, "Mux : Failed to close all channels while reading");
       return std::nullopt;
     }
