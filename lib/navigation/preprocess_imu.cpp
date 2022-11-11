@@ -103,6 +103,9 @@ Quartiles ImuPreprocessor::getOutlierThresholds(const core::ImuData &clean_accel
   quartiles.q3     = q3;
 
   /*
+
+TODO : talk to max about scope or dynamic allocation of size of copy array
+
   const uint8_t num_reliable_accelerometers
     = std::accumulate(are_imus_reliable_.begin(), are_imus_reliable_.end(), 0);
   std::array<core::Float, num_reliable_accelerometers> clean_accelerometer_data_copy;
