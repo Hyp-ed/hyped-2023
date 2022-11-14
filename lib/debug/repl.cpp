@@ -206,13 +206,10 @@ void Repl::addI2cCommands(const std::uint8_t bus)
       std::cout << "Data: ";
       std::cin >> std::hex >> data;
       std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-      const core::Result result
-        = i2c->writeByteToRegister(device_address, register_address, data);
+      const core::Result result = i2c->writeByteToRegister(device_address, register_address, data);
       if (result == core::Result::kSuccess) {
-        log_.log(core::LogLevel::kInfo,
-                 "I2C write successful to device %d on %d",
-                 device_address,
-                 bus);
+        log_.log(
+          core::LogLevel::kInfo, "I2C write successful to device %d on %d", device_address, bus);
       } else {
         log_.log(core::LogLevel::kFatal, "Failed to write to I2C bus: %d", bus);
       }
