@@ -10,6 +10,7 @@
 namespace hyped::sensors {
 
 static constexpr std::uint8_t kDefaultMuxAddress = 0x70;
+static constexpr std::uint8_t kMaxChannelNumber  = 8;
 
 template<class T, std::uint8_t N>
 class Mux {

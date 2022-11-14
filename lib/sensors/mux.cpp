@@ -21,6 +21,10 @@ Mux<T, N>::~Mux()
 template<typename T, std::uint8_t N>
 core::Result Mux<T, N>::selectChannel(const std::uint8_t channel)
 {
+  if (channel >= kMaxChannelNumber) {
+    log_.log(core::LogLevel::kFatal, "Mux : inputted channel out of range");
+    return core::Result::kFailure;
+  }
   const std::uint8_t channel_buffer = 1 << channel;
   const auto i2c_write_result       = i2c_.writeByte(mux_address_, channel_buffer);
   if (i2c_write_result == core::Result::kSuccess) {
