@@ -22,7 +22,7 @@ template<typename T, std::uint8_t N>
 core::Result Mux<T, N>::selectChannel(const std::uint8_t channel)
 {
   if (channel >= kMaxNumChannels) {
-    log_.log(core::LogLevel::kFatal, "Mux : channel number %d is not valid", channel);
+    log_.log(core::LogLevel::kFatal, "Mux : channel number %d is not selectable", channel);
     return core::Result::kFailure;
   }
   const std::uint8_t channel_buffer = 1 << channel;
