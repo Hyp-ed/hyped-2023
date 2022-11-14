@@ -17,7 +17,7 @@ class HardwareGpioReader : public IGpioReader {
 
 class HardwareGpioWriter : public IGpioWriter {
  public:
-  virtual hyped::core::Result write(const core::DigitalSignal state);
+  virtual core::Result write(const core::DigitalSignal state);
 
  private:
   HardwareGpioWriter(const std::uint8_t pin);
@@ -30,13 +30,13 @@ class HardwareGpioWriter : public IGpioWriter {
  */
 class HardwareGpio {
  public:
-  HardwareGpio(hyped::core::ILogger &log);
+  HardwareGpio(core::ILogger &log);
 
   virtual std::optional<std::shared_ptr<IGpioReader>> getReader(const std::uint8_t pin);
   virtual std::optional<std::shared_ptr<IGpioWriter>> getWriter(const std::uint8_t pin);
 
  private:
-  hyped::core::ILogger &log_;
+  core::ILogger &log_;
 };
 
 }  // namespace hyped::io

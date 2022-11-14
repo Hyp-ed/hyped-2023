@@ -207,7 +207,8 @@ void Repl::addI2cCommands(const std::uint8_t bus)
       std::cout << "Data: ";
       std::cin >> std::hex >> data;
       std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-      const hyped::core::Result result = i2c->writeByte(device_address, register_address, data);
+      const hyped::core::Result result
+        = i2c->writeByteToRegister(device_address, register_address, data);
       if (result == hyped::core::Result::kSuccess) {
         log_.log(hyped::core::LogLevel::kInfo,
                  "I2C write successful to device %d on %d",
