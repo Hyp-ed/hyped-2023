@@ -1,6 +1,8 @@
 #pragma once
+
 #include <array>
 #include <cstdint>
+
 namespace hyped::core {
 
 static constexpr float kEpsilon = 0.0001;
