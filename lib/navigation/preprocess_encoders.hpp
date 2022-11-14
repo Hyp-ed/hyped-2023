@@ -11,9 +11,12 @@ class EncodersPreprocessor {
   core::EncoderData processData(const core::EncoderData encoder_data);
 
  private:
+ //extern core::EncoderData reliability_of_encoders;      // some addition
+ //extern core::EncoderData num_outliers_per_encoder;
   core::EncoderData detectOutliers(const core::EncoderData encoder_data);
-
-  void checkReliable(const core::EncoderData &encoder_data);
+  
+  //void checkReliable(const core::EncoderData &encoder_data);
+  void checkReliable(const core::EncoderData num_outliers_per_encoder);
 
 
 
