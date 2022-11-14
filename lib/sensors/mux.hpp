@@ -14,10 +14,10 @@ static constexpr std::uint8_t kDefaultMuxAddress = 0x70;
 template<class T, std::size_t N>
 class Mux {
  public:
-  Mux(hyped::io::I2c &i2c,
+  Mux(io::I2c &i2c,
       const std::uint8_t mux_address,
       const std::array<std::unique_ptr<II2cMuxSensor<T>>, N> sensors,
-      hyped::core::ILogger &log);
+      core::ILogger &log);
   ~Mux();
 
   std::optional<std::array<T, N>> readAllChannels();
@@ -25,8 +25,8 @@ class Mux {
  private:
   core::Result selectChannel(const std::uint8_t channel);
   core::Result closeAllChannels();
-  hyped::core::ILogger &log_;
-  hyped::io::I2c i2c_;
+  core::ILogger &log_;
+  io::I2c i2c_;
   const std::uint8_t mux_address_;
   const std::array<std::unique_ptr<II2cMuxSensor<T>>, N> sensors_;
 };
