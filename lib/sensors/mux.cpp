@@ -22,16 +22,16 @@ template<typename T, std::uint8_t N>
 core::Result Mux<T, N>::selectChannel(const std::uint8_t channel)
 {
   if (channel >= kMaxNumChannels) {
-    log_.log(core::LogLevel::kFatal, "Mux : Channel number %d is not selectable", channel);
+    log_.log(core::LogLevel::kFatal, "Mux Channel number %d is not selectable", channel);
     return core::Result::kFailure;
   }
   const std::uint8_t channel_buffer = 1 << channel;
   const auto i2c_write_result       = i2c_.writeByte(mux_address_, channel_buffer);
   if (i2c_write_result == core::Result::kSuccess) {
-    log_.log(core::LogLevel::kInfo, "Mux : Channel %d selected", channel);
+    log_.log(core::LogLevel::kInfo, "Mux Channel %d selected", channel);
     return core::Result::kSuccess;
   } else {
-    log_.log(core::LogLevel::kFatal, "Mux : Failed to select channel %d", channel);
+    log_.log(core::LogLevel::kFatal, "Failed to select mux channel %d", channel);
     return core::Result::kFailure;
   }
 }
@@ -42,10 +42,10 @@ core::Result Mux<T, N>::closeAllChannels()
   const std::uint8_t clear_channel_buffer = 0x00;
   const auto i2c_write_result             = i2c_.writeByte(mux_address_, clear_channel_buffer);
   if (i2c_write_result == core::Result::kSuccess) {
-    log_.log(core::LogLevel::kInfo, "Mux : All channels closed");
+    log_.log(core::LogLevel::kInfo, "All mux channels closed");
     return core::Result::kSuccess;
   } else {
-    log_.log(core::LogLevel::kFatal, "Mux : Failed to close all channels");
+    log_.log(core::LogLevel::kFatal, "Failed to close all mux channels");
     return core::Result::kFailure;
   }
 }
@@ -60,13 +60,13 @@ std::optional<std::array<T, N>> Mux<T, N>::readAllChannels()
     // First ensure correct channel is selected
     const auto channel_select_result = selectChannel(channel);
     if (channel_select_result == core::Result::kFailure) {
-      log_.log(core::LogLevel::kFatal, "Mux : Failed to select channel %d", channel);
+      log_.log(core::LogLevel::kFatal, "Failed to select mux channel %d", channel);
       return std::nullopt;
     }
     // Next ensure sensor is configured for operation
     const auto configure_result = sensor->configure();
     if (configure_result == core::Result::kFailure) {
-      log_.log(core::LogLevel::kFatal, "Mux : Failed to configure sensor at channel %d", channel);
+      log_.log(core::LogLevel::kFatal, "Failed to configure sensor at mux channel %d", channel);
       return std::nullopt;
     }
     // Finally read sensor data
@@ -74,12 +74,12 @@ std::optional<std::array<T, N>> Mux<T, N>::readAllChannels()
     if (sensor_data.has_value()) {
       mux_data.at(i) = sensor_data.value();
     } else {
-      log_.log(core::LogLevel::kFatal, "Mux : Failed to get data from channel %d", channel);
+      log_.log(core::LogLevel::kFatal, "Failed to get mux data from channel %d", channel);
       return std::nullopt;
     }
     const auto closing_channel_result = closeAllChannels();
     if (closing_channel_result == core::Result::kFailure) {
-      log_.log(core::LogLevel::kFatal, "Mux : Failed to close all channels while reading");
+      log_.log(core::LogLevel::kFatal, "Failed to close all mux channels while reading");
       return std::nullopt;
     }
   }
