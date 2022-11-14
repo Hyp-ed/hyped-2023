@@ -29,7 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Run check for missing std
+      - name: Run check for missing std namespace prefix
         run: |
           IDENTIFIERS="uint8_t uint16_t uint32_t uint64_t int8_t int16_t int32_t int64_t size_t"
           for identifier in $IDENTIFIERS; do
@@ -38,3 +38,15 @@ jobs:
               exit 1
             fi
           done
+
+  find-redundant-hyped:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run check for extra hyped namespace prefix
+        run: |
+          cd lib
+          if grep -rE -n "hyped::" | grep -v "namespace"; then
+            echo "[ERROR] found redundant hyped:: prefix"
+            exit 1
+          fi
