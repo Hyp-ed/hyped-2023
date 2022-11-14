@@ -11,7 +11,7 @@ namespace hyped::sensors {
 
 static constexpr std::uint8_t kDefaultMuxAddress = 0x70;
 
-template<class T, std::size_t N>
+template<class T, std::uint8_t N>
 class Mux {
  public:
   Mux(io::I2c &i2c,
