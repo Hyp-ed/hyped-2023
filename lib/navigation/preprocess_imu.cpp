@@ -7,7 +7,7 @@ ImuPreprocessor::ImuPreprocessor()
   // TODOLater: implement
 }
 
-core::ImuData ImuPreprocessor::processData(const core::RawImuData raw_imu_data)
+std::optional<ImuData> ImuPreprocessor::processData(const core::RawImuData &raw_imu_data)
 {
   /*
   TODOLater: implement
@@ -16,10 +16,10 @@ core::ImuData ImuPreprocessor::processData(const core::RawImuData raw_imu_data)
   - call checkReliable
 
   */
-  return {0, 0, 0, 0};
+  return std::nullopt;
 }
 
-core::ImuData ImuPreprocessor::detectOutliers(const core::RawImuData imu_data)
+ImuData ImuPreprocessor::detectOutliers(const core::RawImuData &imu_data)
 {
   /*
   TODOLater: implement
@@ -37,7 +37,7 @@ core::ImuData ImuPreprocessor::detectOutliers(const core::RawImuData imu_data)
   return {0, 0, 0, 0};
 }
 
-void ImuPreprocessor::checkReliable(const core::ImuData &imu_data)
+void ImuPreprocessor::checkReliable(const ImuData &imu_data)
 {
   /*
   TODOLater: implement

@@ -1,10 +1,10 @@
 #pragma once
 
+#include "benchmark.hpp"
+
 #include <core/time.hpp>
 #include <navigation/navigator.hpp>
 #include <utils/manual_time.hpp>
-
-#include "benchmark.hpp"
 
 namespace hyped::navigation::benchmark {
 
@@ -17,4 +17,4 @@ class Benchmarker {
   utils::ManualTime maunal_time_;
 };
 
-}  // namespace hyped::navigation::benchmarker
+}  // namespace hyped::navigation::benchmark

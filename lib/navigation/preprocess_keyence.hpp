@@ -1,4 +1,7 @@
+#pragma once
+
 #include "consts.hpp"
+#include "types.hpp"
 
 #include <array>
 #include <cstdint>
@@ -11,7 +14,7 @@ class KeyencePreprocessor {
  public:
   KeyencePreprocessor();
 
-  SensorChecks checkKeyenceAgrees(const core::KeyenceData &keyence_data);
+  KeyenceData processData(const core::RawKeyenceData &keyence_data);
 
  private:
   bool is_keyence_agreeing_;

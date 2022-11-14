@@ -7,9 +7,9 @@ Crosscheck::Crosscheck()
   // TODOLater: implement
 }
 
-SensorChecks Crosscheck::checkTrajectoryAgreement(const core::ImuData imu_data,
-                                                  const core::EncoderData encoders_data,
-                                                  const core::KeyenceData keyence_data)
+SensorDisagreement Crosscheck::checkTrajectoryAgreement(const ImuData imu_data,
+                                                        const EncoderData encoders_data,
+                                                        const KeyenceData keyence_data)
 {
   /*
   TODOLater: implement
@@ -21,10 +21,10 @@ SensorChecks Crosscheck::checkTrajectoryAgreement(const core::ImuData imu_data,
     Also need to figure out how data flow is going to work with the historic data and what we use.
     The basic infrastrucutre is there for now so will be a problem for another day.
   */
-  return SensorChecks::kAcceptable;
+  return SensorDisagreement::kAcceptable;
 }
 
-SensorChecks checkEncoderImu(const core::ImuData imu_data, const core::EncoderData encoders_data)
+SensorDisagreement checkEncoderImu(const ImuData imu_data, const EncoderData encoders_data)
 {
   /*
   TODOLater: implement.
@@ -34,11 +34,11 @@ SensorChecks checkEncoderImu(const core::ImuData imu_data, const core::EncoderDa
   imu displacement too high, fail state and return false
   - otherwise all good, return true
   */
-  return SensorChecks::kAcceptable;
+  return SensorDisagreement::kAcceptable;
 }
 
-SensorChecks checkEncoderKeyence(const core::EncoderData encoder_data,
-                                 const core::KeyenceData keyence_data)
+SensorDisagreement checkEncoderKeyence(const EncoderData encoder_data,
+                                       const KeyenceData keyence_data)
 {
   /*
   TODOLater: implement.
@@ -47,6 +47,6 @@ SensorChecks checkEncoderKeyence(const core::EncoderData encoder_data,
   keyence displacement too high, fail state and return false
   - otherwise all good, return true
   */
-  return SensorChecks::kAcceptable;
+  return SensorDisagreement::kAcceptable;
 }
 }  // namespace hyped::navigation

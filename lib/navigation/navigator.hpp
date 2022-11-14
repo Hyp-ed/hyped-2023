@@ -1,5 +1,5 @@
 #pragma once
-#include "consts.hpp"
+#include "types.hpp"
 
 #include <optional>
 
@@ -21,13 +21,13 @@ class Navigator : public INavigator {
    *
    * @param keyence_data
    */
-  void keyenceUpdate(const core::KeyenceData &keyence_data);
+  void keyenceUpdate(const core::RawKeyenceData &keyence_data);
   /**
    * @brief preprocesses encoder data and updates trajectory
    *
    * @param encoder_data
    */
-  void encoderUpdate(const core::EncoderData &encoder_data);
+  void encoderUpdate(const core::RawEncoderData &encoder_data);
   /**
    * @brief preprocesses imu data and updates trajectory
    *
@@ -37,8 +37,8 @@ class Navigator : public INavigator {
 
  private:
   // previous readings
-  core::EncoderData previous_encoder_reading_;
-  core::KeyenceData previous_keyence_reading_;
+  core::RawEncoderData previous_encoder_reading_;
+  core::RawKeyenceData previous_keyence_reading_;
 
   // current navigation trajectory
   core::Trajectory trajectory_;

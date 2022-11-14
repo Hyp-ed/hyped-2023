@@ -10,8 +10,8 @@ namespace hyped::test {
 // TODOLater: improve testing method here!
 void testWithTrajectory(utils::NaiveNavigator &naive_navigator,
                         const core::RawImuData imu_data,
-                        const core::EncoderData encoder_data,
-                        const core::KeyenceData keyence_data)
+                        const core::RawEncoderData encoder_data,
+                        const core::RawKeyenceData keyence_data)
 {
   naive_navigator.imuUpdate(imu_data);
   naive_navigator.encoderUpdate(encoder_data);

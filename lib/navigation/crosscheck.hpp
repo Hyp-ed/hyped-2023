@@ -1,4 +1,4 @@
-#include "consts.hpp"
+#include "types.hpp"
 
 #include <array>
 
@@ -18,9 +18,9 @@ class Crosscheck {
    * @return true signifies trajectory agreement
    * @return false signifies trajectory disagreement. We enter fail state
    */
-  SensorChecks checkTrajectoryAgreement(const core::ImuData imu_data,
-                                        const core::EncoderData encoders_data,
-                                        const core::KeyenceData keyence_data);
+  SensorDisagreement checkTrajectoryAgreement(const ImuData imu_data,
+                                              const EncoderData encoders_data,
+                                              const KeyenceData keyence_data);
 
  private:
   /**
@@ -31,7 +31,7 @@ class Crosscheck {
    * @return true IMU and wheel encoders agree
    * @return false IMU and wheel encoders disagree
    */
-  SensorChecks checkEncoderImu(const core::ImuData imu_data, const core::EncoderData encoders_data);
+  SensorDisagreement checkEncoderImu(const ImuData imu_data, const EncoderData encoders_data);
 
   /**
    * @brief Checks the keyence value of displacement against the
@@ -41,7 +41,7 @@ class Crosscheck {
    * @return true Keyence and wheel encoders agree
    * @return false Keyence and wheel encoders disagree
    */
-  SensorChecks checkEncooderKeyence(const core::EncoderData encoder_data,
-                                    const core::KeyenceData keyence_data);
+  SensorDisagreement checkEncooderKeyence(const EncoderData encoder_data,
+                                          const KeyenceData keyence_data);
 };
 }  // namespace hyped::navigation

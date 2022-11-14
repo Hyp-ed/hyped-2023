@@ -7,7 +7,8 @@ EncodersPreprocessor::EncodersPreprocessor()
   // TODOLater: implement
 }
 
-core::EncoderData EncodersPreprocessor::processData(const core::EncoderData)
+std::optional<EncoderData> EncodersPreprocessor::processData(
+  const core::RawEncoderData &raw_encoder_data)
 {
   /*
   TODOLater: implement
@@ -16,10 +17,10 @@ core::EncoderData EncodersPreprocessor::processData(const core::EncoderData)
   - call checkRelaible
 
   */
-  return {0, 0, 0, 0};
+  return std::nullopt;
 }
 
-core::EncoderData EncodersPreprocessor::detectOutliers(const core::EncoderData encoder_data)
+EncoderData EncodersPreprocessor::detectOutliers(const core::RawEncoderData &raw_encoder_data)
 {
   /*
   TODOLater: implement
@@ -37,7 +38,7 @@ core::EncoderData EncodersPreprocessor::detectOutliers(const core::EncoderData e
   return {0, 0, 0, 0};
 }
 
-void EncodersPreprocessor::checkReliable(const core::EncoderData &encoder_data)
+void EncodersPreprocessor::checkReliable(const core::RawEncoderData &raw_encoder_data)
 {
   /*
   TODOLater: implement

@@ -8,11 +8,12 @@ namespace hyped::core {
 
 class Timer {
  public:
-  Timer(const ITimeSource &time);
-  Duration measure_execution_time(const std::function<void(void)> task);
+  Timer(const ITimeSource &time_source);
+  Duration elapsed() const;
 
  private:
-  const ITimeSource &time_;
+  const ITimeSource &time_source_;
+  const TimePoint time_started_;
 };
 
 }  // namespace hyped::core

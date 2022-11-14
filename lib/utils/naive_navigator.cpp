@@ -13,12 +13,12 @@ std::optional<core::Trajectory> NaiveNavigator::currentTrajectory()
   return current_trajectory_;
 }
 
-void NaiveNavigator::keyenceUpdate(const core::KeyenceData &keyence_data)
+void NaiveNavigator::keyenceUpdate(const core::RawKeyenceData &keyence_data)
 {
   // Do nothing. Keyence has no direct influence on trajectory
 }
 
-void NaiveNavigator::encoderUpdate(const core::EncoderData &encoder_data)
+void NaiveNavigator::encoderUpdate(const core::RawEncoderData &encoder_data)
 {
   core::Float sum                  = std::accumulate(encoder_data.begin(), encoder_data.end(), 0.0);
   core::Float encoder_average      = static_cast<core::Float>(sum / core::kNumEncoders);

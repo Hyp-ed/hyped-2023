@@ -2,16 +2,13 @@
 
 namespace hyped::core {
 
-Timer::Timer(const ITimeSource &time) : time_(time)
+Timer::Timer(const ITimeSource &time_source) : time_source_(time_source), time_started_(time_source.now())
 {
 }
 
-Duration Timer::measure_execution_time(const std::function<void(void)> task)
+Duration Timer::elapsed() const
 {
-  const auto before = time_.now();
-  task();
-  const auto after = time_.now();
-  return after - before;
+  return time_source_.now() - time_started_;
 }
 
 }  // namespace hyped::core

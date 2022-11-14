@@ -7,7 +7,7 @@ KeyencePreprocessor::KeyencePreprocessor()
   // TODOLater: implement
 }
 
-SensorChecks checkKeyenceAgrees(const core::KeyenceData &keyence_data)
+std::optional<KeyenceData> processData(const core::RawKeyenceData &raw_keyence_data)
 {
   /*
    TODOLater: implement:
@@ -20,7 +20,7 @@ SensorChecks checkKeyenceAgrees(const core::KeyenceData &keyence_data)
    - if keyence data agrees and does_keyence_agree_ is true, all is good in the world, return
    kAcceptable.
   */
-  return SensorChecks::kAcceptable;
+  return std::nullopt;
 }
 
 }  // namespace hyped::navigation

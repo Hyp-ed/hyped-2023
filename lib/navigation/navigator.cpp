@@ -21,7 +21,7 @@ std::optional<core::Trajectory> Navigator::currentTrajectory()
   return trajectory_;
 }
 
-void Navigator::keyenceUpdate(const core::KeyenceData &keyence_data)
+void Navigator::keyenceUpdate(const core::RawKeyenceData &keyence_data)
 {
   /*
   TODOLater:
@@ -30,7 +30,7 @@ void Navigator::keyenceUpdate(const core::KeyenceData &keyence_data)
   */
 }
 
-void Navigator::encoderUpdate(const core::EncoderData &encoder_data)
+void Navigator::encoderUpdate(const core::RawEncoderData &encoder_data)
 {
   /*
   TODOLater:
