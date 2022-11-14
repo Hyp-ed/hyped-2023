@@ -14,7 +14,7 @@ class Adc {
   /**
    * @param pin is one of the 6 analogue input pins on the bbb
    */
-  Adc(const std::uint8_t pin, hyped::core::ILogger &logger);
+  Adc(const std::uint8_t pin, hyped::core::ILogger &log);
   ~Adc();
 
   /**
@@ -32,7 +32,7 @@ class Adc {
   std::optional<std::uint16_t> resetAndRead4(const int file_descriptor);
 
  private:
-  hyped::core::ILogger &logger_;
+  hyped::core::ILogger &log_;
   std::uint8_t pin_;
   int file_;
 };
