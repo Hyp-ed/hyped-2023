@@ -12,9 +12,9 @@
 namespace hyped::navigation::benchmark {
 
 struct TrajectoryError {
-  core::Float displacement;
-  core::Float velocity;
-  core::Float acceleration;
+  const core::Float displacement;
+  const core::Float velocity;
+  const core::Float acceleration;
 
   TrajectoryError(const core::Trajectory &expected, const core::Trajectory &actual);
 };
