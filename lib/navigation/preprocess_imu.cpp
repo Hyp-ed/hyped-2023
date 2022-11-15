@@ -3,7 +3,6 @@
 #include <cmath>
 
 #include <algorithm>
-#include <iterator>
 #include <numeric>
 
 namespace hyped::navigation {
@@ -115,11 +114,11 @@ template<std::size_t N> Quartiles ImuPreprocessor::getQuartiles(const std::array
 
 void ImuPreprocessor::checkReliable()
 {
-  std::uint8_t num_unreliable = 0;
+  std::uint8_t num_unreliable;
   num_unreliable
     = core::kNumImus - std::accumulate(are_imus_reliable_.begin(), are_imus_reliable_.end(), 0);
   // changes reliable sensor to false if max consecutive outliers are reached
-  for (size_t i = 0; i < core::kNumImus; ++i) {
+  for (std::size_t i = 0; i < core::kNumImus; ++i) {
     if (num_outliers_per_imu_.at(i) >= kNumAllowedImuFailures_) {
       are_imus_reliable_.at(i) = false;
     }
