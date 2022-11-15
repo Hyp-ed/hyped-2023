@@ -10,10 +10,11 @@ class Timer {
  public:
   Timer(const ITimeSource &time_source);
   Duration elapsed() const;
+  Duration reset();
 
  private:
   const ITimeSource &time_source_;
-  const TimePoint time_started_;
+  TimePoint time_started_;
 };
 
 }  // namespace hyped::core

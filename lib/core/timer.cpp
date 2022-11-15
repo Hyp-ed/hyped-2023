@@ -13,4 +13,11 @@ Duration Timer::elapsed() const
   return time_source_.now() - time_started_;
 }
 
+Duration Timer::reset()
+{
+  const auto previous_time_started = time_started_;
+  time_started_                    = time_source_.now();
+  return time_started_ - previous_time_started;
+}
+
 }  // namespace hyped::core

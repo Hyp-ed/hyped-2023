@@ -48,13 +48,13 @@ TEST(Logger, Stderr)
 TEST(Logger, VaryingTimes)
 {
   utils::ManualTime manual_time;
-  manual_time.set_time(std::chrono::system_clock::from_time_t(3600));
+  manual_time.setTime(std::chrono::system_clock::from_time_t(3600));
   testStdoutLog(core::LogLevel::kDebug, manual_time, "02:00:00.000 DEBUG[test] test\n");
-  manual_time.set_time(std::chrono::system_clock::from_time_t(24 * 3600));
+  manual_time.setTime(std::chrono::system_clock::from_time_t(24 * 3600));
   testStdoutLog(core::LogLevel::kDebug, manual_time, "01:00:00.000 DEBUG[test] test\n");
-  manual_time.set_time(std::chrono::system_clock::from_time_t(60));
+  manual_time.setTime(std::chrono::system_clock::from_time_t(60));
   testStdoutLog(core::LogLevel::kDebug, manual_time, "01:01:00.000 DEBUG[test] test\n");
-  manual_time.set_time(std::chrono::system_clock::from_time_t(1));
+  manual_time.setTime(std::chrono::system_clock::from_time_t(1));
   testStdoutLog(core::LogLevel::kDebug, manual_time, "01:00:01.000 DEBUG[test] test\n");
 }
 
