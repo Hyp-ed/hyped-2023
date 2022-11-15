@@ -28,7 +28,7 @@ class ImuPreprocessor {
   // initialised as all true, bool mask of reliable sensors
   std::array<bool, core::kNumImus> are_imus_reliable_;
 
-  // TODO: describe this
+  // number of alllowed consecutive outliers from single accelerometer
   static constexpr std::uint8_t kNumAllowedImuFailures_ = 20;
 };
 
