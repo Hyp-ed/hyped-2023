@@ -20,9 +20,9 @@ jobs:
       - name: Run todo check
         run: |
           if grep -rE -n 'TODO|FIXME' * | grep -v 'TODOLater'; then
-          exit 1
+            exit 1
           else
-          echo "All good"
+            echo "All good"
           fi
 
   find-missing-std:
@@ -33,10 +33,10 @@ jobs:
         run: |
           IDENTIFIERS="uint8_t uint16_t uint32_t uint64_t int8_t int16_t int32_t int64_t size_t"
           for identifier in $IDENTIFIERS; do
-          if grep -rE -n "$identifier" | grep -v "std::" | grep -v "lint.yml"; then
-        echo "[ERROR] found $identifier without std:: prefix"
-          exit 1
-          fi
+            if grep -rE -n "$identifier" | grep -v "std::" | grep -v "lint.yml"; then
+              echo "[ERROR] found $identifier without std:: prefix"
+              exit 1
+            fi
           done
 
   find-redundant-hyped:
@@ -47,6 +47,17 @@ jobs:
         run: |
           cd lib
           if grep -rE -n "hyped::" | grep -v "namespace"; then
-        echo "[ERROR] found redundant hyped:: prefix"
-          exit 1
+            echo "[ERROR] found redundant hyped:: prefix"
+            exit 1
+          fi
+
+  check-header-pragma-once:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run check for missing header pragma once
+        run: |
+          if grep -riL "#pragma once" --include \*.hpp | grep -v "lint.yml"; then
+            echo "[ERROR] found header without #pragma once"
+            exit 1
           fi
