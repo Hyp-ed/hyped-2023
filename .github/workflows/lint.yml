@@ -19,7 +19,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Run todo check
         run: |
-          if grep -rE -n 'TODO|FIXME' * | grep -v 'TODOLater'; then
+          if grep -r -n 'TODO|FIXME' * | grep -v 'TODOLater'; then
             exit 1
           else
             echo "All good"
@@ -57,7 +57,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Run check for missing header pragma once
         run: |
-          if grep -riL "#pragma once" --include \*.hpp | grep -v "lint.yml"; then
+          if grep -rL "#pragma once" --include \*.hpp | grep -v "lint.yml"; then
             echo "[ERROR] found header without #pragma once"
             exit 1
           fi
