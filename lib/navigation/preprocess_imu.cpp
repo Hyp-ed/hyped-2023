@@ -58,27 +58,29 @@ Quartiles ImuPreprocessor::getOutlierThresholds(const core::ImuData &clean_accel
   std::array<core::Float, core::kNumImus - 1> clean_accelerometer_data_copy_one_unreliable;
   const std::size_t num_reliable_accelerometers
     = std::accumulate(are_imus_reliable_.begin(), are_imus_reliable_.end(), 0);
-  if (num_reliable_accelerometers == core::kNumImus){
+  if (num_reliable_accelerometers == core::kNumImus) {
     std::copy(clean_accelerometer_data.begin(),
               clean_accelerometer_data.end(),
               clean_accelerometer_data_copy_all_reliable.begin());
-    std::sort(clean_accelerometer_data_copy_all_reliable.begin(), clean_accelerometer_data_copy_all_reliable.end());
+    std::sort(clean_accelerometer_data_copy_all_reliable.begin(),
+              clean_accelerometer_data_copy_all_reliable.end());
   } else {
     std::size_t index;
     for (size_t i = 0; i < core::kNumImus - 1; ++i) {
       if (!are_imus_reliable_.at(i)) { index = i; }
-  }
+    }
     for (size_t i = 0; i < core::kNumImus - 1; ++i) {
       if (i >= index) {
         clean_accelerometer_data_copy_one_unreliable.at(i) = clean_accelerometer_data.at(i + 1);
       } else {
         clean_accelerometer_data_copy_one_unreliable.at(i) = clean_accelerometer_data.at(i);
+      }
     }
+    std::sort(clean_accelerometer_data_copy_one_unreliable.begin(),
+              clean_accelerometer_data_copy_one_unreliable.end());
   }
-  std::sort(clean_accelerometer_data_copy_one_unreliable.begin(), clean_accelerometer_data_copy_one_unreliable.end());
-  }
-  
-  if (num_reliable_accelerometers == core::kNumImus){
+
+  if (num_reliable_accelerometers == core::kNumImus) {
     Quartiles quartiles = getQuartiles(clean_accelerometer_data_copy_all_reliable);
     return quartiles;
   } else {
@@ -87,27 +89,33 @@ Quartiles ImuPreprocessor::getOutlierThresholds(const core::ImuData &clean_accel
   }
 }
 
-template<std::size_t N> Quartiles ImuPreprocessor::getQuartiles(const std::array<core::Float, N> clean_accelerometer_data_copy){
+template<std::size_t N>
+Quartiles ImuPreprocessor::getQuartiles(
+  const std::array<core::Float, N> clean_accelerometer_data_copy)
+{
   Quartiles quartiles;
   std::size_t num_reliable_accelerometers = clean_accelerometer_data_copy.size();
 
   core::Float index_q1 = (num_reliable_accelerometers - 1) * 0.25;
-  int index_q1_high = static_cast<int> (std::ceil(index_q1));
-  int index_q1_low = static_cast<int> (std::floor(index_q1));
-  quartiles.q1 = (clean_accelerometer_data_copy.at(index_q1_high) +
-  clean_accelerometer_data_copy.at(index_q1_low))/2.0;
+  int index_q1_high    = static_cast<int>(std::ceil(index_q1));
+  int index_q1_low     = static_cast<int>(std::floor(index_q1));
+  quartiles.q1         = (clean_accelerometer_data_copy.at(index_q1_high)
+                  + clean_accelerometer_data_copy.at(index_q1_low))
+                 / 2.0;
 
   core::Float index_median = (num_reliable_accelerometers - 1) * 0.5;
-  int index_median_high = static_cast<int> (std::ceil(index_median));
-  int index_median_low = static_cast<int> (std::floor(index_median));
-  quartiles.median = (clean_accelerometer_data_copy.at(index_median_high) +
-  clean_accelerometer_data_copy.at(index_median_low))/2.0;
+  int index_median_high    = static_cast<int>(std::ceil(index_median));
+  int index_median_low     = static_cast<int>(std::floor(index_median));
+  quartiles.median         = (clean_accelerometer_data_copy.at(index_median_high)
+                      + clean_accelerometer_data_copy.at(index_median_low))
+                     / 2.0;
 
   core::Float index_q3 = (num_reliable_accelerometers - 1) * 0.75;
-  int index_q3_high = static_cast<int> (std::ceil(index_q3));
-  int index_q3_low = static_cast<int> (std::floor(index_q3));
-  quartiles.median = (clean_accelerometer_data_copy.at(index_q3_high) +
-  clean_accelerometer_data_copy.at(index_q3_low))/2.0;
+  int index_q3_high    = static_cast<int>(std::ceil(index_q3));
+  int index_q3_low     = static_cast<int>(std::floor(index_q3));
+  quartiles.median     = (clean_accelerometer_data_copy.at(index_q3_high)
+                      + clean_accelerometer_data_copy.at(index_q3_low))
+                     / 2.0;
 
   return quartiles;
 }
