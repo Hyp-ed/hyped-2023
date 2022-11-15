@@ -115,7 +115,7 @@ core::EncoderData EncodersPreprocessor::detectOutliers(const core::EncoderData e
     lower_bound = array_of_quartiles.at(2);
   }
   for(int i = 0;i<encoder_data_copy.size();++i){
-    if(encoder_data_copy.at(i) > upper_bound || encoder_data_copy.at(i) < lower_bound ){
+    if(encoder_data_copy.at(i) > upper_bound || encoder_data_copy.at(i) < lower_bound || are_encoders_reliable_.at(i) == false){
       encoder_data_copy.at(i) = median;
       num_outliers_per_encoder_.at(i) = num_outliers_per_encoder_.at(i) + 1;
     }
