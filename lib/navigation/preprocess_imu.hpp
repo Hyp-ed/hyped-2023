@@ -16,8 +16,8 @@ class ImuPreprocessor {
   core::ImuData detectOutliers(const core::RawImuData imu_data);
 
   void checkReliable();
-
-  Quartiles ImuPreprocessor::getQuartiles();
+  
+  template<std::size_t N> Quartiles getQuartiles(const std::array<core::Float, N> clean_accelerometer_data_copy);
 
   Quartiles getOutlierThresholds(const core::ImuData &imu_data);
 

@@ -80,14 +80,15 @@ Quartiles ImuPreprocessor::getOutlierThresholds(const core::ImuData &clean_accel
   }
   
   if (num_reliable_accelerometers == core::kNumImus){
-    return getOutliers(clean_accelerometer_data_copy_all_reliable);
+    Quartiles quartiles = getQuartiles(clean_accelerometer_data_copy_all_reliable);
+    return quartiles;
   } else {
-    return getOutliers(clean_accelerometer_data_copy_one_unreliable);
+    Quartiles quartiles = getQuartiles(clean_accelerometer_data_copy_one_unreliable);
+    return quartiles;
   }
 }
 
-template<core::Float, std::size_t N>;
-Quartiles ImuPreprocessor::getQuartiles(const std::array<core::Float, N> clean_accelerometer_data_copy){
+template<std::size_t N> Quartiles ImuPreprocessor::getQuartiles(const std::array<core::Float, N> clean_accelerometer_data_copy){
   Quartiles quartiles;
   std::size_t num_reliable_accelerometers = clean_accelerometer_data_copy.size();
 
