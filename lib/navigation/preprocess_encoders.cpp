@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <array>
 #include <cmath>  
+#include <numeric>
 
 namespace hyped::navigation {
   //core::EncoderData reliability_of_encoders;
@@ -55,6 +56,9 @@ std::array<core::Float,3> EncodersPreprocessor::quartiles(T encoder_data){
   core::Float median;
   core::Float q1;
   core::Float q3;
+  core::Float iqr;
+  core::Float upper_bound;
+  core::Float lower_bound;
   std::array<core::Float,3> output;
   int q1_high = static_cast<int> (std::ceil((encoder_data.size()+1)/4.0));
   int q1_low = static_cast<int> (std::floor((encoder_data.size()+1)/4.0));
@@ -68,16 +72,58 @@ std::array<core::Float,3> EncodersPreprocessor::quartiles(T encoder_data){
   else{
    median = encoder_data.at(((encoder_data.size()+1)/2)-1);
   }
+  iqr = q3-q1;
+  upper_bound = median + 1.5*(iqr);
+  lower_bound = median - 1.5*(iqr);
   output.at(0) = median;
-  output.at(1) = q1;
-  output.at(2) = q3;
+  output.at(1) = upper_bound;
+  output.at(2) = lower_bound;
 
-  return output; // return an output of the sequence median,q1,q3
+  return output; // return an output of the sequence median,upper_bound,lower_bound
 }
 
+
 core::EncoderData EncodersPreprocessor::detectOutliers(const core::EncoderData encoder_data){
-  
- return {0, 0, 0, 0};
+  const uint8_t num_reliable_encoders = std::accumulate(are_encoders_reliable_.begin(),are_encoders_reliable_.end(),0);
+  core::Float median;
+  core::Float upper_bound;
+  core::Float lower_bound;
+  core::EncoderData encoder_data_copy;
+  std::copy(encoder_data.begin(),encoder_data.end(),encoder_data_copy.begin());
+  if(num_reliable_encoders == 3){
+    std::array<uint32_t,3> encoder_data_copy_for_finding_quartiles;
+    int counter = 0;
+    for(int i = 0;i<encoder_data.size();++i){
+      if(are_encoders_reliable_.at(i) == true){
+        encoder_data_copy_for_finding_quartiles.at(counter) = encoder_data.at(i);
+        counter = counter + 1;
+      }
+    }
+    std::sort(encoder_data_copy_for_finding_quartiles.begin(),encoder_data_copy_for_finding_quartiles.end());
+    std::array<core::Float,3> array_of_quartiles = quartiles(encoder_data_copy_for_finding_quartiles); // ask how to pass the value
+    median = array_of_quartiles.at(0);
+    upper_bound = array_of_quartiles.at(1);
+    lower_bound = array_of_quartiles.at(2);
+  }
+  else{
+    core::EncoderData encoder_data_copy_for_finding_quartiles;
+    std::copy(encoder_data.begin(),encoder_data.end(),encoder_data_copy_for_finding_quartiles.begin());
+    std::sort(encoder_data_copy_for_finding_quartiles.begin(),encoder_data_copy_for_finding_quartiles.end());
+    std::array<core::Float,3> array_of_quartiles = quartiles(encoder_data_copy_for_finding_quartiles); // ask how to pass the value
+    median = array_of_quartiles.at(0);
+    upper_bound = array_of_quartiles.at(1);
+    lower_bound = array_of_quartiles.at(2);
+  }
+  for(int i = 0;i<encoder_data_copy.size();++i){
+    if(encoder_data_copy.at(i) > upper_bound || encoder_data_copy.at(i) < lower_bound ){
+      encoder_data_copy.at(i) = median;
+      num_outliers_per_encoder_.at(i) = num_outliers_per_encoder_.at(i) + 1;
+    }
+    else{
+      num_outliers_per_encoder_.at(i) = 0;
+    }
+  }
+  return encoder_data_copy;
 }
 
 
