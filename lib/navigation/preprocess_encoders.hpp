@@ -18,6 +18,9 @@ class EncodersPreprocessor {
   //void checkReliable(const core::EncoderData &encoder_data);
   void checkReliable(const core::EncoderData num_outliers_per_encoder);
 
+  template<typename T>
+  std::array<core::Float,3> quartiles(T encoder_data);
+
 
 
   // initialised as {0, 0, 0, 0}, count of consecutive outliers

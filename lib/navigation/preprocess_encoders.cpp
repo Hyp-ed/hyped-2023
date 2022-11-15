@@ -13,8 +13,8 @@ namespace hyped::navigation {
   //std::fill_n(reliability_of_encoders.begin(),reliability_of_encoders.end(), 1); 
   //core::EncoderData num_outliers_per_encoder;
 
-  std::array<uint16_t, core::kNumEncoders> num_outliers_per_encoder_;
-  std::array<bool, core::kNumEncoders> are_encoders_reliable_;
+  //std::array<uint16_t, core::kNumEncoders> num_outliers_per_encoder_;
+  // std::array<bool, core::kNumEncoders> are_encoders_reliable_;
 
 EncodersPreprocessor::EncodersPreprocessor()
 {
@@ -50,66 +50,34 @@ core::EncoderData EncodersPreprocessor::detectOutliers(const core::EncoderData e
   documentation as appropriate
   }
   */
-core::EncoderData EncodersPreprocessor::detectOutliers(const core::EncoderData encoder_data){
-  //int sum = std::accumulate(encoder_data.begin(), encoder_data.end(), 0);
-  int sum = 0;// could do this by std::accumulate,but idk why it dosen't work
-  for(int i = 0;i<encoder_data.size();i++){
-    sum  = sum + are_encoders_reliable_.at(i);
-  }
+template<typename T>
+std::array<core::Float,3> EncodersPreprocessor::quartiles(T encoder_data){
   core::Float median;
   core::Float q1;
   core::Float q3;
-  core::Float iqr;
-  core::Float upper_bound;  // ask how to calculate upper bound
-  core::Float lower_bound;   //ask how to calculate lower bound
-  if(sum == 1){
-    std::array<uint32_t,3> encoder_data_copy;
-    core::EncoderData encoder_data_copy2;
-    std::copy(encoder_data.begin(),encoder_data.end(),encoder_data_copy2.begin());
-    int counter = 0;
-    for(int i = 0;i<encoder_data.size();i++){
-      if(are_encoders_reliable_.at(i) == 0){
-        encoder_data_copy.at(counter) = encoder_data.at(i);
-        counter = counter + 1;
-      }
-
-    }
-    std::sort(encoder_data_copy.begin(), encoder_data_copy.end());
-    median = encoder_data_copy.at(1);
-    q1 = encoder_data_copy.at(0);
-    q3 = encoder_data_copy.at(2);
-    iqr = q3-q1;
-    upper_bound = 0;//ask how to find them
-    lower_bound = 0;//ask how to find them
-    for(int i =0;i<encoder_data_copy.size();i++){
-      if(encoder_data_copy.at(i) > upper_bound || encoder_data_copy.at(i) < lower_bound){//check if the condition is correct
-        const unsigned int *index = std::find(encoder_data.begin(),encoder_data.end(), encoder_data_copy.at(i));//finding the index of the element in encoder's data
-        encoder_data_copy.at(i) = median;
-        num_outliers_per_encoder_.at(*index) = num_outliers_per_encoder_.at(*index) + 1;
-        encoder_data_copy2.at(*index) = median;
-      }
-    }
-    return encoder_data_copy2;
-    
+  std::array<core::Float,3> output;
+  int q1_high = static_cast<int> (std::ceil((encoder_data.size()+1)/4.0));
+  int q1_low = static_cast<int> (std::floor((encoder_data.size()+1)/4.0));
+  int q3_high = static_cast<int> (std::ceil((3*(encoder_data.size()+1))/4.0));
+  int q3_low = static_cast<int> (std::ceil((3*(encoder_data.size()+1))/4.0));
+  q1 = encoder_data.at(q1_low-1) + (((encoder_data.size()+1)/4.0) - q1_low)*(encoder_data.at(q1_high-1) - encoder_data.at(q1_low-1));
+  q3 = encoder_data.at(q3_high-1) +(((3*(encoder_data.size()+1))/4.0) - q3_low)*(encoder_data.at(q3_high-1) - encoder_data.at(q3_low-1));
+  if(encoder_data.size() % 2 == 0){
+    median = (encoder_data.at((encoder_data.size()/2)-1) + encoder_data.at(((encoder_data.size()/2) + 1))-1)/2.0;
   }
-  core::EncoderData encoder_data_copy;
-  std::copy(encoder_data.begin(),encoder_data.end(),encoder_data_copy.begin());
-  std::sort(encoder_data_copy.begin(), encoder_data_copy.end());
-  median = (encoder_data_copy.at((std::ceil(encoder_data_copy.size()/2.0))) + encoder_data_copy.at((std::floor(encoder_data_copy.size()/2.0))))/2.0;
-  q1 = (encoder_data_copy.at(0) + encoder_data_copy.at(1))/2.0;
-  q3 = (encoder_data_copy.at(2) + encoder_data_copy.at(3))/2.0;
-  iqr = q3-q1;
-  upper_bound = 0;//ask how to find them
-  lower_bound = 0;//ask how to find them
-  for(int i =0;i<encoder_data_copy.size();i++){
-      if(encoder_data_copy.at(i) > upper_bound || encoder_data_copy.at(i) < lower_bound){//check if the condition is correct
-        const unsigned int *index = std::find(encoder_data.begin(),encoder_data.end(), encoder_data_copy.at(i));//finding the index of the element in encoder's data
-        encoder_data_copy.at(i) = median;
-        num_outliers_per_encoder_.at(*index) = num_outliers_per_encoder_.at(*index) + 1;
-      }
-    }
-return encoder_data_copy;
- //return {0, 0, 0, 0};
+  else{
+   median = encoder_data.at(((encoder_data.size()+1)/2)-1);
+  }
+  output.at(0) = median;
+  output.at(1) = q1;
+  output.at(2) = q3;
+
+  return output; // return an output of the sequence median,q1,q3
+}
+
+core::EncoderData EncodersPreprocessor::detectOutliers(const core::EncoderData encoder_data){
+  
+ return {0, 0, 0, 0};
 }
 
 
@@ -136,7 +104,7 @@ void EncodersPreprocessor::checkReliable(const core::EncoderData &encoder_data)
 void EncodersPreprocessor::checkReliable(const core::EncoderData num_outliers_per_encoder){
   for(int i =0;i<core::kNumEncoders;i++){
     if(num_outliers_per_encoder.at(i) > 10){//for now assuming n to be 10
-        are_encoders_reliable_.at(i) = 1; //the encoder is now unrealiable
+        are_encoders_reliable_.at(i) = false; //the encoder is now unrealiable
     }    
   }
 }
