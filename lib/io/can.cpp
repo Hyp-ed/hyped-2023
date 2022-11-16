@@ -98,14 +98,15 @@ std::optional<CanFrame> Can::receive()
 
 void Can::listen()
 {
-  const std::optional<CanFrame> data;
+  std::optional<CanFrame> data;
   if (ioctl(socket_, FIONREAD) >= sizeof(CanFrame)) { data = receive(); }
   if (data == std::nullopt) { return; }
-  if (!processors_.contains(data->can_id)) {
-    logger_.log(core::LogLevel::kInfo, "No CanProccessor associated with id %i", data->can_id);
+  const CanFrame message = data.value();
+  if (!processors_.contains(message.can_id)) {
+    logger_.log(core::LogLevel::kInfo, "No CanProccessor associated with id %i", message.can_id);
   }
-  for (uint8_t i = 0; i < processors_[data->can_id].size(); i++) {
-    processors_[data->can_id][i]->processMessage(data);
+  for (uint8_t i = 0; i < processors_[message.can_id].size(); i++) {
+    processors_[message.can_id][i]->processMessage(message);
   }
 }
 

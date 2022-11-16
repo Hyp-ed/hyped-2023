@@ -41,7 +41,7 @@ class ICan {
   virtual void addCanProcessor(uint16_t ID, ICanProcessor &processor)    = 0;
 };
 
-class Can : ICan {
+class Can : public ICan {
  public:
   Can(core::ILogger &logger);
   CanResult initialise(const std::string &can_network_interface);
