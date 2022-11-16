@@ -7,12 +7,12 @@
 #include <core/logger.hpp>
 #include <core/types.hpp>
 
-#ifndef LINUX
+#if LINUX
 #include <linux/can.h>
 #endif
 namespace hyped::io {
 
-#ifndef LINUX
+#if LINUX
 using CanFrame = can_frame;
 #else
 struct CanFrame {
