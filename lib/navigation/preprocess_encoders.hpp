@@ -2,6 +2,7 @@
 #include <cstdint>
 
 #include "core/types.hpp"
+#include "consts.hpp"
 
 namespace hyped::navigation {
 class EncodersPreprocessor {
