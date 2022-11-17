@@ -82,12 +82,6 @@ std::array<core::Float,3> EncodersPreprocessor::quartiles(T encoder_data){
   return output; // return an output of the sequence median,upper_bound,lower_bound
 }*/
 
-typedef struct{
-    core::Float median;
-    core::Float upperBound;
-    core::Float lowerBound;
-}Quartile;
-
 template<std::size_t N>
 Quartile EncodersPreprocessor::getQuartiles(std::array<std::uint32_t , N> & encoder_data){
   core::Float median;
