@@ -22,7 +22,7 @@ std::optional<std::uint16_t> Adc::readValue()
 {
   const std::optional<std::uint16_t> raw_voltage = resetAndRead4(file_);
   if (raw_voltage) {
-    log_.log(core::LogLevel::kDebug, "Raw voltage: %i", raw_voltage.value());
+    log_.log(core::LogLevel::kDebug, "Raw voltage from ADC pin %d: %i", pin_, raw_voltage.value());
     return *raw_voltage;
   }
   return std::nullopt;
@@ -40,9 +40,8 @@ std::optional<std::uint16_t> Adc::resetAndRead4(const int file_descriptor)
     = read(file_descriptor,
            &read_buffer,
            sizeof(read_buffer));  // actually consume new data, changes value in buffer
-  if (num_bytes_read != sizeof(read_buffer)) {
-    log_.log(core::LogLevel::kFatal, "Failed to read 4 bytes");
-
+  if (num_bytes_read < 2) {       // 2 bytes minimum as value ranges from [0, 4095]
+    log_.log(core::LogLevel::kFatal, "Failed to read sufficient bytes from ADC");
     return std::nullopt;  // returning NULL since we did not get any value
   }
   const int raw_voltage = std::atoi(read_buffer);
