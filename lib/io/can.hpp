@@ -7,12 +7,12 @@
 #include <core/logger.hpp>
 #include <core/types.hpp>
 
-#if LINUX
+#ifdef __linux__
 #include <linux/can.h>
 #endif
 namespace hyped::io {
 
-#if LINUX
+#ifdef __linux__
 using CanFrame = can_frame;
 #else
 struct CanFrame {
@@ -37,7 +37,7 @@ class ICan {
   virtual CanResult initialise(const std::string &can_network_interface) = 0;
   virtual CanResult send(const CanFrame &message)                        = 0;
   virtual std::optional<CanFrame> receive()                              = 0;
-  virtual void listen()                                                  = 0;
+  virtual CanResult listen()                                             = 0;
   virtual void addCanProcessor(uint16_t ID, ICanProcessor &processor)    = 0;
 };
 
@@ -47,12 +47,12 @@ class Can : public ICan {
   CanResult initialise(const std::string &can_network_interface);
   CanResult send(const CanFrame &message);
   std::optional<CanFrame> receive();
-  void listen();
+  CanResult listen();
   void addCanProcessor(const uint16_t id, std::shared_ptr<ICanProcessor> processor);
 
  private:
   int socket_;
-  hyped::core::ILogger &logger_;
+  hyped::core::ILogger &log_;
   std::unordered_map<uint32_t, std::vector<std::shared_ptr<ICanProcessor>>> processors_;
 };
 
