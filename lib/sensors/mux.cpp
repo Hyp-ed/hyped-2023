@@ -8,6 +8,8 @@ Mux<T, N>::Mux(io::I2c &i2c,
                core::ILogger &log)
     : log_(log),
       i2c_(i2c),
+      num_unusable_sensors(0),
+      max_num_unusable_sensors_(static_cast<std::uint8_t>(kFailureThreshhold * N)),
       sensors_(std::move(sensors))
 {
   static_assert(N <= 8, "Mux can only have up to 8 channels");
@@ -53,8 +55,15 @@ core::Result Mux<T, N>::closeAllChannels()
 template<typename T, std::uint8_t N>
 std::optional<std::array<T, N>> Mux<T, N>::readAllChannels()
 {
-  std::array<T, N> mux_data;
+  // Zero-initialize the array
+  std::array<T, N> mux_data{};
   for (std::uint8_t i = 0; i < N; ++i) {
+    if (num_unusable_sensors > max_num_unusable_sensors_) {
+      log_.log(core::LogLevel::kFatal,
+               "Failed to read from more than %0.f%% of sensors on the mux",
+               kFailureThreshhold * 100);
+      return std::nullopt;
+    }
     const auto sensor          = sensors_[i];
     const std::uint8_t channel = sensor->getChannel();
     // First ensure correct channel is selected
@@ -67,7 +76,8 @@ std::optional<std::array<T, N>> Mux<T, N>::readAllChannels()
     const auto configure_result = sensor->configure();
     if (configure_result == core::Result::kFailure) {
       log_.log(core::LogLevel::kFatal, "Failed to configure sensor at mux channel %d", channel);
-      return std::nullopt;
+      num_unusable_sensors++;
+      continue;
     }
     // Finally read sensor data
     const std::optional<T> sensor_data = sensor->read();
@@ -75,7 +85,8 @@ std::optional<std::array<T, N>> Mux<T, N>::readAllChannels()
       mux_data.at(i) = sensor_data.value();
     } else {
       log_.log(core::LogLevel::kFatal, "Failed to get mux data from channel %d", channel);
-      return std::nullopt;
+      num_unusable_sensors++;
+      continue;
     }
     const auto closing_channel_result = closeAllChannels();
     if (closing_channel_result == core::Result::kFailure) {
