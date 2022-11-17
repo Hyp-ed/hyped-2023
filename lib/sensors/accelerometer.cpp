@@ -49,7 +49,7 @@ std::optional<std::int16_t> Accelerometer::getRawAccelerationZ()
   return rawX;
 }
 
-std::optional<hyped::core::acceleration_struct> Accelerometer::read()
+std::optional<core::acceleration_struct> Accelerometer::read()
 {
   /* check to see if the values are ready to be read */
   std::optional<std::uint8_t> result = i2c_.readByte(address_, 0x27);
@@ -60,7 +60,7 @@ std::optional<hyped::core::acceleration_struct> Accelerometer::read()
 
   // check if sensor says that data is ready to be read
   if (result.value() == 0x00) {
-    log_.log(hyped::core::LogLevel::kFatal, "acceleration data not ready yet to be read");
+    log_.log(core::LogLevel::kFatal, "acceleration data not ready yet to be read");
     return std::nullopt;
   }
 
@@ -92,7 +92,7 @@ std::optional<hyped::core::acceleration_struct> Accelerometer::read()
   ZAcceleration        = ZAcceleration / 1000;
   ZAcceleration        = ZAcceleration * 1.952;
 
-  std::optional<hyped::core::acceleration_struct> resultNEW{std::in_place, XAcceleration, YAcceleration, ZAcceleration, std::chrono::high_resolution_clock::now()};
+  std::optional<core::acceleration_struct> resultNEW{std::in_place, XAcceleration, YAcceleration, ZAcceleration, std::chrono::high_resolution_clock::now()};
 
   return resultNEW;
 }

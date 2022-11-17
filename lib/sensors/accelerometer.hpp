@@ -13,13 +13,13 @@
 
 namespace hyped::sensors {
 
-class Accelerometer : II2cMuxSensor<hyped::core::acceleration_struct> {
+class Accelerometer : II2cMuxSensor<core::acceleration_struct> {
  public:
-  Accelerometer(const std::uint8_t mux_address, io::I2c &i2c, hyped::core::ILogger &log);
+  Accelerometer(const std::uint8_t mux_address, io::I2c &i2c, core::ILogger &log);
   ~Accelerometer();
 
   core::Result configure();
-  std::optional<hyped::core::acceleration_struct> read();
+  std::optional<core::acceleration_struct> read();
 
  private:
 
@@ -27,8 +27,8 @@ class Accelerometer : II2cMuxSensor<hyped::core::acceleration_struct> {
   const std::uint8_t CTRL_2 = 0x21;
   const std::uint8_t CTRL_6 = 0x25;
 
-  hyped::core::ILogger &log_;
-  hyped::io::I2c &i2c_;  // I2c object for the accelerometer
+  core::ILogger &log_;
+  io::I2c &i2c_;  // I2c object for the accelerometer
   const std::uint8_t address_;
 
   std::optional<std::int16_t> getRawAccelerationX();
