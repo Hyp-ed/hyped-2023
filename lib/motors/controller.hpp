@@ -1,4 +1,6 @@
 #pragma once
+#include <cstdint>
+#include "core/logger.hpp"
 
 namespace hyped::motors {
   enum class controller_status {ControllerTemperatureExceeded, GeneralWarning, Nominal};
