@@ -1,3 +1,5 @@
+#pragma once
+
 #include <functional>
 #include <iostream>
 #include <map>
@@ -19,7 +21,7 @@ struct Command {
 
 class Repl {
  public:
-  Repl(hyped::core::ILogger &log);
+  Repl(core::ILogger &log);
   void run();
   std::optional<std::unique_ptr<Repl>> fromFile(const std::string &filename);
 
@@ -33,7 +35,7 @@ class Repl {
   void addAdcCommands(const std::uint8_t pin);
   void addI2cCommands(const std::uint8_t bus);
 
-  hyped::core::ILogger &log_;
+  core::ILogger &log_;
   std::map<std::string, Command> command_map_;
 };
 }  // namespace hyped::debug

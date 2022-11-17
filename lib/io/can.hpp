@@ -1,3 +1,5 @@
+#pragma once
+
 #include <core/types.hpp>
 
 namespace hyped::io {
