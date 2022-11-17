@@ -9,6 +9,7 @@ namespace hyped::state_machine {
     }
 
     //Check if the current states transition function returns true
+    // TODOLater implement:
     void StateMachine::checkTransition()
     {
         //update data
@@ -17,9 +18,10 @@ namespace hyped::state_machine {
     }
 
     //Transition to next state
+    // TODO implement:
     void StateMachine::transition()
     {
-        
+        //takes in a state and changes the current state to that state
     }
 
 } //namespace hyped::state_machine

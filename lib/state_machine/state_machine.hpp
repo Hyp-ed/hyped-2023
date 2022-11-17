@@ -1,3 +1,5 @@
+#pragma once
+
 #include "state.cpp"
 #include "transition.cpp"
 
@@ -11,6 +13,7 @@ namespace hyped::state_machine {
 
         void checkTransition();
 
+        // TODO add state field:
         //requires State be implemented
         //State current_state = State::kInitialState
         
