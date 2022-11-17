@@ -18,8 +18,17 @@ class EncodersPreprocessor {
   //void checkReliable(const core::EncoderData &encoder_data);
   void checkReliable(const core::EncoderData num_outliers_per_encoder);
 
-  template<typename T>
-  std::array<core::Float,3> quartiles(T encoder_data);
+  //template<typename T>
+  //std::array<core::Float,3> quartiles(T encoder_data);
+
+struct Quartile{
+    core::Float median;
+    core::Float upperBound;
+    core::Float lowerBound;
+};
+
+  template<std::size_t N>
+  Quartile getQuartiles(std::array<std::uint32_t , N> & encoder_data);
 
 
 
