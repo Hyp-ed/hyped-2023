@@ -40,7 +40,7 @@ std::optional<std::uint16_t> Adc::resetAndRead4(const int file_descriptor)
     = read(file_descriptor,
            &read_buffer,
            sizeof(read_buffer));  // actually consume new data, changes value in buffer
-  if (num_bytes_read < 2) {       // 2 bytes minimum as value ranges from 1 to 4 digits
+  if (num_bytes_read < 2) {       // 2 bytes minimum as value ranges from [0, 4095]
     log_.log(core::LogLevel::kFatal, "Failed to read sufficient bytes from ADC");
     return std::nullopt;  // returning NULL since we did not get any value
   }
