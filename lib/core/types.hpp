@@ -44,11 +44,11 @@ using KeyenceData = std::array<std::uint32_t, kNumKeyence>;
 // data produced by the accelerometer sensor
 struct acceleration_struct {
 
-  acceleration_struct(float x, float y, float z, std::chrono::high_resolution_clock::time_point time) : x(x), y(y), z(z), time(time) {}
+  acceleration_struct(core::Float x, core::Float y, core::Float z, std::chrono::high_resolution_clock::time_point time) : x(x), y(y), z(z), time(time) {}
 
-  float x;
-  float y;
-  float z;
+  core::Float x;
+  core::Float y;
+  core::Float z;
   std::chrono::high_resolution_clock::time_point time;
 };
 

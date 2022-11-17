@@ -97,14 +97,18 @@ std::optional<hyped::core::acceleration_struct> Accelerometer::read()
   return resultNEW;
 }
 
-bool Accelerometer::configure()
+core::Result Accelerometer::configure()
 {
-  i2c_.writeByte(address_, CTRL_1, 0x64);
-  i2c_.writeByte(address_, CTRL_2, 0xC);
-  i2c_.writeByte(address_, CTRL_6, 0x30);
+  core::Result result1 = i2c_.writeByteToRegister(address_, CTRL_1, 0x64);
+  if (result1 == core::Result::kFailure) return core::Result::kFailure;
 
-  // nothing can go wrong
-  return true;
+  core::Result result2 = i2c_.writeByteToRegister(address_, CTRL_2, 0xC);
+  if (result2 == core::Result::kFailure) return core::Result::kFailure;
+
+  core::Result result3 = i2c_.writeByteToRegister(address_, CTRL_6, 0x30);
+  if (result3 == core::Result::kFailure) return core::Result::kFailure;
+
+  return core::Result::kSuccess;
 }
 
 }  // namespace hyped::sensors

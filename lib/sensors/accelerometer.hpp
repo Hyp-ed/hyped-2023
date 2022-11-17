@@ -1,6 +1,6 @@
 #pragma once
 
-#include "sensors.hpp"
+#include "i2c_sensors.hpp"
 
 #include <cstdint>
 #include <unistd.h>
@@ -13,12 +13,12 @@
 
 namespace hyped::sensors {
 
-class Accelerometer : II2cSensor<hyped::core::acceleration_struct> {
+class Accelerometer : II2cMuxSensor<hyped::core::acceleration_struct> {
  public:
   Accelerometer(const std::uint8_t mux_address, io::I2c &i2c, hyped::core::ILogger &log);
   ~Accelerometer();
 
-  bool configure();
+  core::Result configure();
   std::optional<hyped::core::acceleration_struct> read();
 
  private:
