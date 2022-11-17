@@ -38,4 +38,12 @@ using ImuData     = std::array<Float, kNumImus>;
 using EncoderData = std::array<std::uint32_t, kNumEncoders>;
 using KeyenceData = std::array<std::uint32_t, kNumKeyence>;
 
+// data produced by the accelerometer sensor
+struct acceleration_struct {
+  float x;
+  float y;
+  float z;
+  std::chrono::time_point<std::chrono::system_clock> time;
+};
+
 }  // namespace hyped::core
