@@ -11,21 +11,8 @@ namespace hyped::state_machine {
 
         void checkTransition();
 
-        //TODO: add fields to hold the current state, states and transitions
-        struct states
-        {
-            //requires State be implemented
-            //State::a
-        };
-
-        struct transitions
-        {
-          //requires Transition be implemented
-          //Transition::b 
-        };
-
         //requires State be implemented
-        //State current_state
+        //State current_state = State::kInitialState
         
     };
 } //namespace hyped::state_machine

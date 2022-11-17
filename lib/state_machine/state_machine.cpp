@@ -1,6 +1,5 @@
 #include "state_machine.hpp"
 
-//Add in the state machine class
 
 namespace hyped::state_machine {
 
@@ -9,11 +8,15 @@ namespace hyped::state_machine {
 
     }
 
+    //Check if the current states transition function returns true
     void StateMachine::checkTransition()
     {
-
+        //update data
+        //should check if a transition is needed with current data
+        //then run transition to move to next state
     }
 
+    //Transition to next state
     void StateMachine::transition()
     {
         
