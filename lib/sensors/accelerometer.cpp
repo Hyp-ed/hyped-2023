@@ -54,9 +54,7 @@ std::optional<core::acceleration_struct> Accelerometer::read()
   /* check to see if the values are ready to be read */
   std::optional<std::uint8_t> result = i2c_.readByte(address_, 0x27);
 
-  if (!result.has_value()) {
-    return std::nullopt;
-  }
+  if (!result.has_value()) { return std::nullopt; }
 
   // check if sensor says that data is ready to be read
   if (result.value() == 0x00) {
@@ -68,12 +66,13 @@ std::optional<core::acceleration_struct> Accelerometer::read()
   std::optional<std::int16_t> resultX = getRawAccelerationX();
   if (!resultX.has_value()) return std::nullopt;
 
-  std::int16_t XRawAcc = resultX.value() >> 2; /* shifted by 2 as 14bit resolution is used in high performance mode */
+  std::int16_t XRawAcc
+    = resultX.value() >> 2; /* shifted by 2 as 14bit resolution is used in high performance mode */
   float XAcceleration = (float)(XRawAcc);
   XAcceleration       = XAcceleration / 1000; /* mg to g */
   XAcceleration = XAcceleration * 1.952;      /* Multiply with sensitivity 1.952 in high performance
                                                  mode, 14bit, and full scale +-16g */
-  
+
   // y axis
   std::optional<std::int16_t> resultY = getRawAccelerationY();
   if (!resultY.has_value()) return std::nullopt;
@@ -92,7 +91,11 @@ std::optional<core::acceleration_struct> Accelerometer::read()
   ZAcceleration        = ZAcceleration / 1000;
   ZAcceleration        = ZAcceleration * 1.952;
 
-  std::optional<core::acceleration_struct> resultNEW{std::in_place, XAcceleration, YAcceleration, ZAcceleration, std::chrono::high_resolution_clock::now()};
+  std::optional<core::acceleration_struct> resultNEW{std::in_place,
+                                                     XAcceleration,
+                                                     YAcceleration,
+                                                     ZAcceleration,
+                                                     std::chrono::high_resolution_clock::now()};
 
   return resultNEW;
 }
