@@ -1,19 +1,19 @@
 #pragma once
 #include <cstdint>
+
 #include "core/logger.hpp"
 
 namespace hyped::motors {
-  enum class controller_status {ControllerTemperatureExceeded, GeneralWarning, Nominal};
-  
-  class Controller {
+enum class controller_status { ControllerTemperatureExceeded, GeneralWarning, Nominal };
 
-  public:
-    Controller(core::ILogger &logger);
-    void processErrorMessage(const uint16_t error_code);
-    controller_status processWarningMessage(const uint8_t warning_code);
+class Controller {
+ public:
+  Controller(core::ILogger &logger);
+  void processErrorMessage(const uint16_t error_code);
+  controller_status processWarningMessage(const uint8_t warning_code);
 
-  private:
-    hyped::core::ILogger &logger_;
-  };
+ private:
+  hyped::core::ILogger &logger_;
+};
 
 }  // namespace hyped::motors
