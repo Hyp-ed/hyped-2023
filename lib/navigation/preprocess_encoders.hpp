@@ -1,8 +1,9 @@
+#include "consts.hpp"
+
 #include <array>
 #include <cstdint>
 
 #include "core/types.hpp"
-#include "consts.hpp"
 
 namespace hyped::navigation {
 class EncodersPreprocessor {
@@ -12,20 +13,21 @@ class EncodersPreprocessor {
   core::EncoderData processData(const core::EncoderData encoder_data);
 
  private:
- //extern core::EncoderData reliability_of_encoders;      // some addition
- //extern core::EncoderData num_outliers_per_encoder;
+  // extern core::EncoderData reliability_of_encoders;      // some addition
+  // extern core::EncoderData num_outliers_per_encoder;
   core::EncoderData detectOutliers(const core::EncoderData encoder_data);
-  
-  //void checkReliable(const core::EncoderData &encoder_data);
+
+  // void checkReliable(const core::EncoderData &encoder_data);
   void checkReliable(const core::EncoderData num_outliers_per_encoder);
 
-  //template<typename T>
-  //std::array<core::Float,3> quartiles(T encoder_data);
+  // template<typename T>
+  // std::array<core::Float,3> quartiles(T encoder_data);
 
   template<std::size_t N>
-  Quartile getQuartiles(std::array<std::uint32_t , N> & encoder_data);
+  Quartile getQuartiles(const std::array<std::uint32_t, N> &encoder_data);
 
-
+  // number of reliable encoders, initialised as core::kNumEncoders
+  std::uint8_t num_reliable_encoders_;
 
   // initialised as {0, 0, 0, 0}, count of consecutive outliers
   std::array<uint16_t, core::kNumEncoders> num_outliers_per_encoder_;
@@ -34,4 +36,4 @@ class EncodersPreprocessor {
   std::array<bool, core::kNumEncoders> are_encoders_reliable_;
 };
 
-}  // namespace hyped::navigationcore::Float calculating_median(const core::EncoderData encoder_data)
+}  // namespace hyped::navigation
