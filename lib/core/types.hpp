@@ -1,6 +1,8 @@
 #pragma once
 #include <array>
 #include <cstdint>
+#include <chrono>
+
 namespace hyped::core {
 
 static constexpr float kEpsilon = 0.0001;
@@ -40,10 +42,13 @@ using KeyenceData = std::array<std::uint32_t, kNumKeyence>;
 
 // data produced by the accelerometer sensor
 struct acceleration_struct {
+
+  acceleration_struct(float x, float y, float z, std::chrono::high_resolution_clock::time_point time) : x(x), y(y), z(z), time(time) {}
+
   float x;
   float y;
   float z;
-  std::chrono::time_point<std::chrono::system_clock> time;
+  std::chrono::high_resolution_clock::time_point time;
 };
 
 }  // namespace hyped::core
