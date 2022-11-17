@@ -9,7 +9,7 @@ Mux<T, N>::Mux(io::I2c &i2c,
     : log_(log),
       i2c_(i2c),
       num_unusable_sensors(0),
-      max_num_unusable_sensors_(static_cast<std::uint8_t>(kFailureThreshhold * N)),
+      max_num_unusable_sensors_(static_cast<std::uint8_t>(kFailureThreshold * N)),
       sensors_(std::move(sensors))
 {
   static_assert(N <= 8, "Mux can only have up to 8 channels");
@@ -61,7 +61,7 @@ std::optional<std::array<T, N>> Mux<T, N>::readAllChannels()
     if (num_unusable_sensors > max_num_unusable_sensors_) {
       log_.log(core::LogLevel::kFatal,
                "Failed to read from more than %0.f%% of sensors on the mux",
-               kFailureThreshhold * 100);
+               kFailureThreshold * 100);
       return std::nullopt;
     }
     const auto sensor          = sensors_[i];

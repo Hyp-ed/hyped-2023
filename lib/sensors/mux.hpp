@@ -11,7 +11,7 @@ namespace hyped::sensors {
 
 static constexpr std::uint8_t kDefaultMuxAddress = 0x70;
 static constexpr std::uint8_t kMaxNumChannels    = 8;
-static constexpr core::Float kFailureThreshhold
+static constexpr core::Float kFailureThreshold
   = 0.25;  // TODOLater: finalize this value with Electronics
 
 template<class T, std::uint8_t N>
