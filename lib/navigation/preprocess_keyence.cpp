@@ -4,28 +4,32 @@
 
 namespace hyped::navigation {
 
-KeyencePreprocessor::KeyencePreprocessor(hyped::core::ILogger &logger) : log_(logger)
+KeyencePreprocessor::KeyencePreprocessor(core::ILogger &logger)
+    : log_(logger),
+      previous_data_status_(KeyenceDataStatus::kAgreed)
 {
-  // Currently no extra parameters so constructor is empty
-  has_keyence_disagreed_ = false;
 }
-
 SensorChecks KeyencePreprocessor::checkKeyenceAgrees(const core::KeyenceData &keyence_data)
 {
-  bool keyence_data_disagrees = false;
+  KeyenceDataStatus current_data_status = KeyenceDataStatus::kDisagreed;
   for (std::size_t i = 0; i < keyence_data.size() - 1; ++i) {
-    if (keyence_data.at(i) != keyence_data.at(i + 1)) { keyence_data_disagrees = true; }
+    if (keyence_data.at(i) != keyence_data.at(i + 1)) {
+      current_data_status = KeyenceDataStatus::kDisagreed;
+    }
   }
 
-  if (keyence_data_disagrees && has_keyence_disagreed_) {
-    log_.log(hyped::core::LogLevel::kFatal, "Keyence disagreed more than once");
+  if (current_data_status == KeyenceDataStatus::kDisagreed
+      && previous_data_status_ == KeyenceDataStatus::kDisagreed) {
+    log_.log(core::LogLevel::kFatal, "Keyence disagreed more than once");
     return SensorChecks::kUnacceptable;
-
-  } else if (keyence_data_disagrees && !(has_keyence_disagreed_)) {
-    has_keyence_disagreed_ = true;
-
-  } else if (!(keyence_data_disagrees) && has_keyence_disagreed_) {
-    has_keyence_disagreed_ = false;
+  }
+  if (current_data_status == KeyenceDataStatus::kDisagreed
+      && previous_data_status_ == KeyenceDataStatus::kAgreed) {
+    previous_data_status_ = KeyenceDataStatus::kDisagreed;
+  }
+  if (current_data_status == KeyenceDataStatus::kAgreed
+      && previous_data_status_ == KeyenceDataStatus::kDisagreed) {
+    previous_data_status_ = KeyenceDataStatus::kAgreed;
   }
 
   return SensorChecks::kAcceptable;

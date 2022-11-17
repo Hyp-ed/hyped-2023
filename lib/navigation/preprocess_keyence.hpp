@@ -5,6 +5,8 @@
 
 namespace hyped::navigation {
 
+enum class KeyenceDataStatus { kAgreed = 0, kDisagreed };
+
 class KeyencePreprocessor {
  public:
   /**
@@ -12,7 +14,7 @@ class KeyencePreprocessor {
    *
    * @param log_: Navigation logger
    */
-  KeyencePreprocessor(hyped::core::ILogger &log_);
+  KeyencePreprocessor(core::ILogger &log_);
 
   /**
    * @brief Checks that keyences have not disagreed twice in a row.
@@ -25,9 +27,9 @@ class KeyencePreprocessor {
    *
    */
  private:
-  hyped::core::ILogger &log_;
-  // Flag for if the previous keyence measurements disagreed.
-  bool has_keyence_disagreed_;
+  core::ILogger &log_;
+  // Enum variable for if the previous keyence data disagreed.
+  KeyenceDataStatus previous_data_status_;
 };
 
 }  // namespace hyped::navigation
