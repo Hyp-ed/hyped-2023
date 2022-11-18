@@ -8,7 +8,6 @@ Mux<T, N>::Mux(io::I2c &i2c,
                core::ILogger &log)
     : log_(log),
       i2c_(i2c),
-      num_unusable_sensors(0),
       max_num_unusable_sensors_(static_cast<std::uint8_t>(kFailureThreshold * N)),
       sensors_(std::move(sensors))
 {
@@ -58,12 +57,6 @@ std::optional<std::array<T, N>> Mux<T, N>::readAllChannels()
   // Zero-initialize the array
   std::array<T, N> mux_data{};
   for (std::uint8_t i = 0; i < N; ++i) {
-    if (num_unusable_sensors > max_num_unusable_sensors_) {
-      log_.log(core::LogLevel::kFatal,
-               "Failed to read from more than %0.f%% of sensors on the mux",
-               kFailureThreshold * 100);
-      return std::nullopt;
-    }
     const auto sensor          = sensors_[i];
     const std::uint8_t channel = sensor->getChannel();
     // First ensure correct channel is selected
@@ -76,21 +69,28 @@ std::optional<std::array<T, N>> Mux<T, N>::readAllChannels()
     const auto configure_result = sensor->configure();
     if (configure_result == core::Result::kFailure) {
       log_.log(core::LogLevel::kFatal, "Failed to configure sensor at mux channel %d", channel);
-      num_unusable_sensors++;
+      ++num_unusable_sensors;
       continue;
     }
     // Finally read sensor data
-    const std::optional<T> sensor_data = sensor->read();
-    if (sensor_data.has_value()) {
+    const auto sensor_data = sensor->read();
+    if (sensor_data) {
       mux_data.at(i) = sensor_data.value();
     } else {
       log_.log(core::LogLevel::kFatal, "Failed to get mux data from channel %d", channel);
-      num_unusable_sensors++;
+      ++num_unusable_sensors;
       continue;
     }
     const auto closing_channel_result = closeAllChannels();
     if (closing_channel_result == core::Result::kFailure) {
       log_.log(core::LogLevel::kFatal, "Failed to close all mux channels while reading");
+      return std::nullopt;
+    }
+    // If too many sensors are unusable, assume mux is faulty
+    if (num_unusable_sensors > max_num_unusable_sensors_) {
+      log_.log(core::LogLevel::kFatal,
+               "Failed to read from more than %0.f%% of sensors on the mux",
+               kFailureThreshold * 100);
       return std::nullopt;
     }
   }

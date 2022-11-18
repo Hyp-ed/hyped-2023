@@ -13,6 +13,7 @@ static constexpr std::uint8_t kDefaultMuxAddress = 0x70;
 static constexpr std::uint8_t kMaxNumChannels    = 8;
 static constexpr core::Float kFailureThreshold
   = 0.25;  // TODOLater: finalize this value with Electronics
+std::uint8_t num_unusable_sensors = 0;
 
 template<class T, std::uint8_t N>
 class Mux {
@@ -30,7 +31,6 @@ class Mux {
   core::Result closeAllChannels();
   core::ILogger &log_;
   io::I2c i2c_;
-  std::uint8_t num_unusable_sensors;
   const std::uint8_t max_num_unusable_sensors_;
   const std::uint8_t mux_address_;
   const std::array<std::unique_ptr<II2cMuxSensor<T>>, N> sensors_;
