@@ -14,6 +14,13 @@
 
 namespace hyped::sensors {
 
+static constexpr std::uint8_t CTRL_1 = 0x20;
+static constexpr std::uint8_t CTRL_2 = 0x21;
+static constexpr std::uint8_t CTRL_6 = 0x25;
+
+static constexpr std::uint8_t DEV_ID_REG = 0x0F;
+static constexpr std::uint8_t EXPECTED_DEVICE_ID = 0x44;
+
 class Accelerometer : II2cMuxSensor<core::acceleration_struct> {
  public:
   Accelerometer(const std::uint8_t mux_address, io::I2c &i2c, core::ILogger &log);
@@ -23,12 +30,6 @@ class Accelerometer : II2cMuxSensor<core::acceleration_struct> {
   std::optional<core::acceleration_struct> read();
 
  private:
-  const std::uint8_t CTRL_1 = 0x20;
-  const std::uint8_t CTRL_2 = 0x21;
-  const std::uint8_t CTRL_6 = 0x25;
-
-  const std::uint8_t DEV_ID_REG = 0x0F;
-  const std::uint8_t EXPECTED_DEVICE_ID = 0x44;
 
   core::ILogger &log_;
   io::I2c &i2c_;  // I2c object for the accelerometer
