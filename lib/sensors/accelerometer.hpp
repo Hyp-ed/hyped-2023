@@ -27,6 +27,9 @@ class Accelerometer : II2cMuxSensor<core::acceleration_struct> {
   const std::uint8_t CTRL_2 = 0x21;
   const std::uint8_t CTRL_6 = 0x25;
 
+  const std::uint8_t DEV_ID_REG = 0x0F;
+  const std::uint8_t EXPECTED_DEVICE_ID = 0x44;
+
   core::ILogger &log_;
   io::I2c &i2c_;  // I2c object for the accelerometer
   const std::uint8_t address_;

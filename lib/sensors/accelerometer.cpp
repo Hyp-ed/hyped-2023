@@ -102,6 +102,16 @@ std::optional<core::acceleration_struct> Accelerometer::read()
 
 core::Result Accelerometer::configure()
 {
+
+  // if device id is incorrect, then the address is wrong
+  std::optional<std::uint8_t> deviceID = i2c_.readByte(address_, DEV_ID_REG);
+  if (!deviceID.has_value()) return core::Result::kFailure;
+
+  if (deviceID.value() != EXPECTED_DEVICE_ID) {
+    log_.log(core::LogLevel::kFatal, "accelerometer didn't give correct device id");
+    return core::Result::kFailure;
+  } 
+
   core::Result result1 = i2c_.writeByteToRegister(address_, CTRL_1, 0x64);
   if (result1 == core::Result::kFailure) return core::Result::kFailure;
 
