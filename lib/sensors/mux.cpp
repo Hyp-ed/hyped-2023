@@ -58,7 +58,7 @@ std::optional<std::array<T, N>> Mux<T, N>::readAllChannels()
   std::array<T, N> mux_data{};
   std::uint8_t num_unusable_sensors = 0;
   for (std::uint8_t i = 0; i < N; ++i) {
-    const auto sensor          = sensors_[i];
+    const auto &sensor         = sensors_.at(i);
     const std::uint8_t channel = sensor->getChannel();
     // First ensure correct channel is selected
     const auto channel_select_result = selectChannel(channel);
@@ -75,13 +75,12 @@ std::optional<std::array<T, N>> Mux<T, N>::readAllChannels()
     }
     // Finally read sensor data
     const auto sensor_data = sensor->read();
-    if (sensor_data) {
-      mux_data.at(i) = sensor_data.value();
-    } else {
+    if (!sensor_data) {
       log_.log(core::LogLevel::kFatal, "Failed to get mux data from channel %d", channel);
       ++num_unusable_sensors;
       continue;
     }
+    mux_data.at(i)                    = sensor_data.value();
     const auto closing_channel_result = closeAllChannels();
     if (closing_channel_result == core::Result::kFailure) {
       log_.log(core::LogLevel::kFatal, "Failed to close all mux channels while reading");
