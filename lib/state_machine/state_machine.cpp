@@ -18,10 +18,14 @@ namespace hyped::state_machine {
     }
 
     //Transition to next state
-    // TODO implement:
-    void StateMachine::transition()
+    void StateMachine::transition(Message message)
     {
-        //takes in a state and changes the current state to that state
+        for (Transition transition : transitions) {
+            if (transition.from == current_state && transition.message == message) {
+                current_state = transition.to;
+                return;
+            }
+        }
     }
 
 } //namespace hyped::state_machine
