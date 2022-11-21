@@ -76,7 +76,7 @@ std::optional<std::int16_t> Accelerometer::getRawAccelerationZ()
   return raw_acceleration_Z;
 }
 
-std::optional<core::acceleration_struct> Accelerometer::read()
+std::optional<core::RawAccelerationData> Accelerometer::read()
 {
   /* check to see if the values are ready to be read */
   auto dataReady = i2c_.readByte(mux_address_, kDataReady);
@@ -118,7 +118,7 @@ std::optional<core::acceleration_struct> Accelerometer::read()
   ZAcceleration              = ZAcceleration / 1000;
   ZAcceleration              = ZAcceleration * 1.952;
 
-  const std::optional<core::acceleration_struct> rawAcceleration{
+  const std::optional<core::RawAccelerationData> rawAcceleration{
     std::in_place,
     XAcceleration,
     YAcceleration,

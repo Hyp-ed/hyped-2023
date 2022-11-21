@@ -23,18 +23,17 @@ static constexpr std::uint8_t kYOutL        = 0x2A;
 static constexpr std::uint8_t kYOutH        = 0x2B;
 static constexpr std::uint8_t kZOutL        = 0x2C;
 static constexpr std::uint8_t kZOutH        = 0x2D;
-static constexpr std::uint8_t kZOutH        = 0x2D;
 static constexpr std::uint8_t kDataReady    = 0x27;
 static constexpr std::uint8_t kDevId        = 0x0F;
 static constexpr std::uint8_t expectedDevId = 0x44;
 
-class Accelerometer : II2cMuxSensor<core::acceleration_struct> {
+class Accelerometer : II2cMuxSensor<core::RawAccelerationData> {
  public:
   Accelerometer(const std::uint8_t mux_address, io::I2c &i2c, core::ILogger &log);
   ~Accelerometer();
 
   core::Result configure();
-  std::optional<core::acceleration_struct> read();
+  std::optional<core::RawAccelerationData> read();
 
  private:
   core::ILogger &log_;

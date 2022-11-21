@@ -1,5 +1,7 @@
 #pragma once
 
+#include "time.hpp"
+
 #include <array>
 #include <chrono>
 #include <cstdint>
