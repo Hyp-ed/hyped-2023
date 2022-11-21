@@ -55,7 +55,7 @@ std::optional<std::shared_ptr<IGpioReader>> HardwareGpio::getReader(const uint8_
   //gpio addresses contain 32 pins, so we use pinmap to specify specific pin.
   const uint32_t pinMAP = (1 << pinID);
   if (bank > 3) {
-    log_.log(hyped::core::LogLevel::kFatal, "invalid pin number");
+    log_.log(core::LogLevel::kFatal, "invalid pin number");
     return std::nullopt;
   }
 
@@ -69,13 +69,13 @@ std::optional<std::shared_ptr<IGpioReader>> HardwareGpio::getReader(const uint8_
    **/
   int fd = open("/dev/mem", O_RDWR);
   if (fd < 0) {
-    log_.log(hyped::core::LogLevel::kFatal, "opening /dev/mem failed");
+    log_.log(core::LogLevel::kFatal, "opening /dev/mem failed");
     return std::nullopt;
   }
   
   gpio_addr = mmap(0, pinSize , PROT_READ | PROT_WRITE, MAP_SHARED, fd, pinAddress);
   if (gpio_addr == MAP_FAILED) {
-    log_.log(hyped::core::LogLevel::kFatal, "mmap failed");
+    log_.log(core::LogLevel::kFatal, "mmap failed");
     return std::nullopt;
   }
   // Type conversion for address adding from void
