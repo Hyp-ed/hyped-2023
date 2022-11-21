@@ -42,11 +42,8 @@ using EncoderData = std::array<std::uint32_t, kNumEncoders>;
 using KeyenceData = std::array<std::uint32_t, kNumKeyence>;
 
 // data produced by the accelerometer sensor
-struct acceleration_struct {
-  acceleration_struct(core::Float x,
-                      core::Float y,
-                      core::Float z,
-                      std::chrono::high_resolution_clock::time_point time)
+struct RawAccelerationData {
+  RawAccelerationData(core::Float x, core::Float y, core::Float z, TimePoint time)
       : x(x),
         y(y),
         z(z),
@@ -57,7 +54,7 @@ struct acceleration_struct {
   core::Float x;
   core::Float y;
   core::Float z;
-  std::chrono::high_resolution_clock::time_point time;
+  TimePoint time;
 };
 
 }  // namespace hyped::core
