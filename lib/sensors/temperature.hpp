@@ -11,15 +11,15 @@
 
 namespace hyped::sensors {
 
-static constexpr std::uint8_t kMux             = 0x70;
-static constexpr std::uint8_t kControl         = 0x04;
-static constexpr std::uint8_t kTempuratureHigh = 0x07;
-static constexpr std::uint8_t kTempuratureLow  = 0x06;
-static constexpr std::uint8_t kStatus          = 0x05;
+static constexpr std::uint8_t kCtrl                 = 0x04;
+static constexpr std::uint8_t kData_T_H             = 0x07;
+static constexpr std::uint8_t kData_T_L             = 0x06;
+static constexpr std::uint8_t kStatus               = 0x05;
+static constexpr std::uint8_t kConfigurationSetting = 0x3c;
 
 class Temperature : public II2cMuxSensor<std::uint16_t> {
  public:
-  Temperature(hyped::io::I2c &i2c, hyped::core::ILogger &log);
+  Temperature(const std::uint8_t mux_address, hyped::io::I2c &i2c, hyped::core::ILogger &log);
   ~Temperature();
 
   core::Result configure();
@@ -28,6 +28,7 @@ class Temperature : public II2cMuxSensor<std::uint16_t> {
  private:
   hyped::core::ILogger &log_;
   hyped::io::I2c &i2c_;
+  const std::uint8_t mux_address_;
 };
 
 }  // namespace hyped::sensors
