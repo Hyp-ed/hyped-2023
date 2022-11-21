@@ -9,7 +9,8 @@ namespace hyped::io {
 std::optional<core::DigitalSignal> HardwareGpioReader::read()
 {
   
-  int out = *gpio_readAddr & pinMAP;
+  const uint8_t out = *gpio_readAddr & pinMAP ? 1 : 0;
+  //
   if (out > 0) {
     return core::DigitalSignal::kHigh;
   } else{
@@ -19,13 +20,11 @@ std::optional<core::DigitalSignal> HardwareGpioReader::read()
 
 GpioWriteResult HardwareGpioWriter::write(const core::DigitalSignal state)
 {
-  //Not sure if this correct
-  //May just erase everything
-  //May need to 
+  //Set and Clear are seperate registers.
   if (state == core::DigitalSignal::kHigh) {
-    *gpio_setAddr |= pinMAP;
+    *gpio_setAddr = pinMAP;
   } else {
-    *gpio_clearAddr &= ~pinMAP;
+    *gpio_clearAddr = pinMAP;
   }
   return GpioWriteResult::kSuccess;
 }
@@ -46,14 +45,27 @@ std::optional<std::shared_ptr<IGpioReader>> HardwareGpio::getReader(const uint8_
     std::shared_ptr<IGpioReader> reader = InitializedReaders[pin];
     return reader;
   }
-  const uint8_t bank = pin / 32;
-  const uint8_t pinID = pin % 32;
-  const uint8_t pinMAP = (1 << pinID);
 
+  //There are 4 Bank Numbers, 0 1 2 3
+  //So interger division by 32 gives us bank number
+  const uint32_t bank = pin / 32;
+  // Modulo by 32 gets us the ID of the pin relative to the bank
+  const uint32_t pinID = pin % 32;
+  //gpio addresses contain 32 pins, so we use pinmap to specify specific pin.
+  const uint32_t pinMAP = (1 << pinID);
+  if (bank > 3) {
+    log_.log(hyped::core::LogLevel::kFatal, "invalid pin number");
+    return std::nullopt;
+  }
+
+  //Now that we have the bank number, we can get the actual memory address.
   const off_t pinAddress = bankAddresses[bank];
   volatile void *gpio_addr;
-  volatile unsigned int *gpio_read;
+  volatile uint32_t *gpio_read;
 
+  /** 
+  /dev/mem and mmap is related to making the registry available as a virtual memory address.
+   **/
   int fd = open("/dev/mem", O_RDWR);
   if (fd < 0) {
     log_.log(hyped::core::LogLevel::kFatal, "opening /dev/mem failed");
@@ -65,8 +77,10 @@ std::optional<std::shared_ptr<IGpioReader>> HardwareGpio::getReader(const uint8_
     log_.log(hyped::core::LogLevel::kFatal, "mmap failed");
     return std::nullopt;
   }
-
-  gpio_read = static_cast<volatile unsigned int*>(gpio_addr) + pinRead;  
+  // Type conversion for address adding from void
+  const uint64_t base = reinterpret_cast<uint64_t>(gpio_addr);
+  //pinRead is the hardware specified address for reading.
+  gpio_read = reinterpret_cast<volatile uint32_t *>(base + pinRead);
   InitializedReaders[pin] = std::shared_ptr<HardwareGpioReader>(new HardwareGpioReader(pinMAP, gpio_read));
   std::shared_ptr<IGpioReader> reader = InitializedReaders[pin];
   return reader;
@@ -80,14 +94,14 @@ std::optional<std::shared_ptr<IGpioWriter>> HardwareGpio::getWriter(const uint8_
     return writer;
   }
 
-  const uint8_t bank = pin / 32;
-  const uint8_t pinID = pin % 32;
-  const uint8_t pinMAP = (1 << pinID);
+  const uint32_t bank = pin / 32;
+  const uint32_t pinID = pin % 32;
+  const uint32_t pinMAP = (1 << pinID);
 
   const off_t pinAddress = bankAddresses[bank];
   volatile void *gpio_addr;
-  volatile unsigned int *gpio_set;
-  volatile unsigned int *gpio_clear;
+  volatile uint32_t *gpio_set;
+  volatile uint32_t *gpio_clear;
 
   int fd = open("/dev/mem", O_RDWR);
   if (fd < 0) {
@@ -99,8 +113,15 @@ std::optional<std::shared_ptr<IGpioWriter>> HardwareGpio::getWriter(const uint8_
     return std::nullopt;
   }
 
-  gpio_set =   static_cast<volatile unsigned int*>(gpio_addr) + pinSet;
-  gpio_clear = static_cast<volatile unsigned int*>(gpio_addr) + pinClear;
+  
+  const uint64_t base = reinterpret_cast<uint64_t>(gpio_addr);
+  
+  //pinset is the hardware specified address for reading.
+  gpio_set = reinterpret_cast<volatile uint32_t *>(base + pinSet);
+  
+  //pinclear is the hardware specified address for reading.
+  gpio_clear = reinterpret_cast<volatile uint32_t *>(base + pinClear);
+
   InitializedWriters[pin] = std::shared_ptr<HardwareGpioWriter>(new HardwareGpioWriter(pinMAP, gpio_set, gpio_clear));
   std::shared_ptr<IGpioWriter> writer = InitializedWriters[pin];
   return writer;
