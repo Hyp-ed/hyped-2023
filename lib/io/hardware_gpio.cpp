@@ -8,43 +8,33 @@ namespace hyped::io {
 
 std::optional<core::DigitalSignal> HardwareGpioReader::read()
 {
-<<<<<<< HEAD
-  
+  //pinMap just 0000.... with 1 flipped in pin number.
+  //So AND with readAddr to extract the specific pin
   const uint8_t out = *gpio_readAddr & pinMAP ? 1 : 0;
-  //
+  
   if (out > 0) {
     return core::DigitalSignal::kHigh;
   } else{
     return core::DigitalSignal::kLow;
   }
-=======
-  // TODOLater: implement
-  throw -1;
->>>>>>> master
 }
 
 core::Result HardwareGpioWriter::write(const core::DigitalSignal state)
 {
-<<<<<<< HEAD
   //Set and Clear are seperate registers.
   if (state == core::DigitalSignal::kHigh) {
     *gpio_setAddr = pinMAP;
   } else {
     *gpio_clearAddr = pinMAP;
   }
-  return GpioWriteResult::kSuccess;
-=======
-  // TODOLater: implement
-  throw -1;
->>>>>>> master
+  return core::Result::kSuccess;
 }
 
 HardwareGpio::HardwareGpio(core::ILogger &log) : log_(log)
 {
-  // TODOLater: implement
+  // TODO: implement
 }
 
-<<<<<<< HEAD
 
 
 std::optional<std::shared_ptr<IGpioReader>> HardwareGpio::getReader(const uint8_t pin)
@@ -136,20 +126,6 @@ std::optional<std::shared_ptr<IGpioWriter>> HardwareGpio::getWriter(const uint8_
   InitializedWriters[pin] = std::shared_ptr<HardwareGpioWriter>(new HardwareGpioWriter(pinMAP, gpio_set, gpio_clear));
   std::shared_ptr<IGpioWriter> writer = InitializedWriters[pin];
   return writer;
-=======
-std::optional<std::shared_ptr<IGpioReader>> HardwareGpio::getReader(const std::uint8_t pin)
-{
-  // TODOLater: implement
-  log_.log(core::LogLevel::kFatal, "GPIO reader not implemented");
-  return std::nullopt;
-}
-
-std::optional<std::shared_ptr<IGpioWriter>> HardwareGpio::getWriter(const std::uint8_t pin)
-{
-  // TODOLater: implement
-  log_.log(core::LogLevel::kFatal, "GPIO writer not implemented");
-  return std::nullopt;
->>>>>>> master
 }
 
 }  // namespace hyped::io
