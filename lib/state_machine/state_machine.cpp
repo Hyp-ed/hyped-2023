@@ -25,7 +25,6 @@ namespace hyped::state_machine {
         for (Transition transition : transitions) {
             if (transition.from == current_state && transition.message == message) {
                 current_state = transition.to;
-                return;
             }
         }
     }

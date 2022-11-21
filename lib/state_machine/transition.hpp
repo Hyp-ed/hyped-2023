@@ -1,6 +1,7 @@
 #pragma once
 
 #include "state.hpp"
+#include "message.cpp"
 
 namespace hyped::state_machine {
 
@@ -14,9 +15,4 @@ namespace hyped::state_machine {
         Message message;
     };
 
-    enum class Message
-    {
-        T1,
-        T2
-    };
 };
