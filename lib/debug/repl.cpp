@@ -255,7 +255,8 @@ void Repl::addTemperatureCommands(const std::uint8_t bus, const std::uint8_t dev
   identifier << "temperature 0x" << std::hex << static_cast<int>(device_address) << " read";
   temperature_read_command.name = identifier.str();
   std::stringstream description;
-  description << "Read temperature sensor 0x" << std::hex << static_cast<int>(device_address) << " on "
+  description << "Read temperature sensor 0x" << std::hex << static_cast<int>(device_address)
+              << " on "
               << "I2C bus " << static_cast<int>(bus);
   temperature_read_command.description = description.str();
   temperature_read_command.handler     = [this, temperature, bus]() {
