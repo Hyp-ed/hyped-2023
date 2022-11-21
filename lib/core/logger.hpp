@@ -6,6 +6,17 @@
 #include <iostream>
 #include <optional>
 
+#define logNTimes(logger, n, level, ...)                                                           \
+  do {                                                                                             \
+    static int count = 0;                                                                          \
+    if (count < n) {                                                                               \
+      logger.log(level, __VA_ARGS__);                                                              \
+      count++;                                                                                     \
+    }                                                                                              \
+  } while (0)
+
+#define logOnce(logger, level, ...) logNTimes(logger, 1, level, __VA_ARGS__)
+
 namespace hyped::core {
 
 enum class LogLevel { kNone = 0, kDebug, kInfo, kFatal };
