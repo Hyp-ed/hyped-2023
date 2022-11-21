@@ -4,7 +4,7 @@
 
 #include <algorithm>
 #include <numeric>
-#include <optional> 
+#include <optional>
 
 namespace hyped::navigation {
 
