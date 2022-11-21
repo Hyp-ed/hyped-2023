@@ -29,4 +29,9 @@ namespace hyped::state_machine {
         }
     }
 
+    void StateMachine::reset()
+    {
+        current_state = states[0];
+    }
+
 } //namespace hyped::state_machine
