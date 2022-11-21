@@ -28,7 +28,6 @@ class KeyencePreprocessor {
    */
  private:
   core::ILogger &log_;
-  // Enum variable for if the previous keyence data disagreed.
   KeyenceDataStatus previous_data_status_;
 };
 
