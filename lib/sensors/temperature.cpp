@@ -3,11 +3,17 @@
 namespace hyped::sensors {
 
 Temperature::Temperature(const std::uint8_t mux_address,
+                         const std::uint8_t channel,
                          hyped::io::I2c &i2c,
                          hyped::core::ILogger &log)
     : log_(log),
       i2c_(i2c),
+      channel_(channel),
       mux_address_(mux_address)
+{
+}
+
+Temperature::~Temperature()
 {
 }
 
@@ -60,6 +66,11 @@ core::Result Temperature::configure()
   }
   // Writing to the Control register 0x04 and setting that to 1 for TEMPERATURE_1
   return core::Result::kSuccess;
+}
+
+std::uint8_t Temperature::getChannel()
+{
+  return channel_;
 }
 
 }  // namespace hyped::sensors

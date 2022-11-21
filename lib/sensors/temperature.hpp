@@ -19,16 +19,21 @@ static constexpr std::uint8_t kConfigurationSetting = 0x3c;
 
 class Temperature : public II2cMuxSensor<std::uint16_t> {
  public:
-  Temperature(const std::uint8_t mux_address, hyped::io::I2c &i2c, hyped::core::ILogger &log);
+  Temperature(const std::uint8_t mux_address,
+              const std::uint8_t channel,
+              io::I2c &i2c,
+              hyped::core::ILogger &log);
   ~Temperature();
 
   core::Result configure();
   std::optional<std::uint16_t> read();
+  std::uint8_t getChannel();
 
  private:
   hyped::core::ILogger &log_;
   hyped::io::I2c &i2c_;
   const std::uint8_t mux_address_;
+  const std::uint8_t channel_;
 };
 
 }  // namespace hyped::sensors
