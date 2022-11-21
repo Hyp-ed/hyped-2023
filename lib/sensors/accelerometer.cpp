@@ -119,11 +119,7 @@ std::optional<core::RawAccelerationData> Accelerometer::read()
   ZAcceleration              = ZAcceleration * 1.952;
 
   const std::optional<core::RawAccelerationData> rawAcceleration{
-    std::in_place,
-    XAcceleration,
-    YAcceleration,
-    ZAcceleration,
-    std::chrono::system_clock::now()};
+    std::in_place, XAcceleration, YAcceleration, ZAcceleration, std::chrono::system_clock::now()};
 
   return rawAcceleration;
 }
