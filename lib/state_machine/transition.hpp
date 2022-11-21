@@ -10,6 +10,12 @@ namespace hyped::state_machine {
     class Transition
     {
         public:
+        Transition(State from_state, State to_state, Message transition_message)
+        {
+            from = from_state;
+            to = to_state;
+            message = transition_message;
+        };
         State from;
         State to;
         Message message;
