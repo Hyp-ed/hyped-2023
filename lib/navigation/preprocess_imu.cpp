@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <numeric>
+#include <optional> 
 
 namespace hyped::navigation {
 
@@ -12,7 +13,7 @@ ImuPreprocessor::ImuPreprocessor()
   // TODOLater: implement
 }
 
-core::ImuData ImuPreprocessor::processData(const core::RawImuData raw_imu_data)
+std::optional<core::ImuData> ImuPreprocessor::processData(const core::RawImuData raw_imu_data)
 {
   core::ImuData imu_data;
   core::ImuData accelerometer_data;
@@ -105,7 +106,7 @@ core::Float ImuPreprocessor::getSpecificQuartile(
   return quartile_value;
 }
 
-void ImuPreprocessor::checkReliable()
+SensorChecks ImuPreprocessor::checkReliable()
 {
   std::uint8_t num_unreliable;
   num_unreliable
@@ -118,8 +119,10 @@ void ImuPreprocessor::checkReliable()
     }
   }
   if (num_unreliable > 1) {
-    // TODOLater : Fail State implementation
+    // TODOLater : logging
+    return SensorChecks::kUnacceptable;
   }
+  return SensorChecks::kAcceptable;
 }
 
 }  // namespace hyped::navigation

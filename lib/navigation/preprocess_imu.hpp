@@ -10,12 +10,12 @@ class ImuPreprocessor {
  public:
   ImuPreprocessor();
 
-  core::ImuData processData(const core::RawImuData raw_imu_data);
+  std::optional<core::ImuData> processData(const core::RawImuData raw_imu_data);
 
  private:
   core::ImuData detectOutliers(const core::ImuData imu_data);
 
-  void checkReliable();
+  SensorChecks checkReliable();
 
   template<std::size_t N>
   core::Float getSpecificQuartile(const std::array<core::Float, N> &clean_accelerometer_data_copy,
