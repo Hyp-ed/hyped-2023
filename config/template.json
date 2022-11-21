@@ -9,6 +9,13 @@
 				"enabled": false,
 				"buses": []
 			}
+		},
+		"sensors": {
+			"temperature": {
+				"enabled": true,
+				"bus": 1,
+				"device_address": 112
+			}
 		}
 	}
 }

@@ -55,7 +55,8 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
              path.c_str());
     return std::nullopt;
   }
-  const auto io = debugger["io"].GetObject();
+  const auto io      = debugger["io"].GetObject();
+  const auto sensors = debugger["sensors"].GetObject();
 
   if (!io.HasMember("adc")) {
     log_.log(hyped::core::LogLevel::kFatal,
@@ -101,6 +102,28 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
     for (auto &bus : buses) {
       repl->addI2cCommands(bus.GetUint());
     }
+  }
+
+  if (!sensors.HasMember("temperature")) {
+    log_.log(hyped::core::LogLevel::kFatal,
+             "Missing required field 'sensors.temperature' in configuration file");
+    return std::nullopt;
+  }
+  const auto temperature = sensors["temperature"].GetObject();
+  if (!temperature.HasMember("enabled")) {
+    log_.log(hyped::core::LogLevel::kFatal,
+             "Missing required field 'sensors.temperature.enabled' in configuration file");
+    return std::nullopt;
+  }
+  if (temperature["enabled"].GetBool()) {
+    if (!temperature.HasMember("bus")) {
+      log_.log(hyped::core::LogLevel::kFatal,
+               "Missing required field 'sensors.temperature.bus' in configuration file");
+      return std::nullopt;
+    }
+    const auto device_address = temperature["device_address"].GetUint();
+    const auto bus            = temperature["bus"].GetUint();
+    repl->addTemperatureCommands(bus, device_address);
   }
   return repl;
 }
@@ -221,4 +244,29 @@ void Repl::addI2cCommands(const std::uint8_t bus)
     addCommand(i2c_write_command);
   }
 }
+
+void Repl::addTemperatureCommands(const std::uint8_t bus, const std::uint8_t device_address)
+{
+  const auto i2c = std::make_shared<hyped::io::I2c>(bus, log_);
+  const auto temperature
+    = std::make_shared<hyped::sensors::Temperature>(device_address, 0, *i2c, log_);
+  Command temperature_read_command;
+  std::stringstream identifier;
+  identifier << "temperature 0x" << std::hex << static_cast<int>(device_address) << " read";
+  temperature_read_command.name = identifier.str();
+  std::stringstream description;
+  description << "Read temperature sensor 0x" << std::hex << static_cast<int>(device_address) << " on "
+              << "I2C bus " << static_cast<int>(bus);
+  temperature_read_command.description = description.str();
+  temperature_read_command.handler     = [this, temperature, bus]() {
+    const auto value = temperature->read();
+    if (value) {
+      log_.log(hyped::core::LogLevel::kInfo, "Temperature value from bus %d: %f", bus, *value);
+    } else {
+      log_.log(hyped::core::LogLevel::kFatal, "Failed to read temperature from bus %d", bus);
+    }
+  };
+  addCommand(temperature_read_command);
+}
+
 }  // namespace hyped::debug

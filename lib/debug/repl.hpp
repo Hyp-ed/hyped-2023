@@ -8,6 +8,7 @@
 #include <io/adc.hpp>
 #include <io/hardware_gpio.hpp>
 #include <io/i2c.hpp>
+#include <sensors/temperature.hpp>
 
 namespace hyped::debug {
 
@@ -32,6 +33,7 @@ class Repl {
   void addHelpCommand();
   void addAdcCommands(const std::uint8_t pin);
   void addI2cCommands(const std::uint8_t bus);
+  void addTemperatureCommands(const std::uint8_t bus, const std::uint8_t device_address);
 
   hyped::core::ILogger &log_;
   std::map<std::string, Command> command_map_;
