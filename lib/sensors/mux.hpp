@@ -19,7 +19,7 @@ class Mux {
  public:
   Mux(io::I2c &i2c,
       const std::uint8_t mux_address,
-      const std::array<std::unique_ptr<II2cMuxSensor<T>>, N> sensors,
+      const std::array<std::unique_ptr<II2cMuxSensor<T>>, N> &sensors,
       core::ILogger &log);
   ~Mux();
 
@@ -32,7 +32,7 @@ class Mux {
   io::I2c i2c_;
   const std::uint8_t max_num_unusable_sensors_;
   const std::uint8_t mux_address_;
-  const std::array<std::unique_ptr<II2cMuxSensor<T>>, N> sensors_;
+  const std::array<std::unique_ptr<II2cMuxSensor<T>>, N> &sensors_;
 };
 
 }  // namespace hyped::sensors

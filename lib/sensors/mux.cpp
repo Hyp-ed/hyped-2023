@@ -4,12 +4,12 @@ namespace hyped::sensors {
 template<typename T, std::uint8_t N>
 Mux<T, N>::Mux(io::I2c &i2c,
                const std::uint8_t mux_address,
-               const std::array<std::unique_ptr<II2cMuxSensor<T>>, N> sensors,
+               const std::array<std::unique_ptr<II2cMuxSensor<T>>, N> &sensors,
                core::ILogger &log)
     : log_(log),
       i2c_(i2c),
-      max_num_unusable_sensors_(static_cast<std::uint8_t>(kFailureThreshold * N)),
-      sensors_(std::move(sensors))
+      sensors_(std::move(sensors)),
+      max_num_unusable_sensors_(static_cast<std::uint8_t>(kFailureThreshold * N))
 {
   static_assert(N <= 8, "Mux can only have up to 8 channels");
 }
