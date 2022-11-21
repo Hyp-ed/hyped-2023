@@ -5,7 +5,8 @@ namespace hyped::state_machine {
     // State class containing all the states
     enum class State
     {
-        //TODO Add the actual states
+        //TODOLater Add the actual states
+        kInitialState,
         state1,
         state2,
         state3,

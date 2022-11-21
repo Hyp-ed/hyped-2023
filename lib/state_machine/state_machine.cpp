@@ -1,4 +1,5 @@
 #include "state_machine.hpp"
+#include "transition.cpp"
 
 
 namespace hyped::state_machine {
@@ -19,15 +20,14 @@ namespace hyped::state_machine {
     }
 
     //Transition to next state
-    // TODO implement:
-    void StateMachine::transition()
+    void StateMachine::transition(Message message)
     {
-        //make the corresponding transition based on the transition message and the current state
-        //for (int i = 0; i < length(self.transitions; i++)) {
-        //  if (transitions[i].message == message && transitions[i].start == self.state) {
-        //      self.state = transitions[i].end;
-        //  }
-        //}
+        for (Transition transition : transitions) {
+            if (transition.from == current_state && transition.message == message) {
+                current_state = transition.to;
+                return;
+            }
+        }
     }
 
 } //namespace hyped::state_machine

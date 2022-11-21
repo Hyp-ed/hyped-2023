@@ -5,11 +5,18 @@
 namespace hyped::state_machine {
 
     // Transition class.
-    // Each transitions has a current state and next state
+    // Each transition has a current state and next state, as well as a message indicating the kind of transition.
     class Transition
     {
-        State curr_state;
-        State next_state;
-        
+        public:
+        State from;
+        State to;
+        Message message;
+    };
+
+    enum class Message
+    {
+        T1,
+        T2
     };
 };
