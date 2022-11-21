@@ -2,7 +2,9 @@
 
 namespace hyped::sensors {
 
-Accelerometer::Accelerometer(std::uint8_t mux_address, io::I2c &i2c, core::ILogger &log)
+Accelerometer::Accelerometer(const std::uint8_t mux_address,
+                             const io::I2c &i2c,
+                             const core::ILogger &log)
     : mux_address_(mux_address),
       log_(log),
       i2c_(i2c)
@@ -76,6 +78,7 @@ std::optional<std::int16_t> Accelerometer::getRawAccelerationZ()
   return raw_acceleration_Z;
 }
 
+// TodoLater: !!!!! this code couldn't be tested as the sensor wasn't working !!!!!!!!
 std::optional<core::RawAccelerationData> Accelerometer::read()
 {
   /* check to see if the values are ready to be read */
@@ -84,7 +87,6 @@ std::optional<core::RawAccelerationData> Accelerometer::read()
     log_.log(core::LogLevel::kFatal, "acceleration data could not be read");
     return std::nullopt;
   }
-
   if (dataReady.value() == 0x00) {
     log_.log(core::LogLevel::kFatal, "acceleration data not ready yet to be read");
     return std::nullopt;
@@ -103,7 +105,6 @@ std::optional<core::RawAccelerationData> Accelerometer::read()
   // y axis
   auto resultY = getRawAccelerationY();
   if (!resultY) return std::nullopt;
-
   const std::int16_t YRawAcc = resultY.value() >> 2;
   core::Float YAcceleration  = static_cast<core::Float>(YRawAcc);
   YAcceleration              = YAcceleration / 1000;
@@ -112,7 +113,6 @@ std::optional<core::RawAccelerationData> Accelerometer::read()
   // z axis
   auto resultZ = getRawAccelerationZ();
   if (!resultZ) return std::nullopt;
-
   const std::int16_t ZRawAcc = resultZ.value() >> 2;
   core::Float ZAcceleration  = static_cast<core::Float>(ZRawAcc);
   ZAcceleration              = ZAcceleration / 1000;
