@@ -29,7 +29,7 @@ class Mux {
   core::Result selectChannel(const std::uint8_t channel);
   core::Result closeAllChannels();
   core::ILogger &log_;
-  io::I2c i2c_;
+  io::I2c &i2c_;
   const std::uint8_t max_num_unusable_sensors_;
   const std::uint8_t mux_address_;
   const std::array<std::unique_ptr<II2cMuxSensor<T>>, N> &sensors_;
