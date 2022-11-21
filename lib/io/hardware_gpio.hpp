@@ -28,7 +28,7 @@ class HardwareGpioReader : public IGpioReader {
 
 class HardwareGpioWriter : public IGpioWriter {
  public:
-  virtual GpioWriteResult write(const core::DigitalSignal state);
+  virtual core::Result write(const core::DigitalSignal state);
 
  private:
   HardwareGpioWriter(const uint8_t pin,  volatile uint32_t *set, volatile uint32_t *clear): pinMAP(pin), gpio_setAddr(set), gpio_clearAddr(clear){};
@@ -45,13 +45,13 @@ class HardwareGpioWriter : public IGpioWriter {
 
 class HardwareGpio {
  public:
-  HardwareGpio(hyped::core::ILogger &log);
+  HardwareGpio(core::ILogger &log);
 
   virtual std::optional<std::shared_ptr<IGpioReader>> getReader(const std::uint8_t pin);
   virtual std::optional<std::shared_ptr<IGpioWriter>> getWriter(const std::uint8_t pin);
 
  private:
-  hyped::core::ILogger &log_;
+  core::ILogger &log_;
   //Bank Addresses are header base addresses. 
   //Page 211-213 Figure 6-7/8 P8 Header Pins Beaglebone Bible
 

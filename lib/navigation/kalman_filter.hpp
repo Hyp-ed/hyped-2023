@@ -45,7 +45,7 @@ class KalmanFilter {
     const auto apriori_error_covariance
       = (transition_matrix.transpose() * error_covariance_ * transition_matrix)
         + transition_covariance;
-    // TODO: Some optimisation is to be found here:
+    // TODOLater: Some optimisation is to be found here:
     // 1. Try and get rid of the inverse.
     // 2. Reuse calculations such as `apriori_error_covariance * measurement_matrix.transpose()`.
     // K_k = P_k^{-1} * H_k^T * (H_k * P_k^{-1} * H_k^T + R_k)^{-1}
