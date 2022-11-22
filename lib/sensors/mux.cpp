@@ -9,6 +9,7 @@ Mux<T, N>::Mux(io::I2c &i2c,
     : log_(log),
       i2c_(i2c),
       sensors_(std::move(sensors)),
+      mux_address_(mux_address),
       max_num_unusable_sensors_(static_cast<std::uint8_t>(kFailureThreshold * N))
 {
   static_assert(N <= 8, "Mux can only have up to 8 channels");
