@@ -10,7 +10,7 @@ Controller::Controller(core::ILogger &logger) : logger_(logger)
 {
 }
 
-void Controller::processErrorMessage(const uint16_t error_code)
+void Controller::processErrorMessage(const std::uint16_t error_code)
 {
   switch (error_code) {
     case 0xFF01:

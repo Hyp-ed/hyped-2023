@@ -9,11 +9,11 @@ enum class controller_status { ControllerTemperatureExceeded, GeneralWarning, No
 class Controller {
  public:
   Controller(core::ILogger &logger);
-  void processErrorMessage(const uint16_t error_code);
-  controller_status processWarningMessage(const uint8_t warning_code);
+  void processErrorMessage(const std::uint16_t error_code);
+  controller_status processWarningMessage(const std::uint8_t warning_code);
 
  private:
-  hyped::core::ILogger &logger_;
+  core::ILogger &logger_;
 };
 
 }  // namespace hyped::motors
