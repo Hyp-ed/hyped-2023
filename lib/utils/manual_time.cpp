@@ -31,7 +31,9 @@ void ManualTime::addTime(const core::Duration duration)
   current_time_ += duration;
 }
 
-void ManualTime::addSeconds(const std::uint64_t num_seconds) {
-current_time_ += core::durationFromSeconds(1);}
+void ManualTime::addSeconds(const std::uint64_t num_seconds)
+{
+  current_time_ += core::durationFromSeconds(1);
+}
 
 }  // namespace hyped::utils

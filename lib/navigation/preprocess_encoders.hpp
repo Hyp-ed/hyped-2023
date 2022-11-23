@@ -1,11 +1,11 @@
 #pragma once
 
+#include "types.hpp"
 
 #include <array>
 #include <cstdint>
 
 #include <core/types.hpp>
-#include "types.hpp"
 
 namespace hyped::navigation {
 
