@@ -29,16 +29,21 @@ static constexpr std::uint8_t expectedDevId = 0x44;
 
 class Accelerometer : II2cMuxSensor<core::RawAccelerationData> {
  public:
-  Accelerometer(const std::uint8_t mux_address, io::I2c &i2c, core::ILogger &log);
+  Accelerometer(const std::uint8_t mux_address,
+                const std::uint8_t channel,
+                io::I2c &i2c,
+                core::ILogger &log);
   ~Accelerometer();
 
   core::Result configure();
   std::optional<core::RawAccelerationData> read();
+  std::uint8_t getChannel();
 
  private:
   core::ILogger &log_;
   io::I2c &i2c_;
   const std::uint8_t mux_address_;
+  const std::uint8_t channel_;
 
   std::optional<std::int16_t> getRawAccelerationX();
   std::optional<std::int16_t> getRawAccelerationY();

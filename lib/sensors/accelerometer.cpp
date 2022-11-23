@@ -3,9 +3,11 @@
 namespace hyped::sensors {
 
 Accelerometer::Accelerometer(const std::uint8_t mux_address,
-                             const io::I2c &i2c,
-                             const core::ILogger &log)
+                             const std::uint8_t channel,
+                             io::I2c &i2c,
+                             core::ILogger &log)
     : mux_address_(mux_address),
+      channel_(channel),
       log_(log),
       i2c_(i2c)
 {
@@ -13,6 +15,11 @@ Accelerometer::Accelerometer(const std::uint8_t mux_address,
 
 Accelerometer::~Accelerometer()
 {
+}
+
+std::uint8_t Accelerometer::getChannel()
+{
+  return channel_;
 }
 
 std::optional<std::int16_t> Accelerometer::getRawAccelerationX()
@@ -78,7 +85,7 @@ std::optional<std::int16_t> Accelerometer::getRawAccelerationZ()
   return raw_acceleration_Z;
 }
 
-// TodoLater: !!!!! this code couldn't be tested as the sensor wasn't working !!!!!!!!
+// TODOLater: !!!!! this code couldn't be tested as the sensor wasn't working !!!!!!!!
 std::optional<core::RawAccelerationData> Accelerometer::read()
 {
   /* check to see if the values are ready to be read */
@@ -127,29 +134,32 @@ std::optional<core::RawAccelerationData> Accelerometer::read()
 core::Result Accelerometer::configure()
 {
   // if device id is incorrect, then the address received is wrong
-  auto deviceID = i2c_.readByte(mux_address_, kDevId);
-  if (!deviceID) return core::Result::kFailure;
-
+  const auto deviceID = i2c_.readByte(mux_address_, kDevId);
+  if (!deviceID) {
+    log_.log(core::LogLevel::kFatal, "Failure to read device id of accelerometer");
+    return core::Result::kFailure;
+  }
   if (deviceID.value() != expectedDevId) {
-    log_.log(core::LogLevel::kFatal, "accelerometer didn't give correct device id");
+    log_.log(core::LogLevel::kFatal, "Failiure: Accelerometer didn't give correct device id");
     return core::Result::kFailure;
   }
 
   // configure the sensor according to the following settings :
+
   /* Sampling rate of 200 Hz */
   /* Enable high performance mode */
-  core::Result result1 = i2c_.writeByteToRegister(mux_address_, kCTRL1, 0x64);
-  if (result1 == core::Result::kFailure) return core::Result::kFailure;
+  const core::Result ctrl1Result = i2c_.writeByteToRegister(mux_address_, kCTRL1, 0x64);
+  if (ctrl1Result == core::Result::kFailure) return core::Result::kFailure;
 
   /* Enable block data update */
   /* Enable address auto increment */
-  core::Result result2 = i2c_.writeByteToRegister(mux_address_, kCTRL2, 0xC);
-  if (result2 == core::Result::kFailure) return core::Result::kFailure;
+  const core::Result ctrl2Result = i2c_.writeByteToRegister(mux_address_, kCTRL2, 0xC);
+  if (ctrl2Result == core::Result::kFailure) return core::Result::kFailure;
 
   /* Full scale +-16g */
   /* Filter bandwidth = ODR/2 */
-  core::Result result3 = i2c_.writeByteToRegister(mux_address_, kCTRL6, 0x30);
-  if (result3 == core::Result::kFailure) return core::Result::kFailure;
+  const core::Result ctrl3Result = i2c_.writeByteToRegister(mux_address_, kCTRL6, 0x30);
+  if (ctrl3Result == core::Result::kFailure) return core::Result::kFailure;
 
   return core::Result::kSuccess;
 }
