@@ -21,7 +21,7 @@ TEST(ManualTime, setTime)
 }
 
 void testSetSecondsSinceEpoch(utils::ManualTime &manual_time,
-                                  const std::uint64_t seconds_since_epoch)
+                              const std::uint64_t seconds_since_epoch)
 {
   manual_time.setSecondsSinceEpoch(seconds_since_epoch);
   ASSERT_EQ(
