@@ -8,12 +8,16 @@ namespace hyped::core {
  */
 using TimePoint = std::chrono::system_clock::time_point;
 
+TimePoint timePointFromSecondsSinceEpoch(const std::uint64_t num_seconds_since_epoch);
+
 /**
  * @brief Difference between points in time; nanosecond precision.
  */
 using Duration = std::chrono::system_clock::duration;
 
-static constexpr Duration kSecond = static_cast<Duration>(1000000000);
+static constexpr Duration kOneSecond = static_cast<Duration>(1'000'000'000);
+
+Duration durationFromSeconds(const std::uint64_t num_seconds);
 
 /**
  * @brief Time provider allowing the user to obtain the current time of the

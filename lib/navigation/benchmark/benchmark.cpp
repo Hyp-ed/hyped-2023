@@ -11,33 +11,34 @@ TrajectoryError::TrajectoryError(const core::Trajectory &expected, const core::T
 {
 }
 
-Benchmark::Benchmark(const core::ITimeSource &time_source,
-                     const std::map<core::TimePoint, core::RawEncoderData> &encoder_data_by_time,
-                     const std::map<core::TimePoint, core::RawImuData> &imu_data_by_time,
-                     const std::map<core::TimePoint, core::RawKeyenceData> &keyence_data_by_time,
-                     const std::map<core::TimePoint, core::Trajectory> &trajectory_by_time)
+Benchmark::Benchmark(
+  const core::ITimeSource &time_source,
+  const std::map<core::TimePoint, core::RawEncoderData> &encoder_data_by_time,
+  const std::map<core::TimePoint, core::RawAccelerationData> &acceleration_data_by_time,
+  const std::map<core::TimePoint, core::RawKeyenceData> &keyence_data_by_time,
+  const std::map<core::TimePoint, core::Trajectory> &trajectory_by_time)
     : time_source_(time_source),
       encoder_data_by_time_(encoder_data_by_time),
-      imu_data_by_time_(imu_data_by_time),
+      acceleration_data_by_time_(acceleration_data_by_time),
       keyence_data_by_time_(keyence_data_by_time),
       trajectory_by_time_(trajectory_by_time),
       relevant_times_(getRelevantTimes(
-        encoder_data_by_time, imu_data_by_time, keyence_data_by_time, trajectory_by_time))
+        encoder_data_by_time, acceleration_data_by_time, keyence_data_by_time, trajectory_by_time))
 {
 }
 
 std::vector<core::TimePoint> Benchmark::getRelevantTimes(
   const std::map<core::TimePoint, core::RawEncoderData> &encoder_data_by_time,
-  const std::map<core::TimePoint, core::RawImuData> &imu_data_by_time,
+  const std::map<core::TimePoint, core::RawAccelerationData> &acceleration_data_by_time,
   const std::map<core::TimePoint, core::RawKeyenceData> &keyence_data_by_time,
   const std::map<core::TimePoint, core::Trajectory> &trajectory_by_time)
 {
-  std::vector<core::TimePoint> times(encoder_data_by_time.size() + imu_data_by_time.size()
+  std::vector<core::TimePoint> times(encoder_data_by_time.size() + acceleration_data_by_time.size()
                                      + keyence_data_by_time.size() + trajectory_by_time.size());
   for (const auto &[time_point, _] : encoder_data_by_time) {
     times.push_back(time_point);
   }
-  for (const auto &[time_point, _] : imu_data_by_time) {
+  for (const auto &[time_point, _] : acceleration_data_by_time) {
     times.push_back(time_point);
   }
   for (const auto &[time_point, _] : keyence_data_by_time) {
@@ -66,11 +67,11 @@ std::optional<Result> Benchmark::run(utils::ManualTime &manual_time, INavigator 
       navigator.encoderUpdate(encoder_data);
       result.time_taken_for_encoder_data.push_back(encoder_data_timer.elapsed());
     }
-    if (imu_data_by_time_.contains(time_point)) {
-      const auto imu_data = imu_data_by_time_.find(time_point)->second;
-      const core::Timer imu_data_timer(time_source_);
-      navigator.imuUpdate(imu_data);
-      result.time_taken_for_imu_data.push_back(imu_data_timer.elapsed());
+    if (acceleration_data_by_time_.contains(time_point)) {
+      const auto acceleration_data = acceleration_data_by_time_.find(time_point)->second;
+      const core::Timer acceleration_data_timer(time_source_);
+      navigator.accelerometerUpdate(acceleration_data);
+      result.time_taken_for_acceleration_data.push_back(acceleration_data_timer.elapsed());
     }
     if (keyence_data_by_time_.contains(time_point)) {
       const auto keyence_data = keyence_data_by_time_.find(time_point)->second;

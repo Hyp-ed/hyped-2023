@@ -13,10 +13,10 @@ class ImuPreprocessor {
  public:
   ImuPreprocessor();
 
-  std::optional<ImuData> processData(const core::RawImuData &raw_imu_data);
+  std::optional<ImuData> processData(const core::RawAccelerationData &raw_acceleration_data);
 
  private:
-  ImuData detectOutliers(const core::RawImuData &imu_data);
+  ImuData detectOutliers(const core::RawAccelerationData &raw_acceleration_data);
 
   void checkReliable(const ImuData &imu_data);
 

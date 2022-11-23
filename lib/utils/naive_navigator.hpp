@@ -13,7 +13,7 @@ class NaiveNavigator : public navigation::INavigator {
   virtual std::optional<core::Trajectory> currentTrajectory();
   virtual void keyenceUpdate(const core::RawKeyenceData &keyence_data);
   virtual void encoderUpdate(const core::RawEncoderData &encoder_data);
-  virtual void imuUpdate(const core::RawImuData &imu_data);
+  virtual void accelerometerUpdate(const core::RawAccelerationData &acceleration_data);
 
  private:
   const core::ITimeSource &time_source_;

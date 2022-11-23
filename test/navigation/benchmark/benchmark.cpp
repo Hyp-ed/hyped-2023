@@ -15,4 +15,13 @@ TEST(Benchmark, construction)
   benchmark.run(manual_time, naive_navigator);
 }
 
+TEST(Benchmark, naiveNavigation)
+{
+  core::WallClock wall_clock;
+  navigation::benchmark::Benchmark benchmark(wall_clock, {}, {}, {}, {});
+  utils::ManualTime manual_time;
+  utils::NaiveNavigator naive_navigator(manual_time);
+  const auto result = benchmark.run(manual_time, naive_navigator);
+}
+
 }  // namespace hyped::test

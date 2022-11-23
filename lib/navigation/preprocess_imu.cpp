@@ -7,7 +7,8 @@ ImuPreprocessor::ImuPreprocessor()
   // TODOLater: implement
 }
 
-std::optional<ImuData> ImuPreprocessor::processData(const core::RawImuData &raw_imu_data)
+std::optional<ImuData> ImuPreprocessor::processData(
+  const core::RawAccelerationData &raw_acceleration_data)
 {
   /*
   TODOLater: implement
@@ -19,7 +20,7 @@ std::optional<ImuData> ImuPreprocessor::processData(const core::RawImuData &raw_
   return std::nullopt;
 }
 
-ImuData ImuPreprocessor::detectOutliers(const core::RawImuData &imu_data)
+ImuData ImuPreprocessor::detectOutliers(const core::RawAccelerationData &raw_acceleration_data)
 {
   /*
   TODOLater: implement

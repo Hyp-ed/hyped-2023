@@ -10,12 +10,12 @@ namespace hyped::test {
 
 // TODOLater: improve testing method here!
 void testWithTrajectory(utils::NaiveNavigator &naive_navigator,
-                        const core::RawImuData imu_data,
-                        const core::RawEncoderData encoder_data,
-                        const core::RawKeyenceData keyence_data,
-                        const core::Trajectory expected_trajectory)
+                        const core::RawAccelerationData &acceleration_data,
+                        const core::RawEncoderData &encoder_data,
+                        const core::RawKeyenceData &keyence_data,
+                        const core::Trajectory &expected_trajectory)
 {
-  naive_navigator.imuUpdate(imu_data);
+  naive_navigator.accelerometerUpdate(acceleration_data);
   naive_navigator.encoderUpdate(encoder_data);
   naive_navigator.keyenceUpdate(keyence_data);
 
@@ -31,13 +31,13 @@ TEST(NaiveNavigator, basic)
 {
   utils::ManualTime manual_time;
   utils::NaiveNavigator naive_navigator(manual_time);
-  manual_time.addTime(static_cast<core::Duration>(core::kSecond));
+  manual_time.addSeconds(1);
   testWithTrajectory(naive_navigator,
                      {{{0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}}},
                      {0, 0, 0, 0},
                      {0, 0},
                      {0, 0, 0});
-  manual_time.addTime(static_cast<core::Duration>(core::kSecond));
+  manual_time.addSeconds(1);
   testWithTrajectory(naive_navigator,
                      {{{1, 0, 0}, {1, 0, 0}, {1, 0, 0}, {1, 0, 0}}},
                      {1, 1, 1, 1},

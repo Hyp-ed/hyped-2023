@@ -12,10 +12,10 @@ using KeyenceData = std::uint32_t;
 
 class INavigator {
  public:
-  virtual std::optional<core::Trajectory> currentTrajectory()          = 0;
-  virtual void keyenceUpdate(const core::RawKeyenceData &keyence_data) = 0;
-  virtual void encoderUpdate(const core::RawEncoderData &encoder_data) = 0;
-  virtual void imuUpdate(const core::RawImuData &imu_data)             = 0;
+  virtual std::optional<core::Trajectory> currentTrajectory()                          = 0;
+  virtual void keyenceUpdate(const core::RawKeyenceData &keyence_data)                 = 0;
+  virtual void encoderUpdate(const core::RawEncoderData &encoder_data)                 = 0;
+  virtual void accelerometerUpdate(const core::RawAccelerationData &acceleration_data) = 0;
 };
 
 }  // namespace hyped::navigation

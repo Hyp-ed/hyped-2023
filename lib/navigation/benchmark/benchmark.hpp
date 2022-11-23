@@ -22,7 +22,7 @@ struct TrajectoryError {
 struct Result {
   core::Duration total_time_taken;
   std::vector<core::Duration> time_taken_for_encoder_data;
-  std::vector<core::Duration> time_taken_for_imu_data;
+  std::vector<core::Duration> time_taken_for_acceleration_data;
   std::vector<core::Duration> time_taken_for_keyence_data;
   std::vector<core::Duration> time_taken_for_trajectory;
   std::vector<std::optional<TrajectoryError>> trajectory_errors;
@@ -34,7 +34,7 @@ class Benchmark {
   // these ugly maps.
   Benchmark(const core::ITimeSource &time_source,
             const std::map<core::TimePoint, core::RawEncoderData> &encoder_data_by_time,
-            const std::map<core::TimePoint, core::RawImuData> &imu_data_by_time,
+            const std::map<core::TimePoint, core::RawAccelerationData> &acceleration_data_by_time,
             const std::map<core::TimePoint, core::RawKeyenceData> &keyence_data_by_time,
             const std::map<core::TimePoint, core::Trajectory> &trajectory_data_by_time);
 
@@ -43,13 +43,13 @@ class Benchmark {
  private:
   static std::vector<core::TimePoint> getRelevantTimes(
     const std::map<core::TimePoint, core::RawEncoderData> &encoder_data_by_time,
-    const std::map<core::TimePoint, core::RawImuData> &imu_data_by_time,
+    const std::map<core::TimePoint, core::RawAccelerationData> &acceleration_data_by_time,
     const std::map<core::TimePoint, core::RawKeyenceData> &keyence_data_by_time,
     const std::map<core::TimePoint, core::Trajectory> &trajectory_by_time);
 
   const core::ITimeSource &time_source_;
   const std::map<core::TimePoint, core::RawEncoderData> encoder_data_by_time_;
-  const std::map<core::TimePoint, core::RawImuData> imu_data_by_time_;
+  const std::map<core::TimePoint, core::RawAccelerationData> acceleration_data_by_time_;
   const std::map<core::TimePoint, core::RawKeyenceData> keyence_data_by_time_;
   const std::map<core::TimePoint, core::Trajectory> trajectory_by_time_;
   const std::vector<core::TimePoint> relevant_times_;

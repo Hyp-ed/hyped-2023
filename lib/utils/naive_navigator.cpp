@@ -30,21 +30,21 @@ void NaiveNavigator::encoderUpdate(const core::RawEncoderData &encoder_data)
   core::Float encoder_average = static_cast<core::Float>(sum / core::kNumEncoders);
   // we assume that one revolution equals one metre
   current_trajectory_.displacement = encoder_average;
-  current_trajectory_.velocity     = encoder_average / (time_since_last_update / core::kSecond);
+  current_trajectory_.velocity     = encoder_average / (time_since_last_update / core::kOneSecond);
 }
 
-void NaiveNavigator::imuUpdate(const core::RawImuData &imu_data)
+void NaiveNavigator::accelerometerUpdate(const core::RawAccelerationData &acceleration_data)
 {
   core::Float sum = 0.0;
   for (std::size_t i = 0; i < core::kNumImus; ++i) {
     core::Float amplitude = 0.0;
     for (std::size_t j = 0; j < core::kNumAxis; ++j) {
-      amplitude += imu_data.at(i).at(j) * imu_data.at(i).at(j);
+      const auto acceleration = acceleration_data.at(i).at(j);
+      amplitude += acceleration * acceleration;
     }
     sum += std::sqrt(amplitude);
   }
-  core::Float imu_average          = sum / static_cast<core::Float>(core::kNumImus);
-  current_trajectory_.acceleration = imu_average;
+  current_trajectory_.acceleration = sum / static_cast<core::Float>(core::kNumImus);
 }
 
 }  // namespace hyped::utils

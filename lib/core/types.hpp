@@ -32,7 +32,7 @@ static constexpr std::uint8_t kNumAxis     = 3;
 static constexpr std::uint8_t kNumEncoders = 4;
 static constexpr std::uint8_t kNumKeyence  = 2;
 
-using RawImuData     = std::array<std::array<Float, kNumAxis>, kNumImus>;
+using RawAccelerationData     = std::array<std::array<Float, kNumAxis>, kNumImus>;
 using RawEncoderData = std::array<std::uint32_t, kNumEncoders>;
 using RawKeyenceData = std::array<std::uint32_t, kNumKeyence>;
 
