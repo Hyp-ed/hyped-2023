@@ -1,6 +1,8 @@
 #pragma once
 
 #include <map>
+#include <optional>
+#include <vector>
 
 #include <core/time.hpp>
 #include <core/types.hpp>
@@ -12,12 +14,19 @@ struct Data {
   std::map<core::TimePoint, core::RawAccelerationData> acceleration_data_by_time;
   std::map<core::TimePoint, core::RawKeyenceData> keyence_data_by_time;
   std::map<core::TimePoint, core::Trajectory> trajectory_data_by_time;
+
+  std::vector<core::TimePoint> getRelevantTimes() const;
+  std::optional<core::RawEncoderData> getEncoderDataAt(const core::TimePoint time_point) const;
+  std::optional<core::RawAccelerationData> getAccelerationDataAt(
+    const core::TimePoint time_point) const;
+  std::optional<core::RawKeyenceData> getKeyenceDataAt(const core::TimePoint time_point) const;
+  std::optional<core::Trajectory> getTrajectoryDataAt(const core::TimePoint time_point) const;
 };
 
 class DataBuilder {
  public:
   DataBuilder();
-  Data getData();
+  Data build();
 
   core::Result addEncoderData(const core::TimePoint &timestamp,
                               const core::RawEncoderData &encoder_data);

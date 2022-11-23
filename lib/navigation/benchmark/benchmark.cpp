@@ -11,44 +11,11 @@ TrajectoryError::TrajectoryError(const core::Trajectory &expected, const core::T
 {
 }
 
-Benchmark::Benchmark(
-  const core::ITimeSource &time_source,
-  const std::map<core::TimePoint, core::RawEncoderData> &encoder_data_by_time,
-  const std::map<core::TimePoint, core::RawAccelerationData> &acceleration_data_by_time,
-  const std::map<core::TimePoint, core::RawKeyenceData> &keyence_data_by_time,
-  const std::map<core::TimePoint, core::Trajectory> &trajectory_by_time)
+Benchmark::Benchmark(const core::ITimeSource &time_source, const Data &data)
     : time_source_(time_source),
-      encoder_data_by_time_(encoder_data_by_time),
-      acceleration_data_by_time_(acceleration_data_by_time),
-      keyence_data_by_time_(keyence_data_by_time),
-      trajectory_by_time_(trajectory_by_time),
-      relevant_times_(getRelevantTimes(
-        encoder_data_by_time, acceleration_data_by_time, keyence_data_by_time, trajectory_by_time))
+      data_(data),
+      relevant_times_(data.getRelevantTimes())
 {
-}
-
-std::vector<core::TimePoint> Benchmark::getRelevantTimes(
-  const std::map<core::TimePoint, core::RawEncoderData> &encoder_data_by_time,
-  const std::map<core::TimePoint, core::RawAccelerationData> &acceleration_data_by_time,
-  const std::map<core::TimePoint, core::RawKeyenceData> &keyence_data_by_time,
-  const std::map<core::TimePoint, core::Trajectory> &trajectory_by_time)
-{
-  std::vector<core::TimePoint> times(encoder_data_by_time.size() + acceleration_data_by_time.size()
-                                     + keyence_data_by_time.size() + trajectory_by_time.size());
-  for (const auto &[time_point, _] : encoder_data_by_time) {
-    times.push_back(time_point);
-  }
-  for (const auto &[time_point, _] : acceleration_data_by_time) {
-    times.push_back(time_point);
-  }
-  for (const auto &[time_point, _] : keyence_data_by_time) {
-    times.push_back(time_point);
-  }
-  for (const auto &[time_point, _] : trajectory_by_time) {
-    times.push_back(time_point);
-  }
-  std::sort(times.begin(), times.end());
-  return times;
 }
 
 // TODOLater: Allow this to operate using constructors rather than already initialised navigators.
@@ -61,39 +28,39 @@ std::optional<Result> Benchmark::run(utils::ManualTime &manual_time, INavigator 
   const core::Timer full_benchmark_timer(time_source_);
   Result result;
   for (const auto &time_point : relevant_times_) {
-    if (encoder_data_by_time_.contains(time_point)) {
-      const auto encoder_data = encoder_data_by_time_.find(time_point)->second;
+    const auto encoder_data = data_.getEncoderDataAt(time_point);
+    if (encoder_data) {
       const core::Timer encoder_data_timer(time_source_);
-      navigator.encoderUpdate(encoder_data);
+      navigator.encoderUpdate(*encoder_data);
       result.time_taken_for_encoder_data.push_back(encoder_data_timer.elapsed());
     }
-    if (acceleration_data_by_time_.contains(time_point)) {
-      const auto acceleration_data = acceleration_data_by_time_.find(time_point)->second;
+    const auto acceleration_data = data_.getAccelerationDataAt(time_point);
+    if (acceleration_data) {
       const core::Timer acceleration_data_timer(time_source_);
-      navigator.accelerometerUpdate(acceleration_data);
+      navigator.accelerometerUpdate(*acceleration_data);
       result.time_taken_for_acceleration_data.push_back(acceleration_data_timer.elapsed());
     }
-    if (keyence_data_by_time_.contains(time_point)) {
-      const auto keyence_data = keyence_data_by_time_.find(time_point)->second;
+    const auto keyence_data = data_.getKeyenceDataAt(time_point);
+    if (keyence_data) {
       const core::Timer keyence_data_timer(time_source_);
-      navigator.keyenceUpdate(keyence_data);
+      navigator.keyenceUpdate(*keyence_data);
       result.time_taken_for_keyence_data.push_back(keyence_data_timer.elapsed());
     }
-    if (trajectory_by_time_.contains(time_point)) {
-      const auto expected_trajectory = trajectory_by_time_.find(time_point)->second;
-      const core::Timer trajectory_timer(time_source_);
-      const auto calculated_trajectory = navigator.currentTrajectory();
-      if (calculated_trajectory) {
-        result.trajectory_errors.emplace_back(
-          TrajectoryError(expected_trajectory, *calculated_trajectory));
-      } else {
-        result.trajectory_errors.push_back(std::nullopt);
-      }
-      result.time_taken_for_trajectory.push_back(trajectory_timer.elapsed());
+    const auto expected_trajectory = data_.getTrajectoryDataAt(time_point);
+    if (expected_trajectory) {
+    const core::Timer trajectory_timer(time_source_);
+    const auto calculated_trajectory = navigator.currentTrajectory();
+    if (calculated_trajectory) {
+      result.trajectory_errors.emplace_back(
+        TrajectoryError(*expected_trajectory, *calculated_trajectory));
+    } else {
+      result.trajectory_errors.push_back(std::nullopt);
     }
+    result.time_taken_for_trajectory.push_back(trajectory_timer.elapsed());
   }
-  result.total_time_taken = full_benchmark_timer.elapsed();
-  return result;
+}
+result.total_time_taken = full_benchmark_timer.elapsed();
+return result;
 }
 
 }  // namespace hyped::navigation::benchmark

@@ -1,8 +1,8 @@
 #pragma once
 
-#include <functional>
+#include "data.hpp"
+
 #include <map>
-#include <memory>
 #include <vector>
 
 #include <core/time.hpp>
@@ -32,26 +32,13 @@ class Benchmark {
  public:
   // TODOLater: Use std::input_iterator and concepts to do this to avoid having to construct
   // these ugly maps.
-  Benchmark(const core::ITimeSource &time_source,
-            const std::map<core::TimePoint, core::RawEncoderData> &encoder_data_by_time,
-            const std::map<core::TimePoint, core::RawAccelerationData> &acceleration_data_by_time,
-            const std::map<core::TimePoint, core::RawKeyenceData> &keyence_data_by_time,
-            const std::map<core::TimePoint, core::Trajectory> &trajectory_data_by_time);
+  Benchmark(const core::ITimeSource &time_source, const Data &data);
 
   std::optional<Result> run(utils::ManualTime &manual_time, INavigator &navigator);
 
  private:
-  static std::vector<core::TimePoint> getRelevantTimes(
-    const std::map<core::TimePoint, core::RawEncoderData> &encoder_data_by_time,
-    const std::map<core::TimePoint, core::RawAccelerationData> &acceleration_data_by_time,
-    const std::map<core::TimePoint, core::RawKeyenceData> &keyence_data_by_time,
-    const std::map<core::TimePoint, core::Trajectory> &trajectory_by_time);
-
   const core::ITimeSource &time_source_;
-  const std::map<core::TimePoint, core::RawEncoderData> encoder_data_by_time_;
-  const std::map<core::TimePoint, core::RawAccelerationData> acceleration_data_by_time_;
-  const std::map<core::TimePoint, core::RawKeyenceData> keyence_data_by_time_;
-  const std::map<core::TimePoint, core::Trajectory> trajectory_by_time_;
+  const Data data_;
   const std::vector<core::TimePoint> relevant_times_;
 };
 

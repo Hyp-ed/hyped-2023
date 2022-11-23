@@ -2,11 +2,61 @@
 
 namespace hyped::navigation::benchmark {
 
+std::vector<core::TimePoint> Data::getRelevantTimes() const
+{
+  std::vector<core::TimePoint> times(encoder_data_by_time.size() + acceleration_data_by_time.size()
+                                     + keyence_data_by_time.size()
+                                     + trajectory_data_by_time.size());
+  for (const auto &[time_point, _] : encoder_data_by_time) {
+    times.push_back(time_point);
+  }
+  for (const auto &[time_point, _] : acceleration_data_by_time) {
+    times.push_back(time_point);
+  }
+  for (const auto &[time_point, _] : keyence_data_by_time) {
+    times.push_back(time_point);
+  }
+  for (const auto &[time_point, _] : trajectory_data_by_time) {
+    times.push_back(time_point);
+  }
+  std::sort(times.begin(), times.end());
+  return times;
+}
+
+std::optional<core::RawEncoderData> Data::getEncoderDataAt(const core::TimePoint time_point) const
+{
+  const auto it = encoder_data_by_time.find(time_point);
+  if (it == encoder_data_by_time.end()) { return std::nullopt; }
+  return it->second;
+}
+
+std::optional<core::RawAccelerationData> Data::getAccelerationDataAt(
+  const core::TimePoint time_point) const
+{
+  const auto it = acceleration_data_by_time.find(time_point);
+  if (it == acceleration_data_by_time.end()) { return std::nullopt; }
+  return it->second;
+}
+
+std::optional<core::RawKeyenceData> Data::getKeyenceDataAt(const core::TimePoint time_point) const
+{
+  const auto it = keyence_data_by_time.find(time_point);
+  if (it == keyence_data_by_time.end()) { return std::nullopt; }
+  return it->second;
+}
+
+std::optional<core::Trajectory> Data::getTrajectoryDataAt(const core::TimePoint time_point) const
+{
+  const auto it = trajectory_data_by_time.find(time_point);
+  if (it == trajectory_data_by_time.end()) { return std::nullopt; }
+  return it->second;
+}
+
 DataBuilder::DataBuilder()
 {
 }
 
-Data DataBuilder::getData()
+Data DataBuilder::build()
 {
   return data_;
 }
