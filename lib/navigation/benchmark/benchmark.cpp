@@ -48,19 +48,19 @@ std::optional<Result> Benchmark::run(utils::ManualTime &manual_time, INavigator 
     }
     const auto expected_trajectory = data_.getTrajectoryDataAt(time_point);
     if (expected_trajectory) {
-    const core::Timer trajectory_timer(time_source_);
-    const auto calculated_trajectory = navigator.currentTrajectory();
-    if (calculated_trajectory) {
-      result.trajectory_errors.emplace_back(
-        TrajectoryError(*expected_trajectory, *calculated_trajectory));
-    } else {
-      result.trajectory_errors.push_back(std::nullopt);
+      const core::Timer trajectory_timer(time_source_);
+      const auto calculated_trajectory = navigator.currentTrajectory();
+      if (calculated_trajectory) {
+        result.trajectory_errors.emplace_back(
+          TrajectoryError(*expected_trajectory, *calculated_trajectory));
+      } else {
+        result.trajectory_errors.push_back(std::nullopt);
+      }
+      result.time_taken_for_trajectory.push_back(trajectory_timer.elapsed());
     }
-    result.time_taken_for_trajectory.push_back(trajectory_timer.elapsed());
   }
-}
-result.total_time_taken = full_benchmark_timer.elapsed();
-return result;
+  result.total_time_taken = full_benchmark_timer.elapsed();
+  return result;
 }
 
 }  // namespace hyped::navigation::benchmark
