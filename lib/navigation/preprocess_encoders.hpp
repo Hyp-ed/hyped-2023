@@ -1,9 +1,11 @@
-#include "types.hpp"
+#pragma once
+
 
 #include <array>
 #include <cstdint>
 
-#include "core/types.hpp"
+#include <core/types.hpp>
+#include "types.hpp"
 
 namespace hyped::navigation {
 

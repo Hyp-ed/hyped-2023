@@ -24,7 +24,7 @@ class IGpioReader {
  */
 class IGpioWriter {
  public:
-  virtual hyped::core::Result write(const core::DigitalSignal state) = 0;
+  virtual core::Result write(const core::DigitalSignal state) = 0;
 };
 
 /**
