@@ -110,19 +110,19 @@ controller_status Controller::processWarningMessage(const uint8_t warning_code)
     curr = controller_status::GeneralWarning;
   }
   if ((warning_code & 0b0000'1000'0000) == 0b0000'1000'0000) {
-    logger_.log(core::LogLevel::kFatal, "To be confirmed");
+    logger_.log(core::LogLevel::kFatal, "BMS Proposed Power");
     curr = controller_status::GeneralWarning;
   }
   if ((warning_code & 0b0001'0000'0000) == 0b0001'0000'0000) {
-    logger_.log(core::LogLevel::kFatal, "To be confirmed");
+    logger_.log(core::LogLevel::kFatal, "Capacitor temporature exceeded");
     curr = controller_status::GeneralWarning;
   }
   if ((warning_code & 0b0010'0000'0000) == 0b0010'0000'0000) {
-    logger_.log(core::LogLevel::kFatal, "To be confirmed");
+    logger_.log(core::LogLevel::kFatal, "I2T protection");
     curr = controller_status::GeneralWarning;
   }
   if ((warning_code & 0b0100'0000'0000) == 0b0100'0000'0000) {
-    logger_.log(core::LogLevel::kFatal, "To be confirmed");
+    logger_.log(core::LogLevel::kFatal, "Field weakening active");
     curr = controller_status::GeneralWarning;
   }
 
