@@ -1,3 +1,5 @@
+#pragma once
+
 #include <core/time.hpp>
 
 namespace hyped::utils {
