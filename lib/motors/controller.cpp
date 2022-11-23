@@ -76,7 +76,7 @@ void Controller::processErrorMessage(const std::uint16_t error_code)
   }
 }
 
-controller_status Controller::processWarningMessage(const uint8_t warning_code)
+controller_status Controller::processWarningMessage(const std::uint8_t warning_code)
 {
   controller_status curr = controller_status::Nominal;
 
