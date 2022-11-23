@@ -8,7 +8,7 @@ enum class SensorDisagreement { kUnacceptable = 0, kAcceptable };
 
 using EncoderData = std::array<std::uint64_t, core::kNumEncoders>;
 using ImuData     = std::array<core::Float, core::kNumImus>;
-using KeyenceData = std::uint64_t;
+using KeyenceData = std::uint32_t;
 
 class INavigator {
  public:
