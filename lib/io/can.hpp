@@ -36,9 +36,9 @@ struct sockaddr_can {
     /* reserved for future CAN protocols address information */
   } can_addr;
 };
-#define PF_CAN = 29;
-#define AF_CAN = 29;
-#define CAN_RAW = 1;
+#define PF_CAN 29
+#define AF_CAN 29
+#define CAN_RAW 1
 #endif
 
 enum class CanResult { kFailure, kSuccess };
