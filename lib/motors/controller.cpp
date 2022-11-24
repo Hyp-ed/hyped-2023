@@ -1,8 +1,5 @@
 #include "controller.hpp"
 
-#include <cstdint>
-
-#include <core/logger.hpp>
 
 namespace hyped::motors {
 
@@ -51,10 +48,10 @@ void Controller::processErrorMessage(const std::uint16_t error_code)
       break;
     case 0xFF0C:
       logger_.log(core::LogLevel::kFatal,
-                  "ERROR_DC_LINK_UNDERVOLTAGE: DC voltage not applied to bridge or to low");
+                  "ERROR_DC_LINK_UNDERVOLTAGE: DC voltage not applied to bridge or too low");
       break;
     case 0xFF0D:
-      logger_.log(core::LogLevel::kFatal, "ERROR_PULS_MODE_FINISHED: Puls mode finished");
+      logger_.log(core::LogLevel::kFatal, "ERROR_PULS_MODE_FINISHED: Pulse mode finished");
       break;
     case 0xFF0E:
       logger_.log(core::LogLevel::kFatal, "ERROR_APP_ERROR");
@@ -68,65 +65,64 @@ void Controller::processErrorMessage(const std::uint16_t error_code)
       break;
     case 0x3210:
       logger_.log(core::LogLevel::kFatal,
-                  "ERROR_DC_LINK_OVERVOLTAGE: Power supply voltage tophigh");
+                  "ERROR_DC_LINK_OVERVOLTAGE: Power supply voltage too high");
       break;
-    default:
+    default:  
       logger_.log(core::LogLevel::kFatal, "GENERIC_ERROR: Unspecific error occurred");
       break;
   }
 }
 
-controller_status Controller::processWarningMessage(const std::uint8_t warning_code)
+controllerStatus Controller::processWarningMessage(const std::uint8_t warning_code)
 {
-  controller_status curr = controller_status::Nominal;
+  controllerStatus priority_error = controllerStatus::kNominal;
 
   // Flag specific warnings in binary
-  if ((warning_code & 0b0000'0001) == 0b0000'0001) {
+  if ((warning_code & 0b0000'0001) == 0b000'0000'0001) {
     logger_.log(core::LogLevel::kInfo, "Controller Temperature Exceeded");
-    curr = controller_status::ControllerTemperatureExceeded;
+    priority_error = controllerStatus::kControllerTemperatureExceeded;
   }
   if ((warning_code & 0b0000'0000'0010) == 0b0000'0000'0010) {
     logger_.log(core::LogLevel::kFatal, "Motor Temperature Exceeded");
-    curr = controller_status::GeneralWarning;
+    priority_error = controllerStatus::kUnrecoverableWarning;
   }
   if ((warning_code & 0b0000'0000'0100) == 0b0000'0000'0100) {
     logger_.log(core::LogLevel::kFatal, "DC link under voltage");
-    curr = controller_status::GeneralWarning;
+    priority_error = controllerStatus::kUnrecoverableWarning;
   }
   if ((warning_code & 0b0000'0000'1000) == 0b0000'0000'1000) {
     logger_.log(core::LogLevel::kFatal, "DC link over voltage");
-    curr = controller_status::GeneralWarning;
+    priority_error = controllerStatus::kUnrecoverableWarning;
   }
   if ((warning_code & 0b0000'0001'0000) == 0b0000'0001'0000) {
-    logger_.log(core::LogLevel::kFatal, "DC over current");
-    curr = controller_status::GeneralWarning;
+    logger_.log(core::LogLevel::kFatal, "DC over priority_errorent");
+    priority_error = controllerStatus::kUnrecoverableWarning;
   }
   if ((warning_code & 0b0000'0010'0000) == 0b0000'0010'0000) {
     logger_.log(core::LogLevel::kFatal, "Stall protection active");
-    curr = controller_status::GeneralWarning;
+    priority_error = controllerStatus::kUnrecoverableWarning;
   }
   if ((warning_code & 0b0000'0100'0000) == 0b0000'0100'0000) {
     logger_.log(core::LogLevel::kFatal, "Max velocity exceeded");
-    curr = controller_status::GeneralWarning;
+    priority_error = controllerStatus::kUnrecoverableWarning;
   }
   if ((warning_code & 0b0000'1000'0000) == 0b0000'1000'0000) {
     logger_.log(core::LogLevel::kFatal, "BMS Proposed Power");
-    curr = controller_status::GeneralWarning;
+    priority_error = controllerStatus::kUnrecoverableWarning;
   }
   if ((warning_code & 0b0001'0000'0000) == 0b0001'0000'0000) {
     logger_.log(core::LogLevel::kFatal, "Capacitor temporature exceeded");
-    curr = controller_status::GeneralWarning;
+    priority_error = controllerStatus::kUnrecoverableWarning;
   }
   if ((warning_code & 0b0010'0000'0000) == 0b0010'0000'0000) {
     logger_.log(core::LogLevel::kFatal, "I2T protection");
-    curr = controller_status::GeneralWarning;
+    priority_error = controllerStatus::kUnrecoverableWarning;
   }
   if ((warning_code & 0b0100'0000'0000) == 0b0100'0000'0000) {
     logger_.log(core::LogLevel::kFatal, "Field weakening active");
-    curr = controller_status::GeneralWarning;
+    priority_error = controllerStatus::kUnrecoverableWarning;
   }
 
-  return curr;
+  return priority_error;
 }
-// namespace hyped::motorcontrollers
 }  // namespace hyped::motors
