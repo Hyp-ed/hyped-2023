@@ -70,7 +70,7 @@ std::optional<CanFrame> Can::receive()
 {
   CanFrame received_message;
   if (ioctl(socket_, FIONREAD) < sizeof(CanFrame)) {
-    logger_.log(core::LogLevel::kDebug, "No can data in rx queue");
+    logger_.log(core::LogLevel::kDebug, "No CAN data in rx queue");
     return std::nullopt;
   }
   const int num_bytes_read = read(socket_, &received_message, sizeof(CanFrame));
@@ -99,7 +99,7 @@ io::CanResult Can::listen()
   if (ioctl(socket_, FIONREAD) < sizeof(CanFrame)) { return io::CanResult::kFailure; }
   const auto data = receive();
   if (!data) { return io::CanResult::kFailure; }
-  CanFrame message                 = data.value();
+  const CanFrame message           = data.value();
   const auto subscribed_processors = processors_.find(message.can_id);
   if (subscribed_processors == processors_.end()) {
     logger_.log(core::LogLevel::kInfo, "No CanProccessor associated with id %i", message.can_id);
@@ -113,8 +113,12 @@ io::CanResult Can::listen()
 
 void Can::addCanProcessor(const uint16_t id, std::shared_ptr<ICanProcessor> processor)
 {
-  if (processors_.contains(id)) { processors_[id].push_back(processor); }
-  // TODO add new vector to processors_
+  const auto id_and_processors = processors_.find(id);
+  if (id_and_processors == processors_.end()) {
+    processors_.emplace(id, std::vector<std::shared_ptr<ICanProcessor>>({processor}));
+  } else {
+    id_and_processors->second.push_back(processor);
+  }
   logger_.log(core::LogLevel::kInfo, "Added processor for id %i", id);
 }
 
