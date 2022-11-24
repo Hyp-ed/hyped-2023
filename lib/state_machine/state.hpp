@@ -3,9 +3,8 @@
 namespace hyped::state_machine {
 
 // State class containing all the states
-enum class State
-{
-  //TODOLater Add the actual states
+enum class State {
+  // TODOLater Add the actual states
   kInitialState,
   state1,
   state2,
@@ -13,4 +12,4 @@ enum class State
   state4
 };
 
-} //namespace hyped::state_machine
+}  // namespace hyped::state_machine

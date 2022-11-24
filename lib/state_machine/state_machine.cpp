@@ -4,7 +4,6 @@ namespace hyped::state_machine {
 
 StateMachine::StateMachine()
 {
-
 }
 
 // TODOLater implement
@@ -18,7 +17,7 @@ void StateMachine::checkTransition()
   */
 }
 
-//Transition to next state
+// Transition to next state
 void StateMachine::transition(Message message)
 {
   for (Transition transition : transitions) {
@@ -33,4 +32,4 @@ void StateMachine::reset()
   current_state = states[0];
 }
 
-} //namespace hyped::state_machine
+}  // namespace hyped::state_machine
