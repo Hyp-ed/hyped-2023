@@ -73,12 +73,16 @@ core::Result DataBuilder::addEncoderData(const core::TimePoint &timestamp,
   }
 }
 
-core::Result DataBuilder::addEncoderData(const std::uint64_t seconds_since_epoch,
-                                         const core::RawEncoderData &encoder_data)
+core::Result DataBuilder::addUniformEncoderData(const std::uint64_t seconds_since_epoch,
+                                                const std::uint32_t total_num_revolutions)
 {
   const auto timestamp
     = std::chrono::system_clock::time_point(std::chrono::seconds(seconds_since_epoch));
-  return addEncoderData(timestamp, encoder_data);
+  core::RawEncoderData raw_encoder_data;
+  for (std::size_t i = 0; i < core::kNumEncoders; ++i) {
+    raw_encoder_data.at(i) = total_num_revolutions;
+  }
+  return addEncoderData(timestamp, raw_encoder_data);
 }
 
 core::Result DataBuilder::addAccelerationData(const core::TimePoint &timestamp,
@@ -93,12 +97,17 @@ core::Result DataBuilder::addAccelerationData(const core::TimePoint &timestamp,
   }
 }
 
-core::Result DataBuilder::addAccelerationData(const std::uint64_t seconds_since_epoch,
-                                              const core::RawAccelerationData &acceleration_data)
+core::Result DataBuilder::addUniformAccelerationData(
+  const std::uint64_t seconds_since_epoch,
+  const std::array<core::Float, core::kNumAxis> raw_acceleration)
 {
   const auto timestamp
     = std::chrono::system_clock::time_point(std::chrono::seconds(seconds_since_epoch));
-  return addAccelerationData(timestamp, acceleration_data);
+  core::RawAccelerationData raw_acceleration_data;
+  for (std::size_t i = 0; i < core::kNumImus; ++i) {
+    raw_acceleration_data.at(i) = raw_acceleration;
+  }
+  return addAccelerationData(timestamp, raw_acceleration_data);
 }
 
 core::Result DataBuilder::addKeyenceData(const core::TimePoint &timestamp,
@@ -119,6 +128,26 @@ core::Result DataBuilder::addKeyenceData(const std::uint64_t seconds_since_epoch
   const auto timestamp
     = std::chrono::system_clock::time_point(std::chrono::seconds(seconds_since_epoch));
   return addKeyenceData(timestamp, keyence_data);
+}
+
+core::Result DataBuilder::addTrajectoryData(const core::TimePoint &timestamp,
+                                            const core::Trajectory &trajectory)
+{
+  const auto was_insertion_successful
+    = data_.trajectory_data_by_time.emplace(timestamp, trajectory).second;
+  if (was_insertion_successful) {
+    return core::Result::kSuccess;
+  } else {
+    return core::Result::kFailure;
+  }
+}
+
+core::Result DataBuilder::addTrajectoryData(const std::uint64_t seconds_since_epoch,
+                                            const core::Trajectory &trajectory)
+{
+  const auto timestamp
+    = std::chrono::system_clock::time_point(std::chrono::seconds(seconds_since_epoch));
+  return addTrajectoryData(timestamp, trajectory);
 }
 
 }  // namespace hyped::navigation::benchmark
