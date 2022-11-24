@@ -29,4 +29,4 @@ namespace hyped::state_machine {
 
         State current_state = states[0];
     };
-} //namespace hyped::state_machine
+} // namespace hyped::state_machine

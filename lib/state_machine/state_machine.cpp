@@ -1,6 +1,4 @@
 #include "state_machine.hpp"
-#include "transition.cpp"
-
 
 namespace hyped::state_machine {
 
@@ -9,14 +7,15 @@ namespace hyped::state_machine {
 
     }
 
-    //Check if the current states transition function returns true
-    // TODOLater implement:
+    // TODOLater implement
     void StateMachine::checkTransition()
     {
-        //update data
-        //should check if a transition is needed with current data
-        //then run transition to move to next state
-        //return (None || transition_message)
+        /*
+        update data
+        should check if a transition is needed with current data
+        then run transition to move to next state
+        return (None || transition_message)
+        */
     }
 
     //Transition to next state

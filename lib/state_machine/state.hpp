@@ -12,4 +12,4 @@ namespace hyped::state_machine {
         state3,
         state4
     };
-};
+} //namespace hyped::state_machine

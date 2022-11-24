@@ -10,4 +10,4 @@ namespace hyped::state_machine {
         message1,
         message2,
     };
-};
+} // namespace hyped::state_machine

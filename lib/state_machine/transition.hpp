@@ -21,4 +21,4 @@ namespace hyped::state_machine {
         Message message;
     };
 
-};
+} // namespace hyped::state_machine
