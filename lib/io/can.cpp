@@ -20,7 +20,7 @@ io::CanResult Can::initialise(const std::string &can_network_interface)
     logger_.log(core::LogLevel::kFatal, "Unable to open CAN socket");
     return io::CanResult::kFailure;
   }
-  const int interface_index = if_nametoindex(can_network_interface.c_str());
+  const uint8_t interface_index = if_nametoindex(can_network_interface.c_str());
   if (!interface_index) {
     logger_.log(core::LogLevel::kFatal, "Unable to find CAN1 network interface");
     close(socket_);
