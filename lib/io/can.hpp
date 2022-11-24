@@ -16,6 +16,7 @@ namespace hyped::io {
 #ifdef __linux__
 using CanFrame = can_frame;
 #else
+// structs and values as defined in <linux/can.h>
 struct CanFrame {
   uint32_t can_id; /* 32 bit CAN_ID + EFF/RTR/ERR flags */
   uint8_t can_dlc; /* frame payload length in byte (0 .. CAN_MAX_DLEN) */
@@ -24,6 +25,20 @@ struct CanFrame {
   uint8_t __res1;  /* reserved / padding */
   std::array<uint8_t, 8> data;
 };
+struct sockaddr_can {
+  sa_family_t can_family;
+  int can_ifindex;
+  union {
+    /* transport protocol class address info (e.g. ISOTP) */
+    struct {
+      canid_t rx_id, tx_id;
+    } tp;
+    /* reserved for future CAN protocols address information */
+  } can_addr;
+};
+#define PF_CAN = 29;
+#define CAN_RAW = 1;
+#define AF_CAN = PF_CAN;
 #endif
 
 enum class CanResult { kFailure, kSuccess };
