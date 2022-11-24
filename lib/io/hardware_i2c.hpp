@@ -15,10 +15,10 @@ class HardwareI2c : public II2c {
   ~HardwareI2c();
 
   virtual std::optional<std::uint8_t> readByte(const std::uint8_t device_address,
-                                       const std::uint8_t register_address);
+                                               const std::uint8_t register_address);
   virtual core::Result writeByteToRegister(const std::uint8_t device_address,
-                                   const std::uint8_t register_address,
-                                   const std::uint8_t data);
+                                           const std::uint8_t register_address,
+                                           const std::uint8_t data);
   virtual core::Result writeByte(const std::uint8_t device_address, const std::uint8_t data);
 
  private:
