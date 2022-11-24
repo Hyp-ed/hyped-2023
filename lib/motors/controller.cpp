@@ -1,6 +1,5 @@
 #include "controller.hpp"
 
-
 namespace hyped::motors {
 
 Controller::Controller(core::ILogger &logger) : logger_(logger)
@@ -67,8 +66,10 @@ void Controller::processErrorMessage(const std::uint16_t error_code)
       logger_.log(core::LogLevel::kFatal,
                   "ERROR_DC_LINK_OVERVOLTAGE: Power supply voltage too high");
       break;
-    default:  
-      logger_.log(core::LogLevel::kFatal, "GENERIC_ERROR: Unspecific error occurred");
+    default:
+      logger_.log(core::LogLevel::kFatal,
+                  "GENERIC_ERROR: Unspecific error occurred with code %i",
+                  error_code);
       break;
   }
 }
