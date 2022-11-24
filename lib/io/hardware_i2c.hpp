@@ -14,12 +14,12 @@ class HardwareI2c : public II2c {
   HardwareI2c(const std::uint8_t bus_address, core::ILogger &log);
   ~HardwareI2c();
 
-  std::optional<std::uint8_t> readByte(const std::uint8_t device_address,
+  virtual std::optional<std::uint8_t> readByte(const std::uint8_t device_address,
                                        const std::uint8_t register_address);
-  core::Result writeByteToRegister(const std::uint8_t device_address,
+  virtual core::Result writeByteToRegister(const std::uint8_t device_address,
                                    const std::uint8_t register_address,
                                    const std::uint8_t data);
-  core::Result writeByte(const std::uint8_t device_address, std::uint8_t data);
+  virtual core::Result writeByte(const std::uint8_t device_address, const std::uint8_t data);
 
  private:
   void setSensorAddress(const std::uint8_t device_address);
