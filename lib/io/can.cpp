@@ -99,7 +99,7 @@ io::CanResult Can::listen()
   if (ioctl(socket_, FIONREAD) < sizeof(CanFrame)) { return io::CanResult::kFailure; }
   const auto data = receive();
   if (!data) { return io::CanResult::kFailure; }
-  CanFrame message = data.value();
+  CanFrame message                 = data.value();
   const auto subscribed_processors = processors_.find(message.can_id);
   if (subscribed_processors == processors_.end()) {
     logger_.log(core::LogLevel::kInfo, "No CanProccessor associated with id %i", message.can_id);
