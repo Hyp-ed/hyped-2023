@@ -26,19 +26,19 @@ struct CanFrame {
   std::array<uint8_t, 8> data;
 };
 struct sockaddr_can {
-  sa_family_t can_family;
-  int can_ifindex;
+  uint8_t can_family;
+  uint8_t can_ifindex;
   union {
     /* transport protocol class address info (e.g. ISOTP) */
     struct {
-      canid_t rx_id, tx_id;
+      uint32_t rx_id, tx_id;
     } tp;
     /* reserved for future CAN protocols address information */
   } can_addr;
 };
 #define PF_CAN = 29;
+#define AF_CAN = 29;
 #define CAN_RAW = 1;
-#define AF_CAN = PF_CAN;
 #endif
 
 enum class CanResult { kFailure, kSuccess };
