@@ -7,7 +7,7 @@
 namespace hyped::io {
 
 class II2c {
-  public:
+ public:
   /**
    * @brief      Reads a byte from some device on the I2C bus.
    */
