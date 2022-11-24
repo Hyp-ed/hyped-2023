@@ -164,7 +164,7 @@ void Repl::addAdcCommands(const std::uint8_t pin)
 
 void Repl::addI2cCommands(const std::uint8_t bus)
 {
-  const auto i2c = std::make_shared<io::I2c>(bus, log_);
+  const auto i2c = std::make_shared<io::HardwareI2c>(bus, log_);
   {
     Command i2c_read_command;
     std::stringstream identifier;
