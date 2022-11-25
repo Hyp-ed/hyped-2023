@@ -97,16 +97,15 @@ std::optional<CanFrame> Can::receive()
 core::Result Can::listen()
 {
   if (ioctl(socket_, FIONREAD) < sizeof(CanFrame)) { return core::Result::kFailure; }
-  const auto data = receive();
-  if (!data) { return core::Result::kFailure; }
-  const CanFrame message           = data.value();
-  const auto subscribed_processors = processors_.find(message.can_id);
+  const auto message = receive();
+  if (!message) { return core::Result::kFailure; }
+  const auto subscribed_processors = processors_.find(message->can_id);
   if (subscribed_processors == processors_.end()) {
-    logger_.log(core::LogLevel::kInfo, "No CanProccessor associated with id %i", message.can_id);
+    logger_.log(core::LogLevel::kInfo, "No CanProccessor associated with id %i", message->can_id);
     return core::Result::kFailure;
   }
   for (auto &processor : subscribed_processors->second) {
-    processor->processMessage(message);
+    processor->processMessage(*message);
   }
   return core::Result::kSuccess;
 }

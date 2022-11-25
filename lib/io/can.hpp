@@ -49,10 +49,10 @@ class ICanProcessor {
 
 class ICan {
  public:
-  virtual core::Result initialise(const std::string &can_network_interface) = 0;
-  virtual core::Result send(const CanFrame &message)                        = 0;
-  virtual std::optional<CanFrame> receive()                                 = 0;
-  virtual core::Result listen()                                             = 0;
+  virtual core::Result initialise(const std::string &can_network_interface)      = 0;
+  virtual core::Result send(const CanFrame &message)                             = 0;
+  virtual std::optional<CanFrame> receive()                                      = 0;
+  virtual core::Result listen()                                                  = 0;
   virtual void addCanProcessor(const std::uint16_t id, ICanProcessor &processor) = 0;
 };
 
