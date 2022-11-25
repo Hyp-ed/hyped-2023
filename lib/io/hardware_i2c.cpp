@@ -1,4 +1,4 @@
-#include "i2c.hpp"
+#include "hardware_i2c.hpp"
 
 #include <fcntl.h>
 #include <unistd.h>
@@ -13,7 +13,9 @@
 
 namespace hyped::io {
 
-I2c::I2c(const std::uint8_t bus_address, core::ILogger &log) : sensor_address_(0), log_(log)
+HardwareI2c::HardwareI2c(const std::uint8_t bus_address, core::ILogger &log)
+    : sensor_address_(0),
+      log_(log)
 {
   char path[13];  // up to "/dev/i2c-2"
   sprintf(path, "/dev/i2c-%d", bus_address);
@@ -22,12 +24,12 @@ I2c::I2c(const std::uint8_t bus_address, core::ILogger &log) : sensor_address_(0
   };
 }
 
-I2c::~I2c()
+HardwareI2c::~HardwareI2c()
 {
   close(file_descriptor_);
 }
 
-void I2c::setSensorAddress(const std::uint8_t device_address)
+void HardwareI2c::setSensorAddress(const std::uint8_t device_address)
 {
   if (file_descriptor_ < 0) {
     log_.log(core::LogLevel::kFatal, "Could not find i2c device while setting sensor address");
@@ -41,8 +43,8 @@ void I2c::setSensorAddress(const std::uint8_t device_address)
   }
 }
 
-std::optional<std::uint8_t> I2c::readByte(const std::uint8_t device_address,
-                                          const std::uint8_t register_address)
+std::optional<std::uint8_t> HardwareI2c::readByte(const std::uint8_t device_address,
+                                                  const std::uint8_t register_address)
 {
   if (file_descriptor_ < 0) {
     log_.log(core::LogLevel::kFatal, "Could not find i2c device while reading");
@@ -67,9 +69,9 @@ std::optional<std::uint8_t> I2c::readByte(const std::uint8_t device_address,
   return read_buffer[0];
 }
 
-core::Result I2c::writeByteToRegister(const std::uint8_t device_address,
-                                      const std::uint8_t register_address,
-                                      const std::uint8_t data)
+core::Result HardwareI2c::writeByteToRegister(const std::uint8_t device_address,
+                                              const std::uint8_t register_address,
+                                              const std::uint8_t data)
 {
   if (file_descriptor_ < 0) {
     log_.log(core::LogLevel::kFatal, "Could not find i2c device while writing");
@@ -85,7 +87,7 @@ core::Result I2c::writeByteToRegister(const std::uint8_t device_address,
   return core::Result::kSuccess;
 }
 
-core::Result I2c::writeByte(const std::uint8_t device_address, const std::uint8_t data)
+core::Result HardwareI2c::writeByte(const std::uint8_t device_address, const std::uint8_t data)
 {
   if (file_descriptor_ < 0) {
     log_.log(core::LogLevel::kFatal, "Could not find i2c device while writing");

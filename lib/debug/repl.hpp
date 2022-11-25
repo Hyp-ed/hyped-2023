@@ -9,7 +9,7 @@
 #include <core/logger.hpp>
 #include <io/adc.hpp>
 #include <io/hardware_gpio.hpp>
-#include <io/i2c.hpp>
+#include <io/hardware_i2c.hpp>
 
 namespace hyped::debug {
 
