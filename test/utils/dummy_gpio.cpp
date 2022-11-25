@@ -10,7 +10,7 @@ TEST(DummyGpio, construct)
 {
   utils::DummyGpio dummy_gpio(
     [](const std::uint8_t) { return std::nullopt; },
-    [](const std::uint8_t, const core::DigitalSignal) { return io::GpioWriteResult::kFailure; });
+    [](const std::uint8_t, const core::DigitalSignal) { return hyped::core::Result::kFailure; });
 }
 
 void testRead(utils::DummyGpio &dummy_gpio,
@@ -38,7 +38,7 @@ void testWrite(utils::DummyGpio &dummy_gpio,
   auto dummy_gpio_writer = *dummy_gpio_writer_opt;
   ASSERT_TRUE(dummy_gpio_writer);
   const auto result = dummy_gpio_writer->write(state);
-  ASSERT_EQ(result, io::GpioWriteResult::kSuccess);
+  ASSERT_EQ(result, hyped::core::Result::kSuccess);
   ASSERT_EQ(testing::internal::GetCapturedStdout(), expected_output);
 }
 
@@ -60,7 +60,7 @@ TEST(DummyGpio, printToStdout)
           std::cout << "high";
       }
       std::cout << " to " << static_cast<int>(pin) << std::endl;
-      return io::GpioWriteResult::kSuccess;
+      return hyped::core::Result::kSuccess;
     });
   testRead(dummy_gpio, 4, "read from 4\n");
   testRead(dummy_gpio, 42, "read from 42\n");

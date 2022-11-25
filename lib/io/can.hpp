@@ -1,3 +1,4 @@
+#pragma once
 #include <cstdint>
 #include <memory>
 #include <optional>
@@ -41,8 +42,6 @@ struct sockaddr_can {
 #define CAN_RAW 1
 #endif
 
-enum class CanResult { kFailure, kSuccess };
-
 class ICanProcessor {
  public:
   virtual void processMessage(const io::CanFrame &frame) = 0;
@@ -50,20 +49,20 @@ class ICanProcessor {
 
 class ICan {
  public:
-  virtual CanResult initialise(const std::string &can_network_interface) = 0;
-  virtual CanResult send(const CanFrame &message)                        = 0;
-  virtual std::optional<CanFrame> receive()                              = 0;
-  virtual CanResult listen()                                             = 0;
-  virtual void addCanProcessor(uint16_t ID, ICanProcessor &processor)    = 0;
+  virtual core::Result initialise(const std::string &can_network_interface) = 0;
+  virtual core::Result send(const CanFrame &message)                        = 0;
+  virtual std::optional<CanFrame> receive()                                 = 0;
+  virtual core::Result listen()                                             = 0;
+  virtual void addCanProcessor(uint16_t ID, ICanProcessor &processor)       = 0;
 };
 
 class Can : public ICan {
  public:
   Can(core::ILogger &logger);
-  CanResult initialise(const std::string &can_network_interface);
-  CanResult send(const CanFrame &message);
+  core::Result initialise(const std::string &can_network_interface);
+  core::Result send(const CanFrame &message);
   std::optional<CanFrame> receive();
-  CanResult listen();
+  core::Result listen();
   void addCanProcessor(const uint16_t id, std::shared_ptr<ICanProcessor> processor);
 
  private:
