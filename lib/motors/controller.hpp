@@ -4,13 +4,13 @@
 #include "core/logger.hpp"
 
 namespace hyped::motors {
-enum class controllerStatus { kControllerTemperatureExceeded, kUnrecoverableWarning, kNominal };
+enum class ControllerStatus { kControllerTemperatureExceeded, kUnrecoverableWarning, kNominal };
 
 class Controller {
  public:
   Controller(core::ILogger &logger);
   void processErrorMessage(const std::uint16_t error_code);
-  controllerStatus processWarningMessage(const std::uint8_t warning_code);
+  ControllerStatus processWarningMessage(const std::uint8_t warning_code);
 
  private:
   core::ILogger &logger_;
