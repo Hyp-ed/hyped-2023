@@ -19,20 +19,20 @@ using CanFrame = can_frame;
 #else
 // structs and values as defined in <linux/can.h>
 struct CanFrame {
-  uint32_t can_id; /* 32 bit CAN_ID + EFF/RTR/ERR flags */
-  uint8_t can_dlc; /* frame payload length in byte (0 .. CAN_MAX_DLEN) */
-  uint8_t __pad;   /* padding */
-  uint8_t __res0;  /* reserved / padding */
-  uint8_t __res1;  /* reserved / padding */
-  std::array<uint8_t, 8> data;
+  std::uint32_t can_id; /* 32 bit CAN_ID + EFF/RTR/ERR flags */
+  std::uint8_t can_dlc; /* frame payload length in byte (0 .. CAN_MAX_DLEN) */
+  std::uint8_t __pad;   /* padding */
+  std::uint8_t __res0;  /* reserved / padding */
+  std::uint8_t __res1;  /* reserved / padding */
+  std::array<std::uint8_t, 8> data;
 };
 struct sockaddr_can {
-  uint8_t can_family;
-  uint8_t can_ifindex;
+  std::uint8_t can_family;
+  std::uint8_t can_ifindex;
   union {
     /* transport protocol class address info (e.g. ISOTP) */
     struct {
-      uint32_t rx_id, tx_id;
+      std::uint32_t rx_id, tx_id;
     } tp;
     /* reserved for future CAN protocols address information */
   } can_addr;
@@ -53,7 +53,7 @@ class ICan {
   virtual core::Result send(const CanFrame &message)                        = 0;
   virtual std::optional<CanFrame> receive()                                 = 0;
   virtual core::Result listen()                                             = 0;
-  virtual void addCanProcessor(uint16_t ID, ICanProcessor &processor)       = 0;
+  virtual void addCanProcessor(const std::uint16_t id, ICanProcessor &processor) = 0;
 };
 
 class Can : public ICan {
@@ -63,12 +63,12 @@ class Can : public ICan {
   core::Result send(const CanFrame &message);
   std::optional<CanFrame> receive();
   core::Result listen();
-  void addCanProcessor(const uint16_t id, std::shared_ptr<ICanProcessor> processor);
+  void addCanProcessor(const std::uint16_t id, std::shared_ptr<ICanProcessor> processor);
 
  private:
   int socket_;
-  hyped::core::ILogger &logger_;
-  std::unordered_map<uint32_t, std::vector<std::shared_ptr<ICanProcessor>>> processors_;
+  core::ILogger &logger_;
+  std::unordered_map<std::uint32_t, std::vector<std::shared_ptr<ICanProcessor>>> processors_;
 };
 
 }  // namespace hyped::io

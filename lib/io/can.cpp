@@ -20,7 +20,7 @@ core::Result Can::initialise(const std::string &can_network_interface)
     logger_.log(core::LogLevel::kFatal, "Unable to open CAN socket");
     return core::Result::kFailure;
   }
-  const uint8_t interface_index = if_nametoindex(can_network_interface.c_str());
+  const std::uint8_t interface_index = if_nametoindex(can_network_interface.c_str());
   if (!interface_index) {
     logger_.log(core::LogLevel::kFatal, "Unable to find CAN1 network interface");
     close(socket_);
@@ -111,7 +111,7 @@ core::Result Can::listen()
   return core::Result::kSuccess;
 }
 
-void Can::addCanProcessor(const uint16_t id, std::shared_ptr<ICanProcessor> processor)
+void Can::addCanProcessor(const std::uint16_t id, std::shared_ptr<ICanProcessor> processor)
 {
   const auto id_and_processors = processors_.find(id);
   if (id_and_processors == processors_.end()) {
