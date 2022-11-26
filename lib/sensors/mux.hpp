@@ -122,13 +122,13 @@ std::optional<std::array<T, N>> Mux<T, N>::readAllChannels()
       log_.log(core::LogLevel::kFatal, "Failed to close all mux channels while reading");
       return std::nullopt;
     }
-    // If too many sensors are unusable, assume mux is faulty
-    if (num_unusable_sensors > max_num_unusable_sensors_) {
-      log_.log(core::LogLevel::kFatal,
-               "Failed to read from more than %0.f%% of sensors on the mux",
-               kFailureThreshold * 100);
-      return std::nullopt;
-    }
+  }
+  // If too many sensors are unusable, assume mux is faulty
+  if (num_unusable_sensors > max_num_unusable_sensors_) {
+    log_.log(core::LogLevel::kFatal,
+             "Failed to read from more than %0.f%% of sensors on the mux",
+             kFailureThreshold * 100);
+    return std::nullopt;
   }
   return mux_data;
 }
