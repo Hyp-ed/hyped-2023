@@ -1,7 +1,5 @@
 #pragma once
 
-#include <functional>
-
 #include <io/i2c.hpp>
 
 namespace hyped::utils {
