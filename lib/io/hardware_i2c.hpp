@@ -2,10 +2,7 @@
 
 #include "i2c.hpp"
 
-#include <optional>
-
 #include <core/logger.hpp>
-#include <core/types.hpp>
 
 namespace hyped::io {
 
