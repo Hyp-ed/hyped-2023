@@ -262,7 +262,7 @@ void Repl::addTemperatureCommands(const std::uint8_t bus, const std::uint8_t dev
   temperature_read_command.handler     = [this, temperature, bus]() {
     const auto value = temperature->read();
     if (value) {
-      log_.log(hyped::core::LogLevel::kInfo, "Temperature value from bus %d: %f", bus, *value);
+      log_.log(hyped::core::LogLevel::kInfo, "Temperature value from bus %d: %d", bus, *value);
     } else {
       log_.log(hyped::core::LogLevel::kFatal, "Failed to read temperature from bus %d", bus);
     }
