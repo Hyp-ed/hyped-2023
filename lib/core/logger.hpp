@@ -8,14 +8,12 @@
 
 #define logNTimes(logger, n, level, ...)                                                           \
   do {                                                                                             \
-    static int count = 0;                                                                          \
+    static std::size_t count = 0;                                                                  \
     if (count < n) {                                                                               \
       logger.log(level, __VA_ARGS__);                                                              \
-      count++;                                                                                     \
+      ++count;                                                                                     \
     }                                                                                              \
   } while (0)
-
-#define logOnce(logger, level, ...) logNTimes(logger, 1, level, __VA_ARGS__)
 
 namespace hyped::core {
 
