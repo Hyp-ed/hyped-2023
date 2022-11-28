@@ -3,12 +3,13 @@
 #include <array>
 #include <cstdint>
 
+#include "core/logger.hpp"
 #include "core/types.hpp"
 
 namespace hyped::navigation {
 class ImuPreprocessor {
  public:
-  ImuPreprocessor();
+  ImuPreprocessor(core::ILogger &logger);
 
   std::optional<core::ImuData> processData(const core::RawImuData raw_imu_data);
 
@@ -30,10 +31,12 @@ class ImuPreprocessor {
   // initialised as all true, bool mask of reliable sensors
   std::array<bool, core::kNumImus> are_imus_reliable_;
 
-  // number of alllowed consecutive outliers from single accelerometer
+  // number of allowed consecutive outliers from single accelerometer
   static constexpr std::uint8_t kNumAllowedImuFailures_ = 20;
 
   std::size_t num_reliable_accelerometers_;  // intitialised as= core::kNumImus
+
+  core::ILogger &log_;
 };
 
 }  // namespace hyped::navigation
