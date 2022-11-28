@@ -29,6 +29,7 @@ class Mux {
  private:
   core::Result selectChannel(const std::uint8_t channel);
   core::Result closeAllChannels();
+
   core::ILogger &logger_;
   io::II2c &i2c_;
   const std::uint8_t mux_address_;
