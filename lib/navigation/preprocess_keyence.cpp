@@ -20,18 +20,10 @@ SensorChecks KeyencePreprocessor::checkKeyenceAgrees(const core::KeyenceData &ke
 
   if (current_data_status == KeyenceDataStatus::kDisagreed
       && previous_data_status_ == KeyenceDataStatus::kDisagreed) {
-    
     // TODOLater: Implement logging
     return SensorChecks::kUnacceptable;
   }
-  if (current_data_status == KeyenceDataStatus::kDisagreed
-      && previous_data_status_ == KeyenceDataStatus::kAgreed) {
-    previous_data_status_ = KeyenceDataStatus::kDisagreed;
-  }
-  if (current_data_status == KeyenceDataStatus::kAgreed
-      && previous_data_status_ == KeyenceDataStatus::kDisagreed) {
-    previous_data_status_ = current_data_status;
-  }
+  previous_data_status_ = current_data_status;
 
   return SensorChecks::kAcceptable;
 }
