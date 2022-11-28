@@ -94,9 +94,8 @@ ControllerStatus Controller::processWarningMessage(const std::uint8_t warning_co
     return ControllerStatus::kUnrecoverableWarning;
   }
   if (warning_code & 0x10) {
-    logger_.log(core::LogLevel::kFatal,
-                "Controller Warning: DC link over current (code: %x)",
-                warning_code);
+    logger_.log(
+      core::LogLevel::kFatal, "Controller Warning: DC link over current (code: %x)", warning_code);
     return ControllerStatus::kUnrecoverableWarning;
   }
   if (warning_code & 0x20) {
@@ -127,8 +126,9 @@ ControllerStatus Controller::processWarningMessage(const std::uint8_t warning_co
     return ControllerStatus::kUnrecoverableWarning;
   }
   if (warning_code & 0x400) {
-    logger_.log(
-      core::LogLevel::kFatal, "Controller Warning: Field weakening active (code: %x)", warning_code);
+    logger_.log(core::LogLevel::kFatal,
+                "Controller Warning: Field weakening active (code: %x)",
+                warning_code);
     return ControllerStatus::kUnrecoverableWarning;
   }
   if (warning_code & 0x1) {
