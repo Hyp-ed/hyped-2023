@@ -1,8 +1,8 @@
 #pragma once
 
+#include "consts.hpp"
 #include "state.cpp"
 #include "transition.cpp"
-#include "consts.hpp"
 
 #include <optional>
 
