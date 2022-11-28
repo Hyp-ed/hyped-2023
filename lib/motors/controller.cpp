@@ -95,18 +95,15 @@ ControllerStatus Controller::processWarningMessage(const std::uint8_t warning_co
     priority_error = ControllerStatus::kUnrecoverableWarning;
   }
   if (warning_code & 0x4) {
-    logger_.log(
-      core::LogLevel::kFatal, "Controller Warning: DC link under voltage");
+    logger_.log(core::LogLevel::kFatal, "Controller Warning: DC link under voltage");
     priority_error = ControllerStatus::kUnrecoverableWarning;
   }
   if (warning_code & 0x8) {
-    logger_.log(
-      core::LogLevel::kFatal, "Controller Warning: DC link over voltage");
+    logger_.log(core::LogLevel::kFatal, "Controller Warning: DC link over voltage");
     priority_error = ControllerStatus::kUnrecoverableWarning;
   }
   if (warning_code & 0x10) {
-    logger_.log(
-      core::LogLevel::kFatal, "Controller Warning: DC link over current");
+    logger_.log(core::LogLevel::kFatal, "Controller Warning: DC link over current");
     priority_error = ControllerStatus::kUnrecoverableWarning;
   }
   if (warning_code & 0x20) {
@@ -114,13 +111,11 @@ ControllerStatus Controller::processWarningMessage(const std::uint8_t warning_co
     priority_error = ControllerStatus::kUnrecoverableWarning;
   }
   if (warning_code & 0x40) {
-    logger_.log(
-      core::LogLevel::kFatal, "Controller Warning: Max velocity exceeded");
+    logger_.log(core::LogLevel::kFatal, "Controller Warning: Max velocity exceeded");
     priority_error = ControllerStatus::kUnrecoverableWarning;
   }
   if (warning_code & 0x80) {
-    logger_.log(
-      core::LogLevel::kFatal, "Controller Warning: BMS Proposed Power");
+    logger_.log(core::LogLevel::kFatal, "Controller Warning: BMS Proposed Power");
     priority_error = ControllerStatus::kUnrecoverableWarning;
   }
   if (warning_code & 0x100) {
@@ -128,8 +123,7 @@ ControllerStatus Controller::processWarningMessage(const std::uint8_t warning_co
     priority_error = ControllerStatus::kUnrecoverableWarning;
   }
   if (warning_code & 0x200) {
-    logger_.log(
-      core::LogLevel::kFatal, "Controller Warning: I2T protection");
+    logger_.log(core::LogLevel::kFatal, "Controller Warning: I2T protection");
     priority_error = ControllerStatus::kUnrecoverableWarning;
   }
   if (warning_code & 0x400) {
