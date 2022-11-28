@@ -20,7 +20,8 @@ SensorChecks KeyencePreprocessor::checkKeyenceAgrees(const core::KeyenceData &ke
 
   if (current_data_status == KeyenceDataStatus::kDisagreed
       && previous_data_status_ == KeyenceDataStatus::kDisagreed) {
-    // TODOLater: Implement logging
+    log_.log(core::LogLevel::kFatal,
+             "Keyence disagreement for two consecutive readings.");
     return SensorChecks::kUnacceptable;
   }
   previous_data_status_ = current_data_status;
