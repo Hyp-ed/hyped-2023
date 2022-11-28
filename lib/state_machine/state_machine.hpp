@@ -15,7 +15,7 @@ class StateMachine {
 
   void transition(const Message message);
 
-  Message checkTransition();
+  std::optional<Message> checkTransition();
 
   void reset();
 

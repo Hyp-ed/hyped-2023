@@ -10,7 +10,7 @@ StateMachine::StateMachine()
 }
 
 // TODOLater implement
-Message StateMachine::checkTransition()
+std::optional<Message> StateMachine::checkTransition()
 {
   /*
   update data
@@ -18,7 +18,7 @@ Message StateMachine::checkTransition()
   then run transition to move to next state
   return transition message
   */
-  return Message::noneTransition;
+  return std::nullopt;
 }
 
 // Transition to next state
