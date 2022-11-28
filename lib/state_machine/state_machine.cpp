@@ -1,5 +1,7 @@
 #include "state_machine.hpp"
 
+#include <optional>
+
 namespace hyped::state_machine {
 
 StateMachine::StateMachine()
@@ -7,7 +9,7 @@ StateMachine::StateMachine()
 }
 
 // TODOLater implement
-void StateMachine::checkTransition()
+std::optional<Message> StateMachine::checkTransition()
 {
   /*
   update data
@@ -18,7 +20,7 @@ void StateMachine::checkTransition()
 }
 
 // Transition to next state
-void StateMachine::transition(Message message)
+void StateMachine::transition(const Message message)
 {
   for (Transition transition : transitions) {
     if (transition.from == current_state && transition.message == message) {
@@ -29,7 +31,7 @@ void StateMachine::transition(Message message)
 
 void StateMachine::reset()
 {
-  current_state = states[0];
+  current_state = State::kInitialState;
 }
 
 }  // namespace hyped::state_machine
