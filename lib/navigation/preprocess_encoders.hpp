@@ -13,15 +13,10 @@ class EncodersPreprocessor {
   core::EncoderData processData(const core::EncoderData encoder_data);
 
  private:
-  // extern core::EncoderData reliability_of_encoders;      // some addition
-  // extern core::EncoderData num_outliers_per_encoder;
   core::EncoderData detectOutliers(const core::EncoderData encoder_data);
+  std::uint8_t max_consecutives = 10;
 
-  // void checkReliable(const core::EncoderData &encoder_data);
-  void checkReliable(const core::EncoderData &num_outliers_per_encoder);
-
-  // template<typename T>
-  // std::array<core::Float,3> quartiles(T encoder_data);
+  void checkReliable();
 
   template<std::size_t N>
   Quartile getQuartiles(const std::array<std::uint32_t, N> &encoder_data);
