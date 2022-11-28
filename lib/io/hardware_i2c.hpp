@@ -9,7 +9,7 @@ namespace hyped::io {
 
 class HardwareI2c : public II2c {
  public:
-  HardwareI2c(core::ILogger &log, const std::uint8_t bus_address);
+  HardwareI2c(core::ILogger &logger, const std::uint8_t bus_address);
   ~HardwareI2c();
 
   virtual std::optional<std::uint8_t> readByte(const std::uint8_t device_address,
@@ -23,9 +23,9 @@ class HardwareI2c : public II2c {
   void setSensorAddress(const std::uint8_t device_address);
 
  private:
-  int file_descriptor_;
+  core::ILogger &logger_;
   std::uint8_t sensor_address_;
-  core::ILogger &log_;
+  int file_descriptor_;
 };
 
 }  // namespace hyped::io
