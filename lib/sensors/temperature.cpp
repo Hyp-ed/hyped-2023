@@ -13,9 +13,6 @@ Temperature::Temperature(const std::uint8_t device_address,
 {
 }
 
-Temperature::~Temperature()
-{
-}
 
 std::optional<std::int16_t> Temperature::read()
 {
@@ -29,11 +26,11 @@ std::optional<std::int16_t> Temperature::read()
     return std::nullopt;
   }
   const auto temperature_high_byte = i2c_.readByte(device_address_, kDataTH);
-  const auto temperature_low_byte  = i2c_.readByte(device_address_, kDataTL);
   if (!temperature_high_byte) {
     log_.log(hyped::core::LogLevel::kFatal, "Temperature high could not be read");
     return std::nullopt;
   }
+  const auto temperature_low_byte  = i2c_.readByte(device_address_, kDataTL);
   if (!temperature_low_byte) {
     log_.log(hyped::core::LogLevel::kFatal, "Temperature low could not be read");
     return std::nullopt;

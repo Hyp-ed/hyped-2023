@@ -3,7 +3,6 @@
 #include "i2c_sensors.hpp"
 
 #include <cstdint>
-#include <cstdio>
 #include <optional>
 
 #include <core/logger.hpp>
