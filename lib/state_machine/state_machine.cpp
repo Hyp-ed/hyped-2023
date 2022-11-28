@@ -9,14 +9,15 @@ StateMachine::StateMachine()
 }
 
 // TODOLater implement
-std::optional<Message> StateMachine::checkTransition()
+Message StateMachine::checkTransition()
 {
   /*
   update data
   should check if a transition is needed with current data
   then run transition to move to next state
-  return (None || transition_message)
+  return transition message
   */
+  return Message::noneTransition;
 }
 
 // Transition to next state

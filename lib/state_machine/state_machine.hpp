@@ -1,8 +1,8 @@
 #pragma once
 
 #include "consts.hpp"
-#include "state.cpp"
-#include "transition.cpp"
+#include "state.hpp"
+#include "transition.hpp"
 
 #include <optional>
 
@@ -14,7 +14,7 @@ class StateMachine {
 
   void transition(const Message message);
 
-  std::optional<Message> checkTransition();
+  Message checkTransition();
 
   void reset();
 
