@@ -16,8 +16,6 @@ ImuPreprocessor::ImuPreprocessor()
 std::optional<core::ImuData> ImuPreprocessor::processData(const core::RawImuData raw_imu_data)
 {
   core::ImuData imu_data;
-  core::ImuData accelerometer_data;
-
   core::Float magnitude;
   for (std::size_t i = 0; i < core::kNumImus; ++i) {
     magnitude = 0;
@@ -26,8 +24,8 @@ std::optional<core::ImuData> ImuPreprocessor::processData(const core::RawImuData
     }
     imu_data.at(i) = std::sqrt(magnitude);
   }
-
-  accelerometer_data = detectOutliers(imu_data);
+  
+  const core::ImuData accelerometer_data = detectOutliers(imu_data);
   checkReliable();
   return accelerometer_data;
 }
@@ -81,9 +79,8 @@ template<std::size_t N>
 Quartiles ImuPreprocessor::getQuartiles(const std::array<core::Float, N> &clean_accelerometer_data)
 {
   std::array<core::Float, N> accelerometer_data_copy;
-  for (std::size_t i; i < num_reliable_accelerometers_; ++i) {
-    accelerometer_data_copy.at(i) = clean_accelerometer_data.at(i);
-  }
+  std::copy(clean_accelerometer_data.begin(), clean_accelerometer_data.end(), accelerometer_data_copy.begin());
+
   std::sort(accelerometer_data_copy.begin(), accelerometer_data_copy.end());
 
   Quartiles quartiles;
@@ -95,30 +92,26 @@ Quartiles ImuPreprocessor::getQuartiles(const std::array<core::Float, N> &clean_
 
 template<std::size_t N>
 core::Float ImuPreprocessor::getSpecificQuartile(
-  const std::array<core::Float, N> &clean_accelerometer_data_copy, core::Float quartile)
+  const std::array<core::Float, N> &clean_accelerometer_data, core::Float quartile)
 {
   core::Float index_quartile = (num_reliable_accelerometers_ - 1) * quartile;
   int index_quartile_high    = static_cast<int>(std::ceil(index_quartile));
   int index_quartile_low     = static_cast<int>(std::floor(index_quartile));
-  core::Float quartile_value = (clean_accelerometer_data_copy.at(index_quartile_high)
-                                + clean_accelerometer_data_copy.at(index_quartile_low))
+  core::Float quartile_value = (clean_accelerometer_data.at(index_quartile_high)
+                                + clean_accelerometer_data.at(index_quartile_low))
                                / 2.0;
   return quartile_value;
 }
 
 SensorChecks ImuPreprocessor::checkReliable()
-{
-  std::uint8_t num_unreliable;
-  num_unreliable
-    = core::kNumImus - std::accumulate(are_imus_reliable_.begin(), are_imus_reliable_.end(), 0);
-  // changes reliable sensor to false if max consecutive outliers are reached
+{ // changes reliable sensor to false if max consecutive outliers are reached
   for (std::size_t i = 0; i < core::kNumImus; ++i) {
     if (num_outliers_per_imu_.at(i) >= kNumAllowedImuFailures_) {
       are_imus_reliable_.at(i) = false;
       num_reliable_accelerometers_ -= 1;
     }
   }
-  if (num_unreliable > 1) {
+  if (num_reliable_accelerometers_ < core::kNumImus - 1) {
     // TODOLater : logging
     return SensorChecks::kUnacceptable;
   }
