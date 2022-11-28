@@ -95,7 +95,7 @@ ControllerStatus Controller::processWarningMessage(const std::uint8_t warning_co
   }
   if (warning_code & 0x10) {
     logger_.log(core::LogLevel::kFatal,
-                "Contoller Warning: DC over priority_errorent (code: %x)",
+                "Contoller Warning: DC link over current (code: %x)",
                 warning_code);
     return ControllerStatus::kUnrecoverableWarning;
   }
@@ -117,7 +117,7 @@ ControllerStatus Controller::processWarningMessage(const std::uint8_t warning_co
   }
   if (warning_code & 0x100) {
     logger_.log(core::LogLevel::kFatal,
-                "Contoller Warning: Capacitor temporature exceeded (code: %x)",
+                "Contoller Warning: Capacitor temperature exceeded (code: %x)",
                 warning_code);
     return ControllerStatus::kUnrecoverableWarning;
   }
