@@ -143,7 +143,7 @@ void Repl::addHelpCommand()
 
 void Repl::addAdcCommands(const std::uint8_t pin)
 {
-  const auto adc = std::make_shared<io::Adc>(pin, log_);
+  const auto adc = std::make_shared<io::Adc>(log_, pin);
   Command adc_read_command;
   std::stringstream identifier;
   identifier << "adc " << static_cast<int>(pin) << " read";
@@ -164,7 +164,7 @@ void Repl::addAdcCommands(const std::uint8_t pin)
 
 void Repl::addI2cCommands(const std::uint8_t bus)
 {
-  const auto i2c = std::make_shared<io::HardwareI2c>(bus, log_);
+  const auto i2c = std::make_shared<io::HardwareI2c>(log_, bus);
   {
     Command i2c_read_command;
     std::stringstream identifier;

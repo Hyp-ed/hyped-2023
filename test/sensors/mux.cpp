@@ -17,7 +17,7 @@ TEST(Mux, construction)
   }
   utils::DummyI2c i2c;
   utils::DummyLogger logger;
-  sensors::Mux<std::uint8_t, kSize> mux(i2c, 0, sensors, logger);
+  sensors::Mux<std::uint8_t, kSize> mux(logger, i2c, 0, sensors);
 }
 
 }  // namespace hyped::test

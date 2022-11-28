@@ -13,9 +13,10 @@
 
 namespace hyped::io {
 
-HardwareI2c::HardwareI2c(const std::uint8_t bus_address, core::ILogger &log)
-    : sensor_address_(0),
-      log_(log)
+HardwareI2c::HardwareI2c(core::ILogger &log, const std::uint8_t bus_address)
+    : log_(log),
+      sensor_address_(0)
+
 {
   char path[13];  // up to "/dev/i2c-2"
   sprintf(path, "/dev/i2c-%d", bus_address);
