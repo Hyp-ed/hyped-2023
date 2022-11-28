@@ -77,7 +77,13 @@ void Controller::processErrorMessage(const std::uint16_t error_code)
 ControllerStatus Controller::processWarningMessage(const std::uint8_t warning_code)
 {
   ControllerStatus priority_error = ControllerStatus::kNominal;
-
+  
+  if (warning_code & 0x1) {
+    logger_.log(core::LogLevel::kInfo,
+                "Controller Warning: Controller Temperature Exceeded (code: %x)",
+                warning_code);
+    priority_error = ControllerStatus::kControllerTemperatureExceeded;
+  }
   if (warning_code & 0x2) {
     logger_.log(core::LogLevel::kFatal,
                 "Controller Warning: Motor Temperature Exceeded (code: %x)",
@@ -131,12 +137,6 @@ ControllerStatus Controller::processWarningMessage(const std::uint8_t warning_co
                 "Controller Warning: Field weakening active (code: %x)",
                 warning_code);
     priority_error = ControllerStatus::kUnrecoverableWarning;
-  }
-  if (warning_code & 0x1) {
-    logger_.log(core::LogLevel::kInfo,
-                "Controller Warning: Controller Temperature Exceeded (code: %x)",
-                warning_code);
-    priority_error = ControllerStatus::kControllerTemperatureExceeded;
   }
 
   return priority_error;
