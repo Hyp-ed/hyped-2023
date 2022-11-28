@@ -76,68 +76,69 @@ void Controller::processErrorMessage(const std::uint16_t error_code)
 
 ControllerStatus Controller::processWarningMessage(const std::uint8_t warning_code)
 {
-  // Flag specific warnings in binary
+  ControllerStatus priority_error = ControllerStatus::kNominal;
+
   if (warning_code & 0x2) {
     logger_.log(core::LogLevel::kFatal,
                 "Controller Warning: Motor Temperature Exceeded (code: %x)",
                 warning_code);
-    return ControllerStatus::kUnrecoverableWarning;
+    priority_error = ControllerStatus::kUnrecoverableWarning;
   }
   if (warning_code & 0x4) {
     logger_.log(
       core::LogLevel::kFatal, "Controller Warning: DC link under voltage (code: %x)", warning_code);
-    return ControllerStatus::kUnrecoverableWarning;
+    priority_error = ControllerStatus::kUnrecoverableWarning;
   }
   if (warning_code & 0x8) {
     logger_.log(
       core::LogLevel::kFatal, "Controller Warning: DC link over voltage (code: %x)", warning_code);
-    return ControllerStatus::kUnrecoverableWarning;
+    priority_error = ControllerStatus::kUnrecoverableWarning;
   }
   if (warning_code & 0x10) {
     logger_.log(
       core::LogLevel::kFatal, "Controller Warning: DC link over current (code: %x)", warning_code);
-    return ControllerStatus::kUnrecoverableWarning;
+    priority_error = ControllerStatus::kUnrecoverableWarning;
   }
   if (warning_code & 0x20) {
     logger_.log(core::LogLevel::kFatal,
                 "Controller Warning: Stall protection active (code: %x)",
                 warning_code);
-    return ControllerStatus::kUnrecoverableWarning;
+    priority_error = ControllerStatus::kUnrecoverableWarning;
   }
   if (warning_code & 0x40) {
     logger_.log(
       core::LogLevel::kFatal, "Controller Warning: Max velocity exceeded (code: %x)", warning_code);
-    return ControllerStatus::kUnrecoverableWarning;
+    priority_error = ControllerStatus::kUnrecoverableWarning;
   }
   if (warning_code & 0x80) {
     logger_.log(
       core::LogLevel::kFatal, "Controller Warning: BMS Proposed Power (code: %x)", warning_code);
-    return ControllerStatus::kUnrecoverableWarning;
+    priority_error = ControllerStatus::kUnrecoverableWarning;
   }
   if (warning_code & 0x100) {
     logger_.log(core::LogLevel::kFatal,
                 "Controller Warning: Capacitor temperature exceeded (code: %x)",
                 warning_code);
-    return ControllerStatus::kUnrecoverableWarning;
+    priority_error = ControllerStatus::kUnrecoverableWarning;
   }
   if (warning_code & 0x200) {
     logger_.log(
       core::LogLevel::kFatal, "Controller Warning: I2T protection (code: %x)", warning_code);
-    return ControllerStatus::kUnrecoverableWarning;
+    priority_error = ControllerStatus::kUnrecoverableWarning;
   }
   if (warning_code & 0x400) {
     logger_.log(core::LogLevel::kFatal,
                 "Controller Warning: Field weakening active (code: %x)",
                 warning_code);
-    return ControllerStatus::kUnrecoverableWarning;
+    priority_error = ControllerStatus::kUnrecoverableWarning;
   }
   if (warning_code & 0x1) {
     logger_.log(core::LogLevel::kInfo,
                 "Controller Warning: Controller Temperature Exceeded (code: %x)",
                 warning_code);
-    return ControllerStatus::kControllerTemperatureExceeded;
+    priority_error = ControllerStatus::kControllerTemperatureExceeded;
   }
 
-  return ControllerStatus::kNominal;
+  return priority_error;
 }
 }  // namespace hyped::motors
