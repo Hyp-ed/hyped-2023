@@ -24,7 +24,7 @@ std::optional<core::ImuData> ImuPreprocessor::processData(const core::RawImuData
     }
     imu_data.at(i) = std::sqrt(magnitude);
   }
-  
+
   const core::ImuData accelerometer_data = detectOutliers(imu_data);
   checkReliable();
   return accelerometer_data;
@@ -79,7 +79,9 @@ template<std::size_t N>
 Quartiles ImuPreprocessor::getQuartiles(const std::array<core::Float, N> &clean_accelerometer_data)
 {
   std::array<core::Float, N> accelerometer_data_copy;
-  std::copy(clean_accelerometer_data.begin(), clean_accelerometer_data.end(), accelerometer_data_copy.begin());
+  std::copy(clean_accelerometer_data.begin(),
+            clean_accelerometer_data.end(),
+            accelerometer_data_copy.begin());
 
   std::sort(accelerometer_data_copy.begin(), accelerometer_data_copy.end());
 
@@ -104,7 +106,7 @@ core::Float ImuPreprocessor::getSpecificQuartile(
 }
 
 SensorChecks ImuPreprocessor::checkReliable()
-{ // changes reliable sensor to false if max consecutive outliers are reached
+{  // changes reliable sensor to false if max consecutive outliers are reached
   for (std::size_t i = 0; i < core::kNumImus; ++i) {
     if (num_outliers_per_imu_.at(i) >= kNumAllowedImuFailures_) {
       are_imus_reliable_.at(i) = false;
