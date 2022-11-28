@@ -1,4 +1,5 @@
 #include "state_machine.hpp"
+#include "types.hpp"
 
 #include <optional>
 

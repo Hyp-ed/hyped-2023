@@ -2,8 +2,9 @@
 
 #include "consts.hpp"
 #include "state.hpp"
-#include "transition.hpp"
+#include "types.hpp"
 
+#include <array>
 #include <optional>
 
 namespace hyped::state_machine {
@@ -18,19 +19,14 @@ class StateMachine {
 
   void reset();
 
-  // TODOLater change states to actual states
-  /*
-  State states[5]
-    = {State::kInitialState, State::state1, State::state2, State::state3, State::state4};*/
-
   // TODOLater change transitions to actual transitions
-  Transition transitions[kNumTransitions] = {
-    Transition(State::kInitialState, State::state1, Message::mStart),
-    Transition(State::state1, State::state2, Message::message1),
-    Transition(State::state1, State::state3, Message::message2),
-    Transition(State::state2, State::state4, Message::message2),
-    Transition(State::state3, State::state4, Message::message1),
-  };
+  std::array<Transition, kNumTransitions> transitions{{
+    {State::kInitialState, State::state1, Message::mStart},
+    {State::state1, State::state2, Message::message1},
+    {State::state1, State::state3, Message::message2},
+    {State::state2, State::state4, Message::message2},
+    {State::state3, State::state4, Message::message1},
+  }};
 
   State current_state;
 };
