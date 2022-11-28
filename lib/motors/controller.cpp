@@ -79,61 +79,61 @@ ControllerStatus Controller::processWarningMessage(const std::uint8_t warning_co
   // Flag specific warnings in binary
   if (warning_code & 0x2) {
     logger_.log(core::LogLevel::kFatal,
-                "Contoller Warning: Motor Temperature Exceeded (code: %x)",
+                "Controller Warning: Motor Temperature Exceeded (code: %x)",
                 warning_code);
     return ControllerStatus::kUnrecoverableWarning;
   }
   if (warning_code & 0x4) {
     logger_.log(
-      core::LogLevel::kFatal, "Contoller Warning: DC link under voltage (code: %x)", warning_code);
+      core::LogLevel::kFatal, "Controller Warning: DC link under voltage (code: %x)", warning_code);
     return ControllerStatus::kUnrecoverableWarning;
   }
   if (warning_code & 0x8) {
     logger_.log(
-      core::LogLevel::kFatal, "Contoller Warning: DC link over voltage (code: %x)", warning_code);
+      core::LogLevel::kFatal, "Controller Warning: DC link over voltage (code: %x)", warning_code);
     return ControllerStatus::kUnrecoverableWarning;
   }
   if (warning_code & 0x10) {
     logger_.log(core::LogLevel::kFatal,
-                "Contoller Warning: DC link over current (code: %x)",
+                "Controller Warning: DC link over current (code: %x)",
                 warning_code);
     return ControllerStatus::kUnrecoverableWarning;
   }
   if (warning_code & 0x20) {
     logger_.log(core::LogLevel::kFatal,
-                "Contoller Warning: Stall protection active (code: %x)",
+                "Controller Warning: Stall protection active (code: %x)",
                 warning_code);
     return ControllerStatus::kUnrecoverableWarning;
   }
   if (warning_code & 0x40) {
     logger_.log(
-      core::LogLevel::kFatal, "Contoller Warning: Max velocity exceeded (code: %x)", warning_code);
+      core::LogLevel::kFatal, "Controller Warning: Max velocity exceeded (code: %x)", warning_code);
     return ControllerStatus::kUnrecoverableWarning;
   }
   if (warning_code & 0x80) {
     logger_.log(
-      core::LogLevel::kFatal, "Contoller Warning: BMS Proposed Power (code: %x)", warning_code);
+      core::LogLevel::kFatal, "Controller Warning: BMS Proposed Power (code: %x)", warning_code);
     return ControllerStatus::kUnrecoverableWarning;
   }
   if (warning_code & 0x100) {
     logger_.log(core::LogLevel::kFatal,
-                "Contoller Warning: Capacitor temperature exceeded (code: %x)",
+                "Controller Warning: Capacitor temperature exceeded (code: %x)",
                 warning_code);
     return ControllerStatus::kUnrecoverableWarning;
   }
   if (warning_code & 0x200) {
     logger_.log(
-      core::LogLevel::kFatal, "Contoller Warning: I2T protection (code: %x)", warning_code);
+      core::LogLevel::kFatal, "Controller Warning: I2T protection (code: %x)", warning_code);
     return ControllerStatus::kUnrecoverableWarning;
   }
   if (warning_code & 0x400) {
     logger_.log(
-      core::LogLevel::kFatal, "Contoller Warning: Field weakening active (code: %x)", warning_code);
+      core::LogLevel::kFatal, "Controller Warning: Field weakening active (code: %x)", warning_code);
     return ControllerStatus::kUnrecoverableWarning;
   }
   if (warning_code & 0x1) {
     logger_.log(core::LogLevel::kInfo,
-                "Contoller Warning: Controller Temperature Exceeded (code: %x)",
+                "Controller Warning: Controller Temperature Exceeded (code: %x)",
                 warning_code);
     return ControllerStatus::kControllerTemperatureExceeded;
   }
