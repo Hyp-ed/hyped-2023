@@ -121,7 +121,8 @@ core::Float ImuPreprocessor::getSpecificQuartile(
 SensorChecks ImuPreprocessor::checkReliable()
 {  // changes reliable sensor to false if max consecutive outliers are reached
   for (std::size_t i = 0; i < core::kNumImus; ++i) {
-    if (are_imus_reliable_.at(i) == true && num_outliers_per_imu_.at(i) >= kNumAllowedImuFailures_) {
+    if (are_imus_reliable_.at(i) == true
+        && num_outliers_per_imu_.at(i) >= kNumAllowedImuFailures_) {
       are_imus_reliable_.at(i) = false;
       num_reliable_accelerometers_ -= 1;
     }
