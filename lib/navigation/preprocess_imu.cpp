@@ -19,6 +19,7 @@ ImuPreprocessor::ImuPreprocessor(core::ILogger &logger)
 std::optional<core::ImuData> ImuPreprocessor::processData(const core::RawImuData raw_imu_data)
 {
   core::ImuData imu_data;
+  // TODOLater : check on direction of travel
   core::Float magnitude;
   for (std::size_t i = 0; i < core::kNumImus; ++i) {
     magnitude = 0;
@@ -62,6 +63,7 @@ core::ImuData ImuPreprocessor::detectOutliers(const core::ImuData imu_data)
   const core::Float iqr = quartiles.q3 - quartiles.q1;
   core::Float lower_bound;
   core::Float upper_bound;
+  // TODOLater : Check these values
   if (num_reliable_accelerometers_ == core::kNumImus) {
     lower_bound = quartiles.median - 1.5 * iqr;
     upper_bound = quartiles.median + 1.5 * iqr;
@@ -118,7 +120,7 @@ core::Float ImuPreprocessor::getSpecificQuartile(
 SensorChecks ImuPreprocessor::checkReliable()
 {  // changes reliable sensor to false if max consecutive outliers are reached
   for (std::size_t i = 0; i < core::kNumImus; ++i) {
-    if (num_outliers_per_imu_.at(i) >= kNumAllowedImuFailures_) {
+    if (are_imus_reliable_.at(i) = true && num_outliers_per_imu_.at(i) >= kNumAllowedImuFailures_) {
       are_imus_reliable_.at(i) = false;
       num_reliable_accelerometers_ -= 1;
     }
