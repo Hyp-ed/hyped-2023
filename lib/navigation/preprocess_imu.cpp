@@ -63,6 +63,7 @@ core::ImuData ImuPreprocessor::detectOutliers(const core::ImuData imu_data)
   const core::Float iqr = quartiles.q3 - quartiles.q1;
   core::Float lower_bound;
   core::Float upper_bound;
+
   // TODOLater : Check these values
   if (num_reliable_accelerometers_ == core::kNumImus) {
     lower_bound = quartiles.median - 1.5 * iqr;
