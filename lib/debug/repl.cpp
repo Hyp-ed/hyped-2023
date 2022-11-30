@@ -10,7 +10,7 @@
 
 namespace hyped::debug {
 
-Repl::Repl(core::ILogger &log) : log_(log)
+Repl::Repl(core::ILogger &logger) : logger_(logger)
 {
 }
 
@@ -25,7 +25,7 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
 {
   std::ifstream input_stream(path);
   if (!input_stream.is_open()) {
-    log_.log(core::LogLevel::kFatal, "Failed to open file %s", path.c_str());
+    logger_.log(core::LogLevel::kFatal, "Failed to open file %s", path.c_str());
     return std::nullopt;
   }
 
@@ -33,45 +33,45 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
   rapidjson::Document document;
   rapidjson::ParseResult result = document.ParseStream(input_stream_wrapper);
   if (!result) {
-    log_.log(core::LogLevel::kFatal,
-             "Error parsing JSON: %s",
-             rapidjson::GetParseError_En(document.GetParseError()));
+    logger_.log(core::LogLevel::kFatal,
+                "Error parsing JSON: %s",
+                rapidjson::GetParseError_En(document.GetParseError()));
     return std::nullopt;
   }
 
   if (!document.HasMember("debugger")) {
-    log_.log(core::LogLevel::kFatal,
-             "Missing required field 'debugger' in configuration file at %s",
-             path.c_str());
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'debugger' in configuration file at %s",
+                path.c_str());
     return std::nullopt;
   }
   const auto debugger = document["debugger"].GetObject();
-  auto repl           = std::make_unique<Repl>(log_);
+  auto repl           = std::make_unique<Repl>(logger_);
   repl->addHelpCommand();
   repl->addQuitCommand();
 
   if (!debugger.HasMember("io")) {
-    log_.log(core::LogLevel::kFatal,
-             "Missing required field 'debugger.io' in configuration file at %s",
-             path.c_str());
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'debugger.io' in configuration file at %s",
+                path.c_str());
     return std::nullopt;
   }
   const auto io = debugger["io"].GetObject();
 
   if (!io.HasMember("adc")) {
-    log_.log(core::LogLevel::kFatal, "Missing required field 'io.adc' in configuration file");
+    logger_.log(core::LogLevel::kFatal, "Missing required field 'io.adc' in configuration file");
     return std::nullopt;
   }
   const auto adc = io["adc"].GetObject();
   if (!adc.HasMember("enabled")) {
-    log_.log(core::LogLevel::kFatal,
-             "Missing required field 'io.adc.enabled' in configuration file");
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'io.adc.enabled' in configuration file");
     return std::nullopt;
   }
   if (adc["enabled"].GetBool()) {
     if (!adc.HasMember("pins")) {
-      log_.log(core::LogLevel::kFatal,
-               "Missing required field 'io.adc.pins' in configuration file");
+      logger_.log(core::LogLevel::kFatal,
+                  "Missing required field 'io.adc.pins' in configuration file");
       return std::nullopt;
     }
     const auto pins = adc["pins"].GetArray();
@@ -81,19 +81,19 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
   }
 
   if (!io.HasMember("i2c")) {
-    log_.log(core::LogLevel::kFatal, "Missing required field 'io.i2c' in configuration file");
+    logger_.log(core::LogLevel::kFatal, "Missing required field 'io.i2c' in configuration file");
     return std::nullopt;
   }
   const auto i2c = io["i2c"].GetObject();
   if (!i2c.HasMember("enabled")) {
-    log_.log(core::LogLevel::kFatal,
-             "Missing required field 'io.i2c.enabled' in configuration file");
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'io.i2c.enabled' in configuration file");
     return std::nullopt;
   }
   if (i2c["enabled"].GetBool()) {
     if (!i2c.HasMember("buses")) {
-      log_.log(core::LogLevel::kFatal,
-               "Missing required field 'io.i2c.buses' in configuration file");
+      logger_.log(core::LogLevel::kFatal,
+                  "Missing required field 'io.i2c.buses' in configuration file");
       return std::nullopt;
     }
     const auto buses = i2c["buses"].GetArray();
@@ -106,9 +106,9 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
 
 void Repl::printCommands()
 {
-  log_.log(core::LogLevel::kInfo, "Available commands:");
+  logger_.log(core::LogLevel::kInfo, "Available commands:");
   for (const auto &[name, command] : command_map_) {
-    log_.log(core::LogLevel::kInfo, "  %s: %s", name.c_str(), command.description.c_str());
+    logger_.log(core::LogLevel::kInfo, "  %s: %s", name.c_str(), command.description.c_str());
   }
 }
 
@@ -119,7 +119,7 @@ void Repl::handleCommand()
   std::getline(std::cin, command);
   auto nameAndCommand = command_map_.find(command);
   if (nameAndCommand == command_map_.end()) {
-    log_.log(core::LogLevel::kFatal, "Unknown command: %s", command.c_str());
+    logger_.log(core::LogLevel::kFatal, "Unknown command: %s", command.c_str());
     return;
   }
   nameAndCommand->second.handler();
@@ -128,7 +128,7 @@ void Repl::handleCommand()
 void Repl::addCommand(const Command &cmd)
 {
   command_map_.emplace(cmd.name, cmd);
-  log_.log(core::LogLevel::kDebug, "Added command: %s", cmd.name.c_str());
+  logger_.log(core::LogLevel::kDebug, "Added command: %s", cmd.name.c_str());
 }
 
 void Repl::addQuitCommand()
@@ -143,7 +143,7 @@ void Repl::addHelpCommand()
 
 void Repl::addAdcCommands(const std::uint8_t pin)
 {
-  const auto adc = std::make_shared<io::Adc>(pin, log_);
+  const auto adc = std::make_shared<io::Adc>(logger_, pin);
   Command adc_read_command;
   std::stringstream identifier;
   identifier << "adc " << static_cast<int>(pin) << " read";
@@ -154,9 +154,9 @@ void Repl::addAdcCommands(const std::uint8_t pin)
   adc_read_command.handler     = [this, adc, pin]() {
     const auto value = adc->readValue();
     if (value) {
-      log_.log(core::LogLevel::kInfo, "ADC value from pin %d: %d", pin, *value);
+      logger_.log(core::LogLevel::kInfo, "ADC value from pin %d: %d", pin, *value);
     } else {
-      log_.log(core::LogLevel::kFatal, "Failed to read from ADC pin %d", pin);
+      logger_.log(core::LogLevel::kFatal, "Failed to read from ADC pin %d", pin);
     }
   };
   addCommand(adc_read_command);
@@ -164,7 +164,7 @@ void Repl::addAdcCommands(const std::uint8_t pin)
 
 void Repl::addI2cCommands(const std::uint8_t bus)
 {
-  const auto i2c = std::make_shared<io::I2c>(bus, log_);
+  const auto i2c = std::make_shared<io::HardwareI2c>(logger_, bus);
   {
     Command i2c_read_command;
     std::stringstream identifier;
@@ -182,9 +182,9 @@ void Repl::addI2cCommands(const std::uint8_t bus)
       std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
       const auto value = i2c->readByte(device_address, register_address);
       if (value) {
-        log_.log(core::LogLevel::kInfo, "I2C value from bus %d: %d", bus, *value);
+        logger_.log(core::LogLevel::kInfo, "I2C value from bus %d: %d", bus, *value);
       } else {
-        log_.log(core::LogLevel::kFatal, "Failed to read from I2C bus %d", bus);
+        logger_.log(core::LogLevel::kFatal, "Failed to read from I2C bus %d", bus);
       }
     };
     addCommand(i2c_read_command);
@@ -208,10 +208,10 @@ void Repl::addI2cCommands(const std::uint8_t bus)
       std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
       const core::Result result = i2c->writeByteToRegister(device_address, register_address, data);
       if (result == core::Result::kSuccess) {
-        log_.log(
+        logger_.log(
           core::LogLevel::kInfo, "I2C write successful to device %d on %d", device_address, bus);
       } else {
-        log_.log(core::LogLevel::kFatal, "Failed to write to I2C bus: %d", bus);
+        logger_.log(core::LogLevel::kFatal, "Failed to write to I2C bus: %d", bus);
       }
     };
     addCommand(i2c_write_command);
