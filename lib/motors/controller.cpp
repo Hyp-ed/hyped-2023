@@ -78,14 +78,13 @@ ControllerStatus Controller::processWarningMessage(const std::uint8_t warning_co
 {
   ControllerStatus priority_error = ControllerStatus::kNominal;
 
-  // In the event any warning are found, print entire error code.
-  if (warning_code != 0) {
-    logger_.log(core::LogLevel::kInfo, "Controller Error found, (code: %x)", warning_code);
-  } else {
-    return priority_error;
-  }
+  // In the event norminal warning found, return.
+  if (warning_code == 0) { return priority_error; }
 
-  // In the event some warning have occured, print and return highest priority.
+  // Log general statement incl. error code.
+  logger_.log(core::LogLevel::kInfo, "Controller Error found, (code: %x)", warning_code);
+
+  // In the event some warning have occured, print each and return highest priority.
   if (warning_code & 0x1) {
     logger_.log(core::LogLevel::kInfo, "Controller Warning: Controller Temperature Exceeded");
     priority_error = ControllerStatus::kControllerTemperatureExceeded;
