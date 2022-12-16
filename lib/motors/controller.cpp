@@ -80,11 +80,9 @@ ControllerStatus Controller::processWarningMessage(const std::uint8_t warning_co
 
   // In the event norminal warning found, return.
   if (warning_code == 0) { return priority_error; }
-
-  // Log general statement incl. error code.
   logger_.log(core::LogLevel::kInfo, "Controller Error found, (code: %x)", warning_code);
 
-  // In the event some warning have occured, print each and return highest priority.
+  // In the event some warning(s) have occured, print each and return highest priority.
   if (warning_code & 0x1) {
     logger_.log(core::LogLevel::kInfo, "Controller Warning: Controller Temperature Exceeded");
     priority_error = ControllerStatus::kControllerTemperatureExceeded;
@@ -129,7 +127,6 @@ ControllerStatus Controller::processWarningMessage(const std::uint8_t warning_co
     logger_.log(core::LogLevel::kFatal, "Controller Warning: Field weakening active");
     priority_error = ControllerStatus::kUnrecoverableWarning;
   }
-
   return priority_error;
 }
 }  // namespace hyped::motors
