@@ -80,7 +80,7 @@ ControllerStatus Controller::processWarningMessage(const std::uint8_t warning_co
 
   // In the event norminal warning found, return.
   if (warning_code == 0) { return priority_error; }
-  logger_.log(core::LogLevel::kInfo, "Controller Error found, (code: %x)", warning_code);
+  logger_.log(core::LogLevel::kInfo, "Controller Warning found, (code: %x)", warning_code);
 
   // In the event some warning(s) have occured, print each and return highest priority.
   if (warning_code & 0x1) {
