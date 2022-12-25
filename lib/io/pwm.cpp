@@ -54,7 +54,7 @@ core::Result Pwm::setDutyCycle(const core::Float duty_cycle)
   return setDutyCycle(time_active);
 }
 
-core::Result Pwm::setDutyCycle(const uint32_t time_active)
+core::Result Pwm::setDutyCycle(const std::uint32_t time_active)
 {
   if (duty_cycle_file_ < 0) {
     logger_.log(core::LogLevel::kFatal,
