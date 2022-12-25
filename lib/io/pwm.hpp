@@ -10,6 +10,7 @@
 #include <core/types.hpp>
 
 namespace hyped::io {
+
 enum class PwmOutput {
   kECapPwm0 = 0,
   kECapPwm2,
