@@ -4,7 +4,6 @@
 #include <unistd.h>
 
 #include <sys/ioctl.h>
-
 #if LINUX
 #include <linux/i2c-dev.h>
 #else
@@ -20,9 +19,8 @@ HardwareI2c::HardwareI2c(core::ILogger &logger, const std::uint8_t bus_address)
 {
   char path[13];  // up to "/dev/i2c-2"
   sprintf(path, "/dev/i2c-%d", bus_address);
-  file_descriptor_ = open(path, O_RDWR, 0);
-  if (file_descriptor_ < 0) { /* log "Could not open i2c device" */
-  };
+  file_descriptor_ = open(path, O_RDWR);
+  if (file_descriptor_ < 0) { logger_.log(core::LogLevel::kFatal, "Could not find i2c device"); }
 }
 
 HardwareI2c::~HardwareI2c()
