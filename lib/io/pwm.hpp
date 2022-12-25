@@ -21,7 +21,7 @@ enum class PwmOutput {
   kEHRPwm2A,
   kEHRPwm2B
 };
-enum class Polarity { kActiveLow = 0, kActiveHigh };
+enum class Polarity { kActiveHigh = 0, kActiveLow };
 enum class Mode { kStop = 0, kRun };
 // use this class if a high‐frequency periodic switching signal is required
 // PWM can achieve frequencies of 1 MHz or higher, without a significant CPU load

@@ -89,7 +89,7 @@ core::Result Pwm::setPolarity(const Polarity polarity)
     logger_.log(core::LogLevel::kFatal, "Could not find PWM polarity file while setting polarity");
     return core::Result::kFailure;
   }
-  std::uint8_t polarity_value  = polarity == Polarity::kActiveLow ? 0 : 1;
+  std::uint8_t polarity_value  = polarity == Polarity::kActiveHigh ? 0 : 1;
   const auto num_bytes_written = write(polarity_file_, &polarity_value, sizeof(polarity_value));
   if (num_bytes_written != sizeof(polarity_value)) {
     logger_.log(core::LogLevel::kFatal, "Could not write to PWM polarity file");
