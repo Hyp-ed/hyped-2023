@@ -31,9 +31,9 @@ class Pwm {
   ~Pwm();
 
   // The valid values for duty cycle are 0.0 to 1.0 (0% to 100%)
-  core::Result setDutyCycle(const core::Float duty_cycle);
+  core::Result setDutyCycleByPercentage(const core::Float duty_cycle);
   // The valid values for time active are 0 to the period (0% to 100%)
-  core::Result setDutyCycle(const std::uint32_t time_active);
+  core::Result setDutyCycleByTime(const std::uint32_t time_active);
   core::Result setPeriod(const std::uint32_t period);
   core::Result setPolarity(const Polarity polarity);
   core::Result setMode(const Mode mode);

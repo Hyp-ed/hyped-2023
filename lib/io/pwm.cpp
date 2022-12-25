@@ -35,13 +35,8 @@ Pwm::~Pwm()
   close(enable_file_);
 }
 
-core::Result Pwm::setDutyCycle(const core::Float duty_cycle)
+core::Result Pwm::setDutyCycleByPercentage(const core::Float duty_cycle)
 {
-  if (duty_cycle_file_ < 0) {
-    logger_.log(core::LogLevel::kFatal,
-                "Could not find PWM duty cycle file while setting duty cycle");
-    return core::Result::kFailure;
-  }
   if (duty_cycle > 1.0) {
     logger_.log(core::LogLevel::kFatal, "Duty cycle cannot be greater than 1.0");
     return core::Result::kFailure;
@@ -51,10 +46,10 @@ core::Result Pwm::setDutyCycle(const core::Float duty_cycle)
     return core::Result::kFailure;
   }
   const auto time_active = static_cast<std::uint32_t>(duty_cycle * period_);
-  return setDutyCycle(time_active);
+  return setDutyCycleByTime(time_active);
 }
 
-core::Result Pwm::setDutyCycle(const std::uint32_t time_active)
+core::Result Pwm::setDutyCycleByTime(const std::uint32_t time_active)
 {
   if (duty_cycle_file_ < 0) {
     logger_.log(core::LogLevel::kFatal,
