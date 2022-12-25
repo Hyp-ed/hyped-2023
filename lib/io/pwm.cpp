@@ -4,7 +4,7 @@ namespace hyped::io {
 
 Pwm::Pwm(core::Logger &logger, const PwmOutput pwm_output) : logger_(logger), period_(0)
 {
-  std::string pwm_address = "/sys/class/pwm/" + PwmOutputToString(pwm_output) + "/";
+  std::string pwm_address = "/sys/class/pwm/" + getPwmFolderName(pwm_output) + "/";
   // First get the file descriptor for the period file
   std::string period_address = pwm_address + "period";
   period_file_               = open(period_address.c_str(), O_WRONLY);
@@ -118,9 +118,9 @@ core::Result Pwm::setMode(const Mode mode)
   return core::Result::kSuccess;
 }
 
-std::string Pwm::PwmOutputToString(const PwmOutput PwmOutput)
+std::string Pwm::getPwmFolderName(const PwmOutput pwm_output)
 {
-  switch (PwmOutput) {
+  switch (pwm_output) {
     case PwmOutput::kECapPwm0:
       return "pwm-0:0";
     case PwmOutput::kECapPwm2:

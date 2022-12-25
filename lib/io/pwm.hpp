@@ -37,7 +37,7 @@ class Pwm {
   core::Result setPeriod(const std::uint32_t period);
   core::Result setPolarity(const Polarity polarity);
   core::Result setMode(const Mode mode);
-  std::string PwmOutputToString(const PwmOutput pwm_output);
+  std::string getPwmFolderName(const PwmOutput pwm_output);
 
  private:
   core::Logger &logger_;
