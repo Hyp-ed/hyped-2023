@@ -11,6 +11,7 @@
 #if LINUX
 #include <linux/spi/spidev.h>
 #else
+#define _IOC_SIZEBITS 14
 #define SPI_IOC_MAGIC 'k'
 #define SPI_IOC_WR_MODE _IOW(SPI_IOC_MAGIC, 1, std::uint8_t)
 #define SPI_IOC_WR_MAX_SPEED_HZ _IOW(SPI_IOC_MAGIC, 4, std::uint32_t)
