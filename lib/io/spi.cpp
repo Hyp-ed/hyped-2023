@@ -88,7 +88,7 @@ Spi::Spi(core::ILogger &logger) : spi_fd_(-1), hw_(0), ch_(0), logger_(logger)
   spi_fd_             = open(device, O_RDWR, 0);
 
   if (spi_fd_ < 0) {
-    logger_.log(core::LogLevel::kFatal, "Unable to open SPI device");
+    logger_.log(core::LogLevel::kFatal, "Failed to open SPI device");
     return;
   }
 
@@ -97,26 +97,26 @@ Spi::Spi(core::ILogger &logger) : spi_fd_(-1), hw_(0), ch_(0), logger_(logger)
 
   std::uint8_t bits = SPI_BITS;  // need to change this value
   if (ioctl(spi_fd_, SPI_IOC_WR_BITS_PER_WORD, &bits) < 0) {
-    logger_.log(core::LogLevel::kFatal, "Unable to set bits per word");
+    logger_.log(core::LogLevel::kFatal, "Failed to set bits per word");
   }
 
   // set clock mode and CS active low
   std::uint8_t mode = (SPI_MODE & 0x3) & ~SPI_CS_HIGH;
   if (ioctl(spi_fd_, SPI_IOC_WR_MODE, &mode) < 0) {
-    logger_.log(core::LogLevel::kFatal, "Unable to set SPI mode");
+    logger_.log(core::LogLevel::kFatal, "Failed to set SPI mode");
   }
 
   // set bit order
   std::uint8_t order = SPI_MSBFIRST;
   if (ioctl(spi_fd_, SPI_IOC_WR_LSB_FIRST, &order) < 0) {
-    logger_.log(core::LogLevel::kFatal, "Unable to set bit order");
+    logger_.log(core::LogLevel::kFatal, "Failed to set bit order");
   }
 
   bool check_init = initialise();
   if (check_init) {
-    logger_.log(core::LogLevel::kInfo, "SPI instance successfully created");
+    logger_.log(core::LogLevel::kDebug, "Successfully created SPI instance");
   } else {
-    logger_.log(core::LogLevel::kFatal, "SPI instansiation failed");
+    logger_.log(core::LogLevel::kFatal, "Failed to instantiate SPI");
   }
 }
 
@@ -127,20 +127,20 @@ bool Spi::initialise()
 
   fd = open("/dev/mem", O_RDWR);
   if (fd < 0) {
-    logger_.log(core::LogLevel::kFatal, "Unable to open /dev/mem");
+    logger_.log(core::LogLevel::kFatal, "Failed to open /dev/mem");
     return false;
   }
 
   base = mmap(0, kMmapSize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, kSPIAddrBase);
   if (base == MAP_FAILED) {
-    logger_.log(core::LogLevel::kFatal, "Unable to map bank 0x%x", kSPIAddrBase);
+    logger_.log(core::LogLevel::kFatal, "Failed to map bank 0x%x", kSPIAddrBase);
     return false;
   }
 
   hw_ = reinterpret_cast<SPI_HW *>(base);
   ch_ = &hw_->ch0;
 
-  logger_.log(core::LogLevel::kInfo, "Mapping successfully created %d", sizeof(SPI_HW));
+  logger_.log(core::LogLevel::kDebug, "Successfully created Mapping %d", sizeof(SPI_HW));
   return true;
 }
 
@@ -166,7 +166,7 @@ void Spi::setClock(Clock clk)
   }
 
   if (ioctl(spi_fd_, SPI_IOC_WR_MAX_SPEED_HZ, &data) < 0) {
-    logger_.log(core::LogLevel::kFatal, "Unable to set clock frequency of %d", data);
+    logger_.log(core::LogLevel::kFatal, "Failed to set clock frequency of %d", data);
   }
 }
 
@@ -181,7 +181,7 @@ void SPI::transfer(std::uint8_t *tx, std::uint8_t *rx, std::uint16_t len)
   message.len    = len;
 
   if (ioctl(spi_fd_, SPI_IOC_MESSAGE(1), &message) < 0) {
-    logger_.log(core::Loglevel::kFatal, "Unable to submit TRANSFER message");
+    logger_.log(core::Loglevel::kFatal, "Failed to submit TRANSFER message");
   }
 }
 #else
@@ -192,18 +192,18 @@ void Spi::transfer(std::uint8_t *tx, std::uint8_t *, std::uint16_t len)
   for (std::uint16_t x = 0; x < len; x++) {
     // logger_.log("SPI_TEST","channel 0 status before: %d", 10);
     // while(!(ch0->status & 0x2));
-    logger_.log(core::LogLevel::kInfo, "Status register: %x", ch_->stat);
+    logger_.log(core::LogLevel::kDebug, "Status register: %x", ch_->stat);
     ch_->ctrl = ch_->ctrl | 0x1;
     ch_->conf = ch_->conf & 0xfffcffff;
     ch_->tx   = tx[x];
-    logger_.log(core::LogLevel::kInfo, "Status register: %x", ch_->stat);
-    logger_.log(core::LogLevel::kInfo, "Config register: %x", ch_->conf);
-    logger_.log(core::LogLevel::kInfo, "Control register: %x", ch_->ctrl);
+    logger_.log(core::LogLevel::kDebug, "Status register: %x", ch_->stat);
+    logger_.log(core::LogLevel::kDebug, "Config register: %x", ch_->conf);
+    logger_.log(core::LogLevel::kDebug, "Control register: %x", ch_->ctrl);
 
     while (!(ch_->stat & 0x1)) {
-      logger_.log(core::LogLevel::kInfo, "Status register: %d", ch_->stat);
+      logger_.log(core::LogLevel::kDebug, "Status register: %d", ch_->stat);
     }
-    logger_.log(core::LogLevel::kInfo, "Status register: %d", ch_->stat);
+    logger_.log(core::LogLevel::kDebug, "Status register: %d", ch_->stat);
     // logger_.log("SPI_TEST","Read buffer: %d", ch0->rx_buf);
     // logger_.log("SPI_TEST","channel 0 status after: %d", 10);
     // write_buffer++;
@@ -229,7 +229,7 @@ void Spi::read(std::uint8_t addr, std::uint8_t *rx, std::uint16_t len)
   message[1].len    = len;
 
   if (ioctl(spi_fd_, SPI_IOC_MESSAGE(2), message) < 0) {
-    logger_.log(core::LogLevel::kFatal, "Unable to submit 2 TRANSFER messages");
+    logger_.log(core::LogLevel::kFatal, "Failed to submit 2 TRANSFER messages");
   }
 }
 
@@ -249,7 +249,7 @@ void Spi::write(std::uint8_t addr, std::uint8_t *tx, std::uint16_t len)
   message[1].len    = len;
 
   if (ioctl(spi_fd_, SPI_IOC_MESSAGE(2), message) < 0) {
-    logger_.log(core::LogLevel::kFatal, "Unable to submit 2 TRANSFER messages");
+    logger_.log(core::LogLevel::kFatal, "Failed to submit 2 TRANSFER messages");
   }
 }
 
