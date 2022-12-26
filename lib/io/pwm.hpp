@@ -1,8 +1,5 @@
 #pragma once
 
-#include <fcntl.h>   // define O_WONLY and O_RDONLY
-#include <unistd.h>  // close()
-
 #include <cstdint>
 #include <string>
 
