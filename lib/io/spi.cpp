@@ -210,7 +210,7 @@ void Spi::transfer(std::uint8_t *tx, std::uint8_t *, std::uint16_t len)
   }
 
 #endif
-}  // namespace io
+}  
 
 void Spi::read(std::uint8_t addr, std::uint8_t *rx, std::uint16_t len)
 {
