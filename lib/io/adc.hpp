@@ -34,7 +34,7 @@ class Adc {
  private:
   core::ILogger &logger_;
   std::uint8_t pin_;
-  int file_;
+  int file_descriptor_;
 };
 
 }  // namespace hyped::io
