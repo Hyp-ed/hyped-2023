@@ -9,9 +9,9 @@ struct SPI_CH;
 
 class Spi {
  public:
-	Spi(core::ILogger &logger);
+  Spi(core::ILogger &logger);
   ~Spi();
-	
+
   enum class Clock { k500KHz, k1MHz, k4MHz, k16MHz, k20MHz };
 
   void setClock(Clock clk);
@@ -22,7 +22,7 @@ class Spi {
    * @param rx  - pointer to head of read  buffer
    * @param len - number of BYTES in each buffer
    */
-  void transfer(uint8_t *tx, uint8_t *rx, uint16_t len);
+  void transfer(std::uint8_t *tx, std::uint8_t *rx, std::uint16_t len);
 
   /**
    * @brief Get data from sensor, starting at some address.
@@ -30,7 +30,7 @@ class Spi {
    * @param rx    - pointer to head of read buffer
    * @param len   - number of BYTES to be read, i.e. size of the read buffer
    */
-  void read(uint8_t addr, uint8_t *rx, uint16_t len);
+  void read(std::uint8_t addr, std::uint8_t *rx, std::uint16_t len);
 
   /**
    * @brief Write data to sensor, starting at some address.
@@ -38,7 +38,7 @@ class Spi {
    * @param tx    - pointer to head of write buffer
    * @param len   - number of BYTES to be written, i.e. size of the write buffer
    */
-  void write(uint8_t addr, uint8_t *tx, uint16_t len);
+  void write(std::uint8_t addr, std::uint8_t *tx, std::uint16_t len);
 
  private:
   /**
