@@ -1,8 +1,6 @@
 #include "spi.hpp"
 
-#include <errno.h>
 #include <fcntl.h>
-#include <poll.h>
 #include <unistd.h>
 
 #include <sys/ioctl.h>
@@ -22,10 +20,8 @@
 struct spi_ioc_transfer {
   std::uint64_t tx_buf;
   std::uint64_t rx_buf;
-
   std::uint32_t len;
   std::uint32_t speed_hz;
-
   std::uint16_t delay_usecs;
   std::uint8_t bits_per_word;
   std::uint8_t cs_change;
@@ -41,8 +37,6 @@ struct spi_ioc_transfer {
 #define SPI_IOC_MESSAGE(N) _IOW(SPI_IOC_MAGIC, 0, char[SPI_MSGSIZE(N)])
 #define SPI_CS_HIGH 0x04
 #endif  // if LINUX
-
-#define SPI_FS 0
 
 namespace hyped::io {
 
@@ -75,14 +69,79 @@ struct Spi_Registers {
   std::uint32_t xferlevel;         // 0x17c
 };
 
-Spi::Spi(core::ILogger &logger,
-         const SpiBus bus,
-         const SpiMode mode,
-         const SpiWordSize word_size,
-         const SpiBitOrder bit_order)
-    : spi_registers_(0),
+Spi::Spi(core::ILogger &logger)
+    : logger_(logger),
+      spi_registers_(0),
       spi_channel0_registers_(0),
-      logger_(logger)
+      has_initialised_(Initialised::kFalse)
+{
+}
+
+Spi::~Spi()
+{
+  close(file_descriptor_);
+}
+
+core::Result Spi::read(std::uint8_t addr, std::uint8_t *rx, std::uint16_t len)
+{
+  if (has_initialised_ == Initialised::kFalse) {
+    logger_.log(core::LogLevel::kFatal, "SPI device has not been initialised");
+    return core::Result::kFailure;
+  }
+  if (file_descriptor_ < 0) {
+    logger_.log(core::LogLevel::kFatal, "Failed to open SPI device wile reading");
+    return core::Result::kFailure;
+  }
+  spi_ioc_transfer message[2] = {};
+  // send address
+  message[0].tx_buf = reinterpret_cast<std::uint64_t>(&addr);
+  message[0].rx_buf = 0;
+  message[0].len    = 1;
+  // receive data
+  message[1].tx_buf      = 0;
+  message[1].rx_buf      = reinterpret_cast<std::uint64_t>(rx);
+  message[1].len         = len;
+  const auto read_result = ioctl(file_descriptor_, SPI_IOC_MESSAGE(2), message);
+  if (read_result < 0) {
+    logger_.log(core::LogLevel::kFatal, "Failed to read from SPI device");
+    return core::Result::kFailure;
+  }
+  logger_.log(core::LogLevel::kDebug, "Successfully read from SPI device");
+  return core::Result::kSuccess;
+}
+
+core::Result Spi::write(std::uint8_t addr, std::uint8_t *tx, std::uint16_t len)
+{
+  if (has_initialised_ == Initialised::kFalse) {
+    logger_.log(core::LogLevel::kFatal, "SPI device has not been initialised");
+    return core::Result::kFailure;
+  }
+  if (file_descriptor_ < 0) {
+    logger_.log(core::LogLevel::kFatal, "Failed to open SPI device wile writing");
+    return core::Result::kFailure;
+  }
+  spi_ioc_transfer message[2] = {};
+  // send address
+  message[0].tx_buf = reinterpret_cast<std::uint64_t>(&addr);
+  message[0].rx_buf = 0;
+  message[0].len    = 1;
+  // write data
+  message[1].tx_buf       = reinterpret_cast<std::uint64_t>(tx);
+  message[1].rx_buf       = 0;
+  message[1].len          = len;
+  const auto write_result = ioctl(file_descriptor_, SPI_IOC_MESSAGE(2), message);
+  if (write_result < 0) {
+    logger_.log(core::LogLevel::kFatal, "Failed to write to SPI device");
+    return core::Result::kFailure;
+  }
+  logger_.log(core::LogLevel::kDebug, "Successfully wrote to SPI device");
+  return core::Result::kSuccess;
+}
+
+core::Result Spi::initialiseSpi(const SpiBus bus,
+                                const SpiMode mode,
+                                const SpiWordSize word_size,
+                                const SpiBitOrder bit_order)
 {
   // SPI bus only works in kernel mode on Linux, so we neeed to call the provided driver
   char spi_bus_address[15];
@@ -94,32 +153,47 @@ Spi::Spi(core::ILogger &logger,
   file_descriptor_ = open(spi_bus_address, O_RDWR, 0);
   if (file_descriptor_ < 0) {
     logger_.log(core::LogLevel::kFatal, "Failed to open SPI device");
-    return;
+    return core::Result::kFailure;
   }
   // Set clock frequency
-  setClock(Clock::k500KHz);
+  const auto clock_set_result = setClock(Clock::k500KHz);
+  if (clock_set_result == core::Result::kFailure) {
+    logger_.log(core::LogLevel::kFatal,
+                "Failed to set clock frequency, so SPI device not initialised");
+    return core::Result::kFailure;
+  }
   // Set word size
   const std::uint8_t bits_per_word = static_cast<std::uint8_t>(word_size);
   const auto word_size_write_result
     = ioctl(file_descriptor_, SPI_IOC_WR_BITS_PER_WORD, &bits_per_word);
   if (word_size_write_result < 0) {
     logger_.log(core::LogLevel::kFatal, "Failed to set bits per word");
+    return core::Result::kFailure;
   }
   // Set SPI mode
-  const std::uint8_t selected_mode = (static_cast<std::uint8_t>(mode) & 0x3) & ~SPI_CS_HIGH;
+  const std::uint8_t selected_mode = static_cast<std::uint8_t>(mode);
   const auto mode_write_result     = ioctl(file_descriptor_, SPI_IOC_WR_MODE, &selected_mode);
-  if (mode_write_result < 0) { logger_.log(core::LogLevel::kFatal, "Failed to set SPI mode"); }
+  if (mode_write_result < 0) {
+    logger_.log(core::LogLevel::kFatal, "Failed to set SPI mode");
+    return core::Result::kFailure;
+  }
   // Set bit order
   const std::uint8_t order      = static_cast<std::uint8_t>(bit_order);
   const auto order_write_result = ioctl(file_descriptor_, SPI_IOC_WR_LSB_FIRST, &order);
-  if (order_write_result < 0) { logger_.log(core::LogLevel::kFatal, "Failed to set bit order"); }
-  // Create SPI virtal memory mapping
-  const auto virtual_mapping_result = createVirtualMapping(bus);
-  if (virtual_mapping_result == core::Result::kSuccess) {
-    logger_.log(core::LogLevel::kDebug, "Successfully created SPI instance");
-  } else {
-    logger_.log(core::LogLevel::kFatal, "Failed to instantiate SPI");
+  if (order_write_result < 0) {
+    logger_.log(core::LogLevel::kFatal, "Failed to set bit order");
+    return core::Result::kFailure;
   }
+  // Create SPI virtal memory mappings
+  const auto virtual_mapping_result = createVirtualMapping(bus);
+  if (virtual_mapping_result == core::Result::kFailure) {
+    logger_.log(core::LogLevel::kFatal,
+                "Failed to initialise SPI, could not create virtual mapping");
+    return core::Result::kFailure;
+  }
+  logger_.log(core::LogLevel::kDebug, "Successfully initialised SPI");
+  has_initialised_ = Initialised::kTrue;
+  return core::Result::kSuccess;
 }
 
 core::Result Spi::createVirtualMapping(const SpiBus bus)
@@ -158,7 +232,7 @@ core::Result Spi::createVirtualMapping(const SpiBus bus)
   return core::Result::kSuccess;
 }
 
-void Spi::setClock(Clock clock)
+core::Result Spi::setClock(Clock clock)
 {
   std::uint32_t data;
   switch (clock) {
@@ -178,101 +252,13 @@ void Spi::setClock(Clock clock)
       data = 20000000;
       break;
   }
-
   const auto clock_write_result = ioctl(file_descriptor_, SPI_IOC_WR_MAX_SPEED_HZ, &data);
   if (clock_write_result < 0) {
-    logger_.log(core::LogLevel::kFatal, "Failed to set clock frequency of %d", data);
+    logger_.log(core::LogLevel::kFatal, "Failed to set clock frequency to %d", data);
+    return core::Result::kFailure;
   }
-}
-
-#if SPI_FS
-void SPI::transfer(std::uint8_t *tx, std::uint8_t *rx, std::uint16_t len)
-{
-  if (spi_fd_ < 0) return;  // early exit if no spi spi_bus_address present
-  spi_ioc_transfer message = {};
-
-  message.tx_buf = reinterpret_cast<std::uint64_t>(tx);
-  message.rx_buf = reinterpret_cast<std::uint64_t>(rx);
-  message.len    = len;
-
-  if (ioctl(spi_fd_, SPI_IOC_MESSAGE(1), &message) < 0) {
-    logger_.log(core::Loglevel::kFatal, "Failed to submit TRANSFER message");
-  }
-}
-#else
-void Spi::transfer(std::uint8_t *tx, std::uint8_t *, std::uint16_t len)
-{
-  if (spi_registers_ == 0) return;  // early exit if no spi mapped
-
-  for (std::uint16_t x = 0; x < len; x++) {
-    // logger_.log("SPI_TEST","channel 0 status before: %d", 10);
-    // while(!(channel0->status & 0x2));
-    logger_.log(core::LogLevel::kDebug, "Status register: %x", spi_channel0_registers_->stat);
-    spi_channel0_registers_->ctrl = spi_channel0_registers_->ctrl | 0x1;
-    spi_channel0_registers_->conf = spi_channel0_registers_->conf & 0xfffcffff;
-    spi_channel0_registers_->tx   = tx[x];
-    logger_.log(core::LogLevel::kDebug, "Status register: %x", spi_channel0_registers_->stat);
-    logger_.log(core::LogLevel::kDebug, "Config register: %x", spi_channel0_registers_->conf);
-    logger_.log(core::LogLevel::kDebug, "Control register: %x", spi_channel0_registers_->ctrl);
-
-    while (!(spi_channel0_registers_->stat & 0x1)) {
-      logger_.log(core::LogLevel::kDebug, "Status register: %d", spi_channel0_registers_->stat);
-    }
-    logger_.log(core::LogLevel::kDebug, "Status register: %d", spi_channel0_registers_->stat);
-    // logger_.log("SPI_TEST","Read buffer: %d", channel0->rx_buf);
-    // logger_.log("SPI_TEST","channel 0 status after: %d", 10);
-    // write_buffer++;
-  }
-
-#endif
-}
-
-void Spi::read(std::uint8_t addr, std::uint8_t *rx, std::uint16_t len)
-{
-  if (file_descriptor_ < 0) return;  // early exit if no spi spi_bus_address present
-
-  spi_ioc_transfer message[2] = {};
-
-  // send address
-  message[0].tx_buf = reinterpret_cast<std::uint64_t>(&addr);
-  message[0].rx_buf = 0;
-  message[0].len    = 1;
-
-  // receive data
-  message[1].tx_buf = 0;
-  message[1].rx_buf = reinterpret_cast<std::uint64_t>(rx);
-  message[1].len    = len;
-
-  if (ioctl(file_descriptor_, SPI_IOC_MESSAGE(2), message) < 0) {
-    logger_.log(core::LogLevel::kFatal, "Failed to submit 2 TRANSFER messages");
-  }
-}
-
-void Spi::write(std::uint8_t addr, std::uint8_t *tx, std::uint16_t len)
-{
-  if (file_descriptor_ < 0) return;  // early exit if no spi spi_bus_address present
-
-  spi_ioc_transfer message[2] = {};
-  // send address
-  message[0].tx_buf = reinterpret_cast<std::uint64_t>(&addr);
-  message[0].rx_buf = 0;
-  message[0].len    = 1;
-
-  // write data
-  message[1].tx_buf = reinterpret_cast<std::uint64_t>(tx);
-  message[1].rx_buf = 0;
-  message[1].len    = len;
-
-  if (ioctl(file_descriptor_, SPI_IOC_MESSAGE(2), message) < 0) {
-    logger_.log(core::LogLevel::kFatal, "Failed to submit 2 TRANSFER messages");
-  }
-}
-
-Spi::~Spi()
-{
-  if (file_descriptor_ < 0) return;  // early exit if no spi spi_bus_address present
-
-  close(file_descriptor_);
+  logger_.log(core::LogLevel::kDebug, "Successfully set clock frequency to %d", data);
+  return core::Result::kSuccess;
 }
 
 }  // namespace hyped::io
