@@ -15,8 +15,8 @@ enum class SpiMode { kMode0 = 0, kMode1, kMode2, kMode3 };
 enum class SpiWordSize { kWordSize4 = 4, kWordSize8 = 8, kWordSize16 = 16, kWordSize32 = 32 };
 enum class SpiBitOrder { kMsbFirst = 0, kLsbFirst };
 // Only one chip select is available by default on the BeagleBone Black
-static constexpr std::uint32_t kSPI0AddrBase = 0x48030000;  // For SPI0 Chip Select 0
-static constexpr std::uint32_t kSPI1AddrBase = 0x481A0000;  // For SPI1 Chip Select 0
+static constexpr std::uint32_t kSpi0AddrBase = 0x48030000;  // For SPI0 Chip Select 0
+static constexpr std::uint32_t kSpi1AddrBase = 0x481A0000;  // For SPI1 Chip Select 0
 // The size of the virtual memory mapping for SPI - 4KB (AM335x and AMIC110 Sitara™ Technical
 // Reference Manual)
 static constexpr std::uint32_t kSpiMemoryMapSize = 0x1000;

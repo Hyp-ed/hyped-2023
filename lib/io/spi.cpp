@@ -137,17 +137,17 @@ core::Result Spi::createVirtualMapping(const SpiBus bus)
                               PROT_READ | PROT_WRITE,
                               MAP_SHARED,
                               mapping_file_descriptor,
-                              kSPI0AddrBase);
+                              kSpi0AddrBase);
   } else {
     spi_registers_base = mmap(0,
                               kSpiMemoryMapSize,
                               PROT_READ | PROT_WRITE,
                               MAP_SHARED,
                               mapping_file_descriptor,
-                              kSPI1AddrBase);
+                              kSpi1AddrBase);
   }
   if (spi_registers_base == MAP_FAILED) {
-    logger_.log(core::LogLevel::kFatal, "Failed to map bank 0x%x", kSPI1AddrBase);
+    logger_.log(core::LogLevel::kFatal, "Failed to map bank 0x%x", kSpi1AddrBase);
     return core::Result::kFailure;
   }
   // Get values of relevant registers
