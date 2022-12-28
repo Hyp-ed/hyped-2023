@@ -154,8 +154,8 @@ core::Result Pwm::setPolarity(const Polarity polarity)
     logger_.log(core::LogLevel::kDebug, "PWM polarity is already set to %d", polarity);
     return core::Result::kSuccess;
   }
-  current_polarity_                  = polarity;
-  const std::uint16_t polarity_value = static_cast<uint16_t>(current_polarity_);
+  current_polarity_                 = polarity;
+  const std::uint8_t polarity_value = static_cast<std::uint8_t>(current_polarity_);
   const auto num_bytes_written = write(polarity_file_, &polarity_value, sizeof(polarity_value));
   if (num_bytes_written != sizeof(polarity_value)) {
     logger_.log(core::LogLevel::kFatal, "Failed to write to PWM polarity file");
@@ -180,9 +180,9 @@ core::Result Pwm::setMode(const Mode mode)
     logger_.log(core::LogLevel::kDebug, "PWM mode is already set to %d", mode);
     return core::Result::kSuccess;
   }
-  current_mode_                  = mode;
-  const std::uint16_t mode_value = static_cast<uint16_t>(mode);
-  const auto num_bytes_written   = write(enable_file_, &mode_value, sizeof(mode_value));
+  current_mode_                 = mode;
+  const std::uint8_t mode_value = static_cast<std::uint8_t>(mode);
+  const auto num_bytes_written  = write(enable_file_, &mode_value, sizeof(mode_value));
   if (num_bytes_written != sizeof(mode_value)) {
     logger_.log(core::LogLevel::kFatal, "Failed to write to PWM enable file");
     return core::Result::kFailure;
