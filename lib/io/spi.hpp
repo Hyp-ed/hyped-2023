@@ -6,6 +6,9 @@
 #include <core/logger.hpp>
 #include <core/types.hpp>
 
+// All values and configuration options used are sourced from the AM335x and AMIC110 Sitara™
+// Processors Technical Reference Manual, please refer to the manual for more information.
+
 // Two SPI buses are available on the BeagleBone Black
 enum class SpiBus { kSpi0 = 0, kSpi1 };
 // Four SPI modes are available on the BeagleBone Black - for more information, see
@@ -17,8 +20,7 @@ enum class SpiBitOrder { kMsbFirst = 0, kLsbFirst };
 // Only one chip select is available by default on the BeagleBone Black
 static constexpr std::uint32_t kSpi0AddrBase = 0x48030000;  // For SPI0 Chip Select 0
 static constexpr std::uint32_t kSpi1AddrBase = 0x481A0000;  // For SPI1 Chip Select 0
-// The size of the virtual memory mapping for SPI - 4KB (AM335x and AMIC110 Sitara™ Technical
-// Reference Manual)
+// The size of the virtual memory mapping for SPI - 4KB
 static constexpr std::uint32_t kSpiMemoryMapSize = 0x1000;
 
 namespace hyped::io {
@@ -38,8 +40,7 @@ class Spi {
       const SpiBitOrder bit_order = SpiBitOrder::kMsbFirst);
   ~Spi();
 
-  // Maximum clock frequency for SPI is 100MHz (source: AM335x and AMIC110 Sitara™ Processors
-  // Technical Reference Manual pg. 4888)
+  // Maximum clock frequency for SPI is 100MHz
   enum class Clock { k500KHz, k1MHz, k4MHz, k16MHz, k20MHz };
 
   void setClock(Clock clk);
