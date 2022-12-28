@@ -1,7 +1,7 @@
 #include "adc.hpp"
 
-#include <fcntl.h>   // define O_WONLY and O_RDONLY
-#include <unistd.h>  // close()
+#include <fcntl.h>
+#include <unistd.h>
 
 namespace hyped::io {
 
