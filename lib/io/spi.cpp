@@ -46,9 +46,10 @@ struct spi_ioc_transfer {
 
 namespace hyped::io {
 
-// define what the address space of SPI looks like
+// define what the address space of SPI looks like, see
+// https://github.com/Hyp-ed/hyped-2023/wiki/SPI-Interfacing-on-BBB#spi-register-summary
 #pragma pack(1)
-struct SPI_CH {        // offset
+struct Spi_Channel_Registers {
   std::uint32_t conf;  // 0x00
   std::uint32_t stat;  // 0x04
   std::uint32_t ctrl;  // 0x08
@@ -56,22 +57,22 @@ struct SPI_CH {        // offset
   std::uint32_t rx;    // 0x10
 };
 
-#pragma pack(1)               // so that the compiler does not change layout
-struct SPI_HW {               // offset
-  std::uint32_t revision;     // 0x000
-  std::uint32_t nope0[0x43];  // 0x004 - 0x110
-  std::uint32_t sysconfig;    // 0x110
-  std::uint32_t sysstatus;    // 0x114
-  std::uint32_t irqstatus;    // 0x118
-  std::uint32_t irqenable;    // 0x11c
-  std::uint32_t nope1[2];     // 0x120 - 0x124
-  std::uint32_t syst;         // 0x124
-  std::uint32_t modulctr;     // 0x128
-  SPI_CH ch0;                 // 0x12c - 0x140
-  SPI_CH ch1;                 // 0x140 - 0x154
-  SPI_CH ch2;                 // 0x154 - 0x168
-  SPI_CH ch3;                 // 0x168 - 0x17c
-  std::uint32_t xferlevel;    // 0x17c
+#pragma pack(1)  // ensuring compiler does not add padding
+struct Spi_Registers {
+  std::uint32_t revision;          // 0x000
+  std::uint32_t reserved0[0x43];   // 0x004 - 0x110
+  std::uint32_t sysconfig;         // 0x110
+  std::uint32_t sysstatus;         // 0x114
+  std::uint32_t irqstatus;         // 0x118
+  std::uint32_t irqenable;         // 0x11c
+  std::uint32_t reserved1[2];      // 0x120 - 0x124
+  std::uint32_t syst;              // 0x124
+  std::uint32_t modulctr;          // 0x128
+  Spi_Channel_Registers channel0;  // 0x12c - 0x140
+  Spi_Channel_Registers channel1;  // 0x140 - 0x154
+  Spi_Channel_Registers channel2;  // 0x154 - 0x168
+  Spi_Channel_Registers channel3;  // 0x168 - 0x17c
+  std::uint32_t xferlevel;         // 0x17c
 };
 
 Spi::Spi(core::ILogger &logger,
@@ -79,8 +80,8 @@ Spi::Spi(core::ILogger &logger,
          const SpiMode mode,
          const SpiWordSize word_size,
          const SpiBitOrder bit_order)
-    : hw_(0),
-      ch_(0),
+    : spi_registers_(0),
+      spi_channel0_registers_(0),
       logger_(logger)
 {
   // SPI bus only works in kernel mode on Linux, so we neeed to call the provided driver
@@ -113,8 +114,8 @@ Spi::Spi(core::ILogger &logger,
   const auto order_write_result = ioctl(file_descriptor_, SPI_IOC_WR_LSB_FIRST, &order);
   if (order_write_result < 0) { logger_.log(core::LogLevel::kFatal, "Failed to set bit order"); }
   // Create SPI virtal memory mapping
-  const auto check_init = createVirtualMapping(bus);
-  if (check_init == core::Result::kSuccess) {
+  const auto virtual_mapping_result = createVirtualMapping(bus);
+  if (virtual_mapping_result == core::Result::kSuccess) {
     logger_.log(core::LogLevel::kDebug, "Successfully created SPI instance");
   } else {
     logger_.log(core::LogLevel::kFatal, "Failed to instantiate SPI");
@@ -147,20 +148,20 @@ core::Result Spi::createVirtualMapping(const SpiBus bus)
                               kSpi1AddrBase);
   }
   if (spi_registers_base == MAP_FAILED) {
-    logger_.log(core::LogLevel::kFatal, "Failed to map bank 0x%x", kSpi1AddrBase);
+    logger_.log(core::LogLevel::kFatal, "Failed to map SPI registers");
     return core::Result::kFailure;
   }
   // Get values of relevant registers
-  hw_ = reinterpret_cast<SPI_HW *>(spi_registers_base);
-  ch_ = &hw_->ch0;
-  logger_.log(core::LogLevel::kDebug, "Successfully created Mapping %d", sizeof(SPI_HW));
+  spi_registers_          = reinterpret_cast<Spi_Registers *>(spi_registers_base);
+  spi_channel0_registers_ = &spi_registers_->channel0;
+  logger_.log(core::LogLevel::kDebug, "Successfully created mapping for SPI registers");
   return core::Result::kSuccess;
 }
 
-void Spi::setClock(Clock clk)
+void Spi::setClock(Clock clock)
 {
   std::uint32_t data;
-  switch (clk) {
+  switch (clock) {
     case Clock::k500KHz:
       data = 500000;
       break;
@@ -178,7 +179,8 @@ void Spi::setClock(Clock clk)
       break;
   }
 
-  if (ioctl(file_descriptor_, SPI_IOC_WR_MAX_SPEED_HZ, &data) < 0) {
+  const auto clock_write_result = ioctl(file_descriptor_, SPI_IOC_WR_MAX_SPEED_HZ, &data);
+  if (clock_write_result < 0) {
     logger_.log(core::LogLevel::kFatal, "Failed to set clock frequency of %d", data);
   }
 }
@@ -200,24 +202,24 @@ void SPI::transfer(std::uint8_t *tx, std::uint8_t *rx, std::uint16_t len)
 #else
 void Spi::transfer(std::uint8_t *tx, std::uint8_t *, std::uint16_t len)
 {
-  if (hw_ == 0) return;  // early exit if no spi mapped
+  if (spi_registers_ == 0) return;  // early exit if no spi mapped
 
   for (std::uint16_t x = 0; x < len; x++) {
     // logger_.log("SPI_TEST","channel 0 status before: %d", 10);
-    // while(!(ch0->status & 0x2));
-    logger_.log(core::LogLevel::kDebug, "Status register: %x", ch_->stat);
-    ch_->ctrl = ch_->ctrl | 0x1;
-    ch_->conf = ch_->conf & 0xfffcffff;
-    ch_->tx   = tx[x];
-    logger_.log(core::LogLevel::kDebug, "Status register: %x", ch_->stat);
-    logger_.log(core::LogLevel::kDebug, "Config register: %x", ch_->conf);
-    logger_.log(core::LogLevel::kDebug, "Control register: %x", ch_->ctrl);
+    // while(!(channel0->status & 0x2));
+    logger_.log(core::LogLevel::kDebug, "Status register: %x", spi_channel0_registers_->stat);
+    spi_channel0_registers_->ctrl = spi_channel0_registers_->ctrl | 0x1;
+    spi_channel0_registers_->conf = spi_channel0_registers_->conf & 0xfffcffff;
+    spi_channel0_registers_->tx   = tx[x];
+    logger_.log(core::LogLevel::kDebug, "Status register: %x", spi_channel0_registers_->stat);
+    logger_.log(core::LogLevel::kDebug, "Config register: %x", spi_channel0_registers_->conf);
+    logger_.log(core::LogLevel::kDebug, "Control register: %x", spi_channel0_registers_->ctrl);
 
-    while (!(ch_->stat & 0x1)) {
-      logger_.log(core::LogLevel::kDebug, "Status register: %d", ch_->stat);
+    while (!(spi_channel0_registers_->stat & 0x1)) {
+      logger_.log(core::LogLevel::kDebug, "Status register: %d", spi_channel0_registers_->stat);
     }
-    logger_.log(core::LogLevel::kDebug, "Status register: %d", ch_->stat);
-    // logger_.log("SPI_TEST","Read buffer: %d", ch0->rx_buf);
+    logger_.log(core::LogLevel::kDebug, "Status register: %d", spi_channel0_registers_->stat);
+    // logger_.log("SPI_TEST","Read buffer: %d", channel0->rx_buf);
     // logger_.log("SPI_TEST","channel 0 status after: %d", 10);
     // write_buffer++;
   }

@@ -26,8 +26,8 @@ static constexpr std::uint32_t kSpiMemoryMapSize = 0x1000;
 namespace hyped::io {
 
 // forward declaration
-struct SPI_HW;
-struct SPI_CH;
+struct Spi_Registers;
+struct Spi_Channel_Registers;
 
 class Spi {
  public:
@@ -79,8 +79,8 @@ class Spi {
 
  private:
   int file_descriptor_;
-  SPI_HW *hw_;
-  SPI_CH *ch_;
+  Spi_Registers *spi_registers_;
+  Spi_Channel_Registers *spi_channel0_registers_;
   core::ILogger &logger_;
 };
 
