@@ -113,36 +113,48 @@ Spi::Spi(core::ILogger &logger,
   const auto order_write_result = ioctl(file_descriptor_, SPI_IOC_WR_LSB_FIRST, &order);
   if (order_write_result < 0) { logger_.log(core::LogLevel::kFatal, "Failed to set bit order"); }
   // Create SPI virtal memory mapping
-  bool check_init = initialise();
-  if (check_init) {
+  const auto check_init = createVirtualMapping(bus);
+  if (check_init == core::Result::kSuccess) {
     logger_.log(core::LogLevel::kDebug, "Successfully created SPI instance");
   } else {
     logger_.log(core::LogLevel::kFatal, "Failed to instantiate SPI");
   }
 }
 
-bool Spi::initialise()
+core::Result Spi::createVirtualMapping(const SpiBus bus)
 {
-  int fd;
-  void *base;
-
-  fd = open("/dev/mem", O_RDWR);
-  if (fd < 0) {
+  // First open the /dev/mem (device file that represents the whole physical memory)
+  const int mapping_file_descriptor = open("/dev/mem", O_RDWR);
+  if (mapping_file_descriptor < 0) {
     logger_.log(core::LogLevel::kFatal, "Failed to open /dev/mem");
-    return false;
+    return core::Result::kFailure;
   }
-
-  base = mmap(0, kMmapSize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, kSPI1AddrBase);
-  if (base == MAP_FAILED) {
+  // Map the relevant SPI registers into virtual memory
+  void *spi_registers_base;
+  if (bus == SpiBus::kSpi0) {
+    spi_registers_base = mmap(0,
+                              kSpiMemoryMapSize,
+                              PROT_READ | PROT_WRITE,
+                              MAP_SHARED,
+                              mapping_file_descriptor,
+                              kSPI0AddrBase);
+  } else {
+    spi_registers_base = mmap(0,
+                              kSpiMemoryMapSize,
+                              PROT_READ | PROT_WRITE,
+                              MAP_SHARED,
+                              mapping_file_descriptor,
+                              kSPI1AddrBase);
+  }
+  if (spi_registers_base == MAP_FAILED) {
     logger_.log(core::LogLevel::kFatal, "Failed to map bank 0x%x", kSPI1AddrBase);
-    return false;
+    return core::Result::kFailure;
   }
-
-  hw_ = reinterpret_cast<SPI_HW *>(base);
+  // Get values of relevant registers
+  hw_ = reinterpret_cast<SPI_HW *>(spi_registers_base);
   ch_ = &hw_->ch0;
-
   logger_.log(core::LogLevel::kDebug, "Successfully created Mapping %d", sizeof(SPI_HW));
-  return true;
+  return core::Result::kSuccess;
 }
 
 void Spi::setClock(Clock clk)

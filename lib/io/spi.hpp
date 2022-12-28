@@ -4,6 +4,7 @@
 #include <cstring>
 
 #include <core/logger.hpp>
+#include <core/types.hpp>
 
 // Two SPI buses are available on the BeagleBone Black
 enum class SpiBus { kSpi0 = 0, kSpi1 };
@@ -16,7 +17,9 @@ enum class SpiBitOrder { kMsbFirst = 0, kLsbFirst };
 // Only one chip select is available by default on the BeagleBone Black
 static constexpr std::uint32_t kSPI0AddrBase = 0x48030000;  // For SPI0 Chip Select 0
 static constexpr std::uint32_t kSPI1AddrBase = 0x481A0000;  // For SPI1 Chip Select 0
-static constexpr std::uint32_t kMmapSize     = 0x1000;
+// The size of the virtual memory mapping for SPI - 4KB (AM335x and AMIC110 Sitara™ Technical
+// Reference Manual)
+static constexpr std::uint32_t kSpiMemoryMapSize = 0x1000;
 
 namespace hyped::io {
 
@@ -67,10 +70,11 @@ class Spi {
 
  private:
   /**
-   * @brief Fill in base_mapping_ with pointers to mmap-ed /dev/spidev1.0
-   * to 2 SPI banks/ports.
+   * @brief Create a virtual memory mapping for the SPI bus in use,
+   * this allows us to access the registers of the SPI bus directly
+   * @param bus - SPI bus to be used
    */
-  bool initialise();
+  core::Result createVirtualMapping(const SpiBus bus);
 
  private:
   int file_descriptor_;
