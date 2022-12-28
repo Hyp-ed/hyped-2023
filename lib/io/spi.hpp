@@ -6,6 +6,38 @@
 #include <core/logger.hpp>
 #include <core/types.hpp>
 
+#if __linux__
+#include <linux/spi/spidev.h>
+#else
+// Relevant definitions from linux/spi/spidev.h for non-Linux systems
+#define _IOC_SIZEBITS 14
+#define SPI_IOC_MAGIC 'k'
+#define SPI_IOC_WR_MODE _IOW(SPI_IOC_MAGIC, 1, std::uint8_t)
+#define SPI_IOC_WR_MAX_SPEED_HZ _IOW(SPI_IOC_MAGIC, 4, std::uint32_t)
+#define SPI_IOC_WR_LSB_FIRST _IOW(SPI_IOC_MAGIC, 2, std::uint8_t)
+#define SPI_IOC_WR_BITS_PER_WORD _IOW(SPI_IOC_MAGIC, 3, std::uint8_t)
+
+struct spi_ioc_transfer {
+  std::uint64_t tx_buf;
+  std::uint64_t rx_buf;
+  std::uint32_t len;
+  std::uint32_t speed_hz;
+  std::uint16_t delay_usecs;
+  std::uint8_t bits_per_word;
+  std::uint8_t cs_change;
+  std::uint8_t tx_nbits;
+  std::uint8_t rx_nbits;
+  std::uint16_t pad;
+};
+
+#define SPI_MSGSIZE(N)                                                                             \
+  ((((N) * (sizeof(struct spi_ioc_transfer))) < (1 << _IOC_SIZEBITS))                              \
+     ? ((N) * (sizeof(struct spi_ioc_transfer)))                                                   \
+     : 0)
+#define SPI_IOC_MESSAGE(N) _IOW(SPI_IOC_MAGIC, 0, char[SPI_MSGSIZE(N)])
+#define SPI_CS_HIGH 0x04
+#endif  // if LINUX
+
 // All values and configuration options used are sourced from the AM335x and AMIC110 Sitara™
 // Processors Technical Reference Manual, please refer to the manual for more information.
 
@@ -39,7 +71,7 @@ class Spi {
 
   /**
    * @brief Initialise the SPI bus. We default to SPI1, Mode 3 (SPICLK active low and sampling
-   * occurs on the rising edge) with 8-bit words and MSB first
+   * occurs on the rising edge) with 8-bit words and MSB first.
    * @param bus       - SPI bus to be used
    * @param mode      - SPI mode to be used
    * @param word_size - word size to be used

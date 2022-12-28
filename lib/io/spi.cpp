@@ -6,38 +6,6 @@
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 
-#if LINUX
-#include <linux/spi/spidev.h>
-#else
-// Relevant definitions from linux/spi/spidev.h for non-Linux systems
-#define _IOC_SIZEBITS 14
-#define SPI_IOC_MAGIC 'k'
-#define SPI_IOC_WR_MODE _IOW(SPI_IOC_MAGIC, 1, std::uint8_t)
-#define SPI_IOC_WR_MAX_SPEED_HZ _IOW(SPI_IOC_MAGIC, 4, std::uint32_t)
-#define SPI_IOC_WR_LSB_FIRST _IOW(SPI_IOC_MAGIC, 2, std::uint8_t)
-#define SPI_IOC_WR_BITS_PER_WORD _IOW(SPI_IOC_MAGIC, 3, std::uint8_t)
-
-struct spi_ioc_transfer {
-  std::uint64_t tx_buf;
-  std::uint64_t rx_buf;
-  std::uint32_t len;
-  std::uint32_t speed_hz;
-  std::uint16_t delay_usecs;
-  std::uint8_t bits_per_word;
-  std::uint8_t cs_change;
-  std::uint8_t tx_nbits;
-  std::uint8_t rx_nbits;
-  std::uint16_t pad;
-};
-
-#define SPI_MSGSIZE(N)                                                                             \
-  ((((N) * (sizeof(struct spi_ioc_transfer))) < (1 << _IOC_SIZEBITS))                              \
-     ? ((N) * (sizeof(struct spi_ioc_transfer)))                                                   \
-     : 0)
-#define SPI_IOC_MESSAGE(N) _IOW(SPI_IOC_MAGIC, 0, char[SPI_MSGSIZE(N)])
-#define SPI_CS_HIGH 0x04
-#endif  // if LINUX
-
 namespace hyped::io {
 
 // define what the address space of SPI looks like, see
@@ -71,6 +39,7 @@ struct Spi_Registers {
 
 Spi::Spi(core::ILogger &logger)
     : logger_(logger),
+      file_descriptor_(-1),
       spi_registers_(0),
       spi_channel0_registers_(0),
       has_initialised_(Initialised::kFalse)
@@ -85,7 +54,7 @@ Spi::~Spi()
 core::Result Spi::read(std::uint8_t addr, std::uint8_t *rx, std::uint16_t len)
 {
   if (has_initialised_ == Initialised::kFalse) {
-    logger_.log(core::LogLevel::kFatal, "SPI device has not been initialised");
+    logger_.log(core::LogLevel::kFatal, "Failed to read as SPI device has not been initialised");
     return core::Result::kFailure;
   }
   if (file_descriptor_ < 0) {
@@ -113,7 +82,7 @@ core::Result Spi::read(std::uint8_t addr, std::uint8_t *rx, std::uint16_t len)
 core::Result Spi::write(std::uint8_t addr, std::uint8_t *tx, std::uint16_t len)
 {
   if (has_initialised_ == Initialised::kFalse) {
-    logger_.log(core::LogLevel::kFatal, "SPI device has not been initialised");
+    logger_.log(core::LogLevel::kFatal, "Failed to write as SPI device has not been initialised");
     return core::Result::kFailure;
   }
   if (file_descriptor_ < 0) {
