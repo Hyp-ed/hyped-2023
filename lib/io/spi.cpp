@@ -42,10 +42,6 @@ struct spi_ioc_transfer {
 #define SPI_CS_HIGH 0x04
 #endif  // if LINUX
 
-// configure SPI
-#define SPI_MSBFIRST 0
-#define SPI_LSBFIRST 1
-
 #define SPI_FS 0
 
 namespace hyped::io {
@@ -78,7 +74,11 @@ struct SPI_HW {               // offset
   std::uint32_t xferlevel;    // 0x17c
 };
 
-Spi::Spi(core::ILogger &logger, const SpiBus bus, const SpiMode mode, const SpiWordSize word_size)
+Spi::Spi(core::ILogger &logger,
+         const SpiBus bus,
+         const SpiMode mode,
+         const SpiWordSize word_size,
+         const SpiBitOrder bit_order)
     : hw_(0),
       ch_(0),
       logger_(logger)
@@ -95,23 +95,24 @@ Spi::Spi(core::ILogger &logger, const SpiBus bus, const SpiMode mode, const SpiW
     logger_.log(core::LogLevel::kFatal, "Failed to open SPI device");
     return;
   }
-  // set clock frequency
+  // Set clock frequency
   setClock(Clock::k500KHz);
-  // set word size
+  // Set word size
   const std::uint8_t bits_per_word = static_cast<std::uint8_t>(word_size);
-  if (ioctl(file_descriptor_, SPI_IOC_WR_BITS_PER_WORD, &bits_per_word) < 0) {
+  const auto word_size_write_result
+    = ioctl(file_descriptor_, SPI_IOC_WR_BITS_PER_WORD, &bits_per_word);
+  if (word_size_write_result < 0) {
     logger_.log(core::LogLevel::kFatal, "Failed to set bits per word");
   }
-  // set SPI mode
-  std::uint8_t selected_mode = (static_cast<std::uint8_t>(mode) & 0x3) & ~SPI_CS_HIGH;
-  if (ioctl(file_descriptor_, SPI_IOC_WR_MODE, &selected_mode) < 0) {
-    logger_.log(core::LogLevel::kFatal, "Failed to set SPI mode");
-  }
-  // set bit order
-  std::uint8_t order = SPI_MSBFIRST;
-  if (ioctl(file_descriptor_, SPI_IOC_WR_LSB_FIRST, &order) < 0) {
-    logger_.log(core::LogLevel::kFatal, "Failed to set bit order");
-  }
+  // Set SPI mode
+  const std::uint8_t selected_mode = (static_cast<std::uint8_t>(mode) & 0x3) & ~SPI_CS_HIGH;
+  const auto mode_write_result     = ioctl(file_descriptor_, SPI_IOC_WR_MODE, &selected_mode);
+  if (mode_write_result < 0) { logger_.log(core::LogLevel::kFatal, "Failed to set SPI mode"); }
+  // Set bit order
+  const std::uint8_t order      = static_cast<std::uint8_t>(bit_order);
+  const auto order_write_result = ioctl(file_descriptor_, SPI_IOC_WR_LSB_FIRST, &order);
+  if (order_write_result < 0) { logger_.log(core::LogLevel::kFatal, "Failed to set bit order"); }
+  // Create SPI virtal memory mapping
   bool check_init = initialise();
   if (check_init) {
     logger_.log(core::LogLevel::kDebug, "Successfully created SPI instance");

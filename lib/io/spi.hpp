@@ -12,6 +12,7 @@ enum class SpiBus { kSpi0 = 0, kSpi1 };
 enum class SpiMode { kMode0 = 0, kMode1, kMode2, kMode3 };
 // Common word sizes (in bits) for SPI communcation
 enum class SpiWordSize { kWordSize4 = 4, kWordSize8 = 8, kWordSize16 = 16, kWordSize32 = 32 };
+enum class SpiBitOrder { kMsbFirst = 0, kLsbFirst };
 // Only one chip select is available by default on the BeagleBone Black
 static constexpr std::uint32_t kSPI0AddrBase = 0x48030000;  // For SPI0 Chip Select 0
 static constexpr std::uint32_t kSPI1AddrBase = 0x481A0000;  // For SPI1 Chip Select 0
@@ -25,12 +26,13 @@ struct SPI_CH;
 
 class Spi {
  public:
-  // We default to SPI1, Mode 3 (SPICLK active low and sampling occurs on the rising edge), and
-  // 8-bit words
+  // We default to SPI1, Mode 3 (SPICLK active low and sampling occurs on the rising edge) with
+  // 8-bit words and MSB first
   Spi(core::ILogger &logger,
       const SpiBus bus            = SpiBus::kSpi1,
       const SpiMode mode          = SpiMode::kMode3,
-      const SpiWordSize word_size = SpiWordSize::kWordSize8);
+      const SpiWordSize word_size = SpiWordSize::kWordSize8,
+      const SpiBitOrder bit_order = SpiBitOrder::kMsbFirst);
   ~Spi();
 
   // Maximum clock frequency for SPI is 100MHz (source: AM335x and AMIC110 Sitara™ Processors
