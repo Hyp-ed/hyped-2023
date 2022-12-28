@@ -11,6 +11,7 @@
 #if LINUX
 #include <linux/spi/spidev.h>
 #else
+// Relevant definitions from linux/spi/spidev.h for non-Linux systems
 #define _IOC_SIZEBITS 14
 #define SPI_IOC_MAGIC 'k'
 #define SPI_IOC_WR_MODE _IOW(SPI_IOC_MAGIC, 1, std::uint8_t)
@@ -42,17 +43,12 @@ struct spi_ioc_transfer {
 #endif  // if LINUX
 
 // configure SPI
-#define SPI_MODE 3
-#define SPI_BITS 8  // each word is 1B
 #define SPI_MSBFIRST 0
 #define SPI_LSBFIRST 1
 
 #define SPI_FS 0
 
 namespace hyped::io {
-
-constexpr std::uint32_t kSPIAddrBase = 0x481A0000;  // 0x48030000 for SPI0
-constexpr std::uint32_t kMmapSize    = 0x1000;
 
 // define what the address space of SPI looks like
 #pragma pack(1)
@@ -82,36 +78,40 @@ struct SPI_HW {               // offset
   std::uint32_t xferlevel;    // 0x17c
 };
 
-Spi::Spi(core::ILogger &logger) : spi_fd_(-1), hw_(0), ch_(0), logger_(logger)
+Spi::Spi(core::ILogger &logger, const SpiBus bus, const SpiMode mode, const SpiWordSize word_size)
+    : hw_(0),
+      ch_(0),
+      logger_(logger)
 {
-  const char device[] = "/dev/spidev0.0";  // spidev0.0 for SPI0
-  spi_fd_             = open(device, O_RDWR, 0);
-
-  if (spi_fd_ < 0) {
+  // SPI bus only works in kernel mode on Linux, so we neeed to call the provided driver
+  char spi_bus_address[15];
+  if (bus == SpiBus::kSpi0) {
+    strncat(spi_bus_address, "/dev/spidev0.0", 15);
+  } else {
+    strncat(spi_bus_address, "/dev/spidev1.0", 15);
+  }
+  file_descriptor_ = open(spi_bus_address, O_RDWR, 0);
+  if (file_descriptor_ < 0) {
     logger_.log(core::LogLevel::kFatal, "Failed to open SPI device");
     return;
   }
-
   // set clock frequency
   setClock(Clock::k500KHz);
-
-  std::uint8_t bits = SPI_BITS;  // need to change this value
-  if (ioctl(spi_fd_, SPI_IOC_WR_BITS_PER_WORD, &bits) < 0) {
+  // set word size
+  const std::uint8_t bits_per_word = static_cast<std::uint8_t>(word_size);
+  if (ioctl(file_descriptor_, SPI_IOC_WR_BITS_PER_WORD, &bits_per_word) < 0) {
     logger_.log(core::LogLevel::kFatal, "Failed to set bits per word");
   }
-
-  // set clock mode and CS active low
-  std::uint8_t mode = (SPI_MODE & 0x3) & ~SPI_CS_HIGH;
-  if (ioctl(spi_fd_, SPI_IOC_WR_MODE, &mode) < 0) {
+  // set SPI mode
+  std::uint8_t selected_mode = (static_cast<std::uint8_t>(mode) & 0x3) & ~SPI_CS_HIGH;
+  if (ioctl(file_descriptor_, SPI_IOC_WR_MODE, &selected_mode) < 0) {
     logger_.log(core::LogLevel::kFatal, "Failed to set SPI mode");
   }
-
   // set bit order
   std::uint8_t order = SPI_MSBFIRST;
-  if (ioctl(spi_fd_, SPI_IOC_WR_LSB_FIRST, &order) < 0) {
+  if (ioctl(file_descriptor_, SPI_IOC_WR_LSB_FIRST, &order) < 0) {
     logger_.log(core::LogLevel::kFatal, "Failed to set bit order");
   }
-
   bool check_init = initialise();
   if (check_init) {
     logger_.log(core::LogLevel::kDebug, "Successfully created SPI instance");
@@ -131,9 +131,9 @@ bool Spi::initialise()
     return false;
   }
 
-  base = mmap(0, kMmapSize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, kSPIAddrBase);
+  base = mmap(0, kMmapSize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, kSPI1AddrBase);
   if (base == MAP_FAILED) {
-    logger_.log(core::LogLevel::kFatal, "Failed to map bank 0x%x", kSPIAddrBase);
+    logger_.log(core::LogLevel::kFatal, "Failed to map bank 0x%x", kSPI1AddrBase);
     return false;
   }
 
@@ -165,7 +165,7 @@ void Spi::setClock(Clock clk)
       break;
   }
 
-  if (ioctl(spi_fd_, SPI_IOC_WR_MAX_SPEED_HZ, &data) < 0) {
+  if (ioctl(file_descriptor_, SPI_IOC_WR_MAX_SPEED_HZ, &data) < 0) {
     logger_.log(core::LogLevel::kFatal, "Failed to set clock frequency of %d", data);
   }
 }
@@ -173,7 +173,7 @@ void Spi::setClock(Clock clk)
 #if SPI_FS
 void SPI::transfer(std::uint8_t *tx, std::uint8_t *rx, std::uint16_t len)
 {
-  if (spi_fd_ < 0) return;  // early exit if no spi device present
+  if (spi_fd_ < 0) return;  // early exit if no spi spi_bus_address present
   spi_ioc_transfer message = {};
 
   message.tx_buf = reinterpret_cast<std::uint64_t>(tx);
@@ -214,7 +214,7 @@ void Spi::transfer(std::uint8_t *tx, std::uint8_t *, std::uint16_t len)
 
 void Spi::read(std::uint8_t addr, std::uint8_t *rx, std::uint16_t len)
 {
-  if (spi_fd_ < 0) return;  // early exit if no spi device present
+  if (file_descriptor_ < 0) return;  // early exit if no spi spi_bus_address present
 
   spi_ioc_transfer message[2] = {};
 
@@ -228,14 +228,14 @@ void Spi::read(std::uint8_t addr, std::uint8_t *rx, std::uint16_t len)
   message[1].rx_buf = reinterpret_cast<std::uint64_t>(rx);
   message[1].len    = len;
 
-  if (ioctl(spi_fd_, SPI_IOC_MESSAGE(2), message) < 0) {
+  if (ioctl(file_descriptor_, SPI_IOC_MESSAGE(2), message) < 0) {
     logger_.log(core::LogLevel::kFatal, "Failed to submit 2 TRANSFER messages");
   }
 }
 
 void Spi::write(std::uint8_t addr, std::uint8_t *tx, std::uint16_t len)
 {
-  if (spi_fd_ < 0) return;  // early exit if no spi device present
+  if (file_descriptor_ < 0) return;  // early exit if no spi spi_bus_address present
 
   spi_ioc_transfer message[2] = {};
   // send address
@@ -248,16 +248,16 @@ void Spi::write(std::uint8_t addr, std::uint8_t *tx, std::uint16_t len)
   message[1].rx_buf = 0;
   message[1].len    = len;
 
-  if (ioctl(spi_fd_, SPI_IOC_MESSAGE(2), message) < 0) {
+  if (ioctl(file_descriptor_, SPI_IOC_MESSAGE(2), message) < 0) {
     logger_.log(core::LogLevel::kFatal, "Failed to submit 2 TRANSFER messages");
   }
 }
 
 Spi::~Spi()
 {
-  if (spi_fd_ < 0) return;  // early exit if no spi device present
+  if (file_descriptor_ < 0) return;  // early exit if no spi spi_bus_address present
 
-  close(spi_fd_);
+  close(file_descriptor_);
 }
 
 }  // namespace hyped::io

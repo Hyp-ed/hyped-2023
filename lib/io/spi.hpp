@@ -1,17 +1,40 @@
 #pragma once
 
+#include <cstdint>
+#include <cstring>
+
 #include <core/logger.hpp>
 
+// Two SPI buses are available on the BeagleBone Black
+enum class SpiBus { kSpi0 = 0, kSpi1 };
+// Four SPI modes are available on the BeagleBone Black - for more information, see
+// https://github.com/Hyp-ed/hyped-2023/wiki/SPI-Interfacing-on-BBB#spi-modes-summary
+enum class SpiMode { kMode0 = 0, kMode1, kMode2, kMode3 };
+// Common word sizes (in bits) for SPI communcation
+enum class SpiWordSize { kWordSize4 = 4, kWordSize8 = 8, kWordSize16 = 16, kWordSize32 = 32 };
+// Only one chip select is available by default on the BeagleBone Black
+static constexpr std::uint32_t kSPI0AddrBase = 0x48030000;  // For SPI0 Chip Select 0
+static constexpr std::uint32_t kSPI1AddrBase = 0x481A0000;  // For SPI1 Chip Select 0
+static constexpr std::uint32_t kMmapSize     = 0x1000;
+
 namespace hyped::io {
+
 // forward declaration
 struct SPI_HW;
 struct SPI_CH;
 
 class Spi {
  public:
-  Spi(core::ILogger &logger);
+  // We default to SPI1, Mode 3 (SPICLK active low and sampling occurs on the rising edge), and
+  // 8-bit words
+  Spi(core::ILogger &logger,
+      const SpiBus bus            = SpiBus::kSpi1,
+      const SpiMode mode          = SpiMode::kMode3,
+      const SpiWordSize word_size = SpiWordSize::kWordSize8);
   ~Spi();
 
+  // Maximum clock frequency for SPI is 100MHz (source: AM335x and AMIC110 Sitara™ Processors
+  // Technical Reference Manual pg. 4888)
   enum class Clock { k500KHz, k1MHz, k4MHz, k16MHz, k20MHz };
 
   void setClock(Clock clk);
@@ -48,7 +71,7 @@ class Spi {
   bool initialise();
 
  private:
-  int spi_fd_;
+  int file_descriptor_;
   SPI_HW *hw_;
   SPI_CH *ch_;
   core::ILogger &logger_;
