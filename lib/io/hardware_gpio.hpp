@@ -13,9 +13,9 @@ class HardwareGpioReader : public IGpioReader {
   virtual std::optional<core::DigitalSignal> read();
 
  private:
-  HardwareGpioReader(uint8_t pin, volatile uint32_t *read) : pinMAP(pin), gpio_readAddr(read);
+  HardwareGpioReader(std::uint8_t pin, volatile uint32_t *read) : pinMAP(pin), gpio_readAddr(read){};
 
-  const uint8_t pinMAP;
+  const std::uint8_t pinMAP;
   volatile uint32_t *gpio_readAddr;
 
   friend class HardwareGpio;
@@ -26,12 +26,12 @@ class HardwareGpioWriter : public IGpioWriter {
   virtual core::Result write(const core::DigitalSignal state);
 
  private:
-  HardwareGpioWriter(const uint8_t pin, volatile uint32_t *set, volatile uint32_t *clear)
+  HardwareGpioWriter(const std::uint8_t pin, volatile uint32_t *set, volatile uint32_t *clear)
       : pinMAP(pin),
         gpio_setAddr(set),
-        gpio_clearAddr(clear);
+        gpio_clearAddr(clear){};
 
-  const uint8_t pinMAP;
+  const std::uint8_t pinMAP;
   volatile uint32_t *gpio_setAddr;
   volatile uint32_t *gpio_clearAddr;
 
@@ -51,8 +51,8 @@ class HardwareGpio {
   // Page 211-213 Figure 6-7/8 P8 Header Pins Beaglebone Bible
 
   const off_t bankAddresses[4] = {0x44e07000, 0x4804c000, 0x481ac000, 0x481ae000};
-  std::unordered_map<uint8_t, std::shared_ptr<IGpioWriter>> InitializedWriters;
-  std::unordered_map<uint8_t, std::shared_ptr<IGpioReader>> InitializedReaders;
+  std::unordered_map<std::uint8_t, std::shared_ptr<IGpioWriter>> InitializedWriters;
+  std::unordered_map<std::uint8_t, std::shared_ptr<IGpioReader>> InitializedReaders;
   // Also hardware specified addresses and sizes for read, clear, set, size, etc.
   static constexpr uint32_t pinSize  = 0x1000;
   static constexpr uint32_t pinRead  = 0x138;
