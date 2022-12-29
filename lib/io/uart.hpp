@@ -8,7 +8,7 @@
 #include <core/types.hpp>
 
 // Uart3 not exposed in BBB headers
-enum class UartBus { kuUart0 = 0, kUart1 = 1, kUart2 = 2, kUart4 = 4, kUart5 = 5 };
+enum class UartBus { kUart0 = 0, kUart1 = 1, kUart2 = 2, kUart4 = 4, kUart5 = 5 };
 
 namespace hyped::io {
 
