@@ -13,7 +13,9 @@ class HardwareGpioReader : public IGpioReader {
   virtual std::optional<core::DigitalSignal> read();
 
  private:
-  HardwareGpioReader(std::uint8_t pin, volatile uint32_t *read) : pinMAP(pin), gpio_readAddr(read){};
+  HardwareGpioReader(std::uint8_t pin, volatile uint32_t *read)
+      : pinMAP(pin),
+        gpio_readAddr(read){};
 
   const std::uint8_t pinMAP;
   volatile uint32_t *gpio_readAddr;
