@@ -59,10 +59,10 @@ class HardwareGpio {
   std::unordered_map<uint8_t, std::shared_ptr<IGpioWriter>> InitializedWriters;
   std::unordered_map<uint8_t, std::shared_ptr<IGpioReader>> InitializedReaders;
   //Also hardware specified addresses and sizes for read, clear, set, size, etc.
-  static constexpr uint32_t pinSize= 0x1000;
-  static constexpr uint32_t pinRead= 0x138;
-  static constexpr uint32_t pinClear= 0x190;
-  static constexpr uint32_t pinSet= 0x194;
+  static constexpr uint32_t pinSize = 0x1000;
+  static constexpr uint32_t pinRead = 0x138;
+  static constexpr uint32_t pinClear = 0x190;
+  static constexpr uint32_t pinSet = 0x194;
 };
 
 }  // namespace hyped::io
