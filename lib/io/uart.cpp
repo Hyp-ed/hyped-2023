@@ -11,7 +11,7 @@ Uart::Uart(core::ILogger &logger, const UartBus bus, const std::uint32_t baudrat
       baudrate_(baudrate)
 {
   char path[13];  // up to "/dev/ttyO5"
-  sprintf(path, "/dev/ttyO%d", static_cast<uint8_t>(bus_));
+  sprintf(path, "/dev/ttyO%d", static_cast<std::uint8_t>(bus_));
   file_descriptor_ = open(path, O_RDWR);
   if (file_descriptor_ < 0) { logger_.log(core::LogLevel::kFatal, "Unable to open UART file"); }
 }
