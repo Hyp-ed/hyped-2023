@@ -51,7 +51,6 @@ enum class SpiWordSize { kWordSize4 = 4, kWordSize8 = 8, kWordSize16 = 16, kWord
 enum class SpiBitOrder { kMsbFirst = 0, kLsbFirst };
 // Maximum clock frequency for SPI is 100MHz
 enum class Clock { k500KHz, k1MHz, k4MHz, k16MHz, k20MHz };
-enum class Initialised { kFalse = 0, kTrue };
 // Only one chip select is available by default on the BeagleBone Black
 static constexpr std::uint32_t kSpi0AddrBase = 0x48030000;  // For SPI0 Chip Select 0
 static constexpr std::uint32_t kSpi1AddrBase = 0x481A0000;  // For SPI1 Chip Select 0
@@ -66,21 +65,12 @@ struct Spi_Channel_Registers;
 
 class Spi {
  public:
-  Spi(core::ILogger &logger);
+  static std::optional<Spi> create(core::ILogger &logger,
+                                   const SpiBus bus            = SpiBus::kSpi1,
+                                   const SpiMode mode          = SpiMode::kMode3,
+                                   const SpiWordSize word_size = SpiWordSize::kWordSize8,
+                                   const SpiBitOrder bit_order = SpiBitOrder::kMsbFirst);
   ~Spi();
-
-  /**
-   * @brief Initialise the SPI bus. We default to SPI1, Mode 3 (SPICLK active low and sampling
-   * occurs on the rising edge) with 8-bit words and MSB first.
-   * @param bus       - SPI bus to be used
-   * @param mode      - SPI mode to be used
-   * @param word_size - word size to be used
-   * @param bit_order - bit order to be used
-   */
-  core::Result initialiseSpi(const SpiBus bus            = SpiBus::kSpi1,
-                             const SpiMode mode          = SpiMode::kMode3,
-                             const SpiWordSize word_size = SpiWordSize::kWordSize8,
-                             const SpiBitOrder bit_order = SpiBitOrder::kMsbFirst);
 
   /**
    * @brief Get data from sensor, starting at some address.
@@ -99,23 +89,40 @@ class Spi {
   core::Result write(std::uint8_t addr, std::uint8_t *tx, std::uint16_t len);
 
  private:
+  Spi(core::ILogger &logger);
+  /**
+   * @brief Get the address of the SPI bus in use
+   * @param bus - SPI bus to be used
+   */
+  static const char *getSpiBusAdress(const SpiBus bus);
+  /**
+   * @brief Initialise the SPI bus. We default to SPI1, Mode 3 (SPICLK active low and sampling
+   * occurs on the rising edge) with 8-bit words and MSB first.
+   * @param bus       - SPI bus to be used
+   * @param mode      - SPI mode to be used
+   * @param word_size - word size to be used
+   * @param bit_order - bit order to be used
+   */
+  core::Result initialise(const SpiBus bus,
+                          const SpiMode mode,
+                          const SpiWordSize word_size,
+                          const SpiBitOrder bit_order);
+  /**
+   * @brief Set the clock frequency of the SPI bus
+   * @param clk - clock frequency to be set
+   */
+  core::Result setClock(Clock clk);
   /**
    * @brief Create a virtual memory mapping for the SPI bus in use,
    * this allows us to access the registers of the SPI bus directly
    * @param bus - SPI bus to be used
    */
   core::Result createVirtualMapping(const SpiBus bus);
-  /**
-   * @brief Set the clock frequency of the SPI bus
-   * @param clk - clock frequency to be set
-   */
-  core::Result setClock(Clock clk);
 
+  core::ILogger &logger_;
   int file_descriptor_;
-  Initialised has_initialised_;
   Spi_Registers *spi_registers_;
   Spi_Channel_Registers *spi_channel0_registers_;
-  core::ILogger &logger_;
 };
 
 }  // namespace hyped::io

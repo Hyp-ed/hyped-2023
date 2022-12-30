@@ -37,12 +37,27 @@ struct Spi_Registers {
   std::uint32_t xferlevel;         // 0x17c
 };
 
+std::optional<Spi> Spi::create(core::ILogger &logger,
+                               const SpiBus bus,
+                               const SpiMode mode,
+                               const SpiWordSize word_size,
+                               const SpiBitOrder bit_order)
+{
+  Spi spi(logger);
+  const auto initialisation_result = spi.initialise(bus, mode, word_size, bit_order);
+  if (initialisation_result == core::Result::kFailure) {
+    logger.log(core::LogLevel::kFatal, "Failed to initialise SPI");
+    return std::nullopt;
+  }
+  logger.log(core::LogLevel::kDebug, "Successfully initialised SPI");
+  return spi;
+}
+
 Spi::Spi(core::ILogger &logger)
     : logger_(logger),
       file_descriptor_(-1),
       spi_registers_(0),
-      spi_channel0_registers_(0),
-      has_initialised_(Initialised::kFalse)
+      spi_channel0_registers_(0)
 {
 }
 
@@ -53,10 +68,6 @@ Spi::~Spi()
 
 core::Result Spi::read(std::uint8_t addr, std::uint8_t *rx, std::uint16_t len)
 {
-  if (has_initialised_ == Initialised::kFalse) {
-    logger_.log(core::LogLevel::kFatal, "Failed to read as SPI device has not been initialised");
-    return core::Result::kFailure;
-  }
   if (file_descriptor_ < 0) {
     logger_.log(core::LogLevel::kFatal, "Failed to open SPI device wile reading");
     return core::Result::kFailure;
@@ -81,10 +92,6 @@ core::Result Spi::read(std::uint8_t addr, std::uint8_t *rx, std::uint16_t len)
 
 core::Result Spi::write(std::uint8_t addr, std::uint8_t *tx, std::uint16_t len)
 {
-  if (has_initialised_ == Initialised::kFalse) {
-    logger_.log(core::LogLevel::kFatal, "Failed to write as SPI device has not been initialised");
-    return core::Result::kFailure;
-  }
   if (file_descriptor_ < 0) {
     logger_.log(core::LogLevel::kFatal, "Failed to open SPI device wile writing");
     return core::Result::kFailure;
@@ -107,19 +114,23 @@ core::Result Spi::write(std::uint8_t addr, std::uint8_t *tx, std::uint16_t len)
   return core::Result::kSuccess;
 }
 
-core::Result Spi::initialiseSpi(const SpiBus bus,
-                                const SpiMode mode,
-                                const SpiWordSize word_size,
-                                const SpiBitOrder bit_order)
+const char *Spi::getSpiBusAdress(const SpiBus bus)
+{
+  if (bus == SpiBus::kSpi0) {
+    return "/dev/spidev0.0";
+  } else {
+    return "/dev/spidev1.0";
+  }
+}
+
+core::Result Spi::initialise(const SpiBus bus,
+                             const SpiMode mode,
+                             const SpiWordSize word_size,
+                             const SpiBitOrder bit_order)
 {
   // SPI bus only works in kernel mode on Linux, so we neeed to call the provided driver
-  char spi_bus_address[15];
-  if (bus == SpiBus::kSpi0) {
-    strncat(spi_bus_address, "/dev/spidev0.0", 15);
-  } else {
-    strncat(spi_bus_address, "/dev/spidev1.0", 15);
-  }
-  file_descriptor_ = open(spi_bus_address, O_RDWR, 0);
+  const char *spi_bus_address = getSpiBusAdress(bus);
+  file_descriptor_            = open(spi_bus_address, O_RDWR, 0);
   if (file_descriptor_ < 0) {
     logger_.log(core::LogLevel::kFatal, "Failed to open SPI device");
     return core::Result::kFailure;
@@ -161,7 +172,6 @@ core::Result Spi::initialiseSpi(const SpiBus bus,
     return core::Result::kFailure;
   }
   logger_.log(core::LogLevel::kDebug, "Successfully initialised SPI");
-  has_initialised_ = Initialised::kTrue;
   return core::Result::kSuccess;
 }
 
