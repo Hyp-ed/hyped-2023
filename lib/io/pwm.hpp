@@ -21,15 +21,13 @@ enum class PwmOutput {
 };
 enum class Polarity { kActiveHigh = 0, kActiveLow };
 enum class Mode { kStop = 0, kRun };
-enum class Initialised { kFalse = 0, kTrue };
 // use this class if a high‐frequency periodic switching signal is required
 // PWM can achieve frequencies of 1 MHz or higher, without a significant CPU load
 class Pwm {
  public:
-  Pwm(core::Logger &logger, const PwmOutput pwm_output);
+  static std::optional<Pwm> createPwm(core::Logger &logger, const PwmOutput pwm_output);
   ~Pwm();
 
-  core::Result initialisePwm();
   // The valid values for duty cycle are 0.0 to 1.0 (0% to 100%)
   core::Result setDutyCycleByPercentage(const core::Float duty_cycle);
   // The valid values for time active are 0 to the period (0% to 100%)
@@ -39,13 +37,15 @@ class Pwm {
   core::Result setMode(const Mode mode);
 
  private:
+  Pwm(core::Logger &logger, const PwmOutput pwm_output);
+  core::Result initialisePwm();
   std::string getPwmFolderName(const PwmOutput pwm_output);
+
   core::Logger &logger_;
   std::uint32_t current_time_active_;  // ns
   std::uint32_t current_period_;       // ns
   Mode current_mode_;
   Polarity current_polarity_;
-  Initialised has_initialised_;
   const PwmOutput pwm_output_;
   int period_file_;
   int duty_cycle_file_;

@@ -5,10 +5,21 @@
 
 namespace hyped::io {
 
+std::optional<Pwm> Pwm::createPwm(core::Logger &logger, const PwmOutput pwm_output)
+{
+  Pwm pwm                          = Pwm(logger, pwm_output);
+  const auto initialisation_result = pwm.initialisePwm();
+  if (initialisation_result == core::Result::kFailure) {
+    logger.log(core::LogLevel::kFatal, "Failed to initialise PWM");
+    return std::nullopt;
+  }
+  logger.log(core::LogLevel::kDebug, "Successfully initialised PWM");
+  return pwm;
+}
+
 Pwm::Pwm(core::Logger &logger, const PwmOutput pwm_output)
     : logger_(logger),
       pwm_output_(pwm_output),
-      has_initialised_(Initialised::kFalse),
       current_time_active_(0),
       current_period_(0),
       current_mode_(Mode::kStop),
@@ -56,16 +67,11 @@ core::Result Pwm::initialisePwm()
     return core::Result::kFailure;
   }
   logger_.log(core::LogLevel::kDebug, "Successfully initialised PWM");
-  has_initialised_ = Initialised::kTrue;
   return core::Result::kSuccess;
 }
 
 core::Result Pwm::setDutyCycleByPercentage(const core::Float duty_cycle)
 {
-  if (has_initialised_ == Initialised::kFalse) {
-    logger_.log(core::LogLevel::kFatal, "Failed to set duty cycle, PWM has not been initialised");
-    return core::Result::kFailure;
-  }
   // Ensure duty cycle is between 0 and 1 inlcusive
   if (duty_cycle > 1.0) {
     logger_.log(core::LogLevel::kFatal,
@@ -83,10 +89,6 @@ core::Result Pwm::setDutyCycleByPercentage(const core::Float duty_cycle)
 
 core::Result Pwm::setDutyCycleByTime(const std::uint32_t time_active)
 {
-  if (has_initialised_ == Initialised::kFalse) {
-    logger_.log(core::LogLevel::kFatal, "Failed to set duty cycle, PWM has not been initialised");
-    return core::Result::kFailure;
-  }
   if (duty_cycle_file_ < 0) {
     logger_.log(core::LogLevel::kFatal,
                 "Failed to find PWM duty cycle file while setting duty cycle");
@@ -116,10 +118,6 @@ core::Result Pwm::setDutyCycleByTime(const std::uint32_t time_active)
 
 core::Result Pwm::setPeriod(const std::uint32_t period)
 {
-  if (has_initialised_ == Initialised::kFalse) {
-    logger_.log(core::LogLevel::kFatal, "Failed to set period, PWM has not been initialised");
-    return core::Result::kFailure;
-  }
   if (period_file_ < 0) {
     logger_.log(core::LogLevel::kFatal, "Failed to find PWM period file while setting period");
     return core::Result::kFailure;
@@ -141,10 +139,6 @@ core::Result Pwm::setPeriod(const std::uint32_t period)
 
 core::Result Pwm::setPolarity(const Polarity polarity)
 {
-  if (has_initialised_ == Initialised::kFalse) {
-    logger_.log(core::LogLevel::kFatal, "Failed to set polarity, PWM has not been initialised");
-    return core::Result::kFailure;
-  }
   if (polarity_file_ < 0) {
     logger_.log(core::LogLevel::kFatal, "Failed to find PWM polarity file while setting polarity");
     return core::Result::kFailure;
@@ -167,10 +161,6 @@ core::Result Pwm::setPolarity(const Polarity polarity)
 
 core::Result Pwm::setMode(const Mode mode)
 {
-  if (has_initialised_ == Initialised::kFalse) {
-    logger_.log(core::LogLevel::kFatal, "Failed to set mode, PWM has not been initialised");
-    return core::Result::kFailure;
-  }
   if (enable_file_ < 0) {
     logger_.log(core::LogLevel::kFatal, "Failed to find PWM enable file while setting mode");
     return core::Result::kFailure;
