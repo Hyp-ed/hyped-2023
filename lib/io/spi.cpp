@@ -4,38 +4,8 @@
 #include <unistd.h>
 
 #include <sys/ioctl.h>
-#include <sys/mman.h>
 
 namespace hyped::io {
-
-// define what the address space of SPI looks like, see
-// https://github.com/Hyp-ed/hyped-2023/wiki/SPI-Interfacing-on-BBB#spi-register-summary
-#pragma pack(1)
-struct Spi_Channel_Registers {
-  std::uint32_t conf;  // 0x00
-  std::uint32_t stat;  // 0x04
-  std::uint32_t ctrl;  // 0x08
-  std::uint32_t tx;    // 0x0c
-  std::uint32_t rx;    // 0x10
-};
-
-#pragma pack(1)  // ensuring compiler does not add padding
-struct Spi_Registers {
-  std::uint32_t revision;          // 0x000
-  std::uint32_t reserved0[0x43];   // 0x004 - 0x110
-  std::uint32_t sysconfig;         // 0x110
-  std::uint32_t sysstatus;         // 0x114
-  std::uint32_t irqstatus;         // 0x118
-  std::uint32_t irqenable;         // 0x11c
-  std::uint32_t reserved1[2];      // 0x120 - 0x124
-  std::uint32_t syst;              // 0x124
-  std::uint32_t modulctr;          // 0x128
-  Spi_Channel_Registers channel0;  // 0x12c - 0x140
-  Spi_Channel_Registers channel1;  // 0x140 - 0x154
-  Spi_Channel_Registers channel2;  // 0x154 - 0x168
-  Spi_Channel_Registers channel3;  // 0x168 - 0x17c
-  std::uint32_t xferlevel;         // 0x17c
-};
 
 std::optional<Spi> Spi::create(core::ILogger &logger,
                                const SpiBus bus,
@@ -53,11 +23,7 @@ std::optional<Spi> Spi::create(core::ILogger &logger,
   return spi;
 }
 
-Spi::Spi(core::ILogger &logger)
-    : logger_(logger),
-      file_descriptor_(-1),
-      spi_registers_(0),
-      spi_channel0_registers_(0)
+Spi::Spi(core::ILogger &logger) : logger_(logger), file_descriptor_(-1)
 {
 }
 
@@ -164,50 +130,7 @@ core::Result Spi::initialise(const SpiBus bus,
     logger_.log(core::LogLevel::kFatal, "Failed to set bit order");
     return core::Result::kFailure;
   }
-  // Create SPI virtal memory mappings
-  const auto virtual_mapping_result = createVirtualMapping(bus);
-  if (virtual_mapping_result == core::Result::kFailure) {
-    logger_.log(core::LogLevel::kFatal,
-                "Failed to initialise SPI, could not create virtual mapping");
-    return core::Result::kFailure;
-  }
   logger_.log(core::LogLevel::kDebug, "Successfully initialised SPI");
-  return core::Result::kSuccess;
-}
-
-core::Result Spi::createVirtualMapping(const SpiBus bus)
-{
-  // First open the /dev/mem (device file that represents the whole physical memory)
-  const int mapping_file_descriptor = open("/dev/mem", O_RDWR);
-  if (mapping_file_descriptor < 0) {
-    logger_.log(core::LogLevel::kFatal, "Failed to open /dev/mem");
-    return core::Result::kFailure;
-  }
-  // Map the relevant SPI registers into virtual memory
-  void *spi_registers_base;
-  if (bus == SpiBus::kSpi0) {
-    spi_registers_base = mmap(0,
-                              kSpiMemoryMapSize,
-                              PROT_READ | PROT_WRITE,
-                              MAP_SHARED,
-                              mapping_file_descriptor,
-                              kSpi0AddrBase);
-  } else {
-    spi_registers_base = mmap(0,
-                              kSpiMemoryMapSize,
-                              PROT_READ | PROT_WRITE,
-                              MAP_SHARED,
-                              mapping_file_descriptor,
-                              kSpi1AddrBase);
-  }
-  if (spi_registers_base == MAP_FAILED) {
-    logger_.log(core::LogLevel::kFatal, "Failed to map SPI registers");
-    return core::Result::kFailure;
-  }
-  // Get values of relevant registers
-  spi_registers_          = reinterpret_cast<Spi_Registers *>(spi_registers_base);
-  spi_channel0_registers_ = &spi_registers_->channel0;
-  logger_.log(core::LogLevel::kDebug, "Successfully created mapping for SPI registers");
   return core::Result::kSuccess;
 }
 

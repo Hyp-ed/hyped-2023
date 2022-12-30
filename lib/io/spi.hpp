@@ -51,17 +51,8 @@ enum class SpiWordSize { kWordSize4 = 4, kWordSize8 = 8, kWordSize16 = 16, kWord
 enum class SpiBitOrder { kMsbFirst = 0, kLsbFirst };
 // Maximum clock frequency for SPI is 100MHz
 enum class Clock { k500KHz, k1MHz, k4MHz, k16MHz, k20MHz };
-// Only one chip select is available by default on the BeagleBone Black
-static constexpr std::uint32_t kSpi0AddrBase = 0x48030000;  // For SPI0 Chip Select 0
-static constexpr std::uint32_t kSpi1AddrBase = 0x481A0000;  // For SPI1 Chip Select 0
-// The size of the virtual memory mapping for SPI - 4KB
-static constexpr std::uint32_t kSpiMemoryMapSize = 0x1000;
 
 namespace hyped::io {
-
-// The following structs are used to access the registers of the SPI bus directly
-struct Spi_Registers;
-struct Spi_Channel_Registers;
 
 class Spi {
  public:
@@ -109,20 +100,12 @@ class Spi {
                           const SpiBitOrder bit_order);
   /**
    * @brief Set the clock frequency of the SPI bus
-   * @param clk - clock frequency to be set
+   * @param clock - clock frequency to be set
    */
-  core::Result setClock(Clock clk);
-  /**
-   * @brief Create a virtual memory mapping for the SPI bus in use,
-   * this allows us to access the registers of the SPI bus directly
-   * @param bus - SPI bus to be used
-   */
-  core::Result createVirtualMapping(const SpiBus bus);
+  core::Result setClock(Clock clock);
 
   core::ILogger &logger_;
   int file_descriptor_;
-  Spi_Registers *spi_registers_;
-  Spi_Channel_Registers *spi_channel0_registers_;
 };
 
 }  // namespace hyped::io
