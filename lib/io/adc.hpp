@@ -32,7 +32,7 @@ class Adc {
   std::optional<std::uint16_t> resetAndRead4(const int file_descriptor);
   core::ILogger &logger_;
   std::uint8_t pin_;
-  int file_;
+  int file_descriptor_;
 };
 
 }  // namespace hyped::io

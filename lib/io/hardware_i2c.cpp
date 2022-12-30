@@ -21,8 +21,7 @@ HardwareI2c::HardwareI2c(core::ILogger &logger, const std::uint8_t bus_address)
   char path[13];  // up to "/dev/i2c-2"
   sprintf(path, "/dev/i2c-%d", bus_address);
   file_descriptor_ = open(path, O_RDWR, 0);
-  if (file_descriptor_ < 0) { /* log "Could not open i2c device" */
-  };
+  if (file_descriptor_ < 0) { logger_.log(core::LogLevel::kFatal, "Failed to find i2c device"); };
 }
 
 HardwareI2c::~HardwareI2c()
@@ -34,7 +33,7 @@ std::optional<std::uint8_t> HardwareI2c::readByte(const std::uint8_t device_addr
                                                   const std::uint8_t register_address)
 {
   if (file_descriptor_ < 0) {
-    logger_.log(core::LogLevel::kFatal, "Could not find i2c device while reading");
+    logger_.log(core::LogLevel::kFatal, "Failed to find i2c device while reading");
     return std::nullopt;
   }
   if (sensor_address_ != device_address) { setSensorAddress(device_address); }
@@ -45,14 +44,15 @@ std::optional<std::uint8_t> HardwareI2c::readByte(const std::uint8_t device_addr
   // Writing the register address so we switch to it
   const int num_bytes_written = write(file_descriptor_, write_buffer, 1);
   if (num_bytes_written != 1) {
-    logger_.log(core::LogLevel::kFatal, "Could not write to i2c device");
+    logger_.log(core::LogLevel::kFatal, "Failed to write to i2c device");
     return std::nullopt;
   }
   const int num_bytes_read = read(file_descriptor_, read_buffer, 1);
   if (num_bytes_read != 1) {
-    logger_.log(core::LogLevel::kFatal, "Could not read from i2c device");
+    logger_.log(core::LogLevel::kFatal, "Failed to read from i2c device");
     return std::nullopt;
   }
+  logger_.log(core::LogLevel::kDebug, "Successfully read byte from i2c device");
   return read_buffer[0];
 }
 
@@ -61,45 +61,47 @@ core::Result HardwareI2c::writeByteToRegister(const std::uint8_t device_address,
                                               const std::uint8_t data)
 {
   if (file_descriptor_ < 0) {
-    logger_.log(core::LogLevel::kFatal, "Could not find i2c device while writing");
+    logger_.log(core::LogLevel::kFatal, "Failed to find i2c device while writing");
     return core::Result::kFailure;
   }
   if (sensor_address_ != device_address) { setSensorAddress(device_address); }
   const std::uint8_t write_buffer[2] = {register_address, data};
   const auto num_bytes_written       = write(file_descriptor_, write_buffer, 2);
   if (num_bytes_written != 2) {
-    logger_.log(core::LogLevel::kFatal, "Could not write to i2c device");
+    logger_.log(core::LogLevel::kFatal, "Failed to write to i2c device");
     return core::Result::kFailure;
   }
+  logger_.log(core::LogLevel::kDebug, "Successfully wrote byte to i2c device register");
   return core::Result::kSuccess;
 }
 
 core::Result HardwareI2c::writeByte(const std::uint8_t device_address, const std::uint8_t data)
 {
   if (file_descriptor_ < 0) {
-    logger_.log(core::LogLevel::kFatal, "Could not find i2c device while writing");
+    logger_.log(core::LogLevel::kFatal, "Failed to find i2c device while writing");
     return core::Result::kFailure;
   }
   if (sensor_address_ != device_address) { setSensorAddress(device_address); }
   const std::uint8_t write_buffer[1] = {data};
   const auto num_bytes_written       = write(file_descriptor_, write_buffer, 1);
   if (num_bytes_written != 1) {
-    logger_.log(core::LogLevel::kFatal, "Could not write to i2c device");
+    logger_.log(core::LogLevel::kFatal, "Failed to write to i2c device");
     return core::Result::kFailure;
   }
+  logger_.log(core::LogLevel::kDebug, "Successfully wrote byte to i2c device");
   return core::Result::kSuccess;
 }
 
 void HardwareI2c::setSensorAddress(const std::uint8_t device_address)
 {
   if (file_descriptor_ < 0) {
-    logger_.log(core::LogLevel::kFatal, "Could not find i2c device while setting sensor address");
+    logger_.log(core::LogLevel::kFatal, "Failed to find i2c device while setting sensor address");
     return;
   }
   sensor_address_        = device_address;
   const int return_value = ioctl(file_descriptor_, I2C_SLAVE, device_address);
   if (return_value < 0) {
-    logger_.log(core::LogLevel::kFatal, "Could not set sensor address");
+    logger_.log(core::LogLevel::kFatal, "Failed to set sensor address");
     return;
   }
 }

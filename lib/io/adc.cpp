@@ -9,22 +9,22 @@ Adc::Adc(core::ILogger &logger, const std::uint8_t pin) : logger_(logger), pin_(
 {
   char buf[100];
   snprintf(buf, sizeof(buf), "/sys/bus/iio/devices/iio:device0/in_voltage%i_raw", pin_);
-  file_ = open(buf, O_RDONLY);
-  if (file_ < 0) { logger_.log(core::LogLevel::kFatal, "Unable to open ADC file"); }
+  file_descriptor_ = open(buf, O_RDONLY);
+  if (file_descriptor_ < 0) { logger_.log(core::LogLevel::kFatal, "Failed to open ADC file"); }
 }
 
 Adc::~Adc()
 {
-  close(file_);
+  close(file_descriptor_);
 }
 
 std::optional<std::uint16_t> Adc::readValue()
 {
-  if (file_ < 0) {
-    logger_.log(core::LogLevel::kFatal, "Unable to find ADC file during read");
+  if (file_descriptor_ < 0) {
+    logger_.log(core::LogLevel::kFatal, "Failed to find ADC file during read");
     return std::nullopt;
   }
-  const std::optional<std::uint16_t> raw_voltage = resetAndRead4(file_);
+  const std::optional<std::uint16_t> raw_voltage = resetAndRead4(file_descriptor_);
   if (raw_voltage) {
     logger_.log(
       core::LogLevel::kDebug, "Raw voltage from ADC pin %d: %i", pin_, raw_voltage.value());
