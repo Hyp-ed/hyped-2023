@@ -25,7 +25,7 @@ enum class Mode { kStop = 0, kRun };
 // PWM can achieve frequencies of 1 MHz or higher, without a significant CPU load
 class Pwm {
  public:
-  static std::optional<Pwm> createPwm(core::Logger &logger, const PwmOutput pwm_output);
+  static std::optional<Pwm> create(core::Logger &logger, const PwmOutput pwm_output);
   ~Pwm();
 
   // The valid values for duty cycle are 0.0 to 1.0 (0% to 100%)
@@ -38,7 +38,7 @@ class Pwm {
 
  private:
   Pwm(core::Logger &logger, const PwmOutput pwm_output);
-  core::Result initialisePwm();
+  core::Result initialise();
   std::string getPwmFolderName(const PwmOutput pwm_output);
 
   core::Logger &logger_;

@@ -5,10 +5,10 @@
 
 namespace hyped::io {
 
-std::optional<Pwm> Pwm::createPwm(core::Logger &logger, const PwmOutput pwm_output)
+std::optional<Pwm> Pwm::create(core::Logger &logger, const PwmOutput pwm_output)
 {
-  Pwm pwm                          = Pwm(logger, pwm_output);
-  const auto initialisation_result = pwm.initialisePwm();
+  Pwm pwm(logger, pwm_output);
+  const auto initialisation_result = pwm.initialise();
   if (initialisation_result == core::Result::kFailure) {
     logger.log(core::LogLevel::kFatal, "Failed to initialise PWM");
     return std::nullopt;
@@ -35,7 +35,7 @@ Pwm::~Pwm()
   close(enable_file_);
 }
 
-core::Result Pwm::initialisePwm()
+core::Result Pwm::initialise()
 {
   const std::string pwm_address = "/sys/class/pwm/" + getPwmFolderName(pwm_output_) + "/";
   // First get the file descriptor for the period file
