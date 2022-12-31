@@ -16,10 +16,10 @@ std::optional<Spi> Spi::create(core::ILogger &logger,
   Spi spi(logger);
   const auto initialisation_result = spi.initialise(bus, mode, word_size, bit_order);
   if (initialisation_result == core::Result::kFailure) {
-    logger.log(core::LogLevel::kFatal, "Failed to initialise SPI");
+    spi.logger_.log(core::LogLevel::kFatal, "Failed to initialise SPI");
     return std::nullopt;
   }
-  logger.log(core::LogLevel::kDebug, "Successfully initialised SPI");
+  spi.logger_.log(core::LogLevel::kDebug, "Successfully initialised SPI");
   return spi;
 }
 
@@ -80,7 +80,7 @@ core::Result Spi::write(std::uint8_t addr, std::uint8_t *tx, std::uint16_t len)
   return core::Result::kSuccess;
 }
 
-const char *Spi::getSpiBusAdress(const SpiBus bus)
+const char *Spi::getSpiBusAddress(const SpiBus bus)
 {
   if (bus == SpiBus::kSpi0) {
     return "/dev/spidev0.0";
@@ -95,7 +95,7 @@ core::Result Spi::initialise(const SpiBus bus,
                              const SpiBitOrder bit_order)
 {
   // SPI bus only works in kernel mode on Linux, so we neeed to call the provided driver
-  const char *spi_bus_address = getSpiBusAdress(bus);
+  const char *spi_bus_address = getSpiBusAddress(bus);
   file_descriptor_            = open(spi_bus_address, O_RDWR, 0);
   if (file_descriptor_ < 0) {
     logger_.log(core::LogLevel::kFatal, "Failed to open SPI device");

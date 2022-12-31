@@ -85,7 +85,7 @@ class Spi {
    * @brief Get the address of the SPI bus in use
    * @param bus - SPI bus to be used
    */
-  static const char *getSpiBusAdress(const SpiBus bus);
+  static const char *getSpiBusAddress(const SpiBus bus);
   /**
    * @brief Initialise the SPI bus. We default to SPI1, Mode 3 (SPICLK active low and sampling
    * occurs on the rising edge) with 8-bit words and MSB first.
