@@ -5,21 +5,21 @@
 
 namespace hyped::io {
 
-std::optional<Pwm> Pwm::create(core::Logger &logger, const PwmOutput pwm_output)
+std::optional<Pwm> Pwm::create(core::Logger &logger, const PwmModule pwm_module)
 {
-  Pwm pwm(logger, pwm_output);
+  Pwm pwm(logger, pwm_module);
   const auto initialisation_result = pwm.initialise();
   if (initialisation_result == core::Result::kFailure) {
-    logger.log(core::LogLevel::kFatal, "Failed to initialise PWM");
+    pwm.logger_.log(core::LogLevel::kFatal, "Failed to initialise PWM");
     return std::nullopt;
   }
-  logger.log(core::LogLevel::kDebug, "Successfully initialised PWM");
+  pwm.logger_.log(core::LogLevel::kDebug, "Successfully initialised PWM");
   return pwm;
 }
 
-Pwm::Pwm(core::Logger &logger, const PwmOutput pwm_output)
+Pwm::Pwm(core::Logger &logger, const PwmModule pwm_module)
     : logger_(logger),
-      pwm_output_(pwm_output),
+      pwm_module_(pwm_module),
       current_time_active_(0),
       current_period_(0),
       current_mode_(Mode::kStop),
@@ -37,7 +37,7 @@ Pwm::~Pwm()
 
 core::Result Pwm::initialise()
 {
-  const std::string pwm_address = "/sys/class/pwm/" + getPwmFolderName(pwm_output_) + "/";
+  const std::string pwm_address = "/sys/class/pwm/" + getPwmFolderName(pwm_module_) + "/";
   // First get the file descriptor for the period file
   const std::string period_address = pwm_address + "period";
   period_file_                     = open(period_address.c_str(), O_WRONLY);
@@ -181,25 +181,25 @@ core::Result Pwm::setMode(const Mode mode)
   return core::Result::kSuccess;
 }
 
-std::string Pwm::getPwmFolderName(const PwmOutput pwm_output)
+std::string Pwm::getPwmFolderName(const PwmModule pwm_module)
 {
-  switch (pwm_output) {
-    case PwmOutput::kECapPwm0:
+  switch (pwm_module) {
+    case PwmModule::kECapPwm0:
       return "pwm-0:0";
-    case PwmOutput::kECapPwm2:
+    case PwmModule::kECapPwm2:
       // TODO: Check this particular case in TLD
       return "pwm-6:0";
-    case PwmOutput::kEHRPwm0A:
+    case PwmModule::kEHRPwm0A:
       return "pwm-1:0";
-    case PwmOutput::kEHRPwm0B:
+    case PwmModule::kEHRPwm0B:
       return "pwm-1:1";
-    case PwmOutput::kEHRPwm1A:
+    case PwmModule::kEHRPwm1A:
       return "pwm-4:0";
-    case PwmOutput::kEHRPwm1B:
+    case PwmModule::kEHRPwm1B:
       return "pwm-4:1";
-    case PwmOutput::kEHRPwm2A:
+    case PwmModule::kEHRPwm2A:
       return "pwm-7:0";
-    case PwmOutput::kEHRPwm2B:
+    case PwmModule::kEHRPwm2B:
       return "pwm-7:1";
   }
 }

@@ -9,7 +9,7 @@
 
 namespace hyped::io {
 
-enum class PwmOutput {
+enum class PwmModule {
   kECapPwm0 = 0,
   kECapPwm2,
   kEHRPwm0A,
@@ -25,28 +25,68 @@ enum class Mode { kStop = 0, kRun };
 // PWM can achieve frequencies of 1 MHz or higher, without a significant CPU load
 class Pwm {
  public:
-  static std::optional<Pwm> create(core::Logger &logger, const PwmOutput pwm_output);
+  static std::optional<Pwm> create(core::Logger &logger, const PwmModule pwm_module);
   ~Pwm();
 
-  // The valid values for duty cycle are 0.0 to 1.0 (0% to 100%)
+  /**
+   * @brief Set the duty cycle of the PWM signal using a percentage
+   * @param duty_cycle the duty cycle of the PWM signal
+   * The valid values for duty cycle are 0.0 to 1.0 (0% to 100%)
+   * @return kSuccess if the duty cycle was set successfully
+   */
   core::Result setDutyCycleByPercentage(const core::Float duty_cycle);
-  // The valid values for time active are 0 to the period (0% to 100%)
+
+  /**
+   * @brief Set the duty cycle of the PWM signal using a value for active time
+   * @param time_active the length of time the PWM signal is "active" in ns
+   * The valid values for time active are 0 to the period (0% to 100%)
+   * @return kSuccess if the duty cycle was set successfully
+   */
   core::Result setDutyCycleByTime(const std::uint32_t time_active);
+
+  /**
+   * @brief Set the period of the PWM signal
+   * @param period the period of the PWM signal in ns
+   * @return kSuccess if the period was set successfully
+   */
   core::Result setPeriod(const std::uint32_t period);
+
+  /**
+   * @brief Set the polarity of the PWM signal
+   * @param polarity the polarity of the PWM signal
+   * Polarity is either active high or active low
+   * @return kSuccess if the polarity was set successfully
+   */
   core::Result setPolarity(const Polarity polarity);
+
+  /**
+   * @brief Set the mode of the PWM signal
+   * @param mode the mode of the PWM signal
+   * Mode is either stop or run
+   * @return kSuccess if the mode was set successfully
+   */
   core::Result setMode(const Mode mode);
 
  private:
-  Pwm(core::Logger &logger, const PwmOutput pwm_output);
+  Pwm(core::Logger &logger, const PwmModule pwm_module);
+  /**
+   * @brief Get all relevant file descriptors to do I/O operations
+   * @return kSuccess if all file descriptors were opened successfully
+   */
   core::Result initialise();
-  std::string getPwmFolderName(const PwmOutput pwm_output);
+  /**
+   * @brief Get the corect folder name for the chosen PWM module
+   * @param pwm_module the PWM module to get the folder name for
+   * @return the folder name
+   */
+  std::string getPwmFolderName(const PwmModule pwm_module);
 
   core::Logger &logger_;
   std::uint32_t current_time_active_;  // ns
   std::uint32_t current_period_;       // ns
   Mode current_mode_;
   Polarity current_polarity_;
-  const PwmOutput pwm_output_;
+  const PwmModule pwm_module_;
   int period_file_;
   int duty_cycle_file_;
   int polarity_file_;
