@@ -74,6 +74,7 @@ class Pwm {
    * @return kSuccess if all file descriptors were opened successfully
    */
   core::Result initialise();
+
   /**
    * @brief Get the corect folder name for the chosen PWM module
    * @param pwm_module the PWM module to get the folder name for
