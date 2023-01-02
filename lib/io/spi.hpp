@@ -100,7 +100,7 @@ class Spi {
    * @param clock - clock frequency to be set
    * @return std::uint32_t - actual clock frequency
    */
-  static uint32_t getClockValue(Clock clock);
+  static std::uint32_t getClockValue(Clock clock);
 
   core::ILogger &logger_;
   int file_descriptor_;
