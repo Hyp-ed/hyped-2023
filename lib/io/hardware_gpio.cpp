@@ -66,7 +66,7 @@ core::Result HardwareGpioWriter::writeToPin(const core::DigitalSignal state)
     return core::Result::kFailure;
   }
   // Convert DigitalSignal to a string
-  const uint8_t signal_value = static_cast<uint8_t>(state);
+  const std::uint8_t signal_value = static_cast<std::uint8_t>(state);
   char write_buffer[2];
   snprintf(write_buffer, sizeof(write_buffer), "%d", signal_value);
   // Write the value to the file
