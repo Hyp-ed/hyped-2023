@@ -91,7 +91,7 @@ class Spi : public ISpi {
   static std::uint32_t getClockValue(Clock clock);
 
   core::ILogger &logger_;
-  int file_descriptor_;
+  const int file_descriptor_;
 };
 
 }  // namespace hyped::io
