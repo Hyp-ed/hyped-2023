@@ -6,7 +6,7 @@
 
 #include <core/types.hpp>
 
-// The edge parameter is used to set the interrupt trigger for the pin.
+// Edge is used to set the interrupt trigger for the pin.
 enum class Edge { kNone = 0, kRising, kFalling, kBoth };
 enum class Direction { kIn = 0, kOut };
 
@@ -15,8 +15,7 @@ namespace hyped::io {
 class HardwareGpioReader : public IGpioReader {
  public:
   /**
-   * @brief Reads the digital signal from the GPIO pin.
-   * @return The digital signal read from the pin.
+   * @brief Read a high or low from the GPIO pin.
    */
   std::optional<core::DigitalSignal> readPin();
   ~HardwareGpioReader();
@@ -31,6 +30,10 @@ class HardwareGpioReader : public IGpioReader {
 
 class HardwareGpioWriter : public IGpioWriter {
  public:
+  /**
+   * @brief Writes a high or low to the GPIO pin.
+   * @param state The digital signal to write to the pin.
+   */
   core::Result writeToPin(const core::DigitalSignal state);
   ~HardwareGpioWriter();
 
@@ -45,7 +48,7 @@ class HardwareGpioWriter : public IGpioWriter {
 /**
  * Hardware GPIO interface, requires physical GPIO pins to be present. This should only
  * be instantiated at the top level and then provided to users through the IGpio interface.
- * Ensure inputted pin are defined as pin = 32 * X + Y (GPIOX_Y)
+ * Ensure inputted pins are defined as pin = 32*X + Y (GPIOX_Y)
  */
 class HardwareGpio {
  public:
@@ -57,9 +60,27 @@ class HardwareGpio {
                                                         const Edge edge = Edge::kBoth);
 
  private:
+  /**
+   * @brief Initialises the GPIO pin for reading or writing.
+   * @param pin The pin to initialise.
+   * @param edge The edge to trigger on. Defaults to "both".
+   * @param direction The direction of the pin.
+   */
   core::Result initialisePin(const std::uint8_t pin, const Edge edge, const Direction direction);
+
+  /**
+   * @brief Exports the GPIO pin to the filesystem.
+   * @details This is required to be able to access the pin. Normally hidden from userspace.
+   * @param pin The pin to export.
+   */
   core::Result exportPin(const std::uint8_t pin);
+
+  /**
+   * @brief Get the file descriptor for the pin depending on if we are reading or writing.
+   */
   int getFileDescriptor(const std::uint8_t pin, const Direction direction);
+
+  // Helper functions to get the string representation of the edge and direction.
   static const std::string getEdgeString(const Edge edge);
   static const std::string getDirectionString(const Direction direction);
 
