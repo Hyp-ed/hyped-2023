@@ -15,6 +15,13 @@
     }                                                                                              \
   } while (0)
 
+#define logEveryNth(logger, n, level, ...)                                                         \
+  do {                                                                                             \
+    static std::size_t count = 0;                                                                  \
+    if (count % n == 0) { logger.log(level, __VA_ARGS__); }                                        \
+    ++count;                                                                                       \
+  } while (0)
+
 namespace hyped::core {
 
 enum class LogLevel { kNone = 0, kDebug, kInfo, kFatal };
