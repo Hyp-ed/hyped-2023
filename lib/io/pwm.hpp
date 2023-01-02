@@ -25,6 +25,12 @@ enum class Mode { kStop = 0, kRun };
 // PWM can achieve frequencies of 1 MHz or higher, without a significant CPU load
 class Pwm {
  public:
+  /**
+   * @brief Create a PWM object and get all relevant file descriptors to do I/O operations
+   * @param logger the logger to use
+   * @param pwm_module the PWM module to use
+   * @return a std::optional containing the PWM object if it was created successfully
+   */
   static std::optional<Pwm> create(core::Logger &logger, const PwmModule pwm_module);
   ~Pwm();
 
@@ -68,26 +74,24 @@ class Pwm {
   core::Result setMode(const Mode mode);
 
  private:
-  Pwm(core::Logger &logger, const PwmModule pwm_module);
-  /**
-   * @brief Get all relevant file descriptors to do I/O operations
-   * @return kSuccess if all file descriptors were opened successfully
-   */
-  core::Result initialise();
+  Pwm(core::Logger &logger,
+      const int period_file,
+      const int duty_cycle_file,
+      const int polarity_file,
+      const int enable_file);
 
   /**
    * @brief Get the corect folder name for the chosen PWM module
    * @param pwm_module the PWM module to get the folder name for
    * @return the folder name
    */
-  std::string getPwmFolderName(const PwmModule pwm_module);
+  static std::string getPwmFolderName(const PwmModule pwm_module);
 
   core::Logger &logger_;
   std::uint32_t current_time_active_;  // ns
   std::uint32_t current_period_;       // ns
   Mode current_mode_;
   Polarity current_polarity_;
-  const PwmModule pwm_module_;
   int period_file_;
   int duty_cycle_file_;
   int polarity_file_;

@@ -7,19 +7,45 @@ namespace hyped::io {
 
 std::optional<Pwm> Pwm::create(core::Logger &logger, const PwmModule pwm_module)
 {
-  Pwm pwm(logger, pwm_module);
-  const auto initialisation_result = pwm.initialise();
-  if (initialisation_result == core::Result::kFailure) {
-    pwm.logger_.log(core::LogLevel::kFatal, "Failed to initialise PWM");
+  const std::string pwm_address    = "/sys/class/pwm/" + getPwmFolderName(pwm_module) + "/";
+  const std::string period_address = pwm_address + "period";
+  const int period_file            = open(period_address.c_str(), O_WRONLY);
+  if (period_file < 0) {
+    logger.log(core::LogLevel::kFatal, "Failed to open PWM period file");
     return std::nullopt;
   }
-  pwm.logger_.log(core::LogLevel::kDebug, "Successfully initialised PWM");
-  return pwm;
+  const std::string duty_cycle_address = pwm_address + "duty_cycle";
+  const int duty_cycle_file            = open(duty_cycle_address.c_str(), O_WRONLY);
+  if (duty_cycle_file < 0) {
+    logger.log(core::LogLevel::kFatal, "Failed to open PWM duty cycle file");
+    return std::nullopt;
+  }
+  const std::string polarity_address = pwm_address + "polarity";
+  const int polarity_file            = open(polarity_address.c_str(), O_WRONLY);
+  if (polarity_file < 0) {
+    logger.log(core::LogLevel::kFatal, "Failed to open PWM polarity file");
+    return std::nullopt;
+  }
+  const std::string enable_address = pwm_address + "enable";
+  const int enable_file            = open(enable_address.c_str(), O_WRONLY);
+  if (enable_file < 0) {
+    logger.log(core::LogLevel::kFatal, "Failed to open PWM enable file");
+    return std::nullopt;
+  }
+  logger.log(core::LogLevel::kDebug, "Successfully initialised PWM");
+  return Pwm(logger, period_file, duty_cycle_file, polarity_file, enable_file);
 }
 
-Pwm::Pwm(core::Logger &logger, const PwmModule pwm_module)
+Pwm::Pwm(core::Logger &logger,
+         const int period_file,
+         const int duty_cycle_file,
+         const int polarity_file,
+         const int enable_file)
     : logger_(logger),
-      pwm_module_(pwm_module),
+      period_file_(period_file),
+      duty_cycle_file_(duty_cycle_file),
+      polarity_file_(polarity_file),
+      enable_file_(enable_file),
       current_time_active_(0),
       current_period_(0),
       current_mode_(Mode::kStop),
@@ -35,44 +61,8 @@ Pwm::~Pwm()
   close(enable_file_);
 }
 
-core::Result Pwm::initialise()
-{
-  const std::string pwm_address = "/sys/class/pwm/" + getPwmFolderName(pwm_module_) + "/";
-  // First get the file descriptor for the period file
-  const std::string period_address = pwm_address + "period";
-  period_file_                     = open(period_address.c_str(), O_WRONLY);
-  if (period_file_ < 0) {
-    logger_.log(core::LogLevel::kFatal, "Failed to open PWM period file");
-    return core::Result::kFailure;
-  }
-  // Then get the file descriptor for the duty cycle file
-  const std::string duty_cycle_address = pwm_address + "duty_cycle";
-  duty_cycle_file_                     = open(duty_cycle_address.c_str(), O_WRONLY);
-  if (duty_cycle_file_ < 0) {
-    logger_.log(core::LogLevel::kFatal, "Failed to open PWM duty cycle file");
-    return core::Result::kFailure;
-  }
-  // Next get the file descriptor for the polarity file
-  const std::string polarity_address = pwm_address + "polarity";
-  polarity_file_                     = open(polarity_address.c_str(), O_WRONLY);
-  if (polarity_file_ < 0) {
-    logger_.log(core::LogLevel::kFatal, "Failed to open PWM polarity file");
-    return core::Result::kFailure;
-  }
-  // Finally get the file descriptor for the enable file
-  const std::string enable_address = pwm_address + "enable";
-  enable_file_                     = open(enable_address.c_str(), O_WRONLY);
-  if (enable_file_ < 0) {
-    logger_.log(core::LogLevel::kFatal, "Failed to open PWM enable file");
-    return core::Result::kFailure;
-  }
-  logger_.log(core::LogLevel::kDebug, "Successfully initialised PWM");
-  return core::Result::kSuccess;
-}
-
 core::Result Pwm::setDutyCycleByPercentage(const core::Float duty_cycle)
 {
-  // Ensure duty cycle is between 0 and 1 inlcusive
   if (duty_cycle > 1.0) {
     logger_.log(core::LogLevel::kFatal,
                 "Failed to set duty cycle, percentage cannot be greater than 1.0");
@@ -89,23 +79,17 @@ core::Result Pwm::setDutyCycleByPercentage(const core::Float duty_cycle)
 
 core::Result Pwm::setDutyCycleByTime(const std::uint32_t time_active)
 {
-  if (duty_cycle_file_ < 0) {
-    logger_.log(core::LogLevel::kFatal,
-                "Failed to find PWM duty cycle file while setting duty cycle");
-    return core::Result::kFailure;
-  }
   // Ensure active time is less or equal to period
   if (time_active > current_period_) {
     logger_.log(core::LogLevel::kFatal,
                 "Failed to set duty cycle, active time cannot be greater than period");
     return core::Result::kFailure;
   }
-  // Avoid I/O if the duty cycle is the same
+  // Avoid I/O if no change is required
   if (time_active == current_time_active_) {
     logger_.log(core::LogLevel::kDebug, "Duty cycle is the same as before, skipping I/O");
     return core::Result::kSuccess;
   }
-  current_time_active_ = time_active;
   char write_buffer[10];
   sprintf(write_buffer, "%d", current_time_active_);
   const auto num_bytes_written = write(duty_cycle_file_, write_buffer, sizeof(write_buffer));
@@ -114,21 +98,17 @@ core::Result Pwm::setDutyCycleByTime(const std::uint32_t time_active)
     return core::Result::kFailure;
   }
   logger_.log(core::LogLevel::kDebug, "Successfully set PWM active time to %d", time_active);
+  current_time_active_ = time_active;
   return core::Result::kSuccess;
 }
 
 core::Result Pwm::setPeriod(const std::uint32_t period)
 {
-  if (period_file_ < 0) {
-    logger_.log(core::LogLevel::kFatal, "Failed to find PWM period file while setting period");
-    return core::Result::kFailure;
-  }
   // Avoid I/O if no change is required
   if (current_period_ == period) {
     logger_.log(core::LogLevel::kDebug, "PWM period is already set to %d", period);
     return core::Result::kSuccess;
   }
-  current_period_ = period;
   char write_buffer[10];
   sprintf(write_buffer, "%d", current_period_);
   const auto num_bytes_written = write(period_file_, write_buffer, sizeof(write_buffer));
@@ -137,21 +117,17 @@ core::Result Pwm::setPeriod(const std::uint32_t period)
     return core::Result::kFailure;
   }
   logger_.log(core::LogLevel::kDebug, "Successfully set PWM period to %d", current_period_);
+  current_period_ = period;
   return core::Result::kSuccess;
 }
 
 core::Result Pwm::setPolarity(const Polarity polarity)
 {
-  if (polarity_file_ < 0) {
-    logger_.log(core::LogLevel::kFatal, "Failed to find PWM polarity file while setting polarity");
-    return core::Result::kFailure;
-  }
   // Avoid I/O if no change is required
   if (current_polarity_ == polarity) {
     logger_.log(core::LogLevel::kDebug, "PWM polarity is already set to %d", polarity);
     return core::Result::kSuccess;
-  }
-  current_polarity_                 = polarity;
+  };
   const std::uint8_t polarity_value = static_cast<std::uint8_t>(current_polarity_);
   char write_buffer[2];
   sprintf(write_buffer, "%d", polarity_value);
@@ -161,21 +137,17 @@ core::Result Pwm::setPolarity(const Polarity polarity)
     return core::Result::kFailure;
   }
   logger_.log(core::LogLevel::kDebug, "Successfully set PWM polarity to %d", polarity_value);
+  current_polarity_ = polarity;
   return core::Result::kSuccess;
 }
 
 core::Result Pwm::setMode(const Mode mode)
 {
-  if (enable_file_ < 0) {
-    logger_.log(core::LogLevel::kFatal, "Failed to find PWM enable file while setting mode");
-    return core::Result::kFailure;
-  }
   // Avoid I/O if no change is required
   if (current_mode_ == mode) {
     logger_.log(core::LogLevel::kDebug, "PWM mode is already set to %d", mode);
     return core::Result::kSuccess;
   }
-  current_mode_                 = mode;
   const std::uint8_t mode_value = static_cast<std::uint8_t>(mode);
   char write_buffer[2];
   sprintf(write_buffer, "%d", mode_value);
@@ -185,6 +157,7 @@ core::Result Pwm::setMode(const Mode mode)
     return core::Result::kFailure;
   }
   logger_.log(core::LogLevel::kDebug, "Successfully set PWM mode to %d", mode_value);
+  current_mode_ = mode;
   return core::Result::kSuccess;
 }
 
