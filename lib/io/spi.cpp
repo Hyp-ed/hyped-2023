@@ -13,17 +13,49 @@ std::optional<Spi> Spi::create(core::ILogger &logger,
                                const SpiWordSize word_size,
                                const SpiBitOrder bit_order)
 {
-  Spi spi(logger);
-  const auto initialisation_result = spi.initialise(bus, mode, word_size, bit_order);
-  if (initialisation_result == core::Result::kFailure) {
-    spi.logger_.log(core::LogLevel::kFatal, "Failed to initialise SPI");
+  // SPI bus only works in kernel mode on Linux, so we need to call the provided driver
+  const char *spi_bus_address = getSpiBusAddress(bus);
+  const int file_descriptor   = open(spi_bus_address, O_RDWR, 0);
+  if (file_descriptor < 0) {
+    logger.log(core::LogLevel::kFatal, "Failed to open SPI device");
     return std::nullopt;
   }
-  spi.logger_.log(core::LogLevel::kDebug, "Successfully initialised SPI");
-  return spi;
+  // Set clock frequency
+  const std::uint32_t clock_value = getClockValue(Clock::k500KHz);
+  const auto clock_write_result   = ioctl(file_descriptor, SPI_IOC_WR_MAX_SPEED_HZ, &clock_value);
+  if (clock_write_result < 0) {
+    logger.log(core::LogLevel::kFatal, "Failed to set clock frequency to %d", clock_value);
+    return std::nullopt;
+  }
+  // Set word size
+  const std::uint8_t bits_per_word = static_cast<std::uint8_t>(word_size);
+  const auto word_size_write_result
+    = ioctl(file_descriptor, SPI_IOC_WR_BITS_PER_WORD, &bits_per_word);
+  if (word_size_write_result < 0) {
+    logger.log(core::LogLevel::kFatal, "Failed to set bits per word");
+    return std::nullopt;
+  }
+  // Set SPI mode
+  const std::uint8_t selected_mode = static_cast<std::uint8_t>(mode);
+  const auto mode_write_result     = ioctl(file_descriptor, SPI_IOC_WR_MODE, &selected_mode);
+  if (mode_write_result < 0) {
+    logger.log(core::LogLevel::kFatal, "Failed to set SPI mode");
+    return std::nullopt;
+  }
+  // Set bit order
+  const std::uint8_t order      = static_cast<std::uint8_t>(bit_order);
+  const auto order_write_result = ioctl(file_descriptor, SPI_IOC_WR_LSB_FIRST, &order);
+  if (order_write_result < 0) {
+    logger.log(core::LogLevel::kFatal, "Failed to set bit order");
+    return std::nullopt;
+  }
+  logger.log(core::LogLevel::kDebug, "Successfully initialised SPI");
+  return Spi(logger, file_descriptor);
 }
 
-Spi::Spi(core::ILogger &logger) : logger_(logger), file_descriptor_(-1)
+Spi::Spi(core::ILogger &logger, const int file_descriptor)
+    : logger_(logger),
+      file_descriptor_(file_descriptor)
 {
 }
 
@@ -34,10 +66,6 @@ Spi::~Spi()
 
 core::Result Spi::read(std::uint8_t addr, std::uint8_t *rx, std::uint16_t len)
 {
-  if (file_descriptor_ < 0) {
-    logger_.log(core::LogLevel::kFatal, "Failed to open SPI device wile reading");
-    return core::Result::kFailure;
-  }
   spi_ioc_transfer message[2] = {};
   // send address
   message[0].tx_buf = reinterpret_cast<std::uint64_t>(&addr);
@@ -58,10 +86,6 @@ core::Result Spi::read(std::uint8_t addr, std::uint8_t *rx, std::uint16_t len)
 
 core::Result Spi::write(std::uint8_t addr, std::uint8_t *tx, std::uint16_t len)
 {
-  if (file_descriptor_ < 0) {
-    logger_.log(core::LogLevel::kFatal, "Failed to open SPI device wile writing");
-    return core::Result::kFailure;
-  }
   spi_ioc_transfer message[2] = {};
   // send address
   message[0].tx_buf = reinterpret_cast<std::uint64_t>(&addr);
@@ -89,52 +113,7 @@ const char *Spi::getSpiBusAddress(const SpiBus bus)
   }
 }
 
-core::Result Spi::initialise(const SpiBus bus,
-                             const SpiMode mode,
-                             const SpiWordSize word_size,
-                             const SpiBitOrder bit_order)
-{
-  // SPI bus only works in kernel mode on Linux, so we neeed to call the provided driver
-  const char *spi_bus_address = getSpiBusAddress(bus);
-  file_descriptor_            = open(spi_bus_address, O_RDWR, 0);
-  if (file_descriptor_ < 0) {
-    logger_.log(core::LogLevel::kFatal, "Failed to open SPI device");
-    return core::Result::kFailure;
-  }
-  // Set clock frequency
-  const auto clock_set_result = setClock(Clock::k500KHz);
-  if (clock_set_result == core::Result::kFailure) {
-    logger_.log(core::LogLevel::kFatal,
-                "Failed to set clock frequency, so SPI device not initialised");
-    return core::Result::kFailure;
-  }
-  // Set word size
-  const std::uint8_t bits_per_word = static_cast<std::uint8_t>(word_size);
-  const auto word_size_write_result
-    = ioctl(file_descriptor_, SPI_IOC_WR_BITS_PER_WORD, &bits_per_word);
-  if (word_size_write_result < 0) {
-    logger_.log(core::LogLevel::kFatal, "Failed to set bits per word");
-    return core::Result::kFailure;
-  }
-  // Set SPI mode
-  const std::uint8_t selected_mode = static_cast<std::uint8_t>(mode);
-  const auto mode_write_result     = ioctl(file_descriptor_, SPI_IOC_WR_MODE, &selected_mode);
-  if (mode_write_result < 0) {
-    logger_.log(core::LogLevel::kFatal, "Failed to set SPI mode");
-    return core::Result::kFailure;
-  }
-  // Set bit order
-  const std::uint8_t order      = static_cast<std::uint8_t>(bit_order);
-  const auto order_write_result = ioctl(file_descriptor_, SPI_IOC_WR_LSB_FIRST, &order);
-  if (order_write_result < 0) {
-    logger_.log(core::LogLevel::kFatal, "Failed to set bit order");
-    return core::Result::kFailure;
-  }
-  logger_.log(core::LogLevel::kDebug, "Successfully initialised SPI");
-  return core::Result::kSuccess;
-}
-
-core::Result Spi::setClock(Clock clock)
+std::uint32_t Spi::getClockValue(Clock clock)
 {
   std::uint32_t data;
   switch (clock) {
@@ -154,13 +133,7 @@ core::Result Spi::setClock(Clock clock)
       data = 20000000;
       break;
   }
-  const auto clock_write_result = ioctl(file_descriptor_, SPI_IOC_WR_MAX_SPEED_HZ, &data);
-  if (clock_write_result < 0) {
-    logger_.log(core::LogLevel::kFatal, "Failed to set clock frequency to %d", data);
-    return core::Result::kFailure;
-  }
-  logger_.log(core::LogLevel::kDebug, "Successfully set clock frequency to %d", data);
-  return core::Result::kSuccess;
+  return data;
 }
 
 }  // namespace hyped::io

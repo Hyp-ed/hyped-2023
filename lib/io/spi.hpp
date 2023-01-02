@@ -56,6 +56,14 @@ namespace hyped::io {
 
 class Spi {
  public:
+  /**
+   * @brief Construct a new Spi object. By default we initialise to SPI1, Mode 3 (SPICLK
+   * active low and sampling occurs on the rising edge) with 8-bit words and MSB first.
+   * @param logger - logger to be used
+   * @param bus    - SPI bus to be used
+   * @param mode   - SPI mode to be used
+   * @param clock  - clock frequency to be used
+   */
   static std::optional<Spi> create(core::ILogger &logger,
                                    const SpiBus bus            = SpiBus::kSpi1,
                                    const SpiMode mode          = SpiMode::kMode3,
@@ -80,29 +88,19 @@ class Spi {
   core::Result write(std::uint8_t addr, std::uint8_t *tx, std::uint16_t len);
 
  private:
-  Spi(core::ILogger &logger);
+  Spi(core::ILogger &logger, const int file_descriptor);
   /**
    * @brief Get the address of the SPI bus in use
    * @param bus - SPI bus to be used
    */
   static const char *getSpiBusAddress(const SpiBus bus);
-  /**
-   * @brief Initialise the SPI bus. We default to SPI1, Mode 3 (SPICLK active low and sampling
-   * occurs on the rising edge) with 8-bit words and MSB first.
-   * @param bus       - SPI bus to be used
-   * @param mode      - SPI mode to be used
-   * @param word_size - word size to be used
-   * @param bit_order - bit order to be used
-   */
-  core::Result initialise(const SpiBus bus,
-                          const SpiMode mode,
-                          const SpiWordSize word_size,
-                          const SpiBitOrder bit_order);
+
   /**
    * @brief Set the clock frequency of the SPI bus
    * @param clock - clock frequency to be set
+   * @return uint32_t - actual clock frequency
    */
-  core::Result setClock(Clock clock);
+  static uint32_t getClockValue(Clock clock);
 
   core::ILogger &logger_;
   int file_descriptor_;
