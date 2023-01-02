@@ -87,7 +87,8 @@ core::Result Pwm::setDutyCycleByTime(const std::uint32_t time_active)
   }
   // Avoid I/O if no change is required
   if (time_active == current_time_active_) {
-    logger_.log(core::LogLevel::kDebug, "Duty cycle is the same as before, skipping I/O");
+    logger_.log(
+      core::LogLevel::kDebug, "Duty cycle is already set to %d, skipping I/O", time_active);
     return core::Result::kSuccess;
   }
   char write_buffer[10];
@@ -106,7 +107,7 @@ core::Result Pwm::setPeriod(const std::uint32_t period)
 {
   // Avoid I/O if no change is required
   if (current_period_ == period) {
-    logger_.log(core::LogLevel::kDebug, "PWM period is already set to %d", period);
+    logger_.log(core::LogLevel::kDebug, "PWM period is already set to %d, skipping I/O", period);
     return core::Result::kSuccess;
   }
   char write_buffer[10];
@@ -125,7 +126,8 @@ core::Result Pwm::setPolarity(const Polarity polarity)
 {
   // Avoid I/O if no change is required
   if (current_polarity_ == polarity) {
-    logger_.log(core::LogLevel::kDebug, "PWM polarity is already set to %d", polarity);
+    logger_.log(
+      core::LogLevel::kDebug, "PWM polarity is already set to %d, skipping I/O", polarity);
     return core::Result::kSuccess;
   };
   const std::uint8_t polarity_value = static_cast<std::uint8_t>(current_polarity_);
@@ -145,7 +147,7 @@ core::Result Pwm::setMode(const Mode mode)
 {
   // Avoid I/O if no change is required
   if (current_mode_ == mode) {
-    logger_.log(core::LogLevel::kDebug, "PWM mode is already set to %d", mode);
+    logger_.log(core::LogLevel::kDebug, "PWM mode is already set to %d, skipping I/O", mode);
     return core::Result::kSuccess;
   }
   const std::uint8_t mode_value = static_cast<std::uint8_t>(mode);
