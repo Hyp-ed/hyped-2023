@@ -101,6 +101,34 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
       repl->addI2cCommands(bus.GetUint());
     }
   }
+
+  if (!io.HasMember("pwm")) {
+    logger_.log(core::LogLevel::kFatal, "Missing required field 'io.pwm' in configuration file");
+    return std::nullopt;
+  }
+  const auto pwm = io["pwm"].GetObject();
+  if (!pwm.HasMember("enabled")) {
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'io.pwm.enabled' in configuration file");
+    return std::nullopt;
+  }
+  if (i2c["enabled"].GetBool()) {
+    if (!pwm.HasMember("modules")) {
+      logger_.log(core::LogLevel::kFatal,
+                  "Missing required field 'io.pwm.modules' in configuration file");
+      return std::nullopt;
+    }
+    const auto modules = i2c["modules"].GetArray();
+    for (auto &module : modules) {
+      const std::uint8_t module_id = module.GetUint();
+      if (module_id > 7 || module_id < 0) {
+        logger_.log(
+          core::LogLevel::kFatal, "Invalid module id %d in configuration file", module_id);
+        return std::nullopt;
+      }
+      repl->addPwmCommands(static_cast<io::PwmModule>(module_id));
+    }
+  }
   return repl;
 }
 
@@ -215,6 +243,58 @@ void Repl::addI2cCommands(const std::uint8_t bus)
       }
     };
     addCommand(i2c_write_command);
+  }
+}
+
+void Repl::addPwmCommands(const io::PwmModule pwm_module)
+{
+  const auto optional_pwm = io::Pwm::create(logger_, pwm_module);
+  if (!optional_pwm) {
+    logger_.log(core::LogLevel::kFatal, "Failed to create PWM module");
+    return;
+  }
+  const auto pwm = std::make_shared<io::Pwm>(optional_pwm.value());
+  {
+    Command pwm_run_command;
+    std::stringstream identifier;
+    identifier << "pwm " << static_cast<int>(pwm_module) << " run";
+    pwm_run_command.name = identifier.str();
+    std::stringstream description;
+    description << "Run PWM module: " << static_cast<int>(pwm_module);
+    pwm_run_command.description = description.str();
+    pwm_run_command.handler     = [this, pwm, pwm_module]() {
+      std::uint32_t period;
+      std::cout << "Period: ";
+      std::cin >> period;
+      core::Float duty_cycle;
+      std::cout << "Duty cycle: ";
+      std::cin >> duty_cycle;
+      std::uint8_t polarity;
+      std::cout << "Polarity (0 for active high and 1 for active low): ";
+      std::cin >> polarity;
+      std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+      const core::Result period_set_result = pwm->setPeriod(period);
+      if (period_set_result == core::Result::kFailure) {
+        logger_.log(core::LogLevel::kFatal, "Failed to set PWM period");
+        return;
+      }
+      const core::Result duty_cycle_set_result = pwm->setDutyCycleByPercentage(duty_cycle);
+      if (duty_cycle_set_result == core::Result::kFailure) {
+        logger_.log(core::LogLevel::kFatal, "Failed to set PWM duty cycle");
+        return;
+      }
+      const core::Result polarity_set_result
+        = pwm->setPolarity(static_cast<io::Polarity>(polarity));
+      if (polarity_set_result == core::Result::kFailure) {
+        logger_.log(core::LogLevel::kFatal, "Failed to set PWM polarity");
+        return;
+      }
+      const core::Result enable_result = pwm->setMode(io::Mode::kRun);
+      if (enable_result == core::Result::kFailure) {
+        logger_.log(core::LogLevel::kFatal, "Failed to enable PWM module");
+        return;
+      }
+    };
   }
 }
 }  // namespace hyped::debug

@@ -31,7 +31,7 @@ class Pwm {
    * @param pwm_module the PWM module to use
    * @return a std::optional containing the PWM object if it was created successfully
    */
-  static std::optional<Pwm> create(core::Logger &logger, const PwmModule pwm_module);
+  static std::optional<Pwm> create(core::ILogger &logger, const PwmModule pwm_module);
   ~Pwm();
 
   /**
@@ -74,7 +74,7 @@ class Pwm {
   core::Result setMode(const Mode mode);
 
  private:
-  Pwm(core::Logger &logger,
+  Pwm(core::ILogger &logger,
       const int period_file,
       const int duty_cycle_file,
       const int polarity_file,
@@ -87,7 +87,7 @@ class Pwm {
    */
   static std::string getPwmFolderName(const PwmModule pwm_module);
 
-  core::Logger &logger_;
+  core::ILogger &logger_;
   std::uint32_t current_time_active_;  // ns
   std::uint32_t current_period_;       // ns
   Mode current_mode_;
