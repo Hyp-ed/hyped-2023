@@ -25,7 +25,7 @@ class HardwareGpioReader : public IGpioReader {
   HardwareGpioReader(core::ILogger &logger, const int read_file_descritor);
 
   core::ILogger &logger_;
-  int read_file_descriptor_;
+  const int read_file_descriptor_;
   friend class HardwareGpio;
 };
 
@@ -38,7 +38,7 @@ class HardwareGpioWriter : public IGpioWriter {
   HardwareGpioWriter(core::ILogger &logger, const int write_file_descriptor);
 
   core::ILogger &logger_;
-  int write_file_descriptor_;
+  const int write_file_descriptor_;
   friend class HardwareGpio;
 };
 

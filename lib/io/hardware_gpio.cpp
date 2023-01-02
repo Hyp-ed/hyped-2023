@@ -18,11 +18,6 @@ HardwareGpioReader::~HardwareGpioReader()
 
 std::optional<core::DigitalSignal> HardwareGpioReader::readPin()
 {
-  // Check if the file descriptor is valid
-  if (read_file_descriptor_ < 0) {
-    logger_.log(core::LogLevel::kFatal, "Failed to find GPIO value file descriptor while reading");
-    return std::nullopt;
-  }
   // Read the value from the file
   char read_buffer[2];
   const auto offset = lseek(read_file_descriptor_, 0, SEEK_SET);
@@ -60,11 +55,6 @@ HardwareGpioWriter::~HardwareGpioWriter()
 
 core::Result HardwareGpioWriter::writeToPin(const core::DigitalSignal state)
 {
-  // Set up the file descriptor if it hasn't been already
-  if (write_file_descriptor_ < 0) {
-    logger_.log(core::LogLevel::kFatal, "Failed to find GPIO value file descriptor while writing");
-    return core::Result::kFailure;
-  }
   // Convert DigitalSignal to a string
   const std::uint8_t signal_value = static_cast<std::uint8_t>(state);
   char write_buffer[2];
