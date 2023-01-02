@@ -15,7 +15,7 @@ namespace hyped::io {
  */
 class IGpioReader {
  public:
-  virtual std::optional<core::DigitalSignal> read() = 0;
+  virtual std::optional<core::DigitalSignal> readPin() = 0;
 };
 
 /**
@@ -24,7 +24,7 @@ class IGpioReader {
  */
 class IGpioWriter {
  public:
-  virtual core::Result write(const core::DigitalSignal state) = 0;
+  virtual core::Result writeToPin(const core::DigitalSignal state) = 0;
 };
 
 /**

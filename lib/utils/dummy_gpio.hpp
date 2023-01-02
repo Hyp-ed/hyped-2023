@@ -12,7 +12,7 @@ namespace hyped::utils {
 class DummyGpioReader : public io::IGpioReader {
  public:
   using ReadHandler = std::function<std::optional<core::DigitalSignal>(const std::uint8_t pin)>;
-  virtual std::optional<core::DigitalSignal> read();
+  virtual std::optional<core::DigitalSignal> readPin();
 
  private:
   DummyGpioReader(const std::uint8_t pin, ReadHandler read_handler);
@@ -29,7 +29,7 @@ class DummyGpioWriter : public io::IGpioWriter {
  public:
   using WriteHandler
     = std::function<core::Result(const std::uint8_t pin, const core::DigitalSignal state)>;
-  virtual core::Result write(const core::DigitalSignal state);
+  virtual core::Result writeToPin(const core::DigitalSignal state);
 
  private:
   DummyGpioWriter(const std::uint8_t pin, WriteHandler write_handler);

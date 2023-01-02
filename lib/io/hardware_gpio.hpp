@@ -2,41 +2,68 @@
 
 #include "gpio.hpp"
 
+#include <string>
+
 #include <core/types.hpp>
+
+// The edge parameter is used to set the interrupt trigger for the pin.
+enum class Edge { kNone = 0, kRising, kFalling, kBoth };
+enum class Direction { kIn = 0, kOut };
 
 namespace hyped::io {
 
 class HardwareGpioReader : public IGpioReader {
  public:
-  virtual std::optional<core::DigitalSignal> read();
+  /**
+   * @brief Reads the digital signal from the GPIO pin.
+   * @return The digital signal read from the pin.
+   */
+  std::optional<core::DigitalSignal> readPin();
+  ~HardwareGpioReader();
 
  private:
-  HardwareGpioReader();
+  HardwareGpioReader(core::ILogger &logger, const int read_file_descritor);
+
+  core::ILogger &logger_;
+  int read_file_descriptor_;
   friend class HardwareGpio;
 };
 
 class HardwareGpioWriter : public IGpioWriter {
  public:
-  virtual core::Result write(const core::DigitalSignal state);
+  core::Result writeToPin(const core::DigitalSignal state);
+  ~HardwareGpioWriter();
 
  private:
-  HardwareGpioWriter(const std::uint8_t pin);
+  HardwareGpioWriter(core::ILogger &logger, const int write_file_descriptor);
+
+  core::ILogger &logger_;
+  int write_file_descriptor_;
   friend class HardwareGpio;
 };
 
 /**
  * Hardware GPIO interface, requires physical GPIO pins to be present. This should only
  * be instantiated at the top level and then provided to users through the IGpio interface.
+ * Ensure inputted pin are defined as pin = 32 * X + Y (GPIOX_Y)
  */
 class HardwareGpio {
  public:
-  HardwareGpio(core::ILogger &log);
+  HardwareGpio(core::ILogger &logger);
 
-  virtual std::optional<std::shared_ptr<IGpioReader>> getReader(const std::uint8_t pin);
-  virtual std::optional<std::shared_ptr<IGpioWriter>> getWriter(const std::uint8_t pin);
+  std::optional<std::shared_ptr<IGpioReader>> getReader(const std::uint8_t pin,
+                                                        const Edge edge = Edge::kBoth);
+  std::optional<std::shared_ptr<IGpioWriter>> getWriter(const std::uint8_t pin,
+                                                        const Edge edge = Edge::kBoth);
 
  private:
-  core::ILogger &log_;
+  core::Result initialisePin(const std::uint8_t pin, const Edge edge, const Direction direction);
+  core::Result exportPin(const std::uint8_t pin);
+  int getFileDescriptor(const std::uint8_t pin, const Direction direction);
+  static const std::string getEdgeString(const Edge edge);
+  static const std::string getDirectionString(const Direction direction);
+
+  core::ILogger &logger_;
 };
 
 }  // namespace hyped::io

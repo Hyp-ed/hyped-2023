@@ -22,7 +22,7 @@ void testRead(utils::DummyGpio &dummy_gpio,
   ASSERT_TRUE(dummy_gpio_reader_opt);
   auto dummy_gpio_reader = *dummy_gpio_reader_opt;
   ASSERT_TRUE(dummy_gpio_reader);
-  const auto value = dummy_gpio_reader->read();
+  const auto value = dummy_gpio_reader->readPin();
   ASSERT_EQ(value, core::DigitalSignal::kHigh);
   ASSERT_EQ(testing::internal::GetCapturedStdout(), expected_output);
 }
@@ -37,7 +37,7 @@ void testWrite(utils::DummyGpio &dummy_gpio,
   ASSERT_TRUE(dummy_gpio_writer_opt);
   auto dummy_gpio_writer = *dummy_gpio_writer_opt;
   ASSERT_TRUE(dummy_gpio_writer);
-  const auto result = dummy_gpio_writer->write(state);
+  const auto result = dummy_gpio_writer->writeToPin(state);
   ASSERT_EQ(result, hyped::core::Result::kSuccess);
   ASSERT_EQ(testing::internal::GetCapturedStdout(), expected_output);
 }
