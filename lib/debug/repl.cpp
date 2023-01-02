@@ -295,6 +295,24 @@ void Repl::addPwmCommands(const io::PwmModule pwm_module)
         return;
       }
     };
+    addCommand(pwm_run_command);
+  }
+  {
+    Command pwm_stop_command;
+    std::stringstream identifier;
+    identifier << "pwm " << static_cast<int>(pwm_module) << " stop";
+    pwm_stop_command.name = identifier.str();
+    std::stringstream description;
+    description << "Stop PWM module: " << static_cast<int>(pwm_module);
+    pwm_stop_command.description = description.str();
+    pwm_stop_command.handler     = [this, pwm, pwm_module]() {
+      const core::Result disable_result = pwm->setMode(io::Mode::kStop);
+      if (disable_result == core::Result::kFailure) {
+        logger_.log(core::LogLevel::kFatal, "Failed to stop PWM module");
+        return;
+      }
+    };
+    addCommand(pwm_stop_command);
   }
 }
 }  // namespace hyped::debug
