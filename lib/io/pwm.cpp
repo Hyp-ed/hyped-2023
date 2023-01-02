@@ -106,9 +106,10 @@ core::Result Pwm::setDutyCycleByTime(const std::uint32_t time_active)
     return core::Result::kSuccess;
   }
   current_time_active_ = time_active;
-  const auto num_bytes_written
-    = write(duty_cycle_file_, &current_time_active_, sizeof(current_time_active_));
-  if (num_bytes_written != sizeof(current_time_active_)) {
+  char write_buffer[10];
+  sprintf(write_buffer, "%d", current_time_active_);
+  const auto num_bytes_written = write(duty_cycle_file_, write_buffer, sizeof(write_buffer));
+  if (num_bytes_written != sizeof(write_buffer)) {
     logger_.log(core::LogLevel::kFatal, "Failed to write to PWM duty cycle file");
     return core::Result::kFailure;
   }
@@ -127,9 +128,11 @@ core::Result Pwm::setPeriod(const std::uint32_t period)
     logger_.log(core::LogLevel::kDebug, "PWM period is already set to %d", period);
     return core::Result::kSuccess;
   }
-  current_period_              = period;
-  const auto num_bytes_written = write(period_file_, &current_period_, sizeof(current_period_));
-  if (num_bytes_written != sizeof(current_period_)) {
+  current_period_ = period;
+  char write_buffer[10];
+  sprintf(write_buffer, "%d", current_period_);
+  const auto num_bytes_written = write(period_file_, write_buffer, sizeof(write_buffer));
+  if (num_bytes_written != sizeof(write_buffer)) {
     logger_.log(core::LogLevel::kFatal, "Failed to write to PWM period file");
     return core::Result::kFailure;
   }
@@ -150,8 +153,10 @@ core::Result Pwm::setPolarity(const Polarity polarity)
   }
   current_polarity_                 = polarity;
   const std::uint8_t polarity_value = static_cast<std::uint8_t>(current_polarity_);
-  const auto num_bytes_written = write(polarity_file_, &polarity_value, sizeof(polarity_value));
-  if (num_bytes_written != sizeof(polarity_value)) {
+  char write_buffer[2];
+  sprintf(write_buffer, "%d", polarity_value);
+  const auto num_bytes_written = write(polarity_file_, write_buffer, sizeof(write_buffer));
+  if (num_bytes_written != sizeof(write_buffer)) {
     logger_.log(core::LogLevel::kFatal, "Failed to write to PWM polarity file");
     return core::Result::kFailure;
   }
@@ -172,8 +177,10 @@ core::Result Pwm::setMode(const Mode mode)
   }
   current_mode_                 = mode;
   const std::uint8_t mode_value = static_cast<std::uint8_t>(mode);
-  const auto num_bytes_written  = write(enable_file_, &mode_value, sizeof(mode_value));
-  if (num_bytes_written != sizeof(mode_value)) {
+  char write_buffer[2];
+  sprintf(write_buffer, "%d", mode_value);
+  const auto num_bytes_written = write(enable_file_, write_buffer, sizeof(write_buffer));
+  if (num_bytes_written != sizeof(write_buffer)) {
     logger_.log(core::LogLevel::kFatal, "Failed to write to PWM enable file");
     return core::Result::kFailure;
   }
