@@ -58,4 +58,34 @@ TEST(Logger, VaryingTimes)
   testStdoutLog(core::LogLevel::kDebug, manual_time, "01:00:01.000 DEBUG[test] test\n");
 }
 
+TEST(Logger, logNTimes)
+{
+  utils::ManualTime manual_time;
+  setenv("TZ", "Europe/London", 1);
+  tzset();
+  testing::internal::CaptureStdout();
+  core::Logger logger("test", core::LogLevel::kDebug, manual_time);
+  for (int i = 0; i < 5; i++) {
+    logNTimes(logger, 3, core::LogLevel::kDebug, "test");
+  }
+  ASSERT_EQ(testing::internal::GetCapturedStdout(),
+            "01:00:00.000 DEBUG[test] test\n01:00:00.000 DEBUG[test] test\n01:00:00.000 "
+            "DEBUG[test] test\n");
+}
+
+TEST(Logger, logEveryNth)
+{
+  utils::ManualTime manual_time;
+  setenv("TZ", "Europe/London", 1);
+  tzset();
+  testing::internal::CaptureStdout();
+  core::Logger logger("test", core::LogLevel::kDebug, manual_time);
+  for (int i = 0; i < 15; i++) {
+    logEveryNth(logger, 5, core::LogLevel::kDebug, "test");
+  }
+  ASSERT_EQ(testing::internal::GetCapturedStdout(),
+            "01:00:00.000 DEBUG[test] test\n01:00:00.000 DEBUG[test] test\n01:00:00.000 "
+            "DEBUG[test] test\n");
+}
+
 }  // namespace hyped::test
