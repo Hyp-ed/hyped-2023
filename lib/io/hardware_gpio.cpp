@@ -75,7 +75,7 @@ core::Result HardwareGpioWriter::writeToPin(const core::DigitalSignal state)
     logger_.log(core::LogLevel::kFatal, "Failed to write GPIO value");
     return core::Result::kFailure;
   }
-
+  logger_.log(core::LogLevel::kDebug, "Wrote %d to GPIO", signal_value);
   return core::Result::kSuccess;
 }
 
