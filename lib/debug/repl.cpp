@@ -295,6 +295,7 @@ void Repl::addSpiCommands(const std::uint8_t bus)
         logger_.log(core::LogLevel::kFatal, "Failed to write to SPI bus: %d", bus);
       }
     };
+    addCommand(spi_write_byte_command);
   }
 }
 }  // namespace hyped::debug
