@@ -98,7 +98,7 @@ class Spi {
   /**
    * @brief Set the clock frequency of the SPI bus
    * @param clock - clock frequency to be set
-   * @return uint32_t - actual clock frequency
+   * @return std::uint32_t - actual clock frequency
    */
   static uint32_t getClockValue(Clock clock);
 
