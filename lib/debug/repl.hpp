@@ -10,6 +10,7 @@
 #include <io/adc.hpp>
 #include <io/hardware_gpio.hpp>
 #include <io/hardware_i2c.hpp>
+#include <io/hardware_spi.hpp>
 
 namespace hyped::debug {
 
@@ -34,6 +35,7 @@ class Repl {
   void addHelpCommand();
   void addAdcCommands(const std::uint8_t pin);
   void addI2cCommands(const std::uint8_t bus);
+  void addSpiCommands(const std::uint8_t bus);
 
   core::ILogger &logger_;
   std::map<std::string, Command> command_map_;

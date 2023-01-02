@@ -7,11 +7,11 @@
 
 namespace hyped::io {
 
-std::optional<Spi> Spi::create(core::ILogger &logger,
-                               const SpiBus bus,
-                               const SpiMode mode,
-                               const SpiWordSize word_size,
-                               const SpiBitOrder bit_order)
+std::optional<HardwareSpi> HardwareSpi::create(core::ILogger &logger,
+                                               const SpiBus bus,
+                                               const SpiMode mode,
+                                               const SpiWordSize word_size,
+                                               const SpiBitOrder bit_order)
 {
   // SPI bus only works in kernel mode on Linux, so we need to call the provided driver
   const char *spi_bus_address = getSpiBusAddress(bus);
@@ -50,25 +50,27 @@ std::optional<Spi> Spi::create(core::ILogger &logger,
     return std::nullopt;
   }
   logger.log(core::LogLevel::kDebug, "Successfully initialised SPI");
-  return Spi(logger, file_descriptor);
+  return HardwareSpi(logger, file_descriptor);
 }
 
-Spi::Spi(core::ILogger &logger, const int file_descriptor)
+HardwareSpi::HardwareSpi(core::ILogger &logger, const int file_descriptor)
     : logger_(logger),
       file_descriptor_(file_descriptor)
 {
 }
 
-Spi::~Spi()
+HardwareSpi::~HardwareSpi()
 {
   close(file_descriptor_);
 }
 
-core::Result Spi::read(std::uint8_t addr, std::uint8_t *rx, std::uint16_t len)
+core::Result HardwareSpi::read(const std::uint8_t register_address,
+                               const std::uint8_t *rx,
+                               const std::uint16_t len)
 {
   spi_ioc_transfer message[2] = {};
   // send address
-  message[0].tx_buf = reinterpret_cast<std::uint64_t>(&addr);
+  message[0].tx_buf = reinterpret_cast<std::uint64_t>(&register_address);
   message[0].rx_buf = 0;
   message[0].len    = 1;
   // receive data
@@ -84,11 +86,13 @@ core::Result Spi::read(std::uint8_t addr, std::uint8_t *rx, std::uint16_t len)
   return core::Result::kSuccess;
 }
 
-core::Result Spi::write(std::uint8_t addr, std::uint8_t *tx, std::uint16_t len)
+core::Result HardwareSpi::write(const std::uint8_t register_address,
+                                const std::uint8_t *tx,
+                                const std::uint16_t len)
 {
   spi_ioc_transfer message[2] = {};
   // send address
-  message[0].tx_buf = reinterpret_cast<std::uint64_t>(&addr);
+  message[0].tx_buf = reinterpret_cast<std::uint64_t>(&register_address);
   message[0].rx_buf = 0;
   message[0].len    = 1;
   // write data
@@ -104,7 +108,7 @@ core::Result Spi::write(std::uint8_t addr, std::uint8_t *tx, std::uint16_t len)
   return core::Result::kSuccess;
 }
 
-const char *Spi::getSpiBusAddress(const SpiBus bus)
+const char *HardwareSpi::getSpiBusAddress(const SpiBus bus)
 {
   if (bus == SpiBus::kSpi0) {
     return "/dev/spidev0.0";
@@ -113,7 +117,7 @@ const char *Spi::getSpiBusAddress(const SpiBus bus)
   }
 }
 
-std::uint32_t Spi::getClockValue(Clock clock)
+std::uint32_t HardwareSpi::getClockValue(Clock clock)
 {
   std::uint32_t data;
   switch (clock) {

@@ -55,7 +55,7 @@ enum class Clock { k500KHz, k1MHz, k4MHz, k16MHz, k20MHz };
 
 namespace hyped::io {
 
-class Spi : public ISpi {
+class HardwareSpi : public ISpi {
  public:
   /**
    * @brief Construct a new Spi object. By default we initialise to SPI1, Mode 3 (SPICLK
@@ -65,18 +65,22 @@ class Spi : public ISpi {
    * @param mode   - SPI mode to be used
    * @param clock  - clock frequency to be used
    */
-  static std::optional<Spi> create(core::ILogger &logger,
-                                   const SpiBus bus            = SpiBus::kSpi1,
-                                   const SpiMode mode          = SpiMode::kMode3,
-                                   const SpiWordSize word_size = SpiWordSize::kWordSize8,
-                                   const SpiBitOrder bit_order = SpiBitOrder::kMsbFirst);
-  ~Spi();
+  static std::optional<HardwareSpi> create(core::ILogger &logger,
+                                           const SpiBus bus            = SpiBus::kSpi1,
+                                           const SpiMode mode          = SpiMode::kMode3,
+                                           const SpiWordSize word_size = SpiWordSize::kWordSize8,
+                                           const SpiBitOrder bit_order = SpiBitOrder::kMsbFirst);
+  ~HardwareSpi();
 
-  core::Result read(std::uint8_t addr, std::uint8_t *rx, std::uint16_t len);
-  core::Result write(std::uint8_t addr, std::uint8_t *tx, std::uint16_t len);
+  core::Result read(const std::uint8_t register_address,
+                    const std::uint8_t *rx,
+                    const std::uint16_t len);
+  core::Result write(const std::uint8_t register_address,
+                     const std::uint8_t *tx,
+                     const std::uint16_t len);
 
  private:
-  Spi(core::ILogger &logger, const int file_descriptor);
+  HardwareSpi(core::ILogger &logger, const int file_descriptor);
   /**
    * @brief Get the address of the SPI bus in use
    * @param bus - SPI bus to be used
