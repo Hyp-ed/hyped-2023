@@ -1,4 +1,4 @@
-#include "spi.hpp"
+#include "hardware_spi.hpp"
 
 #include <fcntl.h>
 #include <unistd.h>
