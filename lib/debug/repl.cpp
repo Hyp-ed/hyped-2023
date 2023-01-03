@@ -107,7 +107,7 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
     return std::nullopt;
   }
   const auto spi = io["spi"].GetObject();
-  if (!i2c.HasMember("enabled")) {
+  if (!spi.HasMember("enabled")) {
     logger_.log(core::LogLevel::kFatal,
                 "Missing required field 'io.spi.enabled' in configuration file");
     return std::nullopt;
