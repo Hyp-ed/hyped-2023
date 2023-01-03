@@ -169,7 +169,7 @@ std::string Pwm::getPwmFolderName(const PwmModule pwm_module)
     case PwmModule::kECapPwm0:
       return "pwm-0:0";
     case PwmModule::kECapPwm2:
-      // TODO: Check this particular case in TLD
+      // TODOLater: Check this particular case in TLD
       return "pwm-6:0";
     case PwmModule::kEHRPwm0A:
       return "pwm-1:0";
