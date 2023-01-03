@@ -112,13 +112,13 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
                 "Missing required field 'io.pwm.enabled' in configuration file");
     return std::nullopt;
   }
-  if (i2c["enabled"].GetBool()) {
+  if (pwm["enabled"].GetBool()) {
     if (!pwm.HasMember("modules")) {
       logger_.log(core::LogLevel::kFatal,
                   "Missing required field 'io.pwm.modules' in configuration file");
       return std::nullopt;
     }
-    const auto modules = i2c["modules"].GetArray();
+    const auto modules = pwm["modules"].GetArray();
     for (auto &module : modules) {
       const std::uint8_t module_id = module.GetUint();
       if (module_id > 7 || module_id < 0) {
