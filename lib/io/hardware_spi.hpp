@@ -63,13 +63,16 @@ class HardwareSpi : public ISpi {
    * @param logger - logger to be used
    * @param bus    - SPI bus to be used
    * @param mode   - SPI mode to be used
+   * @param word_size - word size to be used
+   * @param bit_order - bit order to be used
    * @param clock  - clock frequency to be used
    */
   static std::optional<HardwareSpi> create(core::ILogger &logger,
                                            const SpiBus bus            = SpiBus::kSpi1,
                                            const SpiMode mode          = SpiMode::kMode3,
                                            const SpiWordSize word_size = SpiWordSize::kWordSize8,
-                                           const SpiBitOrder bit_order = SpiBitOrder::kMsbFirst);
+                                           const SpiBitOrder bit_order = SpiBitOrder::kMsbFirst,
+                                           const Clock clock           = Clock::k500KHz);
   ~HardwareSpi();
 
   core::Result read(const std::uint8_t register_address,
@@ -92,8 +95,9 @@ class HardwareSpi : public ISpi {
    * @param clock - clock frequency to be set
    * @return std::uint32_t - actual clock frequency
    */
-  static std::uint32_t getClockValue(Clock clock);
+  static std::uint32_t getClockValue(const Clock clock);
 
+ private:
   core::ILogger &logger_;
   const int file_descriptor_;
 };

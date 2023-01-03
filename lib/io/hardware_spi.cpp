@@ -11,7 +11,8 @@ std::optional<HardwareSpi> HardwareSpi::create(core::ILogger &logger,
                                                const SpiBus bus,
                                                const SpiMode mode,
                                                const SpiWordSize word_size,
-                                               const SpiBitOrder bit_order)
+                                               const SpiBitOrder bit_order,
+                                               const Clock clock)
 {
   // SPI bus only works in kernel mode on Linux, so we need to call the provided driver
   const char *spi_bus_address = getSpiBusAddress(bus);
@@ -21,7 +22,7 @@ std::optional<HardwareSpi> HardwareSpi::create(core::ILogger &logger,
     return std::nullopt;
   }
   // Set clock frequency
-  const std::uint32_t clock_value = getClockValue(Clock::k500KHz);
+  const std::uint32_t clock_value = getClockValue(clock);
   const auto clock_write_result   = ioctl(file_descriptor, SPI_IOC_WR_MAX_SPEED_HZ, &clock_value);
   if (clock_write_result < 0) {
     logger.log(core::LogLevel::kFatal, "Failed to set clock frequency to %d", clock_value);
@@ -119,25 +120,19 @@ const char *HardwareSpi::getSpiBusAddress(const SpiBus bus)
 
 std::uint32_t HardwareSpi::getClockValue(Clock clock)
 {
-  std::uint32_t data;
   switch (clock) {
     case Clock::k500KHz:
-      data = 500000;
-      break;
+      return 500000;
     case Clock::k1MHz:
-      data = 1000000;
-      break;
+      return 1000000;
     case Clock::k4MHz:
-      data = 4000000;
-      break;
+      return 4000000;
     case Clock::k16MHz:
-      data = 16000000;
-      break;
+      return 16000000;
     case Clock::k20MHz:
-      data = 20000000;
-      break;
+      return 20000000;
+    default:  // for compiler
+      return 0;
   }
-  return data;
 }
-
 }  // namespace hyped::io
