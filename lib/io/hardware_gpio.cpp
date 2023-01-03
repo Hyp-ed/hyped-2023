@@ -2,13 +2,13 @@
 
 namespace hyped::io {
 
-std::optional<core::DigitalSignal> HardwareGpioReader::readPin()
+std::optional<core::DigitalSignal> HardwareGpioReader::read()
 {
   // TODOLater: implement
   throw -1;
 }
 
-core::Result HardwareGpioWriter::writeToPin(const core::DigitalSignal state)
+core::Result HardwareGpioWriter::write(const core::DigitalSignal state)
 {
   // TODOLater: implement
   throw -1;

@@ -17,7 +17,7 @@ class HardwareGpioReader : public IGpioReader {
   /**
    * @brief Read a high or low from the GPIO pin.
    */
-  std::optional<core::DigitalSignal> readPin();
+  std::optional<core::DigitalSignal> read();
   ~HardwareGpioReader();
 
  private:
@@ -34,7 +34,7 @@ class HardwareGpioWriter : public IGpioWriter {
    * @brief Writes a high or low to the GPIO pin.
    * @param state The digital signal to write to the pin.
    */
-  core::Result writeToPin(const core::DigitalSignal state);
+  core::Result write(const core::DigitalSignal state);
   ~HardwareGpioWriter();
 
  private:

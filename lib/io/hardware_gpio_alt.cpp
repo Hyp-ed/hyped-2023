@@ -16,7 +16,7 @@ HardwareGpioReader::~HardwareGpioReader()
   close(read_file_descriptor_);
 }
 
-std::optional<core::DigitalSignal> HardwareGpioReader::readPin()
+std::optional<core::DigitalSignal> HardwareGpioReader::read()
 {
   // Read the value from the file
   char read_buffer[2];
@@ -25,7 +25,7 @@ std::optional<core::DigitalSignal> HardwareGpioReader::readPin()
     logger_.log(core::LogLevel::kFatal, "Failed to reset file offset");
     return std::nullopt;
   }
-  const auto read_result = read(read_file_descriptor_, read_buffer, sizeof(read_buffer));
+  const auto read_result = ::read(read_file_descriptor_, read_buffer, sizeof(read_buffer));
   if (read_result != sizeof(read_buffer)) {
     logger_.log(core::LogLevel::kFatal, "Failed to read GPIO value");
     return std::nullopt;
@@ -53,14 +53,14 @@ HardwareGpioWriter::~HardwareGpioWriter()
   close(write_file_descriptor_);
 }
 
-core::Result HardwareGpioWriter::writeToPin(const core::DigitalSignal state)
+core::Result HardwareGpioWriter::write(const core::DigitalSignal state)
 {
   // Convert DigitalSignal to a string
   const std::uint8_t signal_value = static_cast<std::uint8_t>(state);
   char write_buffer[2];
   snprintf(write_buffer, sizeof(write_buffer), "%d", signal_value);
   // Write the value to the file
-  const auto write_result = write(write_file_descriptor_, write_buffer, sizeof(write_buffer));
+  const auto write_result = ::write(write_file_descriptor_, write_buffer, sizeof(write_buffer));
   if (write_result != sizeof(write_buffer)) {
     logger_.log(core::LogLevel::kFatal, "Failed to write GPIO value");
     return core::Result::kFailure;
@@ -207,6 +207,8 @@ const std::string HardwareGpio::getEdgeString(const Edge edge)
       return "falling";
     case Edge::kBoth:
       return "both";
+    default:  // for compiler
+      return "";
   }
 }
 
@@ -217,6 +219,8 @@ const std::string HardwareGpio::getDirectionString(const Direction direction)
       return "in";
     case Direction::kOut:
       return "out";
+    default:  // for compiler
+      return "";
   }
 }
 

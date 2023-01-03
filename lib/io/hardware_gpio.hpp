@@ -8,7 +8,7 @@ namespace hyped::io {
 
 class HardwareGpioReader : public IGpioReader {
  public:
-  virtual std::optional<core::DigitalSignal> readPin();
+  virtual std::optional<core::DigitalSignal> read();
 
  private:
   HardwareGpioReader();
@@ -17,7 +17,7 @@ class HardwareGpioReader : public IGpioReader {
 
 class HardwareGpioWriter : public IGpioWriter {
  public:
-  virtual core::Result writeToPin(const core::DigitalSignal state);
+  virtual core::Result write(const core::DigitalSignal state);
 
  private:
   HardwareGpioWriter(const std::uint8_t pin);

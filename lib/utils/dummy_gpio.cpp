@@ -8,7 +8,7 @@ DummyGpioReader::DummyGpioReader(const std::uint8_t pin, DummyGpioReader::ReadHa
 {
 }
 
-std::optional<core::DigitalSignal> DummyGpioReader::readPin()
+std::optional<core::DigitalSignal> DummyGpioReader::read()
 {
   return read_handler_(pin_);
 }
@@ -20,7 +20,7 @@ DummyGpioWriter::DummyGpioWriter(const std::uint8_t pin,
 {
 }
 
-core::Result DummyGpioWriter::writeToPin(const core::DigitalSignal state)
+core::Result DummyGpioWriter::write(const core::DigitalSignal state)
 {
   return write_handler_(pin_, state);
 }
