@@ -143,7 +143,12 @@ void Repl::addHelpCommand()
 
 void Repl::addAdcCommands(const std::uint8_t pin)
 {
-  const auto adc = std::make_shared<io::Adc>(logger_, pin);
+  const auto optional_adc = io::Adc::create(logger_, pin);
+  if (!optional_adc) {
+    logger_.log(core::LogLevel::kFatal, "Failed to create ADC instance on pin %d", pin);
+    return;
+  }
+  const auto adc = std::make_shared<io::Adc>(*optional_adc);
   Command adc_read_command;
   std::stringstream identifier;
   identifier << "adc " << static_cast<int>(pin) << " read";
@@ -164,7 +169,12 @@ void Repl::addAdcCommands(const std::uint8_t pin)
 
 void Repl::addI2cCommands(const std::uint8_t bus)
 {
-  const auto i2c = std::make_shared<io::HardwareI2c>(logger_, bus);
+  const auto optional_i2c = io::HardwareI2c::create(logger_, bus);
+  if (!optional_i2c) {
+    logger_.log(core::LogLevel::kFatal, "Failed to create I2C instance on bus %d", bus);
+    return;
+  }
+  const auto i2c = std::make_shared<io::HardwareI2c>(*optional_i2c);
   {
     Command i2c_read_command;
     std::stringstream identifier;
