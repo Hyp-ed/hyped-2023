@@ -96,7 +96,29 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
                   "Missing required field 'io.i2c.buses' in configuration file");
       return std::nullopt;
     }
-    const auto buses = i2c["buses"].GetArray();
+  }
+  const auto buses = i2c["buses"].GetArray();
+  for (auto &bus : buses) {
+    repl->addI2cCommands(bus.GetUint());
+  }
+
+  if (!io.HasMember("spi")) {
+    logger_.log(core::LogLevel::kFatal, "Missing required field 'io.spi' in configuration file");
+    return std::nullopt;
+  }
+  const auto spi = io["spi"].GetObject();
+  if (!spi.HasMember("enabled")) {
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'io.spi.enabled' in configuration file");
+    return std::nullopt;
+  }
+  if (spi["enabled"].GetBool()) {
+    if (!spi.HasMember("buses")) {
+      logger_.log(core::LogLevel::kFatal,
+                  "Missing required field 'io.spi.buses' in configuration file");
+      return std::nullopt;
+    }
+    const auto buses = spi["buses"].GetArray();
     for (auto &bus : buses) {
       repl->addI2cCommands(bus.GetUint());
     }
@@ -171,7 +193,12 @@ void Repl::addHelpCommand()
 
 void Repl::addAdcCommands(const std::uint8_t pin)
 {
-  const auto adc = std::make_shared<io::Adc>(logger_, pin);
+  const auto optional_adc = io::Adc::create(logger_, pin);
+  if (!optional_adc) {
+    logger_.log(core::LogLevel::kFatal, "Failed to create ADC instance on pin %d", pin);
+    return;
+  }
+  const auto adc = std::make_shared<io::Adc>(*optional_adc);
   Command adc_read_command;
   std::stringstream identifier;
   identifier << "adc " << static_cast<int>(pin) << " read";
@@ -192,7 +219,12 @@ void Repl::addAdcCommands(const std::uint8_t pin)
 
 void Repl::addI2cCommands(const std::uint8_t bus)
 {
-  const auto i2c = std::make_shared<io::HardwareI2c>(logger_, bus);
+  const auto optional_i2c = io::HardwareI2c::create(logger_, bus);
+  if (!optional_i2c) {
+    logger_.log(core::LogLevel::kFatal, "Failed to create I2C instance on bus %d", bus);
+    return;
+  }
+  const auto i2c = std::make_shared<io::HardwareI2c>(*optional_i2c);
   {
     Command i2c_read_command;
     std::stringstream identifier;
@@ -315,4 +347,64 @@ void Repl::addPwmCommands(const io::PwmModule pwm_module)
     addCommand(pwm_stop_command);
   }
 }
+
+void Repl::addSpiCommands(const std::uint8_t bus)
+{
+  const auto optional_spi = io::HardwareSpi::create(logger_);
+  if (!optional_spi) {
+    logger_.log(core::LogLevel::kFatal, "Failed to create I2C instance on bus %d", bus);
+    return;
+  }
+  const auto spi = std::make_shared<io::HardwareSpi>(*optional_spi);
+  {
+    Command spi_read_byte_command;
+    std::stringstream identifier;
+    identifier << "spi " << static_cast<int>(bus) << " read byte";
+    spi_read_byte_command.name = identifier.str();
+    std::stringstream description;
+    description << "Read from SPI bus " << static_cast<int>(bus);
+    spi_read_byte_command.description = description.str();
+    spi_read_byte_command.handler     = [this, spi, bus]() {
+      std::uint8_t register_address;
+      std::cout << "Register address: ";
+      std::cin >> register_address;
+      std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+      std::uint8_t read_buffer;
+      const core::Result result = spi->read(register_address, &read_buffer, 1);
+      if (result == core::Result::kSuccess) {
+        logger_.log(core::LogLevel::kInfo, "SPI value from bus %d: %d", bus, read_buffer);
+      } else {
+        logger_.log(core::LogLevel::kFatal, "Failed to read from SPI bus %d", bus);
+      }
+    };
+    addCommand(spi_read_byte_command);
+  }
+  {
+    Command spi_write_byte_command;
+    std::stringstream identifier;
+    identifier << "spi " << static_cast<int>(bus) << " write byte";
+    spi_write_byte_command.name = identifier.str();
+    std::stringstream description;
+    description << "Write to SPI bus " << static_cast<int>(bus);
+    spi_write_byte_command.description = description.str();
+    spi_write_byte_command.handler     = [this, spi, bus]() {
+      std::uint32_t register_address, data;
+      std::cout << "Register address: ";
+      std::cin >> std::hex >> register_address;
+      std::cout << "Data: ";
+      std::cin >> std::hex >> data;
+      std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+      const std::uint8_t *data_ptr = reinterpret_cast<const std::uint8_t *>(&data);
+      const core::Result result    = spi->write(register_address, data_ptr, 1);
+      if (result == core::Result::kSuccess) {
+        logger_.log(
+          core::LogLevel::kInfo, "Successful SPI write to device %d on %d", register_address, bus);
+      } else {
+        logger_.log(core::LogLevel::kFatal, "Failed to write to SPI bus: %d", bus);
+      }
+    };
+    addCommand(spi_write_byte_command);
+  }
+}
+
 }  // namespace hyped::debug

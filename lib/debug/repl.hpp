@@ -10,6 +10,7 @@
 #include <io/adc.hpp>
 #include <io/hardware_gpio.hpp>
 #include <io/hardware_i2c.hpp>
+#include <io/hardware_spi.hpp>
 #include <io/pwm.hpp>
 
 namespace hyped::debug {
@@ -36,8 +37,10 @@ class Repl {
   void addAdcCommands(const std::uint8_t pin);
   void addI2cCommands(const std::uint8_t bus);
   void addPwmCommands(const io::PwmModule pwm_module);
+  void addSpiCommands(const std::uint8_t bus);
 
   core::ILogger &logger_;
   std::map<std::string, Command> command_map_;
 };
+
 }  // namespace hyped::debug
