@@ -8,6 +8,10 @@
 			"i2c": {
 				"enabled": false,
 				"buses": []
+			},
+			"spi": {
+				"enabled": false,
+				"buses": []
 			}
 		}
 	}
