@@ -12,7 +12,7 @@ std::optional<Uart> Uart::create(core::ILogger &logger,
 {
   char path[15];  // up to "/dev/ttyO5"
   sprintf(path, "/dev/ttyO%d", static_cast<std::uint8_t>(bus));
-  const int file_descriptor = open(path, O_RDWR | O_NOCTTY);
+  const int file_descriptor = open(path, O_RDWR | O_NOCTTY | O_NONBLOCK);
   if (file_descriptor < 0) {
     logger.log(core::LogLevel::kFatal,
                "Failed to open UART file descriptor, could not create UART instance");
@@ -49,6 +49,8 @@ core::Result Uart::configureFileForOperation(core::ILogger &logger,
   struct termios tty;
   // ensuring all bits are initially 0, else any set bit could lead to undefined behavior
   bzero(&tty, sizeof(tty));
+  // exact setting descriptions avaiable here
+  // https://www.mkssoftware.com/docs/man5/struct_termios.5.asp
   tty.c_cflag                    = baud_mask | bits_per_byte_mask | CLOCAL | CREAD;
   tty.c_iflag                    = IGNPAR | ICRNL | IGNCR;
   tty.c_oflag                    = 0;
@@ -150,15 +152,25 @@ Uart::~Uart()
   close(file_descriptor_);
 }
 
-core::Result Uart::send(char *tx, std::uint8_t length)
+core::Result Uart::sendBytes(char *tx, std::uint8_t length)
 {
-  // TODO
-  return core::Result::kFailure;
+  const auto write_result = write(file_descriptor_, tx, length);
+  if (write_result != length) {
+    logger_.log(core::LogLevel::kFatal, "Failed to write the desired number of bytes to UART");
+    return core::Result::kFailure;
+  }
+  logger_.log(core::LogLevel::kDebug, "Successfully wrote %d bytes to UART", length);
+  return core::Result::kSuccess;
 }
 
-core::Result Uart::read(unsigned char *rx, std::uint8_t length)
+core::Result Uart::readBytes(unsigned char *rx, std::uint8_t length)
 {
-  // TODO
+  const auto read_result = read(file_descriptor_, rx, length);
+  if (read_result != length) {
+    logger_.log(core::LogLevel::kFatal, "Failed to read the desired number of bytes from UART");
+    return core::Result::kFailure;
+  }
+  logger_.log(core::LogLevel::kDebug, "Successfully read %d bytes over UART", length);
   return core::Result::kFailure;
 }
 

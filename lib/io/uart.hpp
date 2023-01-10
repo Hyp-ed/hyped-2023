@@ -22,8 +22,8 @@ class Uart {
     const std::uint8_t bits_per_bye = 8);
   ~Uart();
 
-  core::Result send(char *tx, std::uint8_t length);
-  core::Result read(unsigned char *rx, std::uint8_t length);
+  core::Result sendBytes(char *tx, std::uint8_t length);
+  core::Result readBytes(unsigned char *rx, std::uint8_t length);
 
  private:
   Uart(core::ILogger &logger, const int file_descriptor);
