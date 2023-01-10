@@ -51,6 +51,9 @@ struct termios {
 #define CS8 0000060
 #define CREAD 0000200
 #define CLOCAL 0004000
+// c_ccflag bits
+#define VTIME 5
+#define VMIN 6
 // c_iflag bits
 #define IGNPAR 0000004  // Ignore characters with parity error
 #define ICRNL 0000400   // Map CR to NL on input
@@ -59,6 +62,8 @@ struct termios {
 #define TCIFLUSH 0      // flushes data received but not read
 // tcsetattr setting
 #define TCSANOW 0       // changes shall occur immediately.
+extern int tcflush(int __fd, int __queue_selector) __THROW;
+extern int tcsetattr(int __fd, int __optional_actions, const struct termios *__termios_p) __THROW;
 #endif
 
 #include <strings.h>
