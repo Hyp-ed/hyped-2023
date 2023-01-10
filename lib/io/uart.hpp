@@ -44,6 +44,11 @@ struct termios {
 #define B2500000 0010014
 #define B3000000 0010015
 #define B3500000 0010016
+// bits per byte mask
+#define CS5 0000000
+#define CS6 0000020
+#define CS7 0000040
+#define CS8 0000060
 #endif
 
 #include <cstdio>
@@ -58,18 +63,25 @@ namespace hyped::io {
 
 class Uart {
  public:
-  static std::optional<Uart> create(core::ILogger &logger,
-                                    const UartBus bus,
-                                    const std::uint32_t baudrate);
+  static std::optional<Uart> create(
+    core::ILogger &logger,
+    const UartBus bus,
+    const std::uint32_t baud_rate,  // TODOLater: Figure out a default for this by testing
+    const std::uint8_t bits_per_bye = 8);
   ~Uart();
 
   core::Result send(char *tx, std::uint8_t length);
   core::Result read(unsigned char *rx, std::uint8_t length);
 
  private:
-  Uart(core::ILogger &logger, const int file_descriptor, const std::uint32_t baud_mask);
+  Uart(core::ILogger &logger,
+       const int file_descriptor,
+       const std::uint32_t baud_mask,
+       const std::uint8_t bits_per_byte_mask);
   // BBB can work with baudrates from 300 to 3686400 (AM335x and AMIC110 Sitara™ manual)
-  static std::optional<std::uint32_t> getBaudRateMask(const std::uint32_t baudrate);
+  static std::optional<std::uint32_t> getBaudRateMask(const std::uint32_t baud_rate);
+  // Acceptable values are 5,6,7 or 8
+  static std::optional<std::uint8_t> getBitsPerByteMask(const std::uint8_t bits_per_byte);
   core::ILogger &logger_;
   const std::uint32_t baud_mask_;
   const int file_descriptor_;

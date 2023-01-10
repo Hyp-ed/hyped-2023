@@ -7,7 +7,8 @@ namespace hyped::io {
 
 std::optional<Uart> Uart::create(core::ILogger &logger,
                                  const UartBus bus,
-                                 const std::uint32_t baudrate)
+                                 const std::uint32_t baud_rate,
+                                 const std::uint8_t bits_per_byte)
 {
   char path[15];  // up to "/dev/ttyO5"
   sprintf(path, "/dev/ttyO%d", static_cast<std::uint8_t>(bus));
@@ -17,100 +18,100 @@ std::optional<Uart> Uart::create(core::ILogger &logger,
                "Failed to open UART file descriptor, cannot create UART instance");
     return std::nullopt;
   }
-  const auto baud_mask = getBaudRateMask(baudrate);
+  const auto baud_mask = getBaudRateMask(baud_rate);
   if (!baud_mask) {
     logger.log(core::LogLevel::kFatal, "Failed to set baudrate, invalid baudrate provided");
     return std::nullopt;
   }
+  const auto bits_per_byte_mask = getBitsPerByteMask(bits_per_byte);
+  if (!bits_per_byte_mask) {
+    logger.log(core::LogLevel::kFatal,
+               "Failed to set number of bits per byte, invalid value provided");
+    return std::nullopt;
+  }
   logger.log(core::LogLevel::kDebug, "Successfully created UART instance");
-  return Uart(logger, file_descriptor, baud_mask.value());
+  return Uart(logger, file_descriptor, baud_mask.value(), bits_per_byte_mask.value());
+}
+
+std::optional<std::uint8_t> Uart::getBitsPerByteMask(const std::uint8_t bits_per_byte)
+{
+  switch (bits_per_byte) {
+    case 5:
+      return CS5;
+    case 6:
+      return CS6;
+    case 7:
+      return CS7;
+    case 8:
+      return CS8;
+    default:
+      return std::nullopt;
+  }
 }
 
 std::optional<std::uint32_t> Uart::getBaudRateMask(const std::uint32_t baudrate)
 {
-  std::uint32_t baud;
   switch (baudrate) {
     case 300:
-      baud = B300;
-      break;
+      return B300;
     case 600:
-      baud = B600;
-      break;
+      return B600;
     case 1200:
-      baud = B1200;
-      break;
+      return B1200;
     case 1800:
-      baud = B1800;
-      break;
+      return B1800;
     case 2400:
-      baud = B2400;
-      break;
+      return B2400;
     case 4800:
-      baud = B4800;
-      break;
+      return B4800;
     case 9600:
-      baud = B9600;
-      break;
+      return B9600;
     case 19200:
-      baud = B19200;
-      break;
+      return B19200;
     case 38400:
-      baud = B38400;
-      break;
+      return B38400;
     case 57600:
-      baud = B57600;
-      break;
+      return B57600;
     case 115200:
-      baud = B115200;
-      break;
+      return B115200;
     case 230400:
-      baud = B230400;
-      break;
+      return B230400;
     case 460800:
-      baud = B460800;
-      break;
+      return B460800;
     case 500000:
-      baud = B500000;
-      break;
+      return B500000;
     case 576000:
-      baud = B576000;
-      break;
+      return B576000;
     case 921600:
-      baud = B921600;
-      break;
+      return B921600;
     case 1000000:
-      baud = B1000000;
-      break;
+      return B1000000;
     case 1152000:
-      baud = B1152000;
-      break;
+      return B1152000;
     case 1500000:
-      baud = B1500000;
-      break;
+      return B1500000;
     case 2000000:
-      baud = B2000000;
-      break;
+      return B2000000;
     case 2500000:
-      baud = B2500000;
-      break;
+      return B2500000;
     case 3000000:
-      baud = B3000000;
-      break;
+      return B3000000;
     case 3500000:
-      baud = B3500000;
-      break;
+      return B3500000;
     default:
       return std::nullopt;
   }
-  return baud;
 }
 
-Uart::Uart(core::ILogger &logger, const int file_descriptor, const std::uint32_t baud_mask)
+Uart::Uart(core::ILogger &logger,
+           const int file_descriptor,
+           const std::uint32_t baud_mask,
+           const std::uint8_t bits_per_byte_mask)
     : logger_(logger),
       file_descriptor_(file_descriptor),
       baud_mask_(baud_mask)
 {
-  int baud = B115200;
+  tty_.c_cflag = baud_mask | bits_per_byte_mask;
 }
 
 Uart::~Uart()
