@@ -111,7 +111,16 @@ Uart::Uart(core::ILogger &logger,
       file_descriptor_(file_descriptor),
       baud_mask_(baud_mask)
 {
-  tty_.c_cflag = baud_mask | bits_per_byte_mask;
+  // ensuring all bits are initially 0, else any set bit could lead to undefined behavior
+  bzero(&tty_, sizeof(tty_));
+  tty_.c_cflag     = baud_mask | bits_per_byte_mask | CLOCAL | CREAD;
+  tty_.c_iflag     = IGNPAR | ICRNL | IGNCR;
+  tty_.c_oflag     = 0;
+  tty_.c_lflag     = 0;
+  tty_.c_cc[VTIME] = 0;
+  tty_.c_cc[VMIN]  = 0;
+  tcflush(file_descriptor_, TCIFLUSH);
+  tcsetattr(file_descriptor_, TCSANOW, &tty_);
 }
 
 Uart::~Uart()

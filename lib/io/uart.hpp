@@ -44,12 +44,16 @@ struct termios {
 #define B2500000 0010014
 #define B3000000 0010015
 #define B3500000 0010016
-// bits per byte mask
+// C_cflag bits
 #define CS5 0000000
 #define CS6 0000020
 #define CS7 0000040
 #define CS8 0000060
+#define CREAD 0000200
+#define CLOCAL 0004000
 #endif
+
+#include <strings.h>
 
 #include <cstdio>
 
