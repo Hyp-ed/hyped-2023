@@ -30,7 +30,6 @@ std::optional<Uart> Uart::create(core::ILogger &logger,
                "Failed to set invalid number of bits per byte, could not create UART instance");
     return std::nullopt;
   }
-  struct termios tty;
   const auto configuration_result = configureFileForOperation(
     logger, file_descriptor, baud_mask.value(), bits_per_byte_mask.value());
   if (configuration_result == core::Result::kFailure) {
