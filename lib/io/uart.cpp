@@ -15,22 +15,59 @@ std::optional<Uart> Uart::create(core::ILogger &logger,
   const int file_descriptor = open(path, O_RDWR | O_NOCTTY);
   if (file_descriptor < 0) {
     logger.log(core::LogLevel::kFatal,
-               "Failed to open UART file descriptor, cannot create UART instance");
+               "Failed to open UART file descriptor, could not create UART instance");
     return std::nullopt;
   }
   const auto baud_mask = getBaudRateMask(baud_rate);
   if (!baud_mask) {
-    logger.log(core::LogLevel::kFatal, "Failed to set baudrate, invalid baudrate provided");
+    logger.log(core::LogLevel::kFatal,
+               "Failed to set invalid baudrate, could not create UART instance");
     return std::nullopt;
   }
   const auto bits_per_byte_mask = getBitsPerByteMask(bits_per_byte);
   if (!bits_per_byte_mask) {
     logger.log(core::LogLevel::kFatal,
-               "Failed to set number of bits per byte, invalid value provided");
+               "Failed to set invalid number of bits per byte, could not create UART instance");
+    return std::nullopt;
+  }
+  struct termios tty;
+  const auto configuration_result = configureFileForOperation(
+    logger, file_descriptor, baud_mask.value(), bits_per_byte_mask.value());
+  if (configuration_result == core::Result::kFailure) {
+    logger.log(core::LogLevel::kFatal,
+               "Failed to configure UART file, could not create UART instance");
     return std::nullopt;
   }
   logger.log(core::LogLevel::kDebug, "Successfully created UART instance");
-  return Uart(logger, file_descriptor, baud_mask.value(), bits_per_byte_mask.value());
+  return Uart(logger, file_descriptor);
+}
+
+core::Result Uart::configureFileForOperation(core::ILogger &logger,
+                                             const int file_descriptor,
+                                             const std::uint8_t baud_mask,
+                                             const std::uint8_t bits_per_byte_mask)
+{
+  struct termios tty;
+  // ensuring all bits are initially 0, else any set bit could lead to undefined behavior
+  bzero(&tty, sizeof(tty));
+  tty.c_cflag                    = baud_mask | bits_per_byte_mask | CLOCAL | CREAD;
+  tty.c_iflag                    = IGNPAR | ICRNL | IGNCR;
+  tty.c_oflag                    = 0;
+  tty.c_lflag                    = 0;
+  tty.c_cc[VTIME]                = 0;
+  tty.c_cc[VMIN]                 = 0;
+  const int termios_flush_result = tcflush(file_descriptor, TCIFLUSH);
+  if (termios_flush_result < 0) {
+    logger.log(core::LogLevel::kFatal, "Failed to flush UART file for non-transmitted data");
+    return core::Result::kFailure;
+  }
+  const int termios_config_result = tcsetattr(file_descriptor, TCSANOW, &tty);
+  if (termios_config_result < 0) {
+    logger.log(core::LogLevel::kFatal, "Failed to configure UART file for operation");
+    return core::Result::kFailure;
+  }
+  logger.log(core::LogLevel::kDebug, "Successfully configured UART file for operation");
+  return core::Result::kSuccess;
 }
 
 std::optional<std::uint8_t> Uart::getBitsPerByteMask(const std::uint8_t bits_per_byte)
@@ -49,7 +86,7 @@ std::optional<std::uint8_t> Uart::getBitsPerByteMask(const std::uint8_t bits_per
   }
 }
 
-std::optional<std::uint32_t> Uart::getBaudRateMask(const std::uint32_t baudrate)
+std::optional<std::uint8_t> Uart::getBaudRateMask(const std::uint32_t baudrate)
 {
   switch (baudrate) {
     case 300:
@@ -103,24 +140,10 @@ std::optional<std::uint32_t> Uart::getBaudRateMask(const std::uint32_t baudrate)
   }
 }
 
-Uart::Uart(core::ILogger &logger,
-           const int file_descriptor,
-           const std::uint32_t baud_mask,
-           const std::uint8_t bits_per_byte_mask)
+Uart::Uart(core::ILogger &logger, const int file_descriptor)
     : logger_(logger),
-      file_descriptor_(file_descriptor),
-      baud_mask_(baud_mask)
+      file_descriptor_(file_descriptor)
 {
-  // ensuring all bits are initially 0, else any set bit could lead to undefined behavior
-  bzero(&tty_, sizeof(tty_));
-  tty_.c_cflag     = baud_mask | bits_per_byte_mask | CLOCAL | CREAD;
-  tty_.c_iflag     = IGNPAR | ICRNL | IGNCR;
-  tty_.c_oflag     = 0;
-  tty_.c_lflag     = 0;
-  tty_.c_cc[VTIME] = 0;
-  tty_.c_cc[VMIN]  = 0;
-  tcflush(file_descriptor_, TCIFLUSH);
-  tcsetattr(file_descriptor_, TCSANOW, &tty_);
 }
 
 Uart::~Uart()

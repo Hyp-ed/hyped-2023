@@ -44,13 +44,21 @@ struct termios {
 #define B2500000 0010014
 #define B3000000 0010015
 #define B3500000 0010016
-// C_cflag bits
+// c_cflag bits
 #define CS5 0000000
 #define CS6 0000020
 #define CS7 0000040
 #define CS8 0000060
 #define CREAD 0000200
 #define CLOCAL 0004000
+// c_iflag bits
+#define IGNPAR 0000004  // Ignore characters with parity error
+#define ICRNL 0000400   // Map CR to NL on input
+#define IGNCR 0000200   // Ignore CR
+// tcflush setting
+#define TCIFLUSH 0      // flushes data received but not read
+// tcsetattr setting
+#define TCSANOW 0       // changes shall occur immediately.
 #endif
 
 #include <strings.h>
@@ -78,18 +86,17 @@ class Uart {
   core::Result read(unsigned char *rx, std::uint8_t length);
 
  private:
-  Uart(core::ILogger &logger,
-       const int file_descriptor,
-       const std::uint32_t baud_mask,
-       const std::uint8_t bits_per_byte_mask);
+  Uart(core::ILogger &logger, const int file_descriptor);
   // BBB can work with baudrates from 300 to 3686400 (AM335x and AMIC110 Sitara™ manual)
-  static std::optional<std::uint32_t> getBaudRateMask(const std::uint32_t baud_rate);
+  static std::optional<std::uint8_t> getBaudRateMask(const std::uint32_t baud_rate);
   // Acceptable values are 5,6,7 or 8
   static std::optional<std::uint8_t> getBitsPerByteMask(const std::uint8_t bits_per_byte);
+  static core::Result configureFileForOperation(core::ILogger &logger,
+                                                const int file_descriptor,
+                                                const std::uint8_t baud_mask,
+                                                const std::uint8_t bits_per_byte_mask);
   core::ILogger &logger_;
-  const std::uint32_t baud_mask_;
   const int file_descriptor_;
-  struct termios tty_;
 };
 
 }  // namespace hyped::io
