@@ -23,9 +23,10 @@ class Uart {
   core::Result read(unsigned char *rx, std::uint8_t length);
 
  private:
-  Uart(core::ILogger &logger, const int file_descriptor, const std::uint32_t baudrate);
+  Uart(core::ILogger &logger, const int file_descriptor, const std::uint32_t baud_mask);
+  static std::optional<std::uint32_t> getBaudRateMask(const std::uint32_t baudrate);
   core::ILogger &logger_;
-  const int baudrate_;
+  const std::uint32_t baud_mask_;
   const int file_descriptor_;
   struct termios tty_;
 };
