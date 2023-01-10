@@ -5,15 +5,27 @@
 
 namespace hyped::io {
 
-Uart::Uart(core::ILogger &logger, const UartBus bus, const std::uint32_t baudrate)
-    : logger_(logger),
-      bus_(bus),
-      baudrate_(baudrate)
+std::optional<Uart> Uart::create(core::ILogger &logger,
+                                 const UartBus bus,
+                                 const std::uint32_t baudrate)
 {
   char path[13];  // up to "/dev/ttyO5"
-  sprintf(path, "/dev/ttyO%d", static_cast<std::uint8_t>(bus_));
-  file_descriptor_ = open(path, O_RDWR);
-  if (file_descriptor_ < 0) { logger_.log(core::LogLevel::kFatal, "Unable to open UART file"); }
+  sprintf(path, "/dev/ttyO%d", static_cast<std::uint8_t>(bus));
+  const int file_descriptor = open(path, O_RDWR);
+  if (file_descriptor < 0) {
+    logger.log(core::LogLevel::kFatal,
+               "Failed to open UART file descriptor, cannot create UART instance");
+    return std::nullopt;
+  }
+  logger.log(core::LogLevel::kDebug, "Successfully created UART instance");
+  return Uart(logger, file_descriptor, baudrate);
+}
+
+Uart::Uart(core::ILogger &logger, const int file_descriptor, const std::uint32_t baudrate)
+    : logger_(logger),
+      file_descriptor_(file_descriptor),
+      baudrate_(baudrate)
+{
 }
 
 Uart::~Uart()

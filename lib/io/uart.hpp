@@ -14,17 +14,19 @@ namespace hyped::io {
 
 class Uart {
  public:
-  Uart(core::ILogger &logger, const UartBus bus, const std::uint32_t baudrate);
+  static std::optional<Uart> create(core::ILogger &logger,
+                                    const UartBus bus,
+                                    const std::uint32_t baudrate);
   ~Uart();
 
   core::Result send(char *tx, std::uint8_t length);
   core::Result read(unsigned char *rx, std::uint8_t length);
 
  private:
-  const UartBus bus_;
+  Uart(core::ILogger &logger, const int file_descriptor, const std::uint32_t baudrate);
   core::ILogger &logger_;
-  int baudrate_;
-  int file_descriptor_;
+  const int baudrate_;
+  const int file_descriptor_;
   struct termios tty_;
 };
 
