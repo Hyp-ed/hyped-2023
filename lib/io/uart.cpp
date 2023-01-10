@@ -30,6 +30,12 @@ std::optional<std::uint32_t> Uart::getBaudRateMask(const std::uint32_t baudrate)
 {
   std::uint32_t baud;
   switch (baudrate) {
+    case 300:
+      baud = B300;
+      break;
+    case 600:
+      baud = B600;
+      break;
     case 1200:
       baud = B1200;
       break;
@@ -92,9 +98,6 @@ std::optional<std::uint32_t> Uart::getBaudRateMask(const std::uint32_t baudrate)
       break;
     case 3500000:
       baud = B3500000;
-      break;
-    case 4000000:
-      baud = B4000000;
       break;
     default:
       return std::nullopt;
