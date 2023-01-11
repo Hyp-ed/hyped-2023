@@ -371,6 +371,10 @@ void Repl::addUartCommands(const std::uint8_t bus)
       std::string data;
       std::cout << "Data: ";
       std::getline(std::cin, data);
+      if (data.length() > 255) {
+        logger_.log(core::LogLevel::kFatal, "Data too long for UART bus: %d", bus);
+        return;
+      }
       const core::Result result = uart->sendBytes(data.c_str(), data.length());
       if (result == core::Result::kSuccess) {
         logger_.log(core::LogLevel::kDebug, "Successfully wrote to UART bus %d", bus);
