@@ -82,7 +82,7 @@ Uart::~Uart()
   close(file_descriptor_);
 }
 
-core::Result Uart::sendBytes(char *tx, std::uint8_t length)
+core::Result Uart::sendBytes(const char *tx, const std::uint8_t length)
 {
   const auto write_result = write(file_descriptor_, tx, length);
   if (write_result != length) {
@@ -93,7 +93,7 @@ core::Result Uart::sendBytes(char *tx, std::uint8_t length)
   return core::Result::kSuccess;
 }
 
-core::Result Uart::readBytes(unsigned char *rx, std::uint8_t length)
+core::Result Uart::readBytes(unsigned char *rx, const std::uint8_t length)
 {
   const auto read_result = read(file_descriptor_, rx, length);
   if (read_result != length) {

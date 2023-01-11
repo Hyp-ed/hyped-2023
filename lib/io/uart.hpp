@@ -69,14 +69,14 @@ class Uart {
    * @param  tx  Pointer to the byte array to be sent.
    * @param  length  Length of the byte array.
    */
-  core::Result sendBytes(char *tx, std::uint8_t length);
+  core::Result sendBytes(const char *tx, const std::uint8_t length);
 
   /**
    * @brief Receives a byte array over the UART bus.
    * @param rx Pointer to the byte array to be received.
    * @param length Length of the byte array.
    */
-  core::Result readBytes(unsigned char *rx, std::uint8_t length);
+  core::Result readBytes(unsigned char *rx, const std::uint8_t length);
 
  private:
   Uart(core::ILogger &logger, const int file_descriptor);
