@@ -23,6 +23,31 @@
 
 // Uart3 not exposed in BBB headers
 enum class UartBus { kUart0 = 0, kUart1 = 1, kUart2 = 2, kUart4 = 4, kUart5 = 5 };
+enum class BaudRate {
+  kB300     = B300,
+  kB600     = B600,
+  kB1200    = B1200,
+  kB2400    = B2400,
+  kB4800    = B4800,
+  kB9600    = B9600,
+  kB19200   = B19200,
+  kB38400   = B38400,
+  kB57600   = B57600,
+  kB115200  = B1152000,
+  kB230400  = B230400,
+  kB460800  = B460800,
+  kB500000  = B500000,
+  kB576000  = B576000,
+  kB921600  = B921600,
+  kB1000000 = B1000000,
+  kB1152000 = B1152000,
+  kB1500000 = B1500000,
+  kB2000000 = B2000000,
+  kB2500000 = B2500000,
+  kB3000000 = B3000000,
+  kB3500000 = B3500000
+};
+enum class BitsPerByte { k5 = CS5, k6 = CS6, k7 = CS7, k8 = CS8 };
 
 namespace hyped::io {
 
@@ -35,8 +60,8 @@ class Uart {
   static std::optional<Uart> create(
     core::ILogger &logger,
     const UartBus bus,
-    const std::uint32_t baud_rate,  // TODOLater: Figure out a default for this by testing
-    const std::uint8_t bits_per_byte = 8);
+    const BaudRate baud_rate,  // TODOLater: Figure out a default for this by testing
+    const BitsPerByte bits_per_byte = BitsPerByte::k8);
   ~Uart();
 
   /**
@@ -55,27 +80,14 @@ class Uart {
 
  private:
   Uart(core::ILogger &logger, const int file_descriptor);
-  /**
-   * @brief  Returns the baud rate mask for the given baud rate.
-   * @details BBB can work with baudrates from 300 to 3686400 (AM335x and AMIC110 Sitara™ manual)
-   * @param baud_rate  Baud rate to be used.
-   */
-  static std::optional<std::uint8_t> getBaudRateMask(const std::uint32_t baud_rate);
-
-  /**
-   * @brief  Returns the bits per byte mask for the given bits per byte.
-   * @details BBB can work with 5, 6, 7, 8 bits per byte
-   * @param bits_per_byte  Bits per byte to be used.
-   */
-  static std::optional<std::uint8_t> getBitsPerByteMask(const std::uint8_t bits_per_byte);
 
   /**
    * @brief  Configures the UART file descriptor with the provided masks and pre-set settings
    */
   static core::Result configureFileForOperation(core::ILogger &logger,
                                                 const int file_descriptor,
-                                                const std::uint8_t baud_mask,
-                                                const std::uint8_t bits_per_byte_mask);
+                                                const std::uint32_t baud_mask,
+                                                const std::uint32_t bits_per_byte_mask);
 
  private:
   core::ILogger &logger_;
