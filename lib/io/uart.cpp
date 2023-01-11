@@ -49,7 +49,7 @@ core::Result Uart::configureFileForOperation(core::ILogger &logger,
   struct termios tty;
   // ensuring all bits are initially 0, else any set bit could lead to undefined behavior
   bzero(&tty, sizeof(tty));
-  // exact setting descriptions avaiable here
+  // exact setting descriptions available here
   // https://www.mkssoftware.com/docs/man5/struct_termios.5.asp
   tty.c_cflag                    = baud_mask | bits_per_byte_mask | CLOCAL | CREAD;
   tty.c_iflag                    = IGNPAR | ICRNL | IGNCR;
