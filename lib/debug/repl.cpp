@@ -120,7 +120,7 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
     }
     const auto buses = spi["buses"].GetArray();
     for (auto &bus : buses) {
-      repl->addI2cCommands(bus.GetUint());
+      repl->addSpiCommands(bus.GetUint());
     }
   }
 
@@ -333,7 +333,7 @@ void Repl::addSpiCommands(const std::uint8_t bus)
 
 void Repl::addUartCommands(const std::uint8_t bus)
 {
-  UartBus uart_bus         = static_cast<UartBus>(bus);
+  const UartBus uart_bus   = static_cast<UartBus>(bus);
   const auto optional_uart = io::Uart::create(logger_, uart_bus, BaudRate::kB38400);
   if (!optional_uart) {
     logger_.log(core::LogLevel::kFatal, "Failed to create UART instance on bus %d", bus);
