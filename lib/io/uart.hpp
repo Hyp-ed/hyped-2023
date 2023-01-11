@@ -2,7 +2,7 @@
 
 #include <strings.h>
 #include <termios.h>
-#ifdef APPLE
+#ifdef __APPLE__
 #define B460800 0010004
 #define B500000 0010005
 #define B576000 0010006
