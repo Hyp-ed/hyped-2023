@@ -102,28 +102,6 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
     repl->addI2cCommands(bus.GetUint());
   }
 
-  if (!io.HasMember("spi")) {
-    logger_.log(core::LogLevel::kFatal, "Missing required field 'io.spi' in configuration file");
-    return std::nullopt;
-  }
-  const auto spi = io["spi"].GetObject();
-  if (!spi.HasMember("enabled")) {
-    logger_.log(core::LogLevel::kFatal,
-                "Missing required field 'io.spi.enabled' in configuration file");
-    return std::nullopt;
-  }
-  if (spi["enabled"].GetBool()) {
-    if (!spi.HasMember("buses")) {
-      logger_.log(core::LogLevel::kFatal,
-                  "Missing required field 'io.spi.buses' in configuration file");
-      return std::nullopt;
-    }
-    const auto buses = spi["buses"].GetArray();
-    for (auto &bus : buses) {
-      repl->addI2cCommands(bus.GetUint());
-    }
-  }
-
   if (!io.HasMember("pwm")) {
     logger_.log(core::LogLevel::kFatal, "Missing required field 'io.pwm' in configuration file");
     return std::nullopt;
@@ -148,7 +126,29 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
           core::LogLevel::kFatal, "Invalid module id %d in configuration file", module_id);
         return std::nullopt;
       }
-      repl->addPwmCommands(static_cast<io::PwmModule>(module_id));
+      repl->addPwmCommands(module_id);
+    }
+  }
+
+  if (!io.HasMember("spi")) {
+    logger_.log(core::LogLevel::kFatal, "Missing required field 'io.spi' in configuration file");
+    return std::nullopt;
+  }
+  const auto spi = io["spi"].GetObject();
+  if (!spi.HasMember("enabled")) {
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'io.spi.enabled' in configuration file");
+    return std::nullopt;
+  }
+  if (spi["enabled"].GetBool()) {
+    if (!spi.HasMember("buses")) {
+      logger_.log(core::LogLevel::kFatal,
+                  "Missing required field 'io.spi.buses' in configuration file");
+      return std::nullopt;
+    }
+    const auto buses = spi["buses"].GetArray();
+    for (auto &bus : buses) {
+      repl->addI2cCommands(bus.GetUint());
     }
   }
   return repl;
@@ -278,9 +278,10 @@ void Repl::addI2cCommands(const std::uint8_t bus)
   }
 }
 
-void Repl::addPwmCommands(const io::PwmModule pwm_module)
+void Repl::addPwmCommands(const std::uint8_t module)
 {
-  const auto optional_pwm = io::Pwm::create(logger_, pwm_module);
+  const io::PwmModule pwm_module = static_cast<io::PwmModule>(module);
+  const auto optional_pwm        = io::Pwm::create(logger_, pwm_module);
   if (!optional_pwm) {
     logger_.log(core::LogLevel::kFatal, "Failed to create PWM module");
     return;

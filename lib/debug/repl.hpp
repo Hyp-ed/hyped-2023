@@ -36,7 +36,7 @@ class Repl {
   void addHelpCommand();
   void addAdcCommands(const std::uint8_t pin);
   void addI2cCommands(const std::uint8_t bus);
-  void addPwmCommands(const io::PwmModule pwm_module);
+  void addPwmCommands(const std::uint8_t module);
   void addSpiCommands(const std::uint8_t bus);
 
   core::ILogger &logger_;
