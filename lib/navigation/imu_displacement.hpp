@@ -1,6 +1,5 @@
 #pragma once
 
-#include <array>
 #include <cstdint>
 #include <optional>
 
@@ -44,7 +43,7 @@ class ImuDisplacement {
   core::Float imu_velocity_;
 
   // timestamp of the last measured acceleration value
-  std::int64_t previous_timestamp_micros_;
+  std::uint64_t previous_timestamp_micros_;
 };
 
 }  // namespace hyped::navigation

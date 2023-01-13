@@ -18,9 +18,9 @@ ImuDisplacement::ImuDisplacement()
 void ImuDisplacement::updateImuDisplacement(const core::Float imu_acceleration)
 {
   const core::TimePoint time_now = std::chrono::system_clock::now();
-  const std::int64_t time_now_micros
+  const std::uint64_t time_now_micros
     = std::chrono::duration_cast<std::chrono::microseconds>(time_now.time_since_epoch()).count();
-  const std::int64_t time_elapsed_seconds
+  const std::uint64_t time_elapsed_seconds
     = static_cast<double>((time_now_micros - previous_timestamp_micros_) / 1'000'000);
 
   // from equation v=u+at
@@ -28,7 +28,7 @@ void ImuDisplacement::updateImuDisplacement(const core::Float imu_acceleration)
 
   // from equation s = ut + 0.5*a*(t^2)
   imu_displacement_ = (imu_velocity_ * time_elapsed_seconds)
-                      + (0.5 * imu_acceleration * std::pow(time_elapsed_seconds, 2));
+                      + (0.5 * imu_acceleration * time_elapsed_seconds * time_elapsed_seconds);
 
   // update class members
   imu_velocity_              = velocity_estimate;
