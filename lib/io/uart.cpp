@@ -47,7 +47,7 @@ core::Result Uart::configureFileForOperation(core::ILogger &logger,
                                              const std::uint32_t bits_per_byte_mask)
 {
   struct termios tty;
-  // ensuring all bits are initially 0, else any set bit could lead to undefined behavior
+  // resetting termios to remove any unintended configuration settings
   bzero(&tty, sizeof(tty));
   // exact setting descriptions available here
   // https://www.mkssoftware.com/docs/man5/struct_termios.5.asp
