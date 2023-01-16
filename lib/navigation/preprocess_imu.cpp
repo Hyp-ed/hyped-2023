@@ -45,19 +45,15 @@ core::ImuData ImuPreprocessor::detectOutliers(const core::ImuData imu_data)
   if (num_reliable_accelerometers_ == core::kNumImus) {
     quartiles = getQuartiles(imu_data);
   } else {
-    std::array<core::Float, core::kNumImus - 1> faulty_data;
-    std::size_t index;
-    for (std::size_t i = 0; i < core::kNumImus - 1; ++i) {
-      if (!are_imus_reliable_.at(i)) { index = i; }
-    }
-    for (std::size_t i = 0; i < core::kNumImus - 1; ++i) {
-      if (i >= index) {
-        faulty_data.at(i) = imu_data.at(i + 1);
-      } else {
-        faulty_data.at(i) = imu_data.at(i);
+    std::array<core::Float, core::kNumImus - 1> filtered_data;
+    std::size_t j = 0;
+    for (std::size_t i = 0; i < core::kNumImus; ++i) {
+      if (are_imus_reliable_.at(i)) {
+        filtered_data.at(j) = imu_data.at(i);
+        ++j;
       }
     }
-    quartiles = getQuartiles(faulty_data);
+    quartiles = getQuartiles(filtered_data);
   }
 
   const core::Float iqr = quartiles.q3 - quartiles.q1;
