@@ -13,10 +13,9 @@ StateMachine::StateMachine()
 std::optional<Message> StateMachine::checkTransition()
 {
   /*
-  update data
-  should check if a transition is needed with current data
+  check if a transition is needed with current data
   then run transition to move to next state
-  return transition message
+  return transition message or no transition
   */
   return std::nullopt;
 }

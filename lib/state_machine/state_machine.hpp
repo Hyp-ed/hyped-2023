@@ -19,7 +19,7 @@ class StateMachine {
 
   void reset();
 
-  // TODOLater change transitions to actual transitions
+  // TODO change transitions to actual transitions
   std::array<Transition, kNumTransitions> transitions{{
     {State::kInitialState, State::state1, Message::mStart},
     {State::state1, State::state2, Message::message1},
