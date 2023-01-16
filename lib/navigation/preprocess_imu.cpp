@@ -44,7 +44,7 @@ core::ImuData ImuPreprocessor::detectOutliers(const core::ImuData imu_data)
   Quartiles quartiles;
   if (num_reliable_accelerometers_ == core::kNumImus) {
     quartiles = getQuartiles(imu_data);
-  } else {
+  } else if (num_reliable_accelerometers_ == core::kNumImus - 1) {
     std::array<core::Float, core::kNumImus - 1> filtered_data;
     std::size_t j = 0;
     for (std::size_t i = 0; i < core::kNumImus; ++i) {
@@ -54,7 +54,10 @@ core::ImuData ImuPreprocessor::detectOutliers(const core::ImuData imu_data)
       }
     }
     quartiles = getQuartiles(filtered_data);
+  } else {
+    logger_.log(core::LogLevel::kFatal, "Maximum number of unreliable sensors exceeded");
   }
+  // TODOLater : maybe make a nice data structure
 
   const core::Float iqr = quartiles.q3 - quartiles.q1;
   core::Float lower_bound;
