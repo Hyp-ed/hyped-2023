@@ -1,5 +1,7 @@
 #include "consts.hpp"
 
+#include <cmath>
+
 #include <array>
 #include <cstdint>
 
@@ -19,11 +21,32 @@ class ImuPreprocessor {
   SensorChecks checkReliable();
 
   template<std::size_t N>
-  core::Float getSpecificQuartile(const std::array<core::Float, N> &clean_accelerometer_data_copy,
-                                  core::Float quartile);
+  core::Float getSpecificQuartile(const std::array<core::Float, N> &clean_accelerometer_data,
+                                  core::Float quartile)
+  {
+    const core::Float index_quartile       = (num_reliable_accelerometers_ - 1) * quartile;
+    const std::uint8_t index_quartile_high = static_cast<int>(std::ceil(index_quartile));
+    const std::uint8_t index_quartile_low  = static_cast<int>(std::floor(index_quartile));
+    const core::Float quartile_value       = (clean_accelerometer_data.at(index_quartile_high)
+                                        + clean_accelerometer_data.at(index_quartile_low))
+                                       / 2.0;
+    return quartile_value;
+  }
 
   template<std::size_t N>
-  Quartiles getQuartiles(const std::array<core::Float, N> &imu_data);
+  Quartiles getQuartiles(const std::array<core::Float, N> &imu_data)
+  {
+    std::array<core::Float, N> accelerometer_data_copy;
+    std::copy(imu_data.begin(), imu_data.end(), accelerometer_data_copy.begin());
+
+    std::sort(accelerometer_data_copy.begin(), accelerometer_data_copy.end());
+
+    Quartiles quartiles;
+    quartiles.q1     = getSpecificQuartile(accelerometer_data_copy, 0.25);
+    quartiles.median = getSpecificQuartile(accelerometer_data_copy, 0.5);
+    quartiles.q3     = getSpecificQuartile(accelerometer_data_copy, 0.75);
+    return quartiles;
+  }
 
   // initialised as {0, 0, 0, 0}, count of consecutive outliers
   std::array<uint16_t, core::kNumImus> num_outliers_per_imu_;
@@ -36,7 +59,7 @@ class ImuPreprocessor {
 
   std::size_t num_reliable_accelerometers_;  // intitialised as= core::kNumImus
 
-  core::ILogger &log_;
+  core::ILogger &logger_;
 };
 
 }  // namespace hyped::navigation

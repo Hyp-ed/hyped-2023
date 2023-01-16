@@ -9,7 +9,7 @@
 namespace hyped::navigation {
 
 ImuPreprocessor::ImuPreprocessor(core::ILogger &logger)
-    : log_(logger),
+    : logger_(logger),
       num_outliers_per_imu_({0, 0, 0, 0}),
       are_imus_reliable_({true, true, true, true}),
       num_reliable_accelerometers_(core::kNumImus)
@@ -30,7 +30,7 @@ std::optional<core::ImuData> ImuPreprocessor::processData(const core::RawImuData
   }
 
   const core::ImuData accelerometer_data = detectOutliers(imu_data);
-  checkReliable();
+  SensorChecks sensorcheck               = checkReliable();
   return accelerometer_data;
 }
 
@@ -88,36 +88,6 @@ core::ImuData ImuPreprocessor::detectOutliers(const core::ImuData imu_data)
   return accelerometer_data;
 }
 
-template<std::size_t N>
-Quartiles ImuPreprocessor::getQuartiles(const std::array<core::Float, N> &clean_accelerometer_data)
-{
-  std::array<core::Float, N> accelerometer_data_copy;
-  std::copy(clean_accelerometer_data.begin(),
-            clean_accelerometer_data.end(),
-            accelerometer_data_copy.begin());
-
-  std::sort(accelerometer_data_copy.begin(), accelerometer_data_copy.end());
-
-  Quartiles quartiles;
-  quartiles.q1     = getSpecificQuartile(accelerometer_data_copy, 0.25);
-  quartiles.median = getSpecificQuartile(accelerometer_data_copy, 0.5);
-  quartiles.q3     = getSpecificQuartile(accelerometer_data_copy, 0.75);
-  return quartiles;
-}
-
-template<std::size_t N>
-core::Float ImuPreprocessor::getSpecificQuartile(
-  const std::array<core::Float, N> &clean_accelerometer_data, core::Float quartile)
-{
-  const core::Float index_quartile       = (num_reliable_accelerometers_ - 1) * quartile;
-  const std::uint8_t index_quartile_high = static_cast<int>(std::ceil(index_quartile));
-  const std::uint8_t index_quartile_low  = static_cast<int>(std::floor(index_quartile));
-  const core::Float quartile_value       = (clean_accelerometer_data.at(index_quartile_high)
-                                      + clean_accelerometer_data.at(index_quartile_low))
-                                     / 2.0;
-  return quartile_value;
-}
-
 SensorChecks ImuPreprocessor::checkReliable()
 {  // changes reliable sensor to false if max consecutive outliers are reached
   for (std::size_t i = 0; i < core::kNumImus; ++i) {
@@ -128,7 +98,7 @@ SensorChecks ImuPreprocessor::checkReliable()
     }
   }
   if (num_reliable_accelerometers_ < core::kNumImus - 1) {
-    log_.log(core::LogLevel::kFatal, "Maximum number of unreliable sensors exceeded");
+    logger_.log(core::LogLevel::kFatal, "Maximum number of unreliable sensors exceeded");
     return SensorChecks::kUnacceptable;
   }
   return SensorChecks::kAcceptable;
