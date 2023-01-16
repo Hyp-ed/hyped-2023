@@ -1,3 +1,5 @@
+#pragma once
+
 #include "consts.hpp"
 
 #include "core/logger.hpp"
