@@ -21,6 +21,7 @@ class ImuPreprocessor {
 
   SensorChecks checkReliable();
 
+  // TODOLater: Optimize this further
   template<std::size_t N>
   core::Float getSpecificQuantile(const std::array<core::Float, N> &clean_accelerometer_data,
                                   core::Float quartile)
@@ -42,10 +43,9 @@ class ImuPreprocessor {
       accelerometer_data.begin(), accelerometer_data.end(), accelerometer_data_copy.begin());
 
     std::sort(accelerometer_data_copy.begin(), accelerometer_data_copy.end());
-    Quartiles quartiles;
-    return {quartiles.q1     = getSpecificQuantile(accelerometer_data_copy, 0.25),
-            quartiles.median = getSpecificQuantile(accelerometer_data_copy, 0.5),
-            quartiles.q3     = getSpecificQuantile(accelerometer_data_copy, 0.75)};
+    return {.q1     = getSpecificQuantile(accelerometer_data_copy, 0.25),
+            .median = getSpecificQuantile(accelerometer_data_copy, 0.5),
+            .q3     = getSpecificQuantile(accelerometer_data_copy, 0.75)};
   }
 
   // initialised as {0, 0, 0, 0}, count of consecutive outliers

@@ -30,7 +30,12 @@ std::optional<core::ImuData> ImuPreprocessor::processData(const core::RawImuData
   }
   const core::ImuData accelerometer_data = detectOutliers(imu_data);
   SensorChecks sensorcheck               = checkReliable();
-  return accelerometer_data;
+
+  if (sensorcheck == SensorChecks::kUnacceptable) {
+    return std::nullopt;
+  } else {
+    return accelerometer_data;
+  }
 }
 
 core::ImuData ImuPreprocessor::detectOutliers(const core::ImuData imu_data)
