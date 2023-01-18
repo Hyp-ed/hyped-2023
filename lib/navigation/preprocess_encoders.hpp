@@ -9,8 +9,9 @@ namespace hyped::navigation {
 class EncodersPreprocessor {
  public:
   EncodersPreprocessor();
+  EncodersPreprocessor(core::ILogger &logger);
 
-  core::EncoderData processData(const core::EncoderData encoder_data);
+  std::optional<core::EncoderData> processData(const core::EncoderData encoder_data);
 
  private:
   core::EncoderData detectOutliers(const core::EncoderData encoder_data);
@@ -25,7 +26,7 @@ class EncodersPreprocessor {
   std::uint8_t num_reliable_encoders_;
 
   // initialised as {0, 0, 0, 0}, count of consecutive outliers
-  std::array<uint16_t, core::kNumEncoders> num_outliers_per_encoder_;
+  std::array<uint16_t, core::kNumEncoders> encoder_outliers;
 
   // initialised as all true, bool mask of reliable sensors
   std::array<bool, core::kNumEncoders> are_encoders_reliable_;

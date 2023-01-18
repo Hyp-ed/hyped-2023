@@ -3,7 +3,6 @@
 #include <cmath>
 
 #include <algorithm>
-#include <array>
 #include <numeric>
 
 #include "core/types.hpp"
@@ -15,7 +14,7 @@ EncodersPreprocessor::EncodersPreprocessor()
   // TODOLater: implement
 }
 
-core::EncoderData EncodersPreprocessor::processData(const core::EncoderData encoder_data)
+std::optional<core::EncoderData> EncodersPreprocessor::processData(const core::EncoderData encoder_data)
 {
   /*
   TODOLater: implement
@@ -69,7 +68,7 @@ core::EncoderData EncodersPreprocessor::detectOutliers(const core::EncoderData e
     for (std::size_t i = 0; i < encoder_data.size(); ++i) {
       if (are_encoders_reliable_.at(i) == true) {
         reliable_sensors_data.at(counter) = encoder_data.at(i);
-        counter++;
+        ++counter;
       }
     }
     std::sort(reliable_sensors_data.begin(),
@@ -91,10 +90,10 @@ core::EncoderData EncodersPreprocessor::detectOutliers(const core::EncoderData e
     if (encoder_data_copy.at(i) > upper_bound || encoder_data_copy.at(i) < lower_bound) {
       encoder_data_copy.at(i)         = quartiles.median;
       if(are_encoders_reliable_.at(i) == true){
-        num_outliers_per_encoder_.at(i) = num_outliers_per_encoder_.at(i) + 1;
+        encoder_outliers.at(i) = encoder_outliers.at(i) + 1;
       }
     } else {
-      num_outliers_per_encoder_.at(i) = 0;
+      encoder_outliers.at(i) = 0;
     }
   }
   return encoder_data_copy;
@@ -105,8 +104,8 @@ core::EncoderData EncodersPreprocessor::detectOutliers(const core::EncoderData e
 void EncodersPreprocessor::checkReliable()
 {
   for (int i = 0; i < core::kNumEncoders; i++) {
-    if (num_outliers_per_encoder_.at(i) > max_consecutives) {  // for now assuming n to be 10
-      are_encoders_reliable_.at(i) = false;     // the encoder is now unrealiable
+    if (encoder_outliers.at(i) > max_consecutives) {  // for now assuming n to be 10
+      encoder_outliers.at(i) = false;     // the encoder is now unrealiable
     }
   }
 }
