@@ -17,7 +17,7 @@ void ImuDisplacement::updateImuDisplacement(const core::Float imu_acceleration)
 {
   const core::TimePoint time_now    = time_.now();
   const core::Duration time_elapsed = time_now - previous_timestamp_;
-  const uint64_t time_elapsed_seconds
+  const std::uint64_t time_elapsed_seconds
     = std::chrono::duration_cast<std::chrono::seconds>(time_elapsed).count();
 
   // from equation v=u+at
@@ -39,13 +39,13 @@ void ImuDisplacement::initialiseTimePoint(const core::TimePoint initial_timepoin
 
 core::Float ImuDisplacement::getImuDisplacement()
 {
-  // TODO: error handling
+  // TODOLater (/elsewhere?): error handling
   return imu_displacement_;
 }
 
 core::Float ImuDisplacement::getImuVelocity()
 {
-  // TODO: error handling
+  // TODOLater (/elsewhere?): error handling
   return imu_velocity_;
 }
 
