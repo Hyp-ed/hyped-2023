@@ -94,7 +94,7 @@ std::optional<core::RawAccelerationData> Accelerometer::read()
     log_.log(core::LogLevel::kFatal, "acceleration data could not be read");
     return std::nullopt;
   }
-  if (dataReady.value() == 0x00) {
+  if (dataReady.value() % 2 == 0) {
     log_.log(core::LogLevel::kFatal, "acceleration data not ready yet to be read");
     return std::nullopt;
   }
@@ -102,28 +102,20 @@ std::optional<core::RawAccelerationData> Accelerometer::read()
   // x axis
   auto resultX = getRawAccelerationX();
   if (!resultX) return std::nullopt;
-  const std::int16_t XRawAcc
-    = resultX.value() >> 2; /* shifted by 2 as 14bit resolution is used in high performance mode */
-  core::Float XAcceleration = static_cast<core::Float>(XRawAcc);
-  XAcceleration             = XAcceleration / 1000; /* mg to g */
-  XAcceleration = XAcceleration * 1.952; /* Multiply with sensitivity 1.952 in high performance
-                                            mode, 14bit, and full scale +-16g */
+  const std::int16_t XRawAcc = resultX.value(); 
+  core::Float XAcceleration = (static_cast<core::Float>(XRawAcc)) * 0.488f;
 
   // y axis
   auto resultY = getRawAccelerationY();
   if (!resultY) return std::nullopt;
-  const std::int16_t YRawAcc = resultY.value() >> 2;
-  core::Float YAcceleration  = static_cast<core::Float>(YRawAcc);
-  YAcceleration              = YAcceleration / 1000;
-  YAcceleration              = (YAcceleration * 1.952);
+  const std::int16_t YRawAcc = resultY.value(); 
+  core::Float YAcceleration = (static_cast<core::Float>(YRawAcc)) * 0.488f;
 
   // z axis
   auto resultZ = getRawAccelerationZ();
   if (!resultZ) return std::nullopt;
-  const std::int16_t ZRawAcc = resultZ.value() >> 2;
-  core::Float ZAcceleration  = static_cast<core::Float>(ZRawAcc);
-  ZAcceleration              = ZAcceleration / 1000;
-  ZAcceleration              = ZAcceleration * 1.952;
+  const std::int16_t ZRawAcc = resultZ.value(); 
+  core::Float ZAcceleration = (static_cast<core::Float>(ZRawAcc)) * 0.488f;
 
   const std::optional<core::RawAccelerationData> rawAcceleration{
     std::in_place, XAcceleration, YAcceleration, ZAcceleration, std::chrono::system_clock::now()};
