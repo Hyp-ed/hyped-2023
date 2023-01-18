@@ -9,7 +9,8 @@
 #include <core/logger.hpp>
 #include <io/adc.hpp>
 #include <io/hardware_gpio.hpp>
-#include <io/i2c.hpp>
+#include <io/hardware_i2c.hpp>
+#include <io/hardware_spi.hpp>
 
 namespace hyped::debug {
 
@@ -21,7 +22,7 @@ struct Command {
 
 class Repl {
  public:
-  Repl(core::ILogger &log);
+  Repl(core::ILogger &logger);
   void run();
   std::optional<std::unique_ptr<Repl>> fromFile(const std::string &filename);
 
@@ -34,8 +35,9 @@ class Repl {
   void addHelpCommand();
   void addAdcCommands(const std::uint8_t pin);
   void addI2cCommands(const std::uint8_t bus);
+  void addSpiCommands(const std::uint8_t bus);
 
-  core::ILogger &log_;
+  core::ILogger &logger_;
   std::map<std::string, Command> command_map_;
 };
 }  // namespace hyped::debug
