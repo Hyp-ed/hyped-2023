@@ -23,6 +23,13 @@ class ImuDisplacement {
   void updateImuDisplacement(const core::Float imu_acceleration);
 
   /**
+   * @brief initialise timepoint to set up crosschecker for rest of pod run
+   *
+   * @param initial_timepoint time of first accelerometer reading
+   */
+  void initialiseTimePoint(const core::TimePoint initial_timepoint);
+
+  /**
    * @brief Get the Imu Displacement object
    *
    * @return imu estimate of acceleration

@@ -32,6 +32,11 @@ void ImuDisplacement::updateImuDisplacement(const core::Float imu_acceleration)
   previous_timestamp_ = time_now;
 }
 
+void ImuDisplacement::initialiseTimePoint(const core::TimePoint initial_timepoint)
+{
+  previous_timestamp_ = initial_timepoint;
+}
+
 core::Float ImuDisplacement::getImuDisplacement()
 {
   // TODO: error handling
