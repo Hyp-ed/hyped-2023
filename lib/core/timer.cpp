@@ -14,4 +14,11 @@ Duration Timer::measure_execution_time(const std::function<void(void)> task)
   return after - before;
 }
 
+Duration Timer::measure_lapsed_time(const TimePoint previous_timepoint)
+{
+  const TimePoint time_now = time_.now();
+  const Duration duration  = previous_timepoint - time_now;
+  return duration;
+}
+
 }  // namespace hyped::core

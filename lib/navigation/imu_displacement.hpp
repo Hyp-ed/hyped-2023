@@ -4,13 +4,14 @@
 #include <optional>
 
 #include "core/time.hpp"
+#include "core/timer.hpp"
 #include "core/types.hpp"
 
 namespace hyped::navigation {
 
 class ImuDisplacement {
  public:
-  ImuDisplacement();
+  ImuDisplacement(const core::ITimeSource &time);
 
   /**
    * @brief update the imu estimate for both displacement and velocity. Displacement is
@@ -43,7 +44,10 @@ class ImuDisplacement {
   core::Float imu_velocity_;
 
   // timestamp of the last measured acceleration value
-  std::uint64_t previous_timestamp_micros_;
+  core::TimePoint previous_timestamp_;
+
+  // time source
+  const core::ITimeSource &time_;
 };
 
 }  // namespace hyped::navigation
