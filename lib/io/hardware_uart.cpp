@@ -11,7 +11,7 @@ std::optional<Uart> Uart::create(core::ILogger &logger,
                                  const BitsPerByte bits_per_byte)
 {
   char path[15];  // up to "/dev/ttyO5"
-  sprintf(path, "/dev/ttyO%d", static_cast<std::uint8_t>(bus));
+  snprintf(path, sizeof(path), "/dev/ttyO%d", static_cast<std::uint8_t>(bus));
   const int file_descriptor = open(path, O_RDWR | O_NOCTTY | O_NONBLOCK);
   if (file_descriptor < 0) {
     logger.log(core::LogLevel::kFatal,
