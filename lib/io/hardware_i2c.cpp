@@ -17,7 +17,7 @@ std::optional<HardwareI2c> HardwareI2c::create(core::ILogger &logger,
                                                const std::uint8_t bus_address)
 {
   char path[13];  // up to "/dev/i2c-2"
-  sprintf(path, "/dev/i2c-%d", bus_address);
+  snprintf(path, sizeof(path), "/dev/i2c-%d", bus_address);
   const int file_descriptor = open(path, O_RDWR, 0);
   if (file_descriptor < 0) {
     logger.log(core::LogLevel::kFatal, "Failed to find i2c device");

@@ -1,3 +1,5 @@
+#pragma once
+
 #include <io/adc.hpp>
 
 namespace hyped::utils {
