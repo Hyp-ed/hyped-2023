@@ -15,8 +15,8 @@ class EncodersPreprocessor {
   std::optional<core::EncoderData> processData(const core::EncoderData encoder_data);
 
  private:
-  core::EncoderData detectOutliers(const core::EncoderData encoder_data);
-  std::uint8_t max_consecutives = 10;
+  std::optional<core::EncoderData> detectOutliers(const core::EncoderData encoder_data);
+  std::uint8_t max_consecutive_outliers_ = 10;
 
   SensorChecks checkReliable();
 
@@ -24,16 +24,16 @@ class EncodersPreprocessor {
   Quartile getQuartiles(std::array<std::uint32_t, N> &reliable_data);
 
   template<std::size_t N>
-  core::Float getQuartile(const std::array<std::uint32_t, N> &reliable_data, const core::Float quartile_percent);
+  core::Float getSpecificQuartile(const std::array<std::uint32_t, N> &reliable_data, const core::Float quartile_percent);
 
   // number of reliable encoders, initialised as core::kNumEncoders
   std::uint8_t num_reliable_encoders_;
 
   // initialised as {0, 0, 0, 0}, count of consecutive outliers
-  std::array<uint16_t, core::kNumEncoders> encoder_outliers;
+  std::array<uint16_t, core::kNumEncoders> encoder_outliers_;
 
   // initialised as all true, bool mask of reliable sensors
-  std::array<bool, core::kNumEncoders> encoders_reliable;
+  std::array<bool, core::kNumEncoders> encoders_reliable_;
 
   core::ILogger &logger_;
 
