@@ -11,7 +11,7 @@ namespace hyped::state_machine {
 
 class StateMachine {
  public:
-  StateMachine() { current_state = State::kInitialState; };
+  StateMachine() { current_state = State::kIdle; };
 
   void transition(const Message message);
 
@@ -21,11 +21,13 @@ class StateMachine {
 
   // TODO change transitions to actual transitions
   std::array<Transition, kNumTransitions> transitions{{
-    {State::kInitialState, State::state1, Message::mStart},
-    {State::state1, State::state2, Message::message1},
-    {State::state1, State::state3, Message::message2},
-    {State::state2, State::state4, Message::message2},
-    {State::state3, State::state4, Message::message1},
+    {State::kIdle, State::kCalibrating, Message::mCalibrate},
+    {State::kCalibrating, State::kReady, Message::mReady},
+    {State::kReady, State::kAccelerating, Message::mAccelerating},
+    {State::kAccelerating, State::kCruising, Message::mCruising},
+    {State::kCruising, State::kBraking, Message::mBraking},
+    {State::kBraking, State::kStopped, Message::mStoppped},
+    {State::kStopped, State::kOff, Message::mOff},
   }};
 
   State current_state;
