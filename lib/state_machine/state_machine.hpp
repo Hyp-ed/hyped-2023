@@ -28,7 +28,6 @@ class StateMachine {
      {State::kCruising, State::kMotorBraking, Message::mForward},
      {State::kMotorBraking, State::kStopped, Message::mForward},
      {State::kStopped, State::kOff, Message::mForward},
-
      {State::kIdle, State::kFailureStopped, Message::mFailure},
      {State::kCalibrating, State::kFailureStopped, Message::mFailure},
      {State::kReady, State::kFailureStopped, Message::mFailure},
@@ -38,13 +37,10 @@ class StateMachine {
      {State::kFrictionBraking, State::kFailureBraking, Message::mFailure},
      {State::kStopped, State::kFailureStopped, Message::mFailure},
      {State::kFailureBraking, State::kFailureStopped, Message::mFailure},
-
      {State::kFailureBraking, State::kMitigate, Message::mMitigate},
-
      {State::kMitigate, State::kPMAccelerating, Message::mPostEmergency},
      {State::kMitigate, State::kPMCruising, Message::mPostEmergency},
      {State::kMitigate, State::kPMBraking, Message::mPostEmergency},
-
      {State::kPMAccelerating, State::kPMAccelerating, Message::mResume},
      {State::kPMCruising, State::kCruising, Message::mResume},
      {State::kPMBraking, State::kMotorBraking, Message::mResume}}};
