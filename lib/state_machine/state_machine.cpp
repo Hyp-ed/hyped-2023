@@ -32,7 +32,7 @@ void StateMachine::transition(const Message message)
 
 void StateMachine::reset()
 {
-  current_state = State::kInitialState;
+  current_state = State::kIdle;
 }
 
 }  // namespace hyped::state_machine
