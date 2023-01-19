@@ -1,3 +1,5 @@
+#pragma once
+
 #include <io/uart.hpp>
 
 namespace hyped::utils {
