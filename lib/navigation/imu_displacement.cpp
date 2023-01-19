@@ -15,8 +15,9 @@ ImuDisplacement::ImuDisplacement(const core::ITimeSource &time)
 
 void ImuDisplacement::updateImuDisplacement(const core::Float imu_acceleration)
 {
-  const core::TimePoint time_now    = time_.now();
-  const core::Duration time_elapsed = time_now - previous_timestamp_;
+  const core::TimePoint time_now = time_.now();
+  core::Timer timer_(time_);
+  const core::Duration time_elapsed = timer_.measure_lapsed_time(previous_timestamp_);
   const std::uint64_t time_elapsed_seconds
     = std::chrono::duration_cast<std::chrono::seconds>(time_elapsed).count();
 
@@ -34,6 +35,8 @@ void ImuDisplacement::updateImuDisplacement(const core::Float imu_acceleration)
 
 void ImuDisplacement::initialiseTimePoint(const core::TimePoint initial_timepoint)
 {
+  // TODOLater: Implement this initialisation in main algorithm (some sort of startup process?,
+  // Potentailly in initialisation state depending on how dependent navigation wants to be on state)
   previous_timestamp_ = initial_timepoint;
 }
 
