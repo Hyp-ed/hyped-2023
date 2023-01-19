@@ -7,7 +7,9 @@ enum class Message {
   // TODOLater Add the actual messages
   mForward,
   mFailure,
-  mMitigated
+  mMitigate,
+  mPostEmergency,
+  mResume
 };
 
 }  // namespace hyped::state_machine

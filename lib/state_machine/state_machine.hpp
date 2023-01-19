@@ -25,17 +25,29 @@ class StateMachine {
      {State::kCalibrating, State::kReady, Message::mForward},
      {State::kReady, State::kAccelerating, Message::mForward},
      {State::kAccelerating, State::kCruising, Message::mForward},
-     {State::kCruising, State::kBraking, Message::mForward},
-     {State::kBraking, State::kStopped, Message::mForward},
+     {State::kCruising, State::kMotorBraking, Message::mForward},
+     {State::kMotorBraking, State::kStopped, Message::mForward},
      {State::kStopped, State::kOff, Message::mForward},
+
      {State::kIdle, State::kFailureStopped, Message::mFailure},
      {State::kCalibrating, State::kFailureStopped, Message::mFailure},
      {State::kReady, State::kFailureStopped, Message::mFailure},
      {State::kAccelerating, State::kFailureBraking, Message::mFailure},
      {State::kCruising, State::kFailureBraking, Message::mFailure},
-     {State::kBraking, State::kFailureBraking, Message::mFailure},
+     {State::kMotorBraking, State::kFailureBraking, Message::mFailure},
+     {State::kFrictionBraking, State::kFailureBraking, Message::mFailure},
      {State::kStopped, State::kFailureStopped, Message::mFailure},
-     {State::kFailureBraking, State::kFailureStopped, Message::mFailure}}};
+     {State::kFailureBraking, State::kFailureStopped, Message::mFailure},
+
+     {State::kFailureBraking, State::kMitigate, Message::mMitigate},
+
+     {State::kMitigate, State::kPMAccelerating, Message::mPostEmergency},
+     {State::kMitigate, State::kPMCruising, Message::mPostEmergency},
+     {State::kMitigate, State::kPMBraking, Message::mPostEmergency},
+
+     {State::kPMAccelerating, State::kPMAccelerating, Message::mResume},
+     {State::kPMCruising, State::kCruising, Message::mResume},
+     {State::kPMBraking, State::kMotorBraking, Message::mResume}}};
 
   State current_state;
 };
