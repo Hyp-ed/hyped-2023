@@ -4,6 +4,7 @@
 #include <unistd.h>
 
 #include <sys/ioctl.h>
+#include <stdio.h>
 
 #if LINUX
 #include <linux/i2c-dev.h>
@@ -16,7 +17,7 @@ namespace hyped::io {
 I2c::I2c(const uint8_t bus_address, hyped::core::ILogger &log) : sensor_address_(0), log_(log)
 {
   char path[13];  // up to "/dev/i2c-2"
-  snprintf(path, "/dev/i2c-%d", bus_address);
+  snprintf(path, sizeof(path), "/dev/i2c-%d", bus_address);
   file_descriptor_ = open(path, O_RDWR, 0);
   if (file_descriptor_ < 0) { /* log "Could not open i2c device" */
   };
