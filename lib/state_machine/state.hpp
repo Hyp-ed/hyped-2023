@@ -11,7 +11,9 @@ enum class State {
   kAccelerating,
   kCruising,
   kBraking,
+  kFailureBraking,
   kStopped,
+  kFailureStopped,
   kOff
 };
 
