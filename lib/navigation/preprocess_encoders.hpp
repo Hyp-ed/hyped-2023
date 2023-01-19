@@ -4,11 +4,12 @@
 #include <cstdint>
 
 #include "core/types.hpp"
+#include "core/logger.hpp"
 
 namespace hyped::navigation {
 class EncodersPreprocessor {
  public:
-  EncodersPreprocessor();
+  //EncodersPreprocessor();
   EncodersPreprocessor(core::ILogger &logger);
 
   std::optional<core::EncoderData> processData(const core::EncoderData encoder_data);
@@ -17,10 +18,13 @@ class EncodersPreprocessor {
   core::EncoderData detectOutliers(const core::EncoderData encoder_data);
   std::uint8_t max_consecutives = 10;
 
-  void checkReliable();
+  SensorChecks checkReliable();
 
   template<std::size_t N>
-  Quartile getQuartiles(const std::array<std::uint32_t, N> &encoder_data);
+  Quartile getQuartiles(std::array<std::uint32_t, N> &reliable_data);
+
+  template<std::size_t N>
+  core::Float getQuartile(const std::array<std::uint32_t, N> &reliable_data, const core::Float quartile_percent);
 
   // number of reliable encoders, initialised as core::kNumEncoders
   std::uint8_t num_reliable_encoders_;
@@ -29,7 +33,10 @@ class EncodersPreprocessor {
   std::array<uint16_t, core::kNumEncoders> encoder_outliers;
 
   // initialised as all true, bool mask of reliable sensors
-  std::array<bool, core::kNumEncoders> are_encoders_reliable_;
+  std::array<bool, core::kNumEncoders> encoders_reliable;
+
+  core::ILogger &logger_;
+
 };
 
 }  // namespace hyped::navigation
