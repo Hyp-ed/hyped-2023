@@ -1,4 +1,4 @@
-#include "uart.hpp"
+#include "hardware_uart.hpp"
 
 #include <fcntl.h>
 #include <unistd.h>
