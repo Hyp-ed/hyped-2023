@@ -101,7 +101,6 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
   for (auto &bus : buses) {
     repl->addI2cCommands(bus.GetUint());
   }
-
   if (!io.HasMember("pwm")) {
     logger_.log(core::LogLevel::kFatal, "Missing required field 'io.pwm' in configuration file");
     return std::nullopt;
@@ -129,7 +128,6 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
       repl->addPwmCommands(module_id);
     }
   }
-
   if (!io.HasMember("spi")) {
     logger_.log(core::LogLevel::kFatal, "Missing required field 'io.spi' in configuration file");
     return std::nullopt;
