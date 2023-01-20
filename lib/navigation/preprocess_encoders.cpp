@@ -44,8 +44,8 @@ template<std::size_t N>
 core::Float EncodersPreprocessor::getSpecificQuartile(const std::array<std::uint32_t, N> &reliable_data, const core::Float quartile_percent){
 
   const core::Float quartile_index = (num_reliable_encoders_ - 1)*quartile_percent;
-  const std::uint8_t quartile_high = static_cast<int>(std::ceil(quartile_index));
-  const std::uint8_t quartile_low = static_cast<int>(std::floor(quartile_index));
+  const std::uint8_t quartile_high = static_cast<std::uint8_t>(std::ceil(quartile_index));
+  const std::uint8_t quartile_low = static_cast<std::uint8_t>(std::floor(quartile_index));
   const core::Float quartile = (reliable_data.at(quartile_high) + reliable_data.at(quartile_low))/2.0;
   return quartile;
 }
