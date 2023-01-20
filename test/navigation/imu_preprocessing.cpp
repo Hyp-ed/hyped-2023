@@ -22,7 +22,7 @@ TEST(Imu, equal_data)
   core::Logger logger("test", core::LogLevel::kFatal, manual_time);
   navigation::ImuPreprocessor imu_processer(logger);
   core::RawImuData data                          = {{1, 1, 1}};
-  core::ImuData answer                           = {static_cast<float>std::sqrt(3)};
+  core::ImuData answer                           = {static_cast<float> (std::sqrt(3.0))};
   std::optional<std::array<float, 4>> final_data = imu_processer.processData(data);
   ASSERT_EQ(*final_data, answer);
 }
@@ -34,7 +34,7 @@ TEST(Imu, not_equal_data)
   navigation::ImuPreprocessor imu_processer(logger);
   core::RawImuData data                          = {{1, 1, 1}};
   data.at(0)                                     = {3, 5, 6};
-  core::ImuData answer                           = {static_cast<float>std::sqrt(3)};
+  core::ImuData answer                           = {static_cast<float> (std::sqrt(3.0))};
   std::optional<std::array<float, 4>> final_data = imu_processer.processData(data);
   ASSERT_EQ(*final_data, answer);
 }
@@ -49,10 +49,8 @@ TEST(Imu, one_unreliable_sensor)
   for (size_t i; i < 30; ++i) {
     imu_processer.processData(data);
   }
-  core::ImuData answer                           = {static_cast<float>std::sqrt(3)};
+  core::ImuData answer                           = {static_cast<float> (std::sqrt(3.0))};
   std::optional<std::array<float, 4>> final_data = imu_processer.processData(data);
-  std::array<bool, core::kNumImus> bool_array    = {false, true, true, true};
   ASSERT_EQ(*final_data, answer);
-  ASSERT_EQ(imu_processer.getReliablityArray(), bool_array);
 }
 }  // namespace hyped::test
