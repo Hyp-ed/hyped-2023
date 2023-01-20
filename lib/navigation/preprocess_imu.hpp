@@ -17,6 +17,8 @@ class ImuPreprocessor {
 
   std::optional<core::ImuData> processData(const core::RawImuData raw_imu_data);
 
+  std::array<bool, core::kNumImus> getReliablityArray() { return are_imus_reliable_; }
+
  private:
   core::ImuData detectOutliers(const core::ImuData imu_data);
 
