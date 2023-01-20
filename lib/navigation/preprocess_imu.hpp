@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <array>
 #include <cstdint>
+#include <optional>
 
 #include "core/logger.hpp"
 #include "core/types.hpp"

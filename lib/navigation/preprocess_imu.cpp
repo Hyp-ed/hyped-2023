@@ -1,11 +1,5 @@
 #include "preprocess_imu.hpp"
 
-#include <cmath>
-
-#include <algorithm>
-#include <numeric>
-#include <optional>
-
 namespace hyped::navigation {
 
 ImuPreprocessor::ImuPreprocessor(core::ILogger &logger)
