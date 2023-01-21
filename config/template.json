@@ -9,6 +9,10 @@
 				"enabled": false,
 				"buses": []
 			},
+			"pwm": {
+				"enabled": false,
+				"modules": []
+			},
 			"spi": {
 				"enabled": false,
 				"buses": []
