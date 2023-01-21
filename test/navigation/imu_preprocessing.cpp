@@ -9,6 +9,22 @@
 
 namespace hyped::test {
 
+bool checkArrayEquality(core::ImuData &imu_data_a, core::ImuData &imu_data_b)
+{
+  if (imu_data_a.size() == imu_data_b.size()) {
+    for (std::size_t i; i < imu_data_a.size(); ++i) {
+      if (imu_data_a.at(i) == imu_data_b.at(i)) {
+        continue;
+      } else {
+        return false;
+      }
+    }
+  } else {
+    return false;
+  }
+  return true;
+}
+
 void test()
 {
   utils::ManualTime manual_time;
@@ -22,9 +38,9 @@ TEST(Imu, equal_data)
   core::Logger logger("test", core::LogLevel::kFatal, manual_time);
   navigation::ImuPreprocessor imu_processer(logger);
   core::RawImuData data                          = {{1, 1, 1}};
-  core::ImuData answer                           = {static_cast<float> (std::sqrt(3.0))};
+  core::ImuData answer                           = {static_cast<float>(std::sqrt(3.0))};
   std::optional<std::array<float, 4>> final_data = imu_processer.processData(data);
-  ASSERT_EQ(*final_data, answer);
+  ASSERT_TRUE(checkArrayEquality(*final_data, answer));
 }
 
 TEST(Imu, not_equal_data)
@@ -34,9 +50,9 @@ TEST(Imu, not_equal_data)
   navigation::ImuPreprocessor imu_processer(logger);
   core::RawImuData data                          = {{1, 1, 1}};
   data.at(0)                                     = {3, 5, 6};
-  core::ImuData answer                           = {static_cast<float> (std::sqrt(3.0))};
+  core::ImuData answer                           = {static_cast<float>(std::sqrt(3.0))};
   std::optional<std::array<float, 4>> final_data = imu_processer.processData(data);
-  ASSERT_EQ(*final_data, answer);
+  ASSERT_TRUE(checkArrayEquality(*final_data, answer));
 }
 
 TEST(Imu, one_unreliable_sensor)
@@ -46,11 +62,11 @@ TEST(Imu, one_unreliable_sensor)
   navigation::ImuPreprocessor imu_processer(logger);
   core::RawImuData data = {{1, 1, 1}};
   data.at(0)            = {3, 5, 6};
-  for (size_t i; i < 30; ++i) {
+  for (std::size_t i; i < 30; ++i) {
     imu_processer.processData(data);
   }
-  core::ImuData answer                           = {static_cast<float> (std::sqrt(3.0))};
+  core::ImuData answer                           = {static_cast<float>(std::sqrt(3.0))};
   std::optional<std::array<float, 4>> final_data = imu_processer.processData(data);
-  ASSERT_EQ(*final_data, answer);
+  ASSERT_TRUE(checkArrayEquality(*final_data, answer));
 }
 }  // namespace hyped::test
