@@ -40,27 +40,7 @@ std::optional<core::EncoderData> EncodersPreprocessor::processData(const core::E
   }
 }
 
-template<std::size_t N>
-core::Float EncodersPreprocessor::getSpecificQuartile(const std::array<std::uint32_t, N> &reliable_data, const core::Float quartile_percent){
 
-  const core::Float quartile_index = (num_reliable_encoders_ - 1)*quartile_percent;
-  const std::uint8_t quartile_high = static_cast<std::uint8_t>(std::ceil(quartile_index));
-  const std::uint8_t quartile_low = static_cast<std::uint8_t>(std::floor(quartile_index));
-  const core::Float quartile = (reliable_data.at(quartile_high) + reliable_data.at(quartile_low))/2.0;
-  return quartile;
-}
-
-template<std::size_t N>
-Quartile EncodersPreprocessor::getQuartiles(std::array<std::uint32_t, N> &reliable_data){
-  std::sort(reliable_data.begin(), reliable_data.end());
-  return {.q1     = getSpecificQuartile(reliable_data, 0.25),
-            .median = getSpecificQuartile(reliable_data, 0.5),
-            .q3     = getSpecificQuartile(reliable_data, 0.75)};
-}
-
-/*
-The method tidies up the received data by detecting the outliers or data received from faulty 
-sensors and replaces them with median value of the dataset.*/
 std::optional<core::EncoderData> EncodersPreprocessor::detectOutliers(const core::EncoderData encoder_data)
 {
   core::EncoderData encoder_data_copy;
