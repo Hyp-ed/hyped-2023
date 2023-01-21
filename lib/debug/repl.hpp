@@ -7,7 +7,7 @@
 #include <vector>
 
 #include <core/logger.hpp>
-#include <io/adc.hpp>
+#include <io/hardware_adc.hpp>
 #include <io/hardware_gpio.hpp>
 #include <io/hardware_i2c.hpp>
 #include <io/hardware_spi.hpp>
