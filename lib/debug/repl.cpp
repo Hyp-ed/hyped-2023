@@ -146,7 +146,28 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
     }
     const auto buses = spi["buses"].GetArray();
     for (auto &bus : buses) {
-      repl->addI2cCommands(bus.GetUint());
+      repl->addSpiCommands(bus.GetUint());
+    }
+  }
+  if (!io.HasMember("uart")) {
+    logger_.log(core::LogLevel::kFatal, "Missing required field 'io.uart' in configuration file");
+    return std::nullopt;
+  }
+  const auto uart = io["uart"].GetObject();
+  if (!uart.HasMember("enabled")) {
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'io.uart.enabled' in configuration file");
+    return std::nullopt;
+  }
+  if (uart["enabled"].GetBool()) {
+    if (!uart.HasMember("buses")) {
+      logger_.log(core::LogLevel::kFatal,
+                  "Missing required field 'io.uart.buses' in configuration file");
+      return std::nullopt;
+    }
+    const auto buses = uart["buses"].GetArray();
+    for (auto &bus : buses) {
+      repl->addUartCommands(bus.GetUint());
     }
   }
   return repl;
@@ -207,7 +228,7 @@ void Repl::addAdcCommands(const std::uint8_t pin)
   adc_read_command.handler     = [this, adc, pin]() {
     const auto value = adc->readValue();
     if (value) {
-      logger_.log(core::LogLevel::kInfo, "ADC value from pin %d: %d", pin, *value);
+      logger_.log(core::LogLevel::kDebug, "ADC value from pin %d: %d", pin, *value);
     } else {
       logger_.log(core::LogLevel::kFatal, "Failed to read from ADC pin %d", pin);
     }
@@ -240,7 +261,7 @@ void Repl::addI2cCommands(const std::uint8_t bus)
       std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
       const auto value = i2c->readByte(device_address, register_address);
       if (value) {
-        logger_.log(core::LogLevel::kInfo, "I2C value from bus %d: %d", bus, *value);
+        logger_.log(core::LogLevel::kDebug, "I2C value from bus %d: %d", bus, *value);
       } else {
         logger_.log(core::LogLevel::kFatal, "Failed to read from I2C bus %d", bus);
       }
@@ -267,7 +288,7 @@ void Repl::addI2cCommands(const std::uint8_t bus)
       const core::Result result = i2c->writeByteToRegister(device_address, register_address, data);
       if (result == core::Result::kSuccess) {
         logger_.log(
-          core::LogLevel::kInfo, "I2C write successful to device %d on %d", device_address, bus);
+          core::LogLevel::kDebug, "I2C write successful to device %d on %d", device_address, bus);
       } else {
         logger_.log(core::LogLevel::kFatal, "Failed to write to I2C bus: %d", bus);
       }
@@ -371,7 +392,7 @@ void Repl::addSpiCommands(const std::uint8_t bus)
       std::uint8_t read_buffer;
       const core::Result result = spi->read(register_address, &read_buffer, 1);
       if (result == core::Result::kSuccess) {
-        logger_.log(core::LogLevel::kInfo, "SPI value from bus %d: %d", bus, read_buffer);
+        logger_.log(core::LogLevel::kDebug, "SPI value from bus %d: %d", bus, read_buffer);
       } else {
         logger_.log(core::LogLevel::kFatal, "Failed to read from SPI bus %d", bus);
       }
@@ -397,12 +418,67 @@ void Repl::addSpiCommands(const std::uint8_t bus)
       const core::Result result    = spi->write(register_address, data_ptr, 1);
       if (result == core::Result::kSuccess) {
         logger_.log(
-          core::LogLevel::kInfo, "Successful SPI write to device %d on %d", register_address, bus);
+          core::LogLevel::kDebug, "Successful SPI write to device %d on %d", register_address, bus);
       } else {
         logger_.log(core::LogLevel::kFatal, "Failed to write to SPI bus: %d", bus);
       }
     };
     addCommand(spi_write_byte_command);
+  }
+}
+
+void Repl::addUartCommands(const std::uint8_t bus)
+{
+  const UartBus uart_bus   = static_cast<UartBus>(bus);
+  const auto optional_uart = io::Uart::create(logger_, uart_bus, BaudRate::kB38400);
+  if (!optional_uart) {
+    logger_.log(core::LogLevel::kFatal, "Failed to create UART instance on bus %d", bus);
+    return;
+  }
+  const auto uart = std::make_shared<io::Uart>(*optional_uart);
+  {
+    Command uart_read_command;
+    std::stringstream identifier;
+    identifier << "uart " << static_cast<int>(bus) << " read";
+    uart_read_command.name = identifier.str();
+    std::stringstream description;
+    description << "Read from UART bus " << static_cast<int>(bus);
+    uart_read_command.description = description.str();
+    uart_read_command.handler     = [this, uart, bus]() {
+      std::uint8_t read_buffer[255];
+      const core::Result result = uart->readBytes(read_buffer, 255);
+      if (result == core::Result::kSuccess) {
+        logger_.log(core::LogLevel::kDebug, "UART value from bus %d: %s", bus, read_buffer);
+      } else {
+        logger_.log(core::LogLevel::kFatal, "Failed to read from UART bus %d", bus);
+      }
+    };
+    addCommand(uart_read_command);
+  }
+  {
+    Command uart_write_command;
+    std::stringstream identifier;
+    identifier << "uart " << static_cast<int>(bus) << " write";
+    uart_write_command.name = identifier.str();
+    std::stringstream description;
+    description << "Write to UART bus " << static_cast<int>(bus);
+    uart_write_command.description = description.str();
+    uart_write_command.handler     = [this, uart, bus]() {
+      std::string data;
+      std::cout << "Data: ";
+      std::getline(std::cin, data);
+      if (data.length() > 255) {
+        logger_.log(core::LogLevel::kFatal, "Data too long for UART bus: %d", bus);
+        return;
+      }
+      const core::Result result = uart->sendBytes(data.c_str(), data.length());
+      if (result == core::Result::kSuccess) {
+        logger_.log(core::LogLevel::kDebug, "Successfully wrote to UART bus %d", bus);
+      } else {
+        logger_.log(core::LogLevel::kFatal, "Failed to write to UART bus: %d", bus);
+      }
+    };
+    addCommand(uart_write_command);
   }
 }
 

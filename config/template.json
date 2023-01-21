@@ -16,6 +16,10 @@
 			"spi": {
 				"enabled": false,
 				"buses": []
+			},
+			"uart": {
+				"enabled": false,
+				"buses": []
 			}
 		}
 	}
