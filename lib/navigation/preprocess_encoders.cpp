@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "core/types.hpp"
+#include "core/logger.hpp"
 
 namespace hyped::navigation {
 
