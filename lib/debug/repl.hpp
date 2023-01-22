@@ -11,6 +11,7 @@
 #include <io/hardware_gpio.hpp>
 #include <io/hardware_i2c.hpp>
 #include <io/hardware_spi.hpp>
+#include <sensors/accelerometer.hpp>
 
 namespace hyped::debug {
 
@@ -36,6 +37,7 @@ class Repl {
   void addAdcCommands(const std::uint8_t pin);
   void addI2cCommands(const std::uint8_t bus);
   void addSpiCommands(const std::uint8_t bus);
+  void addAccelerometerCommands(const std::uint8_t bus, const std::uint8_t device_address);
 
   core::ILogger &logger_;
   std::map<std::string, Command> command_map_;

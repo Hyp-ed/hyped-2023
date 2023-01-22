@@ -4,7 +4,7 @@ namespace hyped::sensors {
 
 Accelerometer::Accelerometer(const std::uint8_t mux_address,
                              const std::uint8_t channel,
-                             io::I2c &i2c,
+                             io::HardwareI2c &i2c,
                              core::ILogger &log)
     : mux_address_(mux_address),
       channel_(channel),
@@ -38,7 +38,7 @@ std::optional<std::int16_t> Accelerometer::getRawAccelerationX()
     return std::nullopt;
   }
 
-  const auto raw_acceleration_X = (high_byte.value() << 8) | low_byte.value();
+  const auto raw_acceleration_X = (int16_t) ((high_byte.value() << 8) | low_byte.value());
 
   return raw_acceleration_X;
 }
@@ -59,7 +59,7 @@ std::optional<std::int16_t> Accelerometer::getRawAccelerationY()
     return std::nullopt;
   }
 
-  const auto raw_acceleration_Y = (high_byte.value() << 8) | low_byte.value();
+  const auto raw_acceleration_Y = (int16_t) ((high_byte.value() << 8) | low_byte.value());
 
   return raw_acceleration_Y;
 }
@@ -80,7 +80,7 @@ std::optional<std::int16_t> Accelerometer::getRawAccelerationZ()
     return std::nullopt;
   }
 
-  const auto raw_acceleration_Z = (high_byte.value() << 8) | low_byte.value();
+  const auto raw_acceleration_Z = (int16_t) ((high_byte.value() << 8) | low_byte.value());
 
   return raw_acceleration_Z;
 }

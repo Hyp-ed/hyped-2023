@@ -11,6 +11,7 @@
 #include "core/types.hpp"
 #include <core/logger.hpp>
 #include <io/i2c.hpp>
+#include <io/hardware_i2c.hpp>
 
 namespace hyped::sensors {
 
@@ -31,7 +32,7 @@ class Accelerometer : II2cMuxSensor<core::RawAccelerationData> {
  public:
   Accelerometer(const std::uint8_t mux_address,
                 const std::uint8_t channel,
-                io::I2c &i2c,
+                io::HardwareI2c &i2c,
                 core::ILogger &log);
   ~Accelerometer();
 
@@ -41,7 +42,7 @@ class Accelerometer : II2cMuxSensor<core::RawAccelerationData> {
 
  private:
   core::ILogger &log_;
-  io::I2c &i2c_;
+  io::HardwareI2c &i2c_;
   const std::uint8_t mux_address_;
   const std::uint8_t channel_;
 

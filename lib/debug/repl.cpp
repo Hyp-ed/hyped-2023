@@ -56,7 +56,15 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
                 path.c_str());
     return std::nullopt;
   }
-  const auto io = debugger["io"].GetObject();
+  const auto io      = debugger["io"].GetObject();
+
+  if (!debugger.HasMember("sensors")) {
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'debugger.sensors' in configuration file at %s",
+                path.c_str());
+    return std::nullopt;
+  }
+  const auto sensors = debugger["sensors"].GetObject();
 
   if (!io.HasMember("adc")) {
     logger_.log(core::LogLevel::kFatal, "Missing required field 'io.adc' in configuration file");
@@ -122,6 +130,30 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
     for (auto &bus : buses) {
       repl->addI2cCommands(bus.GetUint());
     }
+  }
+
+  if (!sensors.HasMember("accelerometer")) {
+    logger_.log(hyped::core::LogLevel::kFatal,
+             "Missing required field 'sensors.accelerometer' in configuration file");
+    return std::nullopt;
+  }
+  const auto accelerometer = sensors["accelerometer"].GetObject();
+
+  if (!accelerometer.HasMember("enabled")) {
+    logger_.log(hyped::core::LogLevel::kFatal,
+             "Missing required field 'sensors.accelerometer.enabled' in configuration file");
+    return std::nullopt;
+  }
+
+  if (accelerometer["enabled"].GetBool()) {
+    if (!accelerometer.HasMember("bus")) {
+      logger_.log(hyped::core::LogLevel::kFatal,
+               "Missing required field 'sensors.accelerometer.bus' in configuration file");
+      return std::nullopt;
+    }
+    const auto device_address = accelerometer["device_address"].GetUint();
+    const auto bus            = accelerometer["bus"].GetUint();
+    repl->addAccelerometerCommands(bus, device_address);
   }
   return repl;
 }
@@ -307,5 +339,47 @@ void Repl::addSpiCommands(const std::uint8_t bus)
     };
     addCommand(spi_write_byte_command);
   }
+}
+
+void Repl::addAccelerometerCommands(const std::uint8_t bus, const std::uint8_t device_address)
+{
+  //const auto i2c = std::make_shared<hyped::io::HardwareI2c>(bus, logger_);
+  const auto optional_i2c = io::HardwareI2c::create(logger_, bus);
+  if (!optional_i2c) {
+    logger_.log(core::LogLevel::kFatal, "Failed to create I2C instance on bus %d", bus);
+    return;
+  }
+  const auto i2c = std::make_shared<io::HardwareI2c>(*optional_i2c);
+
+  const auto accelerometer
+    = std::make_shared<hyped::sensors::Accelerometer>(device_address, bus, *i2c, logger_);
+
+  accelerometer->configure();
+
+  Command accelerometer_read_command;
+  std::stringstream identifier;
+  identifier << "accelerometer 0x" << std::hex << static_cast<int>(device_address) << " read";
+  accelerometer_read_command.name = identifier.str();
+
+  std::stringstream description;
+  description << "Read accelerometer sensor 0x" << std::hex << static_cast<int>(device_address)
+              << " on "
+              << "I2C bus " << static_cast<int>(bus);
+  accelerometer_read_command.description = description.str();
+
+  accelerometer_read_command.handler     = [this, accelerometer, bus]() {
+
+    const auto value = accelerometer->read();
+    
+    if (value) {
+      const auto result = value.value();
+
+      logger_.log(hyped::core::LogLevel::kInfo, "Acceleration value in mg from bus %d: x %d y %d z %s   at time %d", bus, result.x, result.y, result.z, result.time);
+    } else {
+      logger_.log(hyped::core::LogLevel::kFatal, "Failed to read accelerometer from bus %d", bus);
+    }
+  };
+
+  addCommand(accelerometer_read_command);
 }
 }  // namespace hyped::debug
