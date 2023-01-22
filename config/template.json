@@ -20,7 +20,7 @@
 			"accelerometer": {
 				"enabled": true,
 				"bus": 2,
-				"device_address": 19
+				"device_address": 25
 			}
 		}
 	}

@@ -382,4 +382,5 @@ void Repl::addAccelerometerCommands(const std::uint8_t bus, const std::uint8_t d
 
   addCommand(accelerometer_read_command);
 }
+
 }  // namespace hyped::debug
