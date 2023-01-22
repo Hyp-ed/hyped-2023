@@ -3,6 +3,8 @@
 #include <array>
 #include <cstdint>
 #include <cmath>
+#include <algorithm>
+#include <optional>
 
 #include "core/types.hpp"
 #include "core/logger.hpp"
