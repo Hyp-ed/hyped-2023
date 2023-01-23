@@ -66,7 +66,7 @@ core::ImuData ImuPreprocessor::detectOutliers(const core::ImuData imu_data)
     lower_bound = quartiles.median - 1.2 * iqr;
     upper_bound = quartiles.median + 1.2 * iqr;
   }
-  for (size_t i = 0; i < core::kNumImus; ++i) {
+  for (std::size_t i = 0; i < core::kNumImus; ++i) {
     // converts outliers or unreliables to medians, updates number of consecutive outliers for each
     // sensor
     if (are_imus_reliable_.at(i) == false) {
