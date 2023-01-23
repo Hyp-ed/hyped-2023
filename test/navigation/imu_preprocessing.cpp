@@ -33,9 +33,9 @@ TEST(Imu, equal_data)
   utils::ManualTime manual_time;
   core::Logger logger("test", core::LogLevel::kFatal, manual_time);
   navigation::ImuPreprocessor imu_processer(logger);
-  core::RawImuData data                          = {{1, 1, 1}};
-  core::ImuData answer                           = {static_cast<core::Float>(std::sqrt(3.0))};
-  std::optional<std::array<float, 4>> final_data = imu_processer.processData(data);
+  core::RawImuData data = {{1, 1, 1}};
+  core::ImuData answer  = {static_cast<core::Float>(std::sqrt(3.0))};
+  auto final_data       = imu_processer.processData(data);
   ASSERT_TRUE(checkArrayEquality(*final_data, answer));
 }
 
@@ -44,9 +44,9 @@ TEST(Imu, not_equal_data)
   utils::ManualTime manual_time;
   core::Logger logger("test", core::LogLevel::kFatal, manual_time);
   navigation::ImuPreprocessor imu_processer(logger);
-  core::RawImuData data                   = {{{3, 5, 6}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1}}};
-  core::ImuData answer                    = {static_cast<core::Float>(std::sqrt(3.0))};
-  std::optional<core::ImuData> final_data = imu_processer.processData(data);
+  core::RawImuData data = {{{3, 5, 6}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1}}};
+  core::ImuData answer  = {static_cast<core::Float>(std::sqrt(3.0))};
+  auto final_data       = imu_processer.processData(data);
   ASSERT_TRUE(checkArrayEquality(*final_data, answer));
 }
 
@@ -59,8 +59,8 @@ TEST(Imu, one_unreliable_sensor)
   for (std::size_t i; i < 22; ++i) {
     imu_processer.processData(data);
   }
-  core::ImuData answer                    = {static_cast<core::Float>(std::sqrt(3.0))};
-  std::optional<core::ImuData> final_data = imu_processer.processData(data);
+  core::ImuData answer = {static_cast<core::Float>(std::sqrt(3.0))};
+  auto final_data      = imu_processer.processData(data);
   ASSERT_TRUE(checkArrayEquality(*final_data, answer));
 }
 }  // namespace hyped::test
