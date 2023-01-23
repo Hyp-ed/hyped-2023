@@ -1,30 +1,32 @@
-#include <cstdint>
-#include <cstdio>
+#pragma once
+
 #include <optional>
 
-#include <core/logger.hpp>
+#include <core/types.hpp>
 
 namespace hyped::io {
 
-enum class I2cWriteResult { kSuccess, kFailure };
-
-class I2c {
+class II2c {
  public:
-  I2c(const uint8_t bus_address, hyped::core::ILogger &log);
-  ~I2c();
+  /**
+   * @brief      Reads a byte from some device on the I2C bus.
+   */
+  virtual std::optional<std::uint8_t> readByte(const std::uint8_t device_address,
+                                               const std::uint8_t register_address)
+    = 0;
 
-  std::optional<uint8_t> readByte(const uint8_t device_address, const uint8_t register_address);
-  I2cWriteResult writeByte(const uint8_t device_address,
-                           const uint8_t register_address,
-                           uint8_t data);
+  /**
+   * @brief      General function to write a byte to a register to some device on the I2C bus
+   */
+  virtual core::Result writeByteToRegister(const std::uint8_t device_address,
+                                           const std::uint8_t register_address,
+                                           const std::uint8_t data)
+    = 0;
 
- private:
-  void setSensorAddress(uint8_t device_address);
-
- private:
-  int file_descriptor_;
-  uint8_t sensor_address_;
-  hyped::core::ILogger &log_;
+  /**
+   * @brief      Writes a byte to single register devices such as the mux
+   */
+  virtual core::Result writeByte(const std::uint8_t device_address, std::uint8_t data) = 0;
 };
 
 }  // namespace hyped::io

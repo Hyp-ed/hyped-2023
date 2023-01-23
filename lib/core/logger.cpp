@@ -17,7 +17,7 @@ void Logger::printHead(FILE *file, const char *title)
   const auto timestamp          = std::chrono::system_clock::to_time_t(time_point);
   const auto time_point_seconds = std::chrono::system_clock::from_time_t(timestamp);
   const std::chrono::milliseconds time_point_milliseconds
-    = duration_cast<std::chrono::milliseconds>(time_point - time_point_seconds);
+    = std::chrono::duration_cast<std::chrono::milliseconds>(time_point - time_point_seconds);
   const long long time_milliseconds = time_point_milliseconds.count();
   const std::tm *time_struct        = localtime(&timestamp);
   fprintf(file,

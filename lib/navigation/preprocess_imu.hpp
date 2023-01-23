@@ -1,3 +1,5 @@
+#pragma once
+
 #include "consts.hpp"
 
 #include <cmath>
@@ -80,7 +82,7 @@ class ImuPreprocessor {
   }
 
   // initialised as {0, 0, 0, 0}, count of consecutive outliers
-  std::array<uint16_t, core::kNumImus> num_outliers_per_imu_;
+  std::array<std::uint16_t, core::kNumImus> num_outliers_per_imu_;
 
   // initialised as all true, bool mask of reliable sensors
   std::array<bool, core::kNumImus> are_imus_reliable_;
