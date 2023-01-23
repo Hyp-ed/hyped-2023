@@ -28,8 +28,8 @@ class DummyGpioReader : public io::IGpioReader {
 class DummyGpioWriter : public io::IGpioWriter {
  public:
   using WriteHandler
-    = std::function<io::GpioWriteResult(const std::uint8_t pin, const core::DigitalSignal state)>;
-  virtual io::GpioWriteResult write(const core::DigitalSignal state);
+    = std::function<core::Result(const std::uint8_t pin, const core::DigitalSignal state)>;
+  virtual core::Result write(const core::DigitalSignal state);
 
  private:
   DummyGpioWriter(const std::uint8_t pin, WriteHandler write_handler);

@@ -28,8 +28,8 @@ void NaiveNavigator::encoderUpdate(const core::EncoderData &encoder_data)
 void NaiveNavigator::imuUpdate(const core::RawImuData &imu_data)
 {
   core::Float sum = 0.0;
-  for (size_t i = 0; i < core::kNumImus; ++i) {
-    for (size_t j = 0; j < core::kNumAxis; ++j) {
+  for (std::size_t i = 0; i < core::kNumImus; ++i) {
+    for (std::size_t j = 0; j < core::kNumAxis; ++j) {
       sum += imu_data.at(i).at(j);
     }
   }

@@ -1,3 +1,4 @@
+#pragma once
 #include "consts.hpp"
 
 #include <cmath>
