@@ -6,8 +6,8 @@
 namespace hyped::state_machine {
 
 struct Transition {
-  State from;
-  State to;
+  State source;
+  State target;
   Message message;
 };
 

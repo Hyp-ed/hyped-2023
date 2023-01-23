@@ -13,9 +13,9 @@ class StateMachine {
  public:
   StateMachine() { current_state = State::kIdle; };
 
-  void transition(const Message message);
+  void handleMessage(const Message message);
 
-  std::optional<Message> checkTransition();
+  std::optional<Message> handleData();
 
   void reset();
 

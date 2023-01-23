@@ -10,7 +10,7 @@ StateMachine::StateMachine()
 }
 
 // TODOLater implement
-std::optional<Message> StateMachine::checkTransition()
+std::optional<Message> StateMachine::handleData()
 {
   /*
   check if a transition is needed with current data
@@ -21,11 +21,11 @@ std::optional<Message> StateMachine::checkTransition()
 }
 
 // Transition to next state
-void StateMachine::transition(const Message message)
+void StateMachine::handleMessage(const Message message)
 {
   for (Transition transition : transitions) {
-    if (transition.from == current_state && transition.message == message) {
-      current_state = transition.to;
+    if (transition.source == current_state && transition.message == message) {
+      current_state = transition.target;
     }
   }
 }
