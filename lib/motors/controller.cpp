@@ -6,6 +6,10 @@ Controller::Controller(core::ILogger &logger) : logger_(logger)
 {
 }
 
+core::Result parseMessageFile(const std::string &path) {
+  
+}
+
 void Controller::processErrorMessage(const std::uint16_t error_code)
 {
   switch (error_code) {

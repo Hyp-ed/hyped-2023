@@ -1,12 +1,18 @@
 {
-    "example": [
+    "example_list": [
         {
-            "example_message": {
+            "example_config_message": {
                 "id": 123,
                 "index": 123,
                 "subindex": 234,
                 "data": 2344
             }
         }
-    ]
+    ],
+    "example_message": {
+        "id": 123,
+        "index": 123,
+        "subindex": 234,
+        "data": 2344
+    }
 }
