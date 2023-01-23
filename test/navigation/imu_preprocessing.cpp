@@ -9,11 +9,12 @@
 
 namespace hyped::test {
 
+core::Float epsilon = 1e-5;
 bool checkArrayEquality(core::ImuData &imu_data_a, core::ImuData &imu_data_b)
 {
   if (imu_data_a.size() == imu_data_b.size()) {
     for (std::size_t i; i < imu_data_a.size(); ++i) {
-      if (!(std::abs(imu_data_a.at(i) - imu_data_b.at(i)) < core::kEpsilon)) { return false; }
+      if (!(std::abs(imu_data_a.at(i) - imu_data_b.at(i)) < epsilon)) { return false; }
     }
   } else {
     return false;
