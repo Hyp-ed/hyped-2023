@@ -9,7 +9,7 @@ target_include_directories(${target}
 target_link_libraries(${target}
     GTest::gtest_main
     hyped_core
-    hyped_navigation
+    hyped_navigation 
     hyped_utils
 )
 gtest_discover_tests(${target})

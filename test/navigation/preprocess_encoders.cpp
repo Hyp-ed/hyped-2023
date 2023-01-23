@@ -1,3 +1,5 @@
+#include <cmath>
+
 #include <iostream>
 
 #include <gtest/gtest.h>
@@ -11,16 +13,16 @@ namespace hyped::test {
 
 core::Float epsilon = 1e-5;
 
-bool checkArrayEquality(core::EncoderData &encoder_data_a, core::EncoderData &encoder_data_b){
-    if(encoder_data_a.size() == encoder_data_b.size()){
-        for(std::size_t i = 0; i < encoder_data_a.size();++i){
-            if(std::abs(encoder_data_a.at(i) - encoder_data_b.at(i) >= epsilon)){
-                return false;
-            }
-        }
+bool checkArrayEquality(core::EncoderData &encoder_data_a, core::EncoderData &encoder_data_b)
+{
+  if (encoder_data_a.size() == encoder_data_b.size()) {
+    for (std::size_t i = 0; i < encoder_data_a.size(); ++i) {
+      if (std::fabs(encoder_data_a.at(i) - encoder_data_b.at(i)) > epsilon) { return false; }
     }
-    return true;
+  }
+  return true;
 }
+
 void test()
 {
   utils::ManualTime manual_time;
@@ -28,39 +30,39 @@ void test()
   navigation::EncodersPreprocessor encoder_processer(logger);
 }
 
-TEST(Imu, equal_data)
+TEST(Encoder, equal_data)
 {
   utils::ManualTime manual_time;
   core::Logger logger("test", core::LogLevel::kFatal, manual_time);
   navigation::EncodersPreprocessor encoder_processer(logger);
-  core::EncoderData data                          = {1};
-  core::EncoderData answer                           = {1};
-  auto final_data = encoder_processer.processData(data);
+  core::EncoderData data   = {1, 1, 1, 1};
+  core::EncoderData answer = {1, 1, 1, 1};
+  auto final_data          = encoder_processer.processData(data);
   ASSERT_TRUE(checkArrayEquality(*final_data, answer));
 }
 
-TEST(Imu, not_equal_data)
+TEST(Encoder, not_equal_data)
 {
   utils::ManualTime manual_time;
   core::Logger logger("test", core::LogLevel::kFatal, manual_time);
   navigation::EncodersPreprocessor encoder_processer(logger);
-  core::EncoderData data                   = {6, 1, 1, 1};
-  core::EncoderData answer                    = {1};
-  auto final_data = encoder_processer.processData(data);
+  core::EncoderData data   = {6, 1, 1, 1};
+  core::EncoderData answer = {1, 1, 1, 1};
+  auto final_data          = encoder_processer.processData(data);
   ASSERT_TRUE(checkArrayEquality(*final_data, answer));
 }
 
-TEST(Imu, one_unreliable_sensor)
+TEST(Encoder, one_unreliable_sensor)
 {
   utils::ManualTime manual_time;
   core::Logger logger("test", core::LogLevel::kFatal, manual_time);
   navigation::EncodersPreprocessor encoder_processer(logger);
-  core::EncoderData data = {6,1,1,1};
+  core::EncoderData data = {6, 1, 1, 1};
   for (std::size_t i; i < 12; ++i) {
     encoder_processer.processData(data);
   }
-  core::EncoderData answer                    = {1};
-  auto final_data = encoder_processer.processData(data);
+  core::EncoderData answer = {1, 1, 1, 1};
+  auto final_data          = encoder_processer.processData(data);
   ASSERT_TRUE(checkArrayEquality(*final_data, answer));
 }
 }  // namespace hyped::test
