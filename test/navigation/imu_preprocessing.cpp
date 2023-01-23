@@ -9,7 +9,6 @@
 
 namespace hyped::test {
 
-
 bool checkArrayEquality(core::ImuData &imu_data_a, core::ImuData &imu_data_b)
 {
   if (imu_data_a.size() == imu_data_b.size()) {
