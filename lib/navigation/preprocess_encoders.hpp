@@ -33,7 +33,7 @@ class EncodersPreprocessor {
    */
   std::optional<core::EncoderData> detectOutliers(const core::EncoderData encoder_data);
 
-  /** TODO
+  /**
    * @brief changes the value corresponding to the encoder sensor in the encoders_reliable_ array to
    * false if the number of consecutive outliers exceeds the threshold value
    *
