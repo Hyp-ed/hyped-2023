@@ -9,13 +9,12 @@
 
 namespace hyped::test {
 
-core::Float epsilon = 0.001;
 
 bool checkArrayEquality(core::ImuData &imu_data_a, core::ImuData &imu_data_b)
 {
   if (imu_data_a.size() == imu_data_b.size()) {
     for (std::size_t i; i < imu_data_a.size(); ++i) {
-      if (!(std::abs(imu_data_a.at(i) - imu_data_b.at(i)) < epsilon)) { return false; }
+      if (!(std::abs(imu_data_a.at(i) - imu_data_b.at(i)) < core::kEpsilon)) { return false; }
     }
   } else {
     return false;
@@ -61,7 +60,7 @@ TEST(Imu, one_unreliable_sensor)
   for (std::size_t i; i < 22; ++i) {
     imu_processer.processData(data);
   }
-  core::ImuData answer                    = {static_cast<float>(std::sqrt(3.0))};
+  core::ImuData answer                    = {static_cast<core::Float>(std::sqrt(3.0))};
   std::optional<core::ImuData> final_data = imu_processer.processData(data);
   ASSERT_TRUE(checkArrayEquality(*final_data, answer));
 }
