@@ -1,11 +1,10 @@
-#include "consts.hpp"
-
 #include <array>
 #include <cstdint>
 #include <cmath>
 #include <algorithm>
 #include <optional>
 
+#include "consts.hpp"
 #include "core/types.hpp"
 #include "core/logger.hpp"
 
@@ -14,11 +13,18 @@ namespace hyped::navigation {
 class EncodersPreprocessor {
  public:
   EncodersPreprocessor(core::ILogger &logger);
+
+  /** TODO
+   * @brief
+   * 
+   * @param encoder_data
+   * @return
+  */
   std::optional<core::EncoderData> processData(const core::EncoderData encoder_data);
 
  private:
-
-  /**
+ 
+  /** TODO
    * @brief tidies up the received data by detecting the outliers or data received from faulty 
      sensors and replaces them with median value of the dataset.
    *
@@ -27,9 +33,20 @@ class EncodersPreprocessor {
    */
   std::optional<core::EncoderData> detectOutliers(const core::EncoderData encoder_data);
   
+  /** TODO
+   * @brief
+   * 
+   * @return
+  */
   SensorChecks checkReliable();
 
-
+  /** TODO
+   * @brief
+   * 
+   * @param reliable_data
+   * @param quartile_percent
+   * @return 
+  */
   template<std::size_t N>
   core::Float getSpecificQuartile(const std::array<std::uint32_t, N> &reliable_data, const core::Float quartile_percent){
 
@@ -40,6 +57,12 @@ class EncodersPreprocessor {
     return quartile;
 }
 
+/** TODO
+ * @brief
+ * 
+ * @param reliable_data
+ * @return
+*/
  template<std::size_t N>
  Quartile getQuartiles(std::array<std::uint32_t, N> &reliable_data){
     std::sort(reliable_data.begin(), reliable_data.end());
@@ -47,7 +70,6 @@ class EncodersPreprocessor {
             .median = getSpecificQuartile(reliable_data, 0.5),
             .q3     = getSpecificQuartile(reliable_data, 0.75)};
 }
-
 
   // number of reliable encoders, initialised as core::kNumEncoders
   std::uint8_t num_reliable_encoders_;
@@ -57,9 +79,12 @@ class EncodersPreprocessor {
 
   // initialised as all true, bool mask of reliable sensors
   std::array<bool, core::kNumEncoders> encoders_reliable_;
-  std::uint8_t max_consecutive_outliers_ = 10;
-  core::ILogger &logger_;
 
+  //TODO: comment use
+  std::uint8_t max_consecutive_outliers_ = 10;
+
+  //TODO: comment use
+  core::ILogger &logger_;
 };
 
 }  // namespace hyped::navigation

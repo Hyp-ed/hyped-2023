@@ -4,7 +4,6 @@
 #include <unistd.h>
 
 #include <sys/ioctl.h>
-#include <stdio.h>
 
 #if LINUX
 #include <linux/i2c-dev.h>

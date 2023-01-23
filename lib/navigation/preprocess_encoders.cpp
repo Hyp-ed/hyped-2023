@@ -1,20 +1,7 @@
 #include "preprocess_encoders.hpp"
 
-//#include <cmath>
-
-//#include <algorithm>
-#include <numeric>
-//#include <optional>
-
-//#include "core/types.hpp"
-//#include "core/logger.hpp"
-
 namespace hyped::navigation {
 
-//EncodersPreprocessor::EncodersPreprocessor()
-//{
-  // TODOLater: implement
-//}
 EncodersPreprocessor::EncodersPreprocessor(core::ILogger &logger)
     : logger_(logger),
       encoder_outliers_({0, 0, 0, 0}),
