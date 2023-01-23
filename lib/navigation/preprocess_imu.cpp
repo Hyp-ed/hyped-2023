@@ -17,7 +17,7 @@ std::optional<core::ImuData> ImuPreprocessor::processData(const core::RawImuData
   core::Float magnitude;
   for (std::size_t i = 0; i < core::kNumImus; ++i) {
     magnitude = 0;
-    for (std::size_t j = 0; j < 3; ++j) {
+    for (std::size_t j = 0; j < core::kNumAxis; ++j) {
       magnitude += std::pow(raw_imu_data.at(i).at(j), 2);
     }
     imu_data.at(i) = std::sqrt(magnitude);
