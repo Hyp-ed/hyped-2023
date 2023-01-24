@@ -101,7 +101,7 @@ core::Result Can::listen()
   if (!message) { return core::Result::kFailure; }
   const auto subscribed_processors = processors_.find(message->can_id);
   if (subscribed_processors == processors_.end()) {
-    logger_.log(core::LogLevel::kInfo, "No CanProccessor associated with id %i", message->can_id);
+    logger_.log(core::LogLevel::kFatal, "No CanProccessor associated with id %i", message->can_id);
     return core::Result::kFailure;
   }
   for (auto &processor : subscribed_processors->second) {
@@ -114,7 +114,8 @@ void Can::addCanProcessor(const std::uint16_t id, std::shared_ptr<ICanProcessor>
 {
   const auto id_and_processors = processors_.find(id);
   if (id_and_processors == processors_.end()) {
-    processors_.emplace(id, std::vector<std::shared_ptr<ICanProcessor>>({processor}));
+    auto new_processor_vector = std::vector<std::shared_ptr<ICanProcessor>>({processor});
+    processors_.emplace(id, new_processor_vector);
   } else {
     id_and_processors->second.push_back(processor);
   }
