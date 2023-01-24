@@ -26,6 +26,17 @@ class ImuPreprocessor {
   std::optional<core::ImuData> processData(const core::RawImuData raw_imu_data);
 
  private:
+  core::ILogger &logger_;
+
+  std::array<std::uint16_t, core::kNumImus> num_outliers_per_imu_;
+
+  std::array<bool, core::kNumImus> are_imus_reliable_;
+
+  std::size_t num_reliable_accelerometers_;
+
+  // number of allowed consecutive outliers from single accelerometer
+  static constexpr std::uint8_t kNumAllowedImuFailures_ = 20;
+
   /**
    * @brief filter the imu data by converting outliers to median value
    *
@@ -80,19 +91,6 @@ class ImuPreprocessor {
             .median = getSpecificQuantile(accelerometer_data_copy, 0.5),
             .q3     = getSpecificQuantile(accelerometer_data_copy, 0.75)};
   }
-
-  // initialised as {0, 0, 0, 0}, count of consecutive outliers
-  std::array<std::uint16_t, core::kNumImus> num_outliers_per_imu_;
-
-  // initialised as all true, bool mask of reliable sensors
-  std::array<bool, core::kNumImus> are_imus_reliable_;
-
-  // number of allowed consecutive outliers from single accelerometer
-  static constexpr std::uint8_t kNumAllowedImuFailures_ = 20;
-
-  std::size_t num_reliable_accelerometers_;  // intitialised as= core::kNumImus
-
-  core::ILogger &logger_;
 };
 
 }  // namespace hyped::navigation
