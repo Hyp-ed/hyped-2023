@@ -3,7 +3,7 @@
 #include <cstdint>
 
 #include <core/types.hpp>
-#include <io/can.hpp>
+#include <io/hardware_can.hpp>
 
 namespace hyped::motors {
 

@@ -1,4 +1,4 @@
-#include "can.hpp"
+#include "hardware_can.hpp"
 
 #include <stdio.h>
 #include <unistd.h>
