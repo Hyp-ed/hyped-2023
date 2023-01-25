@@ -45,7 +45,7 @@ using KeyenceData = std::array<std::uint32_t, kNumKeyence>;
 
 // data produced by the accelerometer sensor
 struct RawAccelerationData {
-  RawAccelerationData(core::Float x, core::Float y, core::Float z, TimePoint time)
+  RawAccelerationData(int16_t x, int16_t y, int16_t z, TimePoint time)
       : x(x),
         y(y),
         z(z),
@@ -53,9 +53,9 @@ struct RawAccelerationData {
   {
   }
 
-  core::Float x;
-  core::Float y;
-  core::Float z;
+  int16_t x;
+  int16_t y;
+  int16_t z;
   TimePoint time;
 };
 

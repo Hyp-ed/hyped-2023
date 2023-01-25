@@ -103,19 +103,19 @@ std::optional<core::RawAccelerationData> Accelerometer::read()
   auto resultX = getRawAccelerationX();
   if (!resultX) return std::nullopt;
   const std::int16_t XRawAcc = resultX.value(); 
-  core::Float XAcceleration = (static_cast<core::Float>(XRawAcc)) * 0.488f;
+  int16_t XAcceleration = (int16_t) ((((int32_t) XRawAcc) * 488) / 1000);
 
   // y axis
   auto resultY = getRawAccelerationY();
   if (!resultY) return std::nullopt;
   const std::int16_t YRawAcc = resultY.value(); 
-  core::Float YAcceleration = (static_cast<core::Float>(YRawAcc)) * 0.488f;
+  int16_t YAcceleration = (int16_t) ((((int32_t) YRawAcc) * 488) / 1000);
 
   // z axis
   auto resultZ = getRawAccelerationZ();
   if (!resultZ) return std::nullopt;
   const std::int16_t ZRawAcc = resultZ.value(); 
-  core::Float ZAcceleration = (static_cast<core::Float>(ZRawAcc)) * 0.488f;
+  int16_t ZAcceleration = (int16_t) ((((int32_t) ZRawAcc) * 488) / 1000);
 
   const std::optional<core::RawAccelerationData> rawAcceleration{
     std::in_place, XAcceleration, YAcceleration, ZAcceleration, std::chrono::system_clock::now()};
@@ -145,7 +145,7 @@ core::Result Accelerometer::configure()
 
   /* Enable block data update */
   /* Enable address auto increment */
-  const core::Result ctrl2Result = i2c_.writeByteToRegister(mux_address_, kCTRL2, 0xC);
+  const core::Result ctrl2Result = i2c_.writeByteToRegister(mux_address_, kCTRL2, 0x0);
   if (ctrl2Result == core::Result::kFailure) return core::Result::kFailure;
 
   /* Full scale +-16g */
