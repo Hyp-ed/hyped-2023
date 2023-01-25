@@ -5,10 +5,23 @@
 
 namespace hyped::state_machine {
 
-struct Transition {
+struct TransitionKey {
   State source;
-  State target;
   Message message;
+
+  bool operator==(const TransitionKey& key) const {
+    return key.source == source && key.message == message;
+    }
+};
+
+struct TransitionHasher
+{
+  std::size_t operator()(const TransitionKey& key) const
+  {
+    using std::size_t;
+
+    return ((int) key.source);
+  }
 };
 
 }  // namespace hyped::state_machine

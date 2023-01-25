@@ -23,11 +23,7 @@ std::optional<Message> StateMachine::handleData()
 // Transition to next state
 void StateMachine::handleMessage(const Message message)
 {
-  for (Transition transition : transitions) {
-    if (transition.source == current_state && transition.message == message) {
-      current_state = transition.target;
-    }
-  }
+  current_state = transitions.at({current_state,message});
 }
 
 void StateMachine::reset()
