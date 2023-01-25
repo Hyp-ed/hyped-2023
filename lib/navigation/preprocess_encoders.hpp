@@ -43,7 +43,7 @@ class EncodersPreprocessor {
    * @param encoder_data array containing the values received from various encoder sensors
    * @return consistent data with no outliers
    */
-  std::optional<core::EncoderData> detectOutliers(const core::EncoderData &encoder_data);
+  std::optional<core::EncoderData> sanitise(const core::EncoderData &encoder_data);
 
   /**
    * @brief changes the value corresponding to the encoder sensor in the encoders_reliable_ array to
@@ -87,21 +87,11 @@ class EncodersPreprocessor {
             .median = getSpecificQuantile(reliable_data, 0.5),
             .q3     = getSpecificQuantile(reliable_data, 0.75)};
   }
-
-  // number of reliable encoders, initialised as core::kNumEncoders
-  std::uint8_t num_reliable_encoders_;
-
-  // initialised as {0, 0, 0, 0}, count of consecutive outliers
-  std::array<uint16_t, core::kNumEncoders> encoder_outliers_;
-
-  // initialised as all true, bool mask of reliable sensors
-  std::array<bool, core::kNumEncoders> encoders_reliable_;
-
-  // number of allowed consecutive outliers from a single encoder
-  std::uint8_t max_consecutive_outliers_ = 10;
-
-  // for logging fail state
   core::ILogger &logger_;
+  std::array<uint16_t, core::kNumEncoders> num_consecutive_outliers_per_encoder_;
+  std::array<bool, core::kNumEncoders> is_reliable_per_encoder_;
+  std::uint8_t num_reliable_encoders_;
+  const std::uint8_t max_consecutive_outliers_;
 };
 
 }  // namespace hyped::navigation
