@@ -24,7 +24,7 @@ std::optional<core::EncoderData> EncodersPreprocessor::processData(
 }
 
 std::optional<EncodersPreprocessor::Statistics> EncodersPreprocessor::getStatistics(
-  const core::EncoderData &encoder_data)
+  const core::EncoderData &encoder_data) const
 {
   if (num_reliable_encoders_ > core::kNumEncoders
       || num_reliable_encoders_ < core::kNumEncoders - 1) {

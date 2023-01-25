@@ -34,14 +34,15 @@ class EncodersPreprocessor {
   };
 
   // TODO Doc
-  std::optional<Statistics> getStatistics(const core::EncoderData &encoder_data);
+  std::optional<Statistics> getStatistics(const core::EncoderData &encoder_data) const;
 
   /**
    * @brief tidies up the received data by detecting the outliers or data received from faulty
-     sensors and replaces them with median value of the dataset
+     sensors and replaces them with median value of the dataset; if there are too many
+     outliers or faulty sensors then this function fails
    *
-   * @param encoder_data array containing the values received from various encoder sensors
-   * @return consistent data with no outliers
+   * @param encoder_data to be sanitised
+   * @return consistent data with no outliers, if possible
    */
   std::optional<core::EncoderData> sanitise(const core::EncoderData &encoder_data);
 
@@ -63,7 +64,7 @@ class EncodersPreprocessor {
    */
   template<std::size_t N>
   core::Float getSpecificQuantile(const std::array<std::uint32_t, N> &reliable_data,
-                                  const core::Float fraction)
+                                  const core::Float fraction) const
   {
     const core::Float theoretical_index = (num_reliable_encoders_ - 1) * fraction;
     const std::size_t low_index         = static_cast<std::size_t>(std::floor(theoretical_index));
@@ -80,13 +81,14 @@ class EncodersPreprocessor {
    * @return a quartile object which contains q1, q3 and the median value
    */
   template<std::size_t N>
-  Quartile getQuartiles(std::array<std::uint32_t, N> &reliable_data)
+  Quartile getQuartiles(std::array<std::uint32_t, N> &reliable_data) const
   {
     std::sort(reliable_data.begin(), reliable_data.end());
     return {.q1     = getSpecificQuantile(reliable_data, 0.25),
             .median = getSpecificQuantile(reliable_data, 0.5),
             .q3     = getSpecificQuantile(reliable_data, 0.75)};
   }
+
   core::ILogger &logger_;
   std::array<uint16_t, core::kNumEncoders> num_consecutive_outliers_per_encoder_;
   std::array<bool, core::kNumEncoders> is_reliable_per_encoder_;
