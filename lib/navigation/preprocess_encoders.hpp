@@ -55,23 +55,22 @@ class EncodersPreprocessor {
   SensorChecks checkReliable();
 
   /**
-   * @brief calculates a specific quantile value from input array
+   * @brief calculates a specific quantile value from sorted input array
    *
-   * @param reliable_data array containing filtered values(i.e with no values from faulty sensors)
-   * @param quartile_percent value corresponding to the quantile that we want(0.25 for q1, 0.5 for
-   * median and 0.75 for q3)
+   * @param reliable_data sorted array of values
+   * @param fraction in [0, 1] corresponding to the quantile (e.g. 0.25 for the 25th percentile)
    * @return the quantile that we require
    */
   template<std::size_t N>
   core::Float getSpecificQuantile(const std::array<std::uint32_t, N> &reliable_data,
-                                  const core::Float quartile_percent)
+                                  const core::Float fraction)
   {
-    const core::Float quartile_index = (num_reliable_encoders_ - 1) * quartile_percent;
-    const std::uint8_t quartile_high = static_cast<std::uint8_t>(std::ceil(quartile_index));
-    const std::uint8_t quartile_low  = static_cast<std::uint8_t>(std::floor(quartile_index));
-    const core::Float quartile
-      = (reliable_data.at(quartile_high) + reliable_data.at(quartile_low)) / 2.0;
-    return quartile;
+    const core::Float theoretical_index = (num_reliable_encoders_ - 1) * fraction;
+    const std::size_t low_index         = static_cast<std::size_t>(std::floor(theoretical_index));
+    const std::size_t high_index        = static_cast<std::size_t>(std::ceil(theoretical_index));
+    const auto low                      = static_cast<core::Float>(reliable_data.at(low_index));
+    const auto high                     = static_cast<core::Float>(reliable_data.at(high_index));
+    return (low + high) / 2.0;
   }
 
   /**
