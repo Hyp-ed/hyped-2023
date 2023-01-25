@@ -372,9 +372,9 @@ void Repl::addAccelerometerCommands(const std::uint8_t bus, const std::uint8_t d
     const auto value = accelerometer->read();
     
     if (value) {
-      const auto result = value.value();
+      const core::RawAccelerationData result = value.value();
 
-      logger_.log(hyped::core::LogLevel::kInfo, "Acceleration value in mg from bus %d: x %d y %d z %s   at time %d", bus, result.x, result.y, result.z, result.time);
+      logger_.log(hyped::core::LogLevel::kInfo, "Acceleration in mg: \n x %d \n y %d \n z %d", result.x, result.y, result.z);
     } else {
       logger_.log(hyped::core::LogLevel::kFatal, "Failed to read accelerometer from bus %d", bus);
     }
