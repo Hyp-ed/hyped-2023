@@ -1,5 +1,7 @@
 #include "preprocess_encoders.hpp"
 
+#include "core/types.hpp"
+
 namespace hyped::navigation {
 
 EncodersPreprocessor::EncodersPreprocessor(core::ILogger &logger)
@@ -22,60 +24,65 @@ std::optional<core::EncoderData> EncodersPreprocessor::processData(
   }
 }
 
-std::optional<core::EncoderData> EncodersPreprocessor::detectOutliers(
-  const core::EncoderData encoder_data)
+std::optional<EncodersPreprocessor::Statistics> EncodersPreprocessor::getStatistics(
+  const core::EncoderData &encoder_data)
 {
-  core::EncoderData encoder_data_copy;
-  std::copy(encoder_data.begin(), encoder_data.end(), encoder_data_copy.begin());
-  Quartile quartiles;
-  core::Float interquartile_range;
-  core::Float upper_bound;
-  core::Float lower_bound;
-  // Case 1: All sensors are functioning properly
-  if (num_reliable_encoders_ == core::kNumEncoders) {
-    core::EncoderData reliable_data;
-    std::copy(encoder_data.begin(), encoder_data.end(), reliable_data.begin());
-    quartiles           = getQuartiles(reliable_data);
-    interquartile_range = quartiles.q3 - quartiles.q1;
-    upper_bound         = quartiles.median + 1.5 * interquartile_range;
-    lower_bound         = quartiles.median - 1.5 * interquartile_range;
-
-  }
-  // Case 2: One of the sensors has become faulty
-  else if (num_reliable_encoders_ == core::kNumEncoders - 1) {
-    std::array<uint32_t, core::kNumEncoders - 1> reliable_data;
-    std::size_t counter = 0;
-    for (std::size_t i = 0; i < encoder_data.size(); ++i) {
-      if (encoders_reliable_.at(i)) {
-        reliable_data.at(counter) = encoder_data.at(i);
-        ++counter;
-      }
-    }
-    quartiles           = getQuartiles(reliable_data);
-    interquartile_range = quartiles.q3 - quartiles.q1;
-    upper_bound         = quartiles.median + 1.2 * interquartile_range;
-    lower_bound         = quartiles.median - 1.2 * interquartile_range;
-  }
-  // Case 3: More than one sensors have become unreliable, stopping everything and entering into
-  // fail State.
-  else {
+  if (num_reliable_encoders_ > core::kNumEncoders
+      || num_reliable_encoders_ < core::kNumEncoders - 1) {
     logger_.log(core::LogLevel::kFatal,
-                "Number of unreliable encoder sensors have exceeded the threshold");
+                "Unsuitable number of reliable encoders (%d of %d)",
+                num_reliable_encoders_,
+                core::kNumEncoders);
     return std::nullopt;
   }
+  if (num_reliable_encoders_ == core::kNumEncoders) {
+    std::array<std::uint32_t, core::kNumEncoders> reliable_data;
+    std::copy(encoder_data.begin(), encoder_data.end(), reliable_data.begin());
+    const Quartile quartiles              = getQuartiles(reliable_data);
+    const core::Float interquartile_range = quartiles.q3 - quartiles.q1;
+    return {
+      {.median      = quartiles.median,
+       .upper_bound = quartiles.median + static_cast<core::Float>(1.5) * interquartile_range,
+       .lower_bound = quartiles.median - static_cast<core::Float>(1.5) * interquartile_range}};
+  } else {
+    std::array<uint32_t, core::kNumEncoders - 1> reliable_data;
+    std::size_t j = 0;
+    for (std::size_t i = 0; i < encoder_data.size(); ++i) {
+      if (encoders_reliable_.at(i)) {
+        reliable_data.at(j) = encoder_data.at(i);
+        ++j;
+      }
+    }
+    const Quartile quartiles              = getQuartiles(reliable_data);
+    const core::Float interquartile_range = quartiles.q3 - quartiles.q1;
+    return {
+      {.median      = quartiles.median,
+       .upper_bound = quartiles.median + static_cast<core::Float>(1.2) * interquartile_range,
+       .lower_bound = quartiles.median - static_cast<core::Float>(1.2) * interquartile_range}};
+  }
+}
 
+std::optional<core::EncoderData> EncodersPreprocessor::detectOutliers(
+  const core::EncoderData &encoder_data)
+{
+  const auto statistics = getStatistics(encoder_data);
+  if (!statistics) {
+    logger_.log(core::LogLevel::kFatal, "Failed to obtain statistics for measurement");
+  }
+  core::EncoderData encoder_data_copy;
+  std::copy(encoder_data.begin(), encoder_data.end(), encoder_data_copy.begin());
   for (std::size_t i = 0; i < encoder_data_copy.size(); ++i) {
     // replacing the ouliers or data from faulty sensors with the median of the dataset.
-    if (encoder_data_copy.at(i) > upper_bound || encoder_data_copy.at(i) < lower_bound
-        || encoders_reliable_.at(i) == false) {
-      encoder_data_copy.at(i) = quartiles.median;
-
-      if (encoders_reliable_.at(i)) { ++encoder_outliers_.at(i); }
+    if (encoder_data_copy.at(i) > statistics->upper_bound
+        || encoder_data_copy.at(i) < statistics->lower_bound) {
+      encoder_data_copy.at(i) = statistics->median;
+      ++encoder_outliers_.at(i);
+    } else if (!encoders_reliable_.at(i)) {
+      encoder_data_copy.at(i) = statistics->median;
     } else {
       encoder_outliers_.at(i) = 0;
     }
   }
-
   return encoder_data_copy;
 }
 

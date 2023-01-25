@@ -12,6 +12,7 @@
 #include "core/types.hpp"
 
 namespace hyped::navigation {
+
 class EncodersPreprocessor {
  public:
   EncodersPreprocessor(core::ILogger &logger);
@@ -22,9 +23,19 @@ class EncodersPreprocessor {
    * @param encoder_data
    * @return cleaned and reliable encoder data
    */
-  std::optional<core::EncoderData> processData(const core::EncoderData encoder_data);
+  std::optional<core::EncoderData> processData(const core::EncoderData &encoder_data);
 
  private:
+  // TODO confirm or improve name
+  struct Statistics {
+    core::Float median;
+    core::Float upper_bound;
+    core::Float lower_bound;
+  };
+
+  // TODO Doc
+  std::optional<Statistics> getStatistics(const core::EncoderData &encoder_data);
+
   /**
    * @brief tidies up the received data by detecting the outliers or data received from faulty
      sensors and replaces them with median value of the dataset
@@ -32,7 +43,7 @@ class EncodersPreprocessor {
    * @param encoder_data array containing the values received from various encoder sensors
    * @return consistent data with no outliers
    */
-  std::optional<core::EncoderData> detectOutliers(const core::EncoderData encoder_data);
+  std::optional<core::EncoderData> detectOutliers(const core::EncoderData &encoder_data);
 
   /**
    * @brief changes the value corresponding to the encoder sensor in the encoders_reliable_ array to
