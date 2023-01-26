@@ -112,8 +112,8 @@ void Can::addCanProcessor(const std::uint16_t id, std::shared_ptr<ICanProcessor>
 {
   const auto id_and_processors = processors_.find(id);
   if (id_and_processors == processors_.end()) {
-    auto new_processor_vector = std::vector<std::shared_ptr<ICanProcessor>>({processor});
-    processors_.emplace(id, new_processor_vector);
+    auto processors_for_id = std::vector<std::shared_ptr<ICanProcessor>>({processor});
+    processors_.emplace(id, processors_for_id);
   } else {
     id_and_processors->second.push_back(processor);
   }
