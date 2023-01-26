@@ -1,12 +1,14 @@
 #pragma once
+
 #include <cstdint>
 #include <string>
+#include <unordered_map>
+#include <vector>
+
 #include <linux/can.h>
 
 #include "core/logger.hpp"
 #include "core/types.hpp"
-
-#include <unordered_map>
 
 namespace hyped::motors {
 enum class ControllerStatus { kControllerTemperatureExceeded, kUnrecoverableWarning, kNominal };
@@ -20,7 +22,8 @@ class Controller {
 
  private:
   core::ILogger &logger_;
-  std::unordered_map<std::string, can_frame> messages;
+  std::unordered_map<std::string, can_frame> messages_;
+  std::vector<can_frame> configuration_messages_;
 };
 
 }  // namespace hyped::motors

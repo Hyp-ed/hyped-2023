@@ -1,13 +1,45 @@
 #include "controller.hpp"
 
+#include <fstream>
+
+#include <rapidjson/document.h>
+#include <rapidjson/error/en.h>
+#include <rapidjson/istreamwrapper.h>
+
 namespace hyped::motors {
 
-Controller::Controller(core::ILogger &logger) : logger_(logger)
+Controller::Controller(core::ILogger &logger) : logger_(logger), configuration_messages_()
 {
 }
 
-core::Result parseMessageFile(const std::string &path) {
-  
+core::Result Controller::parseMessageFile(const std::string &path)
+{
+  std::ifstream input_stream(path);
+  if (!input_stream.is_open()) {
+    logger_.log(core::LogLevel::kFatal, "Failed to open file %s", path.c_str());
+    return core::Result::kFailure;
+  }
+  rapidjson::IStreamWrapper input_stream_wrapper(input_stream);
+  rapidjson::Document document;
+  rapidjson::ParseResult result = document.ParseStream(input_stream_wrapper);
+  if (!result) {
+    logger_.log(core::LogLevel::kFatal,
+                "Error parsing JSON: %s",
+                rapidjson::GetParseError_En(document.GetParseError()));
+    return core::Result::kFailure;
+  }
+  if (!document.HasMember("config_commands")) {
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'config_messages' in can message file at %s",
+                path.c_str());
+    return core::Result::kFailure;
+  }
+  const auto configuration_messages = document["config_commands"].GetObject();
+  for (auto &message : configuration_messages) {
+    // TODO make work
+    configuration_messages_.push_back(message);
+  }
+  return core::Result::kFailure;
 }
 
 void Controller::processErrorMessage(const std::uint16_t error_code)

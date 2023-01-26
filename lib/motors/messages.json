@@ -1,5 +1,6 @@
 {
-    "example_list": [
+    "categories": [],
+    "config_commands": [
         {
             "example_config_message": {
                 "id": 123,
