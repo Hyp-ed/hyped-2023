@@ -18,7 +18,7 @@ void ImuDisplacement::updateImuDisplacement(const core::Float imu_acceleration,
                                             const core::TimePoint imu_timestamp)
 {
   core::Timer timer_(time_);
-  const core::Duration time_elapsed = timer_.measureElapsedTime(imu_timestamp, previous_timestamp_);
+  const auto time_elapsed = timer_.measureElapsedTime(imu_timestamp, previous_timestamp_);
   const core::Float time_elapsed_seconds = timer_.elapsedTimeInSeconds(time_elapsed);
 
   // from equation v=u+at
