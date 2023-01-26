@@ -26,14 +26,19 @@ class EncodersPreprocessor {
   std::optional<core::EncoderData> processData(const core::EncoderData &encoder_data);
 
  private:
-  // TODO confirm or improve name
   struct Statistics {
     core::Float median;
     core::Float upper_bound;
     core::Float lower_bound;
   };
 
-  // TODO Doc
+  /**
+   * @brief calculate the upper and lower bounds as well as the median for
+   * the input data array
+   *
+   * @param encoder_data
+   * @return std::optional<Statistics>
+   */
   std::optional<Statistics> getStatistics(const core::EncoderData &encoder_data) const;
 
   /**
@@ -91,7 +96,7 @@ class EncodersPreprocessor {
 
   core::ILogger &logger_;
   std::array<uint16_t, core::kNumEncoders> num_consecutive_outliers_per_encoder_;
-  std::array<bool, core::kNumEncoders> is_reliable_per_encoder_;
+  std::array<bool, core::kNumEncoders> are_encoders_reliable_;
   std::uint8_t num_reliable_encoders_;
   const std::uint8_t max_consecutive_outliers_;
 };

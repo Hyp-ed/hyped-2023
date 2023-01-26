@@ -8,8 +8,8 @@ namespace hyped::navigation {
 EncodersPreprocessor::EncodersPreprocessor(core::ILogger &logger)
     : logger_(logger),
       num_consecutive_outliers_per_encoder_({0, 0, 0, 0}),
-      is_reliable_per_encoder_({true, true, true, true}),
-      num_reliable_encoders_(core::kNumImus),
+      are_encoders_reliable_({true, true, true, true}),
+      num_reliable_encoders_(core::kNumEncoders),
       max_consecutive_outliers_(10)
 {
 }
@@ -46,7 +46,7 @@ std::optional<EncodersPreprocessor::Statistics> EncodersPreprocessor::getStatist
     std::array<uint32_t, core::kNumEncoders - 1> reliable_data;
     std::size_t j = 0;
     for (std::size_t i = 0; i < encoder_data.size(); ++i) {
-      if (is_reliable_per_encoder_.at(i)) {
+      if (are_encoders_reliable_.at(i)) {
         reliable_data.at(j) = encoder_data.at(i);
         ++j;
       }
@@ -66,6 +66,7 @@ std::optional<core::EncoderData> EncodersPreprocessor::sanitise(
   const auto statistics = getStatistics(encoder_data);
   if (!statistics) {
     logger_.log(core::LogLevel::kFatal, "Failed to obtain statistics for measurement");
+    return std::nullopt;
   }
   auto sanitised_data = encoder_data;
   for (std::size_t i = 0; i < encoder_data.size(); ++i) {
@@ -76,7 +77,7 @@ std::optional<core::EncoderData> EncodersPreprocessor::sanitise(
     } else {
       num_consecutive_outliers_per_encoder_.at(i) = 0;
     }
-    if (!is_reliable_per_encoder_.at(i)) { sanitised_data.at(i) = statistics->median; }
+    if (!are_encoders_reliable_.at(i)) { sanitised_data.at(i) = statistics->median; }
   }
   if (checkReliable() == SensorChecks::kUnacceptable) { return std::nullopt; }
   return sanitised_data;
@@ -87,8 +88,8 @@ SensorChecks EncodersPreprocessor::checkReliable()
   for (std::size_t i = 0; i < core::kNumEncoders; ++i) {
     // changes reliable sensor to false if max consecutive outliers are reached
     if (num_consecutive_outliers_per_encoder_.at(i) > max_consecutive_outliers_
-        && is_reliable_per_encoder_.at(i)) {
-      is_reliable_per_encoder_.at(i) = false;  // the encoder is now unrealiable
+        && are_encoders_reliable_.at(i)) {
+      are_encoders_reliable_.at(i) = false;  // the encoder is now unrealiable
       --num_reliable_encoders_;
     }
   }
