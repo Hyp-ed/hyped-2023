@@ -7,7 +7,7 @@ Crosscheck::Crosscheck()
   // TODOLater: implement
 }
 
-SensorChecks Crosscheck::checkTrajectoryAgreement(const core::ImuData imu_data,
+SensorChecks Crosscheck::checkTrajectoryAgreement(const core::AccelerometerData accelerometer_data,
                                                   const core::EncoderData encoders_data,
                                                   const core::KeyenceData keyence_data)
 {
@@ -24,7 +24,8 @@ SensorChecks Crosscheck::checkTrajectoryAgreement(const core::ImuData imu_data,
   return SensorChecks::kAcceptable;
 }
 
-SensorChecks checkEncoderImu(const core::ImuData imu_data, const core::EncoderData encoders_data)
+SensorChecks checkEncoderImu(const core::AccelerometerData accelerometer_data,
+                             const core::EncoderData encoders_data)
 {
   /*
   TODOLater: implement.

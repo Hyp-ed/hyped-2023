@@ -25,16 +25,16 @@ void NaiveNavigator::encoderUpdate(const core::EncoderData &encoder_data)
   current_trajectory_.displacement = encoder_average;
 }
 
-void NaiveNavigator::imuUpdate(const core::RawImuData &imu_data)
+void NaiveNavigator::accelerometerUpdate(const core::RawAccelerometerData &accelerometer_data)
 {
   core::Float sum = 0.0;
-  for (std::size_t i = 0; i < core::kNumImus; ++i) {
+  for (std::size_t i = 0; i < core::kNumAccelerometers; ++i) {
     for (std::size_t j = 0; j < core::kNumAxis; ++j) {
-      sum += imu_data.at(i).at(j);
+      sum += accelerometer_data.at(i).at(j);
     }
   }
-  core::Float imu_average          = static_cast<core::Float>(sum / core::kNumImus);
-  current_trajectory_.acceleration = imu_average;
+  core::Float accelerometer_average          = static_cast<core::Float>(sum / core::kNumAccelerometers);
+  current_trajectory_.acceleration = accelerometer_average;
   // TODOLater: improve this...
   current_trajectory_.velocity = 0;
 }

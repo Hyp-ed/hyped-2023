@@ -20,20 +20,20 @@ class Crosscheck {
    * @return true signifies trajectory agreement
    * @return false signifies trajectory disagreement. We enter fail state
    */
-  SensorChecks checkTrajectoryAgreement(const core::ImuData imu_data,
+  SensorChecks checkTrajectoryAgreement(const core::AccelerometerData accelerometer_data,
                                         const core::EncoderData encoders_data,
                                         const core::KeyenceData keyence_data);
 
  private:
   /**
-   * @brief Checks the double integrated IMU value of displacement against
+   * @brief Checks the double integrated accelerometer value of displacement against
    * the encoder value of displacement to some tolerance
    * TODOLater: update comment with tolerance once updated
    *
-   * @return true IMU and wheel encoders agree
-   * @return false IMU and wheel encoders disagree
+   * @return true accelerometer and wheel encoders agree
+   * @return false accelerometers and wheel encoders disagree
    */
-  SensorChecks checkEncoderImu(const core::ImuData imu_data, const core::EncoderData encoders_data);
+  SensorChecks checkEncoderImu(const core::AccelerometerData accelerometer_data, const core::EncoderData encoders_data);
 
   /**
    * @brief Checks the keyence value of displacement against the

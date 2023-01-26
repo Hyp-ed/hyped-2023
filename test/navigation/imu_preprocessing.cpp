@@ -10,51 +10,49 @@
 namespace hyped::test {
 
 core::Float epsilon = 1e-5;
-bool checkArrayEquality(const core::ImuData &imu_data_a, const core::ImuData &imu_data_b)
+bool checkArrayEquality(const core::AccelerometerData &data_a,
+                        const core::AccelerometerData &data_b)
 {
-  if (imu_data_a.size() == imu_data_b.size()) {
-    for (std::size_t i; i < imu_data_a.size(); ++i) {
-      if (!(std::abs(imu_data_a.at(i) - imu_data_b.at(i)) < epsilon)) { return false; }
-    }
-  } else {
-    return false;
+  if (data_a.size() != data_b.size()) { return false; }
+  for (std::size_t i; i < data_a.size(); ++i) {
+    if (!(std::abs(data_a.at(i) - data_b.at(i)) < epsilon)) { return false; }
   }
   return true;
 }
 
-TEST(Imu, equal_data)
+TEST(Accelerometer, equal_data)
 {
   utils::ManualTime manual_time;
   core::Logger logger("test", core::LogLevel::kFatal, manual_time);
-  navigation::ImuPreprocessor imu_processer(logger);
-  const core::RawImuData data = {{1, 1, 1}};
-  const core::ImuData answer  = {static_cast<core::Float>(std::sqrt(3.0))};
-  const auto final_data       = imu_processer.processData(data);
+  navigation::AccelerometerPreprocessor accelerometer_processer(logger);
+  const core::RawAccelerometerData data = {{1, 1, 1}};
+  const core::AccelerometerData answer  = {static_cast<core::Float>(std::sqrt(3.0))};
+  const auto final_data                 = accelerometer_processer.processData(data);
   ASSERT_TRUE(checkArrayEquality(*final_data, answer));
 }
 
-TEST(Imu, not_equal_data)
+TEST(Accelerometer, not_equal_data)
 {
   utils::ManualTime manual_time;
   core::Logger logger("test", core::LogLevel::kFatal, manual_time);
-  navigation::ImuPreprocessor imu_processer(logger);
-  const core::RawImuData data = {{{3, 5, 6}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1}}};
-  const core::ImuData answer  = {static_cast<core::Float>(std::sqrt(3.0))};
-  const auto final_data       = imu_processer.processData(data);
+  navigation::AccelerometerPreprocessor accelerometer_processer(logger);
+  const core::RawAccelerometerData data = {{{3, 5, 6}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1}}};
+  const core::AccelerometerData answer  = {static_cast<core::Float>(std::sqrt(3.0))};
+  const auto final_data                 = accelerometer_processer.processData(data);
   ASSERT_TRUE(checkArrayEquality(*final_data, answer));
 }
 
-TEST(Imu, one_unreliable_sensor)
+TEST(Accelerometer, one_unreliable_sensor)
 {
   utils::ManualTime manual_time;
   core::Logger logger("test", core::LogLevel::kFatal, manual_time);
-  navigation::ImuPreprocessor imu_processer(logger);
-  const core::RawImuData data = {{{3, 5, 6}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1}}};
+  navigation::AccelerometerPreprocessor accelerometer_processer(logger);
+  const core::RawAccelerometerData data = {{{3, 5, 6}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1}}};
   for (std::size_t i; i < 22; ++i) {
-    imu_processer.processData(data);
+    accelerometer_processer.processData(data);
   }
-  const core::ImuData answer = {static_cast<core::Float>(std::sqrt(3.0))};
-  const auto final_data      = imu_processer.processData(data);
+  const core::AccelerometerData answer = {static_cast<core::Float>(std::sqrt(3.0))};
+  const auto final_data                = accelerometer_processer.processData(data);
   ASSERT_TRUE(checkArrayEquality(*final_data, answer));
 }
 }  // namespace hyped::test

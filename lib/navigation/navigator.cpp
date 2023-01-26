@@ -40,7 +40,7 @@ void Navigator::encoderUpdate(const core::EncoderData &encoder_data)
   */
 }
 
-void Navigator::imuUpdate(const core::RawImuData &imu_data)
+void Navigator::imuUpdate(const core::RawAccelerometerData &accelerometer_data)
 {
   /*
   TODOLater:

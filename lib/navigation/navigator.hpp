@@ -32,9 +32,9 @@ class Navigator : public INavigator {
   /**
    * @brief preprocesses imu data and updates trajectory
    *
-   * @param imu_data
+   * @param accelerometer_data
    */
-  void imuUpdate(const core::RawImuData &imu_data);
+  void imuUpdate(const core::RawAccelerometerData &accelerometer_data);
 
  private:
   // previous readings

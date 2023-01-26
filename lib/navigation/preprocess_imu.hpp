@@ -13,37 +13,35 @@
 #include "core/types.hpp"
 
 namespace hyped::navigation {
-class ImuPreprocessor {
+class AccelerometerPreprocessor {
  public:
-  ImuPreprocessor(core::ILogger &logger);
+  AccelerometerPreprocessor(core::ILogger &logger);
 
   /**
    * @brief convert raw imu data to cleaned and filtered data
    *
-   * @param raw_imu_data
+   * @param raw_accelerometer_data
    * @return clean imu data or optionally fail
    */
-  std::optional<core::ImuData> processData(const core::RawImuData raw_imu_data);
+  std::optional<core::AccelerometerData> processData(
+    const core::RawAccelerometerData raw_accelerometer_data);
 
  private:
   core::ILogger &logger_;
-
-  std::array<std::uint16_t, core::kNumImus> num_outliers_per_imu_;
-
-  std::array<bool, core::kNumImus> are_imus_reliable_;
-
+  std::array<std::uint16_t, core::kNumAccelerometers> num_outliers_per_accelerometer_;
+  std::array<bool, core::kNumAccelerometers> are_accelerometers_reliable_;
   std::size_t num_reliable_accelerometers_;
 
   // number of allowed consecutive outliers from single accelerometer
-  static constexpr std::uint8_t kNumAllowedImuFailures_ = 20;
+  static constexpr std::uint8_t kNumAllowedAccelerometerFailures_ = 20;
 
   /**
    * @brief filter the imu data by converting outliers to median value
    *
-   * @param imu_data
+   * @param accelerometer_data
    * @return filtered imu data
    */
-  core::ImuData detectOutliers(const core::ImuData imu_data);
+  core::AccelerometerData detectOutliers(core::AccelerometerData accelerometer_data);
 
   /**
    * @brief check the reliability of all imu's
