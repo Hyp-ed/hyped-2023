@@ -18,10 +18,10 @@ class AccelerometerPreprocessor {
   AccelerometerPreprocessor(core::ILogger &logger);
 
   /**
-   * @brief convert raw imu data to cleaned and filtered data
+   * @brief convert raw accelerometer data to cleaned and filtered data
    *
    * @param raw_accelerometer_data
-   * @return clean imu data or optionally fail
+   * @return clean accelerometer data or optionally fail
    */
   std::optional<core::AccelerometerData> processData(
     const core::RawAccelerometerData raw_accelerometer_data);
@@ -36,15 +36,15 @@ class AccelerometerPreprocessor {
   static constexpr std::uint8_t kNumAllowedAccelerometerFailures_ = 20;
 
   /**
-   * @brief filter the imu data by converting outliers to median value
+   * @brief filter the accelerometer data by converting outliers to median value
    *
    * @param accelerometer_data
-   * @return filtered imu data
+   * @return filtered accelerometer data
    */
   core::AccelerometerData detectOutliers(core::AccelerometerData accelerometer_data);
 
   /**
-   * @brief check the reliability of all imu's
+   * @brief check the reliability of all accelerometer's
    *
    * @return SensorChecks with value kAcceptable or kUnacceptable
    */
