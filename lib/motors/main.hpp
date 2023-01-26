@@ -2,7 +2,7 @@
 
 namespace hyped::motors {
   // Temporary states, actual states TBC.
-enum class MotorStates { kInitialisation, kCalibration, kMotorReady, kMotorAccelerating, kMotorBraking, kRunComplete, kEmergencyBreak };
+enum class MotorStates { kInitialisation, kCalibration, kReady, kAcceleration, kNominalBreaking, kStopped, kFailureBreaking, kMotorBreaking, kFrictionBreaking, kMitigate, kPEAccelerating, kPECruising, kPEBreaking };
 
 class Main {
  public:
