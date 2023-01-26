@@ -33,8 +33,8 @@ void NaiveNavigator::accelerometerUpdate(const core::RawAccelerometerData &accel
       sum += accelerometer_data.at(i).at(j);
     }
   }
-  core::Float accelerometer_average          = static_cast<core::Float>(sum / core::kNumAccelerometers);
-  current_trajectory_.acceleration = accelerometer_average;
+  core::Float accelerometer_average = static_cast<core::Float>(sum / core::kNumAccelerometers);
+  current_trajectory_.acceleration  = accelerometer_average;
   // TODOLater: improve this...
   current_trajectory_.velocity = 0;
 }

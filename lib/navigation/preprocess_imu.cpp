@@ -23,7 +23,7 @@ std::optional<core::AccelerometerData> AccelerometerPreprocessor::processData(
     accelerometer_data.at(i) = std::sqrt(magnitude);
   }
   const core::AccelerometerData accel_data = detectOutliers(accelerometer_data);
-  SensorChecks sensorcheck                         = checkReliable();
+  SensorChecks sensorcheck                 = checkReliable();
 
   if (sensorcheck == SensorChecks::kUnacceptable) {
     return std::nullopt;
@@ -32,7 +32,8 @@ std::optional<core::AccelerometerData> AccelerometerPreprocessor::processData(
   }
 }
 
-core::AccelerometerData AccelerometerPreprocessor::detectOutliers(core::AccelerometerData accelerometer_data)
+core::AccelerometerData AccelerometerPreprocessor::detectOutliers(
+  core::AccelerometerData accelerometer_data)
 {
   // core::AccelerometerData accelerometer_data;
   // for (std::size_t i; i < core::kNumAccelerometers; ++i) {
