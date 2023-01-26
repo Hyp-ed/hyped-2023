@@ -30,7 +30,7 @@ class Navigator : public INavigator {
    */
   void encoderUpdate(const core::EncoderData &encoder_data);
   /**
-   * @brief preprocesses imu data and updates trajectory
+   * @brief preprocesses accelerometer data and updates trajectory
    *
    * @param accelerometer_data
    */

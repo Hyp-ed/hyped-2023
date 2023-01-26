@@ -33,8 +33,8 @@ class Crosscheck {
    * @return true accelerometer and wheel encoders agree
    * @return false accelerometers and wheel encoders disagree
    */
-  SensorChecks checkEncoderImu(const core::AccelerometerData accelerometer_data,
-                               const core::EncoderData encoders_data);
+  SensorChecks checkEncoderAccelerometer(const core::AccelerometerData accelerometer_data,
+                                         const core::EncoderData encoders_data);
 
   /**
    * @brief Checks the keyence value of displacement against the
