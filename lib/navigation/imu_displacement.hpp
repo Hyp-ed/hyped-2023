@@ -11,49 +11,26 @@ namespace hyped::navigation {
 
 class ImuDisplacement {
  public:
-  ImuDisplacement(const core::ITimeSource &time);
-
+  ImuDisplacement(const core::ITimeSource &time, const core::TimePoint initial_time);
   /**
    * @brief update the imu estimate for both displacement and velocity. Displacement is
    * used for cross checking agreement with wheel encooders, velocity is used for us to
    * estimate velocity in the case we have no direct velocity sensors.
    *
    * @param imu_acceleration kalman filtered single value for acceleration
+   * @param imu_timestamp time at which easurement was taken
    */
-  void updateImuDisplacement(const core::Float imu_acceleration);
+  void updateImuDisplacement(const core::Float imu_acceleration,
+                             const core::TimePoint imu_timestamp);
 
-  /**
-   * @brief initialise timepoint to set up crosschecker for rest of pod run
-   *
-   * @param initial_timepoint time of first accelerometer reading
-   */
-  void initialiseTimePoint(const core::TimePoint initial_timepoint);
-
-  /**
-   * @brief Get the Imu Displacement object
-   *
-   * @return imu estimate of acceleration
-   */
   core::Float getImuDisplacement();
 
-  /**
-   * @brief Get the Imu Velocity object
-   *
-   * @return imu estimate of velocity
-   */
   core::Float getImuVelocity();
 
  private:
-  // imu estimate of acceleration
   core::Float imu_displacement_;
-
-  // imu estimate of velocity
   core::Float imu_velocity_;
-
-  // timestamp of the last measured acceleration value
   core::TimePoint previous_timestamp_;
-
-  // time source
   const core::ITimeSource &time_;
 };
 

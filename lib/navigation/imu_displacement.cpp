@@ -6,20 +6,20 @@
 
 namespace hyped::navigation {
 
-ImuDisplacement::ImuDisplacement(const core::ITimeSource &time)
+ImuDisplacement::ImuDisplacement(const core::ITimeSource &time, const core::TimePoint initial_time)
     : time_(time),
+      previous_timestamp_(initial_time),
       imu_displacement_(0),
       imu_velocity_(0)
 {
 }
 
-void ImuDisplacement::updateImuDisplacement(const core::Float imu_acceleration)
+void ImuDisplacement::updateImuDisplacement(const core::Float imu_acceleration,
+                                            const core::TimePoint imu_timestamp)
 {
-  const core::TimePoint time_now = time_.now();
   core::Timer timer_(time_);
-  const core::Duration time_elapsed = timer_.measure_lapsed_time(previous_timestamp_);
-  const core::Float time_elapsed_seconds
-    = std::chrono::duration_cast<std::chrono::microseconds>(time_elapsed).count() / 1'000'000;
+  const core::Duration time_elapsed = timer_.measureElapsedTime(imu_timestamp, previous_timestamp_);
+  const core::Float time_elapsed_seconds = timer_.elapsedTimeInSeconds(time_elapsed);
 
   // from equation v=u+at
   const core::Float velocity_estimate = imu_velocity_ + (imu_acceleration * time_elapsed_seconds);
@@ -28,28 +28,17 @@ void ImuDisplacement::updateImuDisplacement(const core::Float imu_acceleration)
   imu_displacement_ = (imu_velocity_ * time_elapsed_seconds)
                       + (0.5 * imu_acceleration * time_elapsed_seconds * time_elapsed_seconds);
 
-  // update class members
   imu_velocity_       = velocity_estimate;
-  previous_timestamp_ = time_now;
-}
-
-void ImuDisplacement::initialiseTimePoint(const core::TimePoint initial_timepoint)
-{
-  // TODOLater: Implement this initialisation in main algorithm (some sort of startup process?,
-  // Potentailly in initialisation state depending on how dependent navigation wants to be on state)
-  previous_timestamp_ = initial_timepoint;
+  previous_timestamp_ = imu_timestamp;
 }
 
 core::Float ImuDisplacement::getImuDisplacement()
 {
-  // TODOLater (/elsewhere?): error handling
   return imu_displacement_;
 }
 
 core::Float ImuDisplacement::getImuVelocity()
 {
-  // TODOLater (/elsewhere?): error handling
   return imu_velocity_;
 }
-
 }  // namespace hyped::navigation
