@@ -5,7 +5,7 @@
 
 namespace hyped::motors {
 enum class ControllerStatus { kControllerTemperatureExceeded, kUnrecoverableWarning, kNominal };
-enum class MotorStates { kInitialisation, kCalibration, kMotorReady, kMotorAccelerating, kMotorBraking, kRunComplete, kEmergencyBreak };
+
 
 class Controller {
  public:
