@@ -1,91 +1,94 @@
+#include "consts.hpp"
 #include "preprocess_encoders.hpp"
+
+#include "core/types.hpp"
 
 namespace hyped::navigation {
 
 EncodersPreprocessor::EncodersPreprocessor(core::ILogger &logger)
     : logger_(logger),
-      encoder_outliers_({0, 0, 0, 0}),
-      encoders_reliable_({true, true, true, true}),
-      num_reliable_encoders_(core::kNumImus)
+      num_consecutive_outliers_per_encoder_({0, 0, 0, 0}),
+      is_reliable_per_encoder_({true, true, true, true}),
+      num_reliable_encoders_(core::kNumImus),
+      max_consecutive_outliers_(10)
 {
 }
 
 std::optional<core::EncoderData> EncodersPreprocessor::processData(
-  const core::EncoderData raw_encoder_data)
+  const core::EncoderData &raw_encoder_data)
 {
-  const auto encoder_data = detectOutliers(raw_encoder_data);
-  SensorChecks sensors    = checkReliable();
-  if (!encoder_data.has_value() || sensors == SensorChecks::kUnacceptable) {
+  const auto encoder_data = sanitise(raw_encoder_data);
+  const auto sensors      = checkReliable();
+  if (sensors == SensorChecks::kUnacceptable) { return std::nullopt; }
+  return encoder_data;
+}
+
+std::optional<EncodersPreprocessor::Statistics> EncodersPreprocessor::getStatistics(
+  const core::EncoderData &encoder_data) const
+{
+  if (num_reliable_encoders_ > core::kNumEncoders
+      || num_reliable_encoders_ < core::kNumEncoders - 1) {
+    logger_.log(core::LogLevel::kFatal,
+                "Unsuitable number of reliable encoders (%d of %d)",
+                num_reliable_encoders_,
+                core::kNumEncoders);
     return std::nullopt;
+  }
+  if (num_reliable_encoders_ == core::kNumEncoders) {
+    auto reliable_data                    = encoder_data;
+    const Quartile quartiles              = getQuartiles(reliable_data);
+    const core::Float interquartile_range = quartiles.q3 - quartiles.q1;
+    return {
+      {.median      = quartiles.median,
+       .upper_bound = quartiles.median + static_cast<core::Float>(1.5) * interquartile_range,
+       .lower_bound = quartiles.median - static_cast<core::Float>(1.5) * interquartile_range}};
   } else {
-    return encoder_data;
+    std::array<uint32_t, core::kNumEncoders - 1> reliable_data;
+    std::size_t j = 0;
+    for (std::size_t i = 0; i < encoder_data.size(); ++i) {
+      if (is_reliable_per_encoder_.at(i)) {
+        reliable_data.at(j) = encoder_data.at(i);
+        ++j;
+      }
+    }
+    const Quartile quartiles              = getQuartiles(reliable_data);
+    const core::Float interquartile_range = quartiles.q3 - quartiles.q1;
+    return {
+      {.median      = quartiles.median,
+       .upper_bound = quartiles.median + static_cast<core::Float>(1.2) * interquartile_range,
+       .lower_bound = quartiles.median - static_cast<core::Float>(1.2) * interquartile_range}};
   }
 }
 
-std::optional<core::EncoderData> EncodersPreprocessor::detectOutliers(
-  const core::EncoderData encoder_data)
+std::optional<core::EncoderData> EncodersPreprocessor::sanitise(
+  const core::EncoderData &encoder_data)
 {
-  core::EncoderData encoder_data_copy;
-  std::copy(encoder_data.begin(), encoder_data.end(), encoder_data_copy.begin());
-  Quartile quartiles;
-  core::Float interquartile_range;
-  core::Float upper_bound;
-  core::Float lower_bound;
-  // Case 1: All sensors are functioning properly
-  if (num_reliable_encoders_ == core::kNumEncoders) {
-    core::EncoderData reliable_data;
-    std::copy(encoder_data.begin(), encoder_data.end(), reliable_data.begin());
-    quartiles           = getQuartiles(reliable_data);
-    interquartile_range = quartiles.q3 - quartiles.q1;
-    upper_bound         = quartiles.median + 1.5 * interquartile_range;
-    lower_bound         = quartiles.median - 1.5 * interquartile_range;
-
+  const auto statistics = getStatistics(encoder_data);
+  if (!statistics) {
+    logger_.log(core::LogLevel::kFatal, "Failed to obtain statistics for measurement");
   }
-  // Case 2: One of the sensors has become faulty
-  else if (num_reliable_encoders_ == core::kNumEncoders - 1) {
-    std::array<uint32_t, core::kNumEncoders - 1> reliable_data;
-    std::size_t counter = 0;
-    for (std::size_t i = 0; i < encoder_data.size(); ++i) {
-      if (encoders_reliable_.at(i)) {
-        reliable_data.at(counter) = encoder_data.at(i);
-        ++counter;
-      }
-    }
-    quartiles           = getQuartiles(reliable_data);
-    interquartile_range = quartiles.q3 - quartiles.q1;
-    upper_bound         = quartiles.median + 1.2 * interquartile_range;
-    lower_bound         = quartiles.median - 1.2 * interquartile_range;
-  }
-  // Case 3: More than one sensors have become unreliable, stopping everything and entering into
-  // fail State.
-  else {
-    logger_.log(core::LogLevel::kFatal,
-                "Number of unreliable encoder sensors have exceeded the threshold");
-    return std::nullopt;
-  }
-
-  for (std::size_t i = 0; i < encoder_data_copy.size(); ++i) {
-    // replacing the ouliers or data from faulty sensors with the median of the dataset.
-    if (encoder_data_copy.at(i) > upper_bound || encoder_data_copy.at(i) < lower_bound
-        || encoders_reliable_.at(i) == false) {
-      encoder_data_copy.at(i) = quartiles.median;
-
-      if (encoders_reliable_.at(i)) { ++encoder_outliers_.at(i); }
+  auto sanitised_data = encoder_data;
+  for (std::size_t i = 0; i < encoder_data.size(); ++i) {
+    if (sanitised_data.at(i) > statistics->upper_bound
+        || encoder_data.at(i) < statistics->lower_bound) {
+      sanitised_data.at(i) = statistics->median;
+      ++num_consecutive_outliers_per_encoder_.at(i);
     } else {
-      encoder_outliers_.at(i) = 0;
+      num_consecutive_outliers_per_encoder_.at(i) = 0;
     }
+    if (!is_reliable_per_encoder_.at(i)) { sanitised_data.at(i) = statistics->median; }
   }
-
-  return encoder_data_copy;
+  if (checkReliable() == SensorChecks::kUnacceptable) { return std::nullopt; }
+  return sanitised_data;
 }
 
 SensorChecks EncodersPreprocessor::checkReliable()
 {
   for (std::size_t i = 0; i < core::kNumEncoders; ++i) {
     // changes reliable sensor to false if max consecutive outliers are reached
-    if (encoder_outliers_.at(i) > max_consecutive_outliers_
-        && encoders_reliable_.at(i) == true) {  // for now assuming n to be 10
-      encoders_reliable_.at(i) = false;         // the encoder is now unrealiable
+    if (num_consecutive_outliers_per_encoder_.at(i) > max_consecutive_outliers_
+        && is_reliable_per_encoder_.at(i)) {
+      is_reliable_per_encoder_.at(i) = false;  // the encoder is now unrealiable
       --num_reliable_encoders_;
     }
   }

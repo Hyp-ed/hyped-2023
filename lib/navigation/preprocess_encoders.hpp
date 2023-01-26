@@ -12,6 +12,7 @@
 #include "core/types.hpp"
 
 namespace hyped::navigation {
+
 class EncodersPreprocessor {
  public:
   EncodersPreprocessor(core::ILogger &logger);
@@ -22,17 +23,28 @@ class EncodersPreprocessor {
    * @param encoder_data
    * @return cleaned and reliable encoder data
    */
-  std::optional<core::EncoderData> processData(const core::EncoderData encoder_data);
+  std::optional<core::EncoderData> processData(const core::EncoderData &encoder_data);
 
  private:
+  // TODO confirm or improve name
+  struct Statistics {
+    core::Float median;
+    core::Float upper_bound;
+    core::Float lower_bound;
+  };
+
+  // TODO Doc
+  std::optional<Statistics> getStatistics(const core::EncoderData &encoder_data) const;
+
   /**
    * @brief tidies up the received data by detecting the outliers or data received from faulty
-     sensors and replaces them with median value of the dataset
+     sensors and replaces them with median value of the dataset; if there are too many
+     outliers or faulty sensors then this function fails
    *
-   * @param encoder_data array containing the values received from various encoder sensors
-   * @return consistent data with no outliers
+   * @param encoder_data to be sanitised
+   * @return consistent data with no outliers, if possible
    */
-  std::optional<core::EncoderData> detectOutliers(const core::EncoderData encoder_data);
+  std::optional<core::EncoderData> sanitise(const core::EncoderData &encoder_data);
 
   /**
    * @brief changes the value corresponding to the encoder sensor in the encoders_reliable_ array to
@@ -44,23 +56,22 @@ class EncodersPreprocessor {
   SensorChecks checkReliable();
 
   /**
-   * @brief calculates a specific quantile value from input array
+   * @brief calculates a specific quantile value from sorted input array
    *
-   * @param reliable_data array containing filtered values(i.e with no values from faulty sensors)
-   * @param quartile_percent value corresponding to the quantile that we want(0.25 for q1, 0.5 for
-   * median and 0.75 for q3)
+   * @param reliable_data sorted array of values
+   * @param fraction in [0, 1] corresponding to the quantile (e.g. 0.25 for the 25th percentile)
    * @return the quantile that we require
    */
   template<std::size_t N>
   core::Float getSpecificQuantile(const std::array<std::uint32_t, N> &reliable_data,
-                                  const core::Float quartile_percent)
+                                  const core::Float fraction) const
   {
-    const core::Float quartile_index = (num_reliable_encoders_ - 1) * quartile_percent;
-    const std::uint8_t quartile_high = static_cast<std::uint8_t>(std::ceil(quartile_index));
-    const std::uint8_t quartile_low  = static_cast<std::uint8_t>(std::floor(quartile_index));
-    const core::Float quartile
-      = (reliable_data.at(quartile_high) + reliable_data.at(quartile_low)) / 2.0;
-    return quartile;
+    const core::Float theoretical_index = (num_reliable_encoders_ - 1) * fraction;
+    const std::size_t low_index         = static_cast<std::size_t>(std::floor(theoretical_index));
+    const std::size_t high_index        = static_cast<std::size_t>(std::ceil(theoretical_index));
+    const auto low                      = static_cast<core::Float>(reliable_data.at(low_index));
+    const auto high                     = static_cast<core::Float>(reliable_data.at(high_index));
+    return (low + high) / 2.0;
   }
 
   /**
@@ -70,7 +81,7 @@ class EncodersPreprocessor {
    * @return a quartile object which contains q1, q3 and the median value
    */
   template<std::size_t N>
-  Quartile getQuartiles(std::array<std::uint32_t, N> &reliable_data)
+  Quartile getQuartiles(std::array<std::uint32_t, N> &reliable_data) const
   {
     std::sort(reliable_data.begin(), reliable_data.end());
     return {.q1     = getSpecificQuantile(reliable_data, 0.25),
@@ -78,20 +89,11 @@ class EncodersPreprocessor {
             .q3     = getSpecificQuantile(reliable_data, 0.75)};
   }
 
-  // number of reliable encoders, initialised as core::kNumEncoders
-  std::uint8_t num_reliable_encoders_;
-
-  // initialised as {0, 0, 0, 0}, count of consecutive outliers
-  std::array<uint16_t, core::kNumEncoders> encoder_outliers_;
-
-  // initialised as all true, bool mask of reliable sensors
-  std::array<bool, core::kNumEncoders> encoders_reliable_;
-
-  // number of allowed consecutive outliers from a single encoder
-  std::uint8_t max_consecutive_outliers_ = 10;
-
-  // for logging fail state
   core::ILogger &logger_;
+  std::array<uint16_t, core::kNumEncoders> num_consecutive_outliers_per_encoder_;
+  std::array<bool, core::kNumEncoders> is_reliable_per_encoder_;
+  std::uint8_t num_reliable_encoders_;
+  const std::uint8_t max_consecutive_outliers_;
 };
 
 }  // namespace hyped::navigation
