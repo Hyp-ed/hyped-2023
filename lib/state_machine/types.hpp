@@ -3,6 +3,8 @@
 #include "message.hpp"
 #include "state.hpp"
 
+#include <cstdint>
+
 #include "utils/hash.hpp"
 
 namespace hyped::state_machine {

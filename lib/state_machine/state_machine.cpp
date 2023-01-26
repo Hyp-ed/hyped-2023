@@ -3,10 +3,6 @@
 
 namespace hyped::state_machine {
 
-StateMachine::StateMachine()
-{
-}
-
 // TODOLater implement
 std::optional<Message> StateMachine::handleData()
 {
