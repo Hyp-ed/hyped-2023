@@ -13,8 +13,7 @@
 namespace hyped::io {
 class Can : public ICan {
  public:
-  Can(core::ILogger &logger);
-  core::Result initialise(const std::string &can_network_interface);
+  Can(const std::string &can_network_interface, core::ILogger &logger);
   core::Result send(const CanFrame &message);
   std::optional<CanFrame> receive();
   core::Result listen();

@@ -9,11 +9,9 @@
 
 namespace hyped::io {
 
-Can::Can(core::ILogger &logger) : logger_(logger), processors_()
-{
-}
-
-core::Result Can::initialise(const std::string &can_network_interface)
+Can::Can(const std::string &can_network_interface, core::ILogger &logger)
+    : logger_(logger),
+      processors_()
 {
   socket_ = socket(PF_CAN, SOCK_RAW, CAN_RAW);
   if (socket_ < 0) {
