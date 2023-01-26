@@ -3,6 +3,8 @@
 #include "message.hpp"
 #include "state.hpp"
 
+#include "utils/hash.hpp"
+
 namespace hyped::state_machine {
 
 struct TransitionKey {
@@ -18,9 +20,10 @@ struct TransitionKey {
 struct TransitionHasher {
   std::size_t operator()(const TransitionKey &key) const
   {
-    using std::size_t;
-
-    return ((int)key.source);
+    std::size_t seed = 0;
+    utils::hash_combine(seed, key.source);
+    utils::hash_combine(seed, key.message);
+    return seed;
   }
 };
 

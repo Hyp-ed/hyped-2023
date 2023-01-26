@@ -1,8 +1,6 @@
 #include "state_machine.hpp"
 #include "types.hpp"
 
-#include <optional>
-
 namespace hyped::state_machine {
 
 StateMachine::StateMachine()
