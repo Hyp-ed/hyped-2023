@@ -7,9 +7,10 @@ Main::Main()
   // TODOLater implement
 }
 
-void Main::run()
+void Main::run(MotorState states)
 {
-  // TODOLater implement
+  // Input type will need changing later
+  // Implement switch cases here for states 
 }
 
 }  // namespace hyped::motors
