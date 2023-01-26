@@ -34,7 +34,7 @@ class Navigator : public INavigator {
    *
    * @param accelerometer_data
    */
-  void imuUpdate(const core::RawAccelerometerData &accelerometer_data);
+  void accelerometerUpdate(const core::RawAccelerometerData &accelerometer_data);
 
  private:
   // previous readings

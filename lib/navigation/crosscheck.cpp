@@ -14,7 +14,7 @@ SensorChecks Crosscheck::checkTrajectoryAgreement(const core::AccelerometerData 
   /*
   TODOLater: implement
   basically:
-    - checkEncoderImu
+    - checkEncoderAccelerometer
     - checkEncooderKeyence
     - if all good, return true. else false and fail state
 
@@ -24,15 +24,15 @@ SensorChecks Crosscheck::checkTrajectoryAgreement(const core::AccelerometerData 
   return SensorChecks::kAcceptable;
 }
 
-SensorChecks checkEncoderImu(const core::AccelerometerData accelerometer_data,
-                             const core::EncoderData encoders_data)
+SensorChecks checkEncoderAccelerometer(const core::AccelerometerData accelerometer_data,
+                                       const core::EncoderData encoders_data)
 {
   /*
   TODOLater: implement.
   plan:
-  - double integrate imu values (also TODOLater)
+  - double integrate z accelerometer values (also TODOLater)
   - if absolute diff between encoder displacement and
-  imu displacement too high, fail state and return false
+  accelerometer displacement too high, fail state and return false
   - otherwise all good, return true
   */
   return SensorChecks::kAcceptable;

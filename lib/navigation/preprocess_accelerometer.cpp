@@ -1,4 +1,4 @@
-#include "preprocess_imu.hpp"
+#include "preprocess_accelerometer.hpp"
 
 namespace hyped::navigation {
 
