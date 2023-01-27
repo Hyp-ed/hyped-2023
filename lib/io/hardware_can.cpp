@@ -12,7 +12,7 @@ namespace hyped::io {
 std::optional<HardwareCan> HardwareCan::create(core::ILogger &logger,
                                                const std::string &can_network_interface)
 {
-  int16_t socket_id = socket(PF_CAN, SOCK_RAW, CAN_RAW);
+  std::int16_t socket_id = socket(PF_CAN, SOCK_RAW, CAN_RAW);
   if (socket_id < 0) {
     logger.log(core::LogLevel::kFatal, "Unable to open CAN socket");
     return std::nullopt;
@@ -35,7 +35,7 @@ std::optional<HardwareCan> HardwareCan::create(core::ILogger &logger,
   return HardwareCan(logger, socket_id);
 }
 
-HardwareCan::HardwareCan(core::ILogger &logger, const int16_t socket)
+HardwareCan::HardwareCan(core::ILogger &logger, const std::int16_t socket)
     : logger_(logger),
       processors_(),
       socket_(socket)
