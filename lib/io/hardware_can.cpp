@@ -9,8 +9,8 @@
 
 namespace hyped::io {
 
-std::optional<HardwareCan> HardwareCan::create(core::ILogger &logger,
-                                               const std::string &can_network_interface)
+std::optional<std::shared_ptr<HardwareCan>> HardwareCan::create(
+  core::ILogger &logger, const std::string &can_network_interface)
 {
   std::int16_t socket_id = socket(PF_CAN, SOCK_RAW, CAN_RAW);
   if (socket_id < 0) {
@@ -32,7 +32,7 @@ std::optional<HardwareCan> HardwareCan::create(core::ILogger &logger,
     return std::nullopt;
   }
   logger.log(core::LogLevel::kInfo, "CAN socket successfully created");
-  return HardwareCan(logger, socket_id);
+  return std::make_shared<HardwareCan>(HardwareCan(logger, socket_id));
 }
 
 HardwareCan::HardwareCan(core::ILogger &logger, const std::int16_t socket)
@@ -40,6 +40,11 @@ HardwareCan::HardwareCan(core::ILogger &logger, const std::int16_t socket)
       processors_(),
       socket_(socket)
 {
+}
+
+HardwareCan::~HardwareCan()
+{
+  close(socket_);
 }
 
 core::Result HardwareCan::send(const io::CanFrame &data)
