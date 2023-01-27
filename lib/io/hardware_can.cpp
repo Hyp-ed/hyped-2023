@@ -9,36 +9,40 @@
 
 namespace hyped::io {
 
-Can::Can(const std::string &can_network_interface, core::ILogger &logger)
-    : logger_(logger),
-      processors_()
+std::optional<HardwareCan> HardwareCan::create(core::ILogger &logger,
+                                               const std::string &can_network_interface)
 {
-  socket_ = socket(PF_CAN, SOCK_RAW, CAN_RAW);
-  if (socket_ < 0) {
-    logger_.log(core::LogLevel::kFatal, "Unable to open CAN socket");
-    return core::Result::kFailure;
+  int16_t socket_id = socket(PF_CAN, SOCK_RAW, CAN_RAW);
+  if (socket_id < 0) {
+    logger.log(core::LogLevel::kFatal, "Unable to open CAN socket");
+    return std::nullopt;
   }
   const std::uint8_t interface_index = if_nametoindex(can_network_interface.c_str());
   if (!interface_index) {
-    logger_.log(core::LogLevel::kFatal, "Unable to find CAN1 network interface");
-    close(socket_);
-    socket_ = -1;
-    return core::Result::kFailure;
+    logger.log(core::LogLevel::kFatal, "Unable to find CAN1 network interface");
+    close(socket_id);
+    return std::nullopt;
   }
   const sockaddr_can socket_address = {AF_CAN, interface_index};
   const int bind_status
-    = bind(socket_, reinterpret_cast<const sockaddr *>(&socket_address), sizeof(socket_address));
+    = bind(socket_id, reinterpret_cast<const sockaddr *>(&socket_address), sizeof(socket_address));
   if (bind_status < 0) {
-    logger_.log(core::LogLevel::kFatal, "Unable to bind CAN socket");
-    close(socket_);
-    socket_ = -1;
-    return core::Result::kFailure;
+    logger.log(core::LogLevel::kFatal, "Unable to bind CAN socket");
+    close(socket_id);
+    return std::nullopt;
   }
-  logger_.log(core::LogLevel::kInfo, "CAN socket successfully created");
-  return core::Result::kSuccess;
+  logger.log(core::LogLevel::kInfo, "CAN socket successfully created");
+  return HardwareCan(logger, socket_id);
 }
 
-core::Result Can::send(const io::CanFrame &data)
+HardwareCan::HardwareCan(core::ILogger &logger, const int16_t socket)
+    : logger_(logger),
+      processors_(),
+      socket_(socket)
+{
+}
+
+core::Result HardwareCan::send(const io::CanFrame &data)
 {
   if (socket_ < 0) {
     logger_.log(core::LogLevel::kFatal, "Trying to send CAN data but no CAN socket found");
@@ -64,7 +68,7 @@ core::Result Can::send(const io::CanFrame &data)
   return core::Result::kSuccess;
 }
 
-std::optional<CanFrame> Can::receive()
+std::optional<CanFrame> HardwareCan::receive()
 {
   CanFrame received_message;
   if (ioctl(socket_, FIONREAD) < sizeof(CanFrame)) {
@@ -92,7 +96,7 @@ std::optional<CanFrame> Can::receive()
   return received_message;
 }
 
-core::Result Can::listen()
+core::Result HardwareCan::listen()
 {
   if (ioctl(socket_, FIONREAD) < sizeof(CanFrame)) { return core::Result::kFailure; }
   const auto message = receive();
@@ -108,7 +112,7 @@ core::Result Can::listen()
   return core::Result::kSuccess;
 }
 
-void Can::addCanProcessor(const std::uint16_t id, std::shared_ptr<ICanProcessor> processor)
+void HardwareCan::addCanProcessor(const std::uint16_t id, std::shared_ptr<ICanProcessor> processor)
 {
   const auto id_and_processors = processors_.find(id);
   if (id_and_processors == processors_.end()) {

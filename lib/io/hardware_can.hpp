@@ -11,15 +11,17 @@
 #include <core/logger.hpp>
 #include <core/types.hpp>
 namespace hyped::io {
-class Can : public ICan {
+class HardwareCan : public ICan {
  public:
-  Can(const std::string &can_network_interface, core::ILogger &logger);
+  static std::optional<HardwareCan> create(core::ILogger &logger,
+                                           const std::string &can_network_interface);
   core::Result send(const CanFrame &message);
   std::optional<CanFrame> receive();
   core::Result listen();
   void addCanProcessor(const std::uint16_t id, std::shared_ptr<ICanProcessor> processor);
 
  private:
+  HardwareCan(core::ILogger &logger, const int16_t socket);
   int socket_;
   core::ILogger &logger_;
   std::unordered_map<std::uint32_t, std::vector<std::shared_ptr<ICanProcessor>>> processors_;
