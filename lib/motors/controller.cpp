@@ -24,13 +24,19 @@ core::Result Controller::parseMessageFile(const std::string &path)
                 rapidjson::GetParseError_En(document.GetParseError()));
     return core::Result::kFailure;
   }
+  if (!document.HasMember("config_messages")) {
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'config_messages' in can message file at %s",
+                path.c_str());
+    return core::Result::kFailure;
+  }
   if (!document.HasMember("messages")) {
     logger_.log(core::LogLevel::kFatal,
                 "Missing required field 'messages' in can message file at %s",
                 path.c_str());
     return core::Result::kFailure;
   }
-  const auto configuration_messages = document["config_commands"].GetArray();
+  const auto configuration_messages = document["config_messages"].GetArray();
   for (auto &message : configuration_messages) {
     const std::optional<core::CanFrame> new_message = parseJsonCanFrame(message.GetObject());
     if (!new_message) {

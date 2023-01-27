@@ -1,9 +1,5 @@
 {
-    "categories": [
-        "messages",
-        "config_commands"
-    ],
-    "config_commands": [
+    "config_messages": [
         {
             "example_config_message": {
                 "id": 123,
