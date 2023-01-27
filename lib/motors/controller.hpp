@@ -6,7 +6,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include <linux/can.h>
 #include <rapidjson/document.h>
 #include <rapidjson/error/en.h>
 #include <rapidjson/istreamwrapper.h>

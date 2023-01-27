@@ -36,7 +36,7 @@ core::Result Controller::parseMessageFile(const std::string &path)
     if (!new_message) {
       logger_.log(core::LogLevel::kFatal,
                   "Invalid CAN configuration frame in JSON message file at path %s",
-                  path);
+                  path.c_str());
       return core::Result::kFailure;
     }
     configuration_messages_.push_back(new_message.value());
@@ -46,7 +46,7 @@ core::Result Controller::parseMessageFile(const std::string &path)
     const std::optional<core::CanFrame> new_message = parseJsonCanFrame(message.value.GetObject());
     if (!new_message) {
       logger_.log(
-        core::LogLevel::kFatal, "Invalid CAN frame in JSON message file at path %s", path);
+        core::LogLevel::kFatal, "Invalid CAN frame in JSON message file at path %s", path.c_str());
       return core::Result::kFailure;
     }
     auto x = new_message.value();
