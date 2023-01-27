@@ -2,10 +2,6 @@
 
 #include <fstream>
 
-#include <rapidjson/document.h>
-#include <rapidjson/error/en.h>
-#include <rapidjson/istreamwrapper.h>
-
 namespace hyped::motors {
 
 Controller::Controller(core::ILogger &logger) : logger_(logger), configuration_messages_()
@@ -28,18 +24,69 @@ core::Result Controller::parseMessageFile(const std::string &path)
                 rapidjson::GetParseError_En(document.GetParseError()));
     return core::Result::kFailure;
   }
-  if (!document.HasMember("config_commands")) {
+  if (!document.HasMember("messages")) {
     logger_.log(core::LogLevel::kFatal,
-                "Missing required field 'config_messages' in can message file at %s",
+                "Missing required field 'messages' in can message file at %s",
                 path.c_str());
     return core::Result::kFailure;
   }
-  const auto configuration_messages = document["config_commands"].GetObject();
+  const auto configuration_messages = document["config_commands"].GetArray();
   for (auto &message : configuration_messages) {
-    // TODO make work
-    configuration_messages_.push_back(message);
+    const std::optional<core::CanFrame> new_message = parseJsonCanFrame(message.GetObject());
+    if (!new_message) {
+      logger_.log(core::LogLevel::kFatal,
+                  "Invalid CAN configuration frame in JSON message file at path %s",
+                  path);
+      return core::Result::kFailure;
+    }
+    configuration_messages_.push_back(new_message.value());
   }
-  return core::Result::kFailure;
+  const auto messages = document["messages"].GetObject();
+  for (auto &message : messages) {
+    const std::optional<core::CanFrame> new_message = parseJsonCanFrame(message.value.GetObject());
+    if (!new_message) {
+      logger_.log(
+        core::LogLevel::kFatal, "Invalid CAN frame in JSON message file at path %s", path);
+      return core::Result::kFailure;
+    }
+    auto x = new_message.value();
+    messages_.emplace(message.name.GetString(), x);
+  }
+  return core::Result::kSuccess;
+}
+
+std::optional<core::CanFrame> Controller::parseJsonCanFrame(
+  rapidjson::GenericObject<false, rapidjson::Value> message)
+{
+  if (!message.HasMember("id")) {
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'id' in message in CAN message file");
+    return std::nullopt;
+  }
+  if (!message.HasMember("index")) {
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'index' in message in CAN message file");
+    return std::nullopt;
+  }
+  if (!message.HasMember("subindex")) {
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'subindex' in message in CAN message file");
+    return std::nullopt;
+  }
+  if (!message.HasMember("data")) {
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'data' in message in CAN message file");
+    return std::nullopt;
+  }
+  core::CanFrame new_message;
+  new_message.can_id  = message["id"].GetInt();
+  new_message.can_dlc = 8;
+  // TODO sort endianness conversion for index and data
+  //  newmessage.data[0&1] = index
+  new_message.data[2] = message["subindex"].GetInt();
+  new_message.data[3] = 0;  // padding
+  // newmessage.data[4-7] = index
+  return new_message;
 }
 
 void Controller::processErrorMessage(const std::uint16_t error_code)

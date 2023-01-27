@@ -1,5 +1,8 @@
 {
-    "categories": [],
+    "categories": [
+        "messages",
+        "config_commands"
+    ],
     "config_commands": [
         {
             "example_config_message": {
@@ -10,10 +13,14 @@
             }
         }
     ],
-    "example_message": {
-        "id": 123,
-        "index": 123,
-        "subindex": 234,
-        "data": 2344
-    }
+    "messages": [
+        {
+            "example_message": {
+                "id": 123,
+                "index": 123,
+                "subindex": 234,
+                "data": 2344
+            }
+        }
+    ]
 }
