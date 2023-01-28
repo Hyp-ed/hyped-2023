@@ -18,18 +18,20 @@ enum class ControllerStatus { kControllerTemperatureExceeded, kUnrecoverableWarn
 
 class Controller {
  public:
-  Controller(core::ILogger &logger);
-  core::Result parseMessageFile(const std::string &path);
+  static std::optional<Controller> create(core::ILogger &logger, std::string &message_file_path);
   void processErrorMessage(const std::uint16_t error_code);
   ControllerStatus processWarningMessage(const std::uint8_t warning_code);
+  static std::optional<core::CanFrame> parseJsonCanFrame(
+    rapidjson::GenericObject<false, rapidjson::Value> message, core::ILogger &logger);
 
  private:
-  std::optional<core::CanFrame> parseJsonCanFrame(
-    rapidjson::GenericObject<false, rapidjson::Value> message);
+  Controller(core::ILogger &logger,
+             const std::unordered_map<std::string, core::CanFrame> messages,
+             const std::vector<core::CanFrame> configuration_messages);
   core::ILogger &logger_;
   // TODO replace core::CanFrame with io::CanFrame once merged
-  std::unordered_map<std::string, core::CanFrame> messages_;
-  std::vector<core::CanFrame> configuration_messages_;
+  const std::unordered_map<std::string, core::CanFrame> messages_;
+  const std::vector<core::CanFrame> configuration_messages_;
 };
 
 }  // namespace hyped::motors
