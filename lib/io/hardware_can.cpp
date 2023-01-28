@@ -12,12 +12,12 @@ namespace hyped::io {
 std::optional<std::shared_ptr<HardwareCan>> HardwareCan::create(
   core::ILogger &logger, const std::string &can_network_interface)
 {
-  std::int16_t socket_id = socket(PF_CAN, SOCK_RAW, CAN_RAW);
+  const int socket_id = socket(PF_CAN, SOCK_RAW, CAN_RAW);
   if (socket_id < 0) {
     logger.log(core::LogLevel::kFatal, "Unable to open CAN socket");
     return std::nullopt;
   }
-  const std::uint8_t interface_index = if_nametoindex(can_network_interface.c_str());
+  const auto interface_index = if_nametoindex(can_network_interface.c_str());
   if (!interface_index) {
     logger.log(core::LogLevel::kFatal, "Unable to find CAN1 network interface");
     close(socket_id);
@@ -117,11 +117,11 @@ core::Result HardwareCan::listen()
   return core::Result::kSuccess;
 }
 
-void HardwareCan::addCanProcessor(const std::uint16_t id, std::shared_ptr<ICanProcessor> processor)
+void HardwareCan::addProcessor(const std::uint16_t id, std::shared_ptr<ICanProcessor> processor)
 {
   const auto id_and_processors = processors_.find(id);
   if (id_and_processors == processors_.end()) {
-    auto processors_for_id = std::vector<std::shared_ptr<ICanProcessor>>({processor});
+    const auto processors_for_id = std::vector<std::shared_ptr<ICanProcessor>>({processor});
     processors_.emplace(id, processors_for_id);
   } else {
     id_and_processors->second.push_back(processor);

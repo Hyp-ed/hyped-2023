@@ -21,7 +21,7 @@ class HardwareCan : public ICan {
   core::Result send(const CanFrame &message);
   std::optional<CanFrame> receive();
   core::Result listen();
-  void addCanProcessor(const std::uint16_t id, std::shared_ptr<ICanProcessor> processor);
+  void addProcessor(const std::uint16_t id, std::shared_ptr<ICanProcessor> processor);
 
  private:
   HardwareCan(core::ILogger &logger, const std::int16_t socket);
