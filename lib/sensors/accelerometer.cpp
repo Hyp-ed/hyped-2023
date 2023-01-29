@@ -2,13 +2,9 @@
 
 namespace hyped::sensors {
 
-Accelerometer::Accelerometer(const std::uint8_t kDeviceAddr,
-                             const std::uint8_t channel,
-                             io::HardwareI2c &i2c,
-                             core::ILogger &log)
-    : kDeviceAddr(kDeviceAddr),
-      channel_(channel),
-      log_(log),
+Accelerometer::Accelerometer(std::uint8_t channel, io::HardwareI2c &i2c, core::ILogger &logger)
+    : channel_(channel),
+      logger_(logger),
       i2c_(i2c)
 {
 }
@@ -22,138 +18,126 @@ std::uint8_t Accelerometer::getChannel()
   return channel_;
 }
 
-std::optional<std::int16_t> Accelerometer::getRawAccelerationX()
+std::optional<std::int16_t> Accelerometer::getRawAcceleration(Axis axis)
 {
-  const auto low_byte = i2c_.readByte(kDeviceAddr, kXOutL);
+  // based on the axis asked, choose the correct register address to read from
+  std::uint8_t low_byte_address, high_byte_address;
+  switch (axis) {
+    case Axis::x:
+      low_byte_address  = kXOutL;
+      high_byte_address = kXOutH;
+      break;
+    case Axis::y:
+      low_byte_address  = kYOutL;
+      high_byte_address = kYOutH;
+      break;
+    case Axis::z:
+      low_byte_address  = kZOutL;
+      high_byte_address = kZOutH;
+      break;
+  }
+
+  const auto low_byte = i2c_.readByte(kDeviceAddress, low_byte_address);
   if (!low_byte) {
-    log_.log(core::LogLevel::kFatal,
-             "Failed to read the low byte for acceleration along the x-axis");
+    logger_.log(core::LogLevel::kFatal,
+                "Failed to read the low byte for acceleration along the %s",
+                AxisStrings[axis]);
     return std::nullopt;
   }
 
-  const auto high_byte = i2c_.readByte(kDeviceAddr, kXOutH);
+  const auto high_byte = i2c_.readByte(kDeviceAddress, high_byte_address);
   if (!high_byte) {
-    log_.log(core::LogLevel::kFatal,
-             "Failed to read the high byte for acceleration along the x-axis");
+    logger_.log(core::LogLevel::kFatal,
+                "Failed to read the low byte for acceleration along the %s",
+                AxisStrings[axis]);
     return std::nullopt;
   }
 
-  const auto raw_acceleration_X = (int16_t) ((high_byte.value() << 8) | low_byte.value());
+  const auto raw_acceleration
+    = static_cast<std::int16_t>((high_byte.value() << 8) | low_byte.value());
 
-  return raw_acceleration_X;
+  return raw_acceleration;
 }
 
-std::optional<std::int16_t> Accelerometer::getRawAccelerationY()
+std::int16_t Accelerometer::getAccelerationFromRaw(std::int16_t rawAcc)
 {
-  const auto low_byte = i2c_.readByte(kDeviceAddr, kYOutL);
-  if (!low_byte) {
-    log_.log(core::LogLevel::kFatal,
-             "Failed to read the low byte for acceleration along the y-axis");
-    return std::nullopt;
-  }
+  // ! these values come from the data sheet. Don't chance them.
+  int16_t acceleration = static_cast<std::int16_t>((((int32_t)rawAcc) * 488) / 1000);
 
-  const auto high_byte = i2c_.readByte(kDeviceAddr, kYOutH);
-  if (!high_byte) {
-    log_.log(core::LogLevel::kFatal,
-             "Failed to read the high byte for acceleration along the y-axis");
-    return std::nullopt;
-  }
-
-  const auto raw_acceleration_Y = (int16_t) ((high_byte.value() << 8) | low_byte.value());
-
-  return raw_acceleration_Y;
+  return acceleration;
 }
 
-std::optional<std::int16_t> Accelerometer::getRawAccelerationZ()
-{
-  const auto low_byte = i2c_.readByte(kDeviceAddr, kZOutL);
-  if (!low_byte) {
-    log_.log(core::LogLevel::kFatal,
-             "Failed to read the low byte for acceleration along the z-axis");
-    return std::nullopt;
-  }
-
-  const auto high_byte = i2c_.readByte(kDeviceAddr, kZOutH);
-  if (!high_byte) {
-    log_.log(core::LogLevel::kFatal,
-             "Failed to read the high byte for acceleration along the z-axis");
-    return std::nullopt;
-  }
-
-  const auto raw_acceleration_Z = (int16_t) ((high_byte.value() << 8) | low_byte.value());
-
-  return raw_acceleration_Z;
-}
-
-// todolater: check whether the range of values the accelerometer is correct, cause now the noise is big
+// todolater: check whether the range of values the accelerometer is correct, cause now the noise is
 std::optional<core::RawAccelerationData> Accelerometer::read()
 {
   /* check to see if the values are ready to be read */
-  auto dataReady = i2c_.readByte(kDeviceAddr, kDataReady);
+  auto dataReady = i2c_.readByte(kDeviceAddress, kDataReady);
   if (!dataReady) {
-    log_.log(core::LogLevel::kFatal, "acceleration data could not be read");
+    logger_.log(core::LogLevel::kFatal, "acceleration data could not be read");
     return std::nullopt;
   }
   if (dataReady.value() % 2 == 0) {
-    log_.log(core::LogLevel::kInfo, "acceleration data not ready yet to be read");
+    logger_.log(core::LogLevel::kInfo, "acceleration data not ready yet to be read");
     return std::nullopt;
   }
 
   // x axis
-  auto resultX = getRawAccelerationX();
+  const auto resultX = getRawAcceleration(Axis::x);
   if (!resultX) return std::nullopt;
-  const std::int16_t XRawAcc = resultX.value(); 
-  int16_t XAcceleration = (int16_t) ((((int32_t) XRawAcc) * 488) / 1000);
+  const std::int16_t XRawAcc  = resultX.value();
+  const int16_t XAcceleration = getAccelerationFromRaw(XRawAcc);
 
   // y axis
-  auto resultY = getRawAccelerationY();
+  const auto resultY = getRawAcceleration(Axis::y);
   if (!resultY) return std::nullopt;
-  const std::int16_t YRawAcc = resultY.value(); 
-  int16_t YAcceleration = (int16_t) ((((int32_t) YRawAcc) * 488) / 1000);
+  const std::int16_t YRawAcc  = resultY.value();
+  const int16_t YAcceleration = getAccelerationFromRaw(YRawAcc);
 
   // z axis
-  auto resultZ = getRawAccelerationZ();
+  const auto resultZ = getRawAcceleration(Axis::z);
   if (!resultZ) return std::nullopt;
-  const std::int16_t ZRawAcc = resultZ.value(); 
-  int16_t ZAcceleration = (int16_t) ((((int32_t) ZRawAcc) * 488) / 1000);
+  const std::int16_t ZRawAcc  = resultZ.value();
+  const int16_t ZAcceleration = getAccelerationFromRaw(ZRawAcc);
 
-  const std::optional<core::RawAccelerationData> rawAcceleration{
+  const std::optional<core::RawAccelerationData> Acceleration3D{
     std::in_place, XAcceleration, YAcceleration, ZAcceleration, std::chrono::system_clock::now()};
 
-  return rawAcceleration;
+  return Acceleration3D;
 }
 
 core::Result Accelerometer::configure()
 {
   // check we are communicating with the correct sensor
-  const auto deviceID = i2c_.readByte(kDeviceAddr, kDevId);
+  const auto deviceID = i2c_.readByte(kDeviceAddress, kDevId);
   if (!deviceID) {
-    log_.log(core::LogLevel::kFatal, "Failure to read device id of accelerometer");
+    logger_.log(core::LogLevel::kFatal, "Failure to read device id of accelerometer");
     return core::Result::kFailure;
   }
   if (deviceID.value() != expectedDevId) {
-    log_.log(core::LogLevel::kFatal, "Failure: accelerometer didn't give correct device id");
+    logger_.log(core::LogLevel::kFatal, "Failure: accelerometer didn't give correct device id");
     return core::Result::kFailure;
   }
 
-  // configure the sensor according to what was found in the repo of the manufacturers 
+  // configure the sensor according to what was found in the repo of the manufacturers
 
   /* Sampling rate of 200 Hz */
   /* Enable high performance mode */
-  const core::Result ctrl1Result = i2c_.writeByteToRegister(kDeviceAddr, kCTRL1Addr, kCTRL1Value);
+  const core::Result ctrl1Result
+    = i2c_.writeByteToRegister(kDeviceAddress, kCtrl1Addr, kCtrl1Value);
   if (ctrl1Result == core::Result::kFailure) return core::Result::kFailure;
 
   /* Enable block data update */
   /* Enable address auto increment */
-  const core::Result ctrl2Result = i2c_.writeByteToRegister(kDeviceAddr, kCTRL2Addr, kCTRL2Value);
+  const core::Result ctrl2Result
+    = i2c_.writeByteToRegister(kDeviceAddress, kCtrl2Addr, kCtrl2Value);
   if (ctrl2Result == core::Result::kFailure) return core::Result::kFailure;
 
   /* Full scale +-16g */
   /* Filter bandwidth = ODR/2 */
-  const core::Result ctrl3Result = i2c_.writeByteToRegister(kDeviceAddr, kCTRL6Addr, kCTRL6Value);
+  const core::Result ctrl3Result
+    = i2c_.writeByteToRegister(kDeviceAddress, kCtrl6Addr, kCtrl6Value);
   if (ctrl3Result == core::Result::kFailure) return core::Result::kFailure;
 
   return core::Result::kSuccess;
 }
-
 }  // namespace hyped::sensors

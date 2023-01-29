@@ -36,7 +36,7 @@ HardwareI2c::HardwareI2c(core::ILogger &logger, const int file_descriptor)
 
 HardwareI2c::~HardwareI2c()
 {
-  close(file_descriptor_);
+  //close(file_descriptor_);
 }
 
 std::optional<std::uint8_t> HardwareI2c::readByte(const std::uint8_t device_address,
