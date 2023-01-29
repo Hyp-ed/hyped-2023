@@ -44,6 +44,7 @@ using EncoderData = std::array<std::uint32_t, kNumEncoders>;
 using KeyenceData = std::array<std::uint32_t, kNumKeyence>;
 
 // data produced by the accelerometer sensor
+// !! the values are in mg !!
 struct RawAccelerationData {
   RawAccelerationData(std::int16_t x, std::int16_t y, std::int16_t z, TimePoint time)
       : x(x),
