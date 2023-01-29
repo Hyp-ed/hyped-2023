@@ -18,7 +18,7 @@ std::uint8_t Accelerometer::getChannel()
   return channel_;
 }
 
-std::optional<std::int16_t> Accelerometer::getRawAcceleration(Axis axis)
+std::optional<std::kCtrl2Value> Accelerometer::getRawAcceleration(Axis axis)
 {
   // based on the axis asked, choose the correct register address to read from
   std::uint8_t low_byte_address, high_byte_address;
@@ -62,7 +62,7 @@ std::optional<std::int16_t> Accelerometer::getRawAcceleration(Axis axis)
 std::int16_t Accelerometer::getAccelerationFromRaw(std::int16_t rawAcc)
 {
   // ! these values come from the data sheet. Don't chance them.
-  int16_t acceleration = static_cast<std::int16_t>((((int32_t)rawAcc) * 488) / 1000);
+  std::int16_t acceleration = static_cast<std::int16_t>((((int32_t)rawAcc) * 488) / 1000);
 
   return acceleration;
 }
@@ -85,19 +85,19 @@ std::optional<core::RawAccelerationData> Accelerometer::read()
   const auto resultX = getRawAcceleration(Axis::x);
   if (!resultX) return std::nullopt;
   const std::int16_t XRawAcc  = resultX.value();
-  const int16_t XAcceleration = getAccelerationFromRaw(XRawAcc);
+  const std::int16_t XAcceleration = getAccelerationFromRaw(XRawAcc);
 
   // y axis
   const auto resultY = getRawAcceleration(Axis::y);
   if (!resultY) return std::nullopt;
   const std::int16_t YRawAcc  = resultY.value();
-  const int16_t YAcceleration = getAccelerationFromRaw(YRawAcc);
+  const std::int16_t YAcceleration = getAccelerationFromRaw(YRawAcc);
 
   // z axis
   const auto resultZ = getRawAcceleration(Axis::z);
   if (!resultZ) return std::nullopt;
   const std::int16_t ZRawAcc  = resultZ.value();
-  const int16_t ZAcceleration = getAccelerationFromRaw(ZRawAcc);
+  const std::int16_t ZAcceleration = getAccelerationFromRaw(ZRawAcc);
 
   const std::optional<core::RawAccelerationData> Acceleration3D{
     std::in_place, XAcceleration, YAcceleration, ZAcceleration, std::chrono::system_clock::now()};
