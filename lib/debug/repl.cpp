@@ -133,21 +133,21 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
   }
 
   if (!sensors.HasMember("accelerometer")) {
-    logger_.log(hyped::core::LogLevel::kFatal,
+    logger_.log(core::LogLevel::kFatal,
                 "Missing required field 'sensors.accelerometer' in configuration file");
     return std::nullopt;
   }
   const auto accelerometer = sensors["accelerometer"].GetObject();
 
   if (!accelerometer.HasMember("enabled")) {
-    logger_.log(hyped::core::LogLevel::kFatal,
+    logger_.log(core::LogLevel::kFatal,
                 "Missing required field 'sensors.accelerometer.enabled' in configuration file");
     return std::nullopt;
   }
 
   if (accelerometer["enabled"].GetBool()) {
     if (!accelerometer.HasMember("bus")) {
-      logger_.log(hyped::core::LogLevel::kFatal,
+      logger_.log(core::LogLevel::kFatal,
                   "Missing required field 'sensors.accelerometer.bus' in configuration file");
       return std::nullopt;
     }
@@ -356,7 +356,7 @@ void Repl::addAccelerometerCommands(const std::uint8_t bus, const std::uint8_t d
     return;
   }
 
-  const auto accelerometer = std::make_shared<hyped::sensors::Accelerometer>(bus, *i2c, logger_);
+  const auto accelerometer = std::make_shared<sensors::Accelerometer>(bus, *i2c, logger_);
 
   accelerometer->configure();
 
@@ -377,13 +377,13 @@ void Repl::addAccelerometerCommands(const std::uint8_t bus, const std::uint8_t d
     if (value) {
       const core::RawAccelerationData result = value.value();
 
-      logger_.log(hyped::core::LogLevel::kInfo,
+      logger_.log(core::LogLevel::kInfo,
                   "Acceleration in mg: \n x %d \n y %d \n z %d",
                   result.x,
                   result.y,
                   result.z);
     } else {
-      logger_.log(hyped::core::LogLevel::kFatal, "Failed to read accelerometer from bus %d", bus);
+      logger_.log(core::LogLevel::kFatal, "Failed to read accelerometer from bus %d", bus);
     }
   };
 
