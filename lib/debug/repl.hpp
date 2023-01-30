@@ -11,10 +11,9 @@
 #include <io/hardware_gpio.hpp>
 #include <io/hardware_i2c.hpp>
 #include <io/hardware_spi.hpp>
-#include <sensors/accelerometer.hpp>
 #include <io/hardware_uart.hpp>
 #include <io/pwm.hpp>
-
+#include <sensors/accelerometer.hpp>
 
 namespace hyped::debug {
 
