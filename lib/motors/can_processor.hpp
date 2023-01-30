@@ -1,9 +1,11 @@
 #pragma once
 
+#include "controller.hpp"
+
 #include <cstdint>
+#include <memory>
 
 #include <core/types.hpp>
-#include "controller.hpp"
 
 namespace hyped::motors {
 
@@ -12,9 +14,9 @@ class CanProcessor {
   CanProcessor(std::shared_ptr<Controller> controller);
   bool sendMessage(const core::CanFrame frame);
   void processMessage(const core::CanFrame frame);
- private: 
-  std::shared_ptr<Controller> controller_;
 
+ private:
+  std::shared_ptr<Controller> controller_;
 };
 
 }  // namespace hyped::motors
