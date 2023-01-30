@@ -2,4 +2,4 @@
 
 namespace hyped::test {
 
-} // namespace hyped::test
+}  // namespace hyped::test
