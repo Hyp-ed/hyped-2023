@@ -12,7 +12,7 @@ std::optional<core::DigitalSignal> HardwareGpioReader::read()
   // pinMap just 0000.... with 1 flipped in pin number.
   // So AND with readAddr to extract the specific pin
   const std::uint8_t out = *gpio_readAddr & pinMAP ? 1 : 0;
-  
+
   if (out > 0) {
     return core::DigitalSignal::kHigh;
   } else {
@@ -31,10 +31,10 @@ core::Result HardwareGpioWriter::write(const core::DigitalSignal state)
   return core::Result::kSuccess;
 }
 
-HardwareGpio::HardwareGpio(core::ILogger &log) : log_(log)
-{}
+HardwareGpio::HardwareGpio(core::ILogger &log)
+    : log_(log)
 
-std::optional<std::shared_ptr<IGpioReader>> HardwareGpio::getReader(const std::uint8_t pin)
+        std::optional<std::shared_ptr<IGpioReader>> HardwareGpio::getReader(const std::uint8_t pin)
 {
   // What happens if all shared pointers are removed and this is called?
   // Map solves this, GPIO will always hold one pointer so it dosen't get destroyed.

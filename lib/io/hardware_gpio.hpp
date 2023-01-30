@@ -16,7 +16,7 @@ static constexpr std::uint32_t pinSet   = 0x194;
 
 class HardwareGpioReader : public IGpioReader {
  public:
-   /**
+  /**
    * @brief Read a high or low from the GPIO pin.
    */
   virtual std::optional<core::DigitalSignal> read();
@@ -34,7 +34,7 @@ class HardwareGpioReader : public IGpioReader {
 
 class HardwareGpioWriter : public IGpioWriter {
  public:
-   /**
+  /**
    * @brief Writes a high or low to the GPIO pin.
    * @param state The digital signal to write to the pin.
    */
@@ -68,7 +68,6 @@ class HardwareGpio {
   virtual std::optional<std::shared_ptr<IGpioWriter>> getWriter(const std::uint8_t pin);
 
  private:
-
   core::ILogger &log_;
   // Bank Addresses are header base addresses.
   // Page 211-213 Figure 6-7/8 P8 Header Pins Beaglebone Bible
