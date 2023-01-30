@@ -57,8 +57,8 @@ class Accelerometer : II2cMuxSensor<core::RawAccelerationData> {
   io::HardwareI2c &i2c_;
   const std::uint8_t channel_;
 
-  std::optional<std::uint16_t> getRawAcceleration(Axis axis);
-  std::int16_t getAccelerationFromRaw(std::uint16_t rawAcc);
+  std::optional<std::int16_t> getRawAcceleration(Axis axis);
+  std::int16_t getAccelerationFromRaw(std::int16_t rawAcc);
 };
 
 }  // namespace hyped::sensors
