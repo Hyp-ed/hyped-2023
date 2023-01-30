@@ -9,6 +9,10 @@ Temperature::Temperature(hyped::core::ILogger &log, io::I2c &i2c, const std::uin
 {
 }
 
+Temperature::~Temperature(){
+  
+}
+
 std::optional<std::int16_t> Temperature::read()
 {
   const auto status_check_result = i2c_.readByte(kTemperature, kStatus);
