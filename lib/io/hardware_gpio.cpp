@@ -31,10 +31,11 @@ core::Result HardwareGpioWriter::write(const core::DigitalSignal state)
   return core::Result::kSuccess;
 }
 
-HardwareGpio::HardwareGpio(core::ILogger &log)
-    : log_(log)
+HardwareGpio::HardwareGpio(core::ILogger &log) : log_(log)
+{
+}
 
-        std::optional<std::shared_ptr<IGpioReader>> HardwareGpio::getReader(const std::uint8_t pin)
+std::optional<std::shared_ptr<IGpioReader>> HardwareGpio::getReader(const std::uint8_t pin)
 {
   // What happens if all shared pointers are removed and this is called?
   // Map solves this, GPIO will always hold one pointer so it dosen't get destroyed.
