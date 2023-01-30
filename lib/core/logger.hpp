@@ -6,6 +6,25 @@
 #include <iostream>
 #include <optional>
 
+#define logNTimes(logger, n, level, ...)                                                           \
+  do {                                                                                             \
+    static std::size_t count = 0;                                                                  \
+    if (count < n) {                                                                               \
+      logger.log(level, __VA_ARGS__);                                                              \
+      ++count;                                                                                     \
+    }                                                                                              \
+  } while (0)
+
+#define logEveryNth(logger, n, level, ...)                                                         \
+  do {                                                                                             \
+    static std::size_t count = n;                                                                  \
+    if (count == n) {                                                                              \
+      logger.log(level, __VA_ARGS__);                                                              \
+      count = 0;                                                                                   \
+    }                                                                                              \
+    ++count;                                                                                       \
+  } while (0)
+
 namespace hyped::core {
 
 enum class LogLevel { kNone = 0, kDebug, kInfo, kFatal };

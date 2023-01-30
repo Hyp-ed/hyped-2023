@@ -9,21 +9,21 @@ namespace hyped::test {
 
 // TODOLater: improve testing method here!
 void testWithTrajectory(utils::NaiveNavigator &naive_navigator,
-                        const core::RawImuData imu_data,
+                        const core::RawAccelerometerData accelerometer_data,
                         const core::EncoderData encoder_data,
                         const core::KeyenceData keyence_data)
 {
-  naive_navigator.imuUpdate(imu_data);
+  naive_navigator.accelerometerUpdate(accelerometer_data);
   naive_navigator.encoderUpdate(encoder_data);
   naive_navigator.keyenceUpdate(keyence_data);
 
-  core::Float sum_imu = 0;
-  for (std::size_t i = 0; i < core::kNumImus; ++i) {
+  core::Float sum_accelerometer = 0;
+  for (std::size_t i = 0; i < core::kNumAccelerometers; ++i) {
     for (std::size_t j = 0; j < core::kNumAxis; ++j) {
-      sum_imu += imu_data.at(i).at(j);
+      sum_accelerometer += accelerometer_data.at(i).at(j);
     }
   }
-  core::Float new_acceleration = sum_imu / core::kNumImus;
+  core::Float new_acceleration = sum_accelerometer / core::kNumAccelerometers;
   core::Float new_velocity     = 0;
   core::Float new_displacement
     = std::accumulate(encoder_data.begin(), encoder_data.end(), 0.0) / core::kNumEncoders;
