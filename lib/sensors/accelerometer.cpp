@@ -71,7 +71,7 @@ std::int16_t Accelerometer::getAccelerationFromRaw(std::uint16_t rawAcc)
 // todolater: check whether the range of values the accelerometer is correct, cause now the noise is
 std::optional<core::RawAccelerationData> Accelerometer::read()
 {
-  /* check to see if the values are ready to be read */
+  // check to see if the values are ready to be read
   auto data_ready = i2c_.readByte(kDeviceAddress, kDataReady);
   if (!data_ready) {
     logger_.log(core::LogLevel::kFatal, "acceleration data could not be read");
@@ -122,20 +122,20 @@ core::Result Accelerometer::configure()
 
   // configure the sensor according to what was found in the repo of the manufacturers
 
-  /* Sampling rate of 200 Hz */
-  /* Enable high performance mode */
+  // Sampling rate of 200 Hz
+  // Enable high performance mode
   const core::Result ctrl1_result
     = i2c_.writeByteToRegister(kDeviceAddress, kCtrl1Addr, kCtrl1Value);
   if (ctrl1_result == core::Result::kFailure) return core::Result::kFailure;
 
-  /* Enable block data update */
-  /* Enable address auto increment */
+  // Enable block data update
+  // Enable address auto increment
   const core::Result ctrl2_result
     = i2c_.writeByteToRegister(kDeviceAddress, kCtrl2Addr, kCtrl2Value);
   if (ctrl2_result == core::Result::kFailure) return core::Result::kFailure;
 
-  /* Full scale +-16g */
-  /* Filter bandwidth = ODR/2 */
+  // Full scale +-16g
+  // Filter bandwidth = ODR/2 
   const core::Result ctrl3_result
     = i2c_.writeByteToRegister(kDeviceAddress, kCtrl6Addr, kCtrl6Value);
   if (ctrl3_result == core::Result::kFailure) return core::Result::kFailure;
