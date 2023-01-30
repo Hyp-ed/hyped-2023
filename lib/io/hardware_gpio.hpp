@@ -68,12 +68,7 @@ class HardwareGpio {
   virtual std::optional<std::shared_ptr<IGpioWriter>> getWriter(const std::uint8_t pin);
 
  private:
-   /**
-   * @brief Initialises the GPIO pin for reading or writing.
-   * @param pin The pin to initialise.
-   * @param edge The edge to trigger on. Defaults to "both".
-   * @param direction The direction of the pin.
-   */
+
   core::ILogger &log_;
   // Bank Addresses are header base addresses.
   // Page 211-213 Figure 6-7/8 P8 Header Pins Beaglebone Bible
