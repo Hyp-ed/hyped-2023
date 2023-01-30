@@ -6,7 +6,6 @@
 namespace hyped::motors {
 enum class ControllerStatus { kControllerTemperatureExceeded, kUnrecoverableWarning, kNominal };
 
-
 class Controller {
  public:
   Controller(core::ILogger &logger);
