@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Telemetry UI</title>
+    <style>
+      body {
+        margin: 0;
+        height: 100%;
+        width: 100%;
+      }
+      html {
+        height: 100%;
+        width: 100%;
+      }
+      .split-view {
+        height: 100%;
+        display: flex;
+      }
+      .split-view > iframe {
+        width: 85%;
+        border: none;
+        border-right: 4px solid #666;
+      }
+      .split-view > div {
+        width: 15%;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="split-view">
+      <iframe src="http://localhost:8080/"></iframe>
+      <div id="root"></div>
+    </div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

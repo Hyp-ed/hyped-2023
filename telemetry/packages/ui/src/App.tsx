@@ -1,26 +1,34 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Button } from './components';
 
-function App() {
+/**
+ * The background colour to match openmct
+ */
+const BG_COLOUR = '#393939';
+
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <main
+      className={`p-4 flex flex-col justify-between h-full bg-black text-white`}
+    >
+      <div className="space-y-8">
+        <h1 className="text-xl font-bold">Controls</h1>
+        {/* Stats */}
+        <div>
+          <h2 className="text-lg font-bold">Stats</h2>
+          <div className="grid grid-cols-2 gap-4">
+            <span className="text-sm">Latency: 0 ms</span>
+          </div>
+        </div>
+        {/* Buttons */}
+        <div className="grid grid-rows-10 gap-4">
+          <Button onClick={() => {}} colour="blue" />
+          <Button onClick={() => {}} colour="green" />
+          <Button onClick={() => {}} colour="red" />
+        </div>
+      </div>
+      <div className="mx-auto"><img src="hyped.svg" /></div>
+    </main>
   );
-}
+};
 
 export default App;
