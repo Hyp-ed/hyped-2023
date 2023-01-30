@@ -1,7 +1,7 @@
 #pragma once
 
-#include "message.cpp"
-#include "state.cpp"
+#include "message.hpp"
+#include "state.hpp"
 
 #include <cstdint>
 
