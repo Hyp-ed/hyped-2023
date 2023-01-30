@@ -1,4 +1,4 @@
-#include "adc.hpp"
+#include "hardware_adc.hpp"
 
 #include <fcntl.h>
 #include <unistd.h>
