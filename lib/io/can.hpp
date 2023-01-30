@@ -24,8 +24,8 @@ struct CanFrame {
   std::array<std::uint8_t, 8> data;
 };
 struct sockaddr_can {
-  std::uint8_t can_family;
-  std::uint8_t can_ifindex;
+  std::uint16_t can_family;
+  int can_ifindex;
   union {
     /* transport protocol class address info (e.g. ISOTP) */
     struct {
