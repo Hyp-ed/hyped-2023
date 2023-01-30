@@ -1,4 +1,4 @@
-#include "imu_displacement.hpp"
+#include "accelerometer_trajectory.hpp"
 
 #include <cmath>
 
@@ -10,8 +10,8 @@ AccelerometerTrajectoryEstimator::AccelerometerTrajectoryEstimator(
   const core::ITimeSource &time, const core::TimePoint initial_time)
     : time_(time),
       previous_timestamp_(initial_time),
-      imu_displacement_(0),
-      imu_velocity_(0)
+      displacement_estimate_(0),
+      velocity_estimate_(0)
 {
 }
 
@@ -25,23 +25,24 @@ void AccelerometerTrajectoryEstimator::update(const core::Float imu_acceleration
   const core::Float time_elapsed_seconds = timer_.elapsedTimeInSeconds(time_elapsed);
 
   // from equation v=u+at
-  const core::Float velocity_estimate = imu_velocity_ + (imu_acceleration * time_elapsed_seconds);
+  const core::Float velocity_estimate
+    = velocity_estimate_ + (imu_acceleration * time_elapsed_seconds);
 
   // from equation s = ut + 0.5*a*(t^2)
-  imu_displacement_ = (imu_velocity_ * time_elapsed_seconds)
-                      + (0.5 * imu_acceleration * time_elapsed_seconds * time_elapsed_seconds);
+  displacement_estimate_ = (velocity_estimate_ * time_elapsed_seconds)
+                           + (0.5 * imu_acceleration * time_elapsed_seconds * time_elapsed_seconds);
 
-  imu_velocity_       = velocity_estimate;
+  velocity_estimate_  = velocity_estimate;
   previous_timestamp_ = imu_timestamp;
 }
 
-core::Float AccelerometerTrajectoryEstimator::getAccelerometerDisplacement() const
+core::Float AccelerometerTrajectoryEstimator::getDisplacementEstimate() const
 {
-  return imu_displacement_;
+  return displacement_estimate_;
 }
 
-core::Float AccelerometerTrajectoryEstimator::getAccelerometerVelocity() const
+core::Float AccelerometerTrajectoryEstimator::getVelocityEstimate() const
 {
-  return imu_velocity_;
+  return velocity_estimate_;
 }
 }  // namespace hyped::navigation
