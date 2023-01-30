@@ -63,7 +63,7 @@ std::int16_t Accelerometer::getAccelerationFromRaw(std::uint16_t rawAcc)
 {
   // these values come from the data sheet. Don't chance them.
   std::int16_t acceleration
-    = static_cast<std::int16_t>(((static_cast<int32_t> rawAcc) * 488) / 1000);
+    = static_cast<std::int16_t>((static_cast<int32_t>(rawAcc) * 488) / 1000);
 
   return acceleration;
 }
@@ -100,7 +100,7 @@ std::optional<core::RawAccelerationData> Accelerometer::read()
   const std::optional<core::RawAccelerationData> acceleration_3axis{
     std::in_place,
     x_acceleration,
-    YAccely_aation,
+    y_acceleration,
     z_acceleration,
     std::chrono::system_clock::now()};
 
