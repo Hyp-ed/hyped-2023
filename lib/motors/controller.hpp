@@ -18,7 +18,8 @@ enum class ControllerStatus { kControllerTemperatureExceeded, kUnrecoverableWarn
 
 class Controller {
  public:
-  static std::optional<Controller> create(core::ILogger &logger, std::string &message_file_path);
+  static std::optional<Controller> create(core::ILogger &logger,
+                                          const std::string &message_file_path);
   void processErrorMessage(const std::uint16_t error_code);
   ControllerStatus processWarningMessage(const std::uint8_t warning_code);
   static std::optional<core::CanFrame> parseJsonCanFrame(

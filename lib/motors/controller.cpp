@@ -4,7 +4,8 @@
 
 namespace hyped::motors {
 
-std::optional<Controller> Controller::create(core::ILogger &logger, std::string &message_file_path)
+std::optional<Controller> Controller::create(core::ILogger &logger,
+                                             const std::string &message_file_path)
 {
   std::ifstream input_stream(message_file_path);
   if (!input_stream.is_open()) {
@@ -13,7 +14,7 @@ std::optional<Controller> Controller::create(core::ILogger &logger, std::string 
   }
   rapidjson::IStreamWrapper input_stream_wrapper(input_stream);
   rapidjson::Document document;
-  rapidjson::ParseResult result = document.ParseStream(input_stream_wrapper);
+  const rapidjson::ParseResult result = document.ParseStream(input_stream_wrapper);
   if (!result) {
     logger.log(core::LogLevel::kFatal,
                "Error parsing JSON: %s",
