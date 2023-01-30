@@ -17,13 +17,13 @@ std::optional<std::shared_ptr<HardwareCan>> HardwareCan::create(
     logger.log(core::LogLevel::kFatal, "Unable to open CAN socket");
     return std::nullopt;
   }
-  const auto interface_index = if_nametoindex(can_network_interface.c_str());
+  const int interface_index = if_nametoindex(can_network_interface.c_str());
   if (!interface_index) {
     logger.log(core::LogLevel::kFatal, "Unable to find CAN1 network interface");
     close(socket_id);
     return std::nullopt;
   }
-  const sockaddr_can socket_address = {AF_CAN, static_cast<int>(interface_index)};
+  const sockaddr_can socket_address = {AF_CAN, interface_index};
   const int bind_status
     = bind(socket_id, reinterpret_cast<const sockaddr *>(&socket_address), sizeof(socket_address));
   if (bind_status < 0) {
