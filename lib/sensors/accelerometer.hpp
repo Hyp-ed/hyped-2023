@@ -48,9 +48,9 @@ class Accelerometer : II2cMuxSensor<core::RawAccelerationData> {
   Accelerometer(const std::uint8_t channel, io::HardwareI2c &i2c, core::ILogger &logger);
   ~Accelerometer();
 
-  core::Result configure();
-  std::optional<core::RawAccelerationData> read();
-  std::uint8_t getChannel();
+  virtual core::Result configure();
+  virtual std::optional<core::RawAccelerationData> read();
+  virtual std::uint8_t getChannel();
 
  private:
   core::ILogger &logger_;

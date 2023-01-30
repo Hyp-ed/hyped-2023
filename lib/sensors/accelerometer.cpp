@@ -135,7 +135,7 @@ core::Result Accelerometer::configure()
   if (ctrl2_result == core::Result::kFailure) return core::Result::kFailure;
 
   // Full scale +-16g
-  // Filter bandwidth = ODR/2 
+  // Filter bandwidth = ODR/2
   const core::Result ctrl3_result
     = i2c_.writeByteToRegister(kDeviceAddress, kCtrl6Addr, kCtrl6Value);
   if (ctrl3_result == core::Result::kFailure) return core::Result::kFailure;
