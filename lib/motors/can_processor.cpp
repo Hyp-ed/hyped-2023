@@ -1,11 +1,13 @@
 #include "can_processor.hpp"
+#include "controller.hpp"
 
 namespace hyped::motors {
 
-CanProcessor::CanProcessor()
-{
-  // TODOLater implement
+CanProcessor::CanProcessor(std::shared_ptr<Controller> controller)
+{ 
+    controller_ = controller;
 }
+
 
 bool CanProcessor::sendMessage(const core::CanFrame frame)
 {
@@ -15,8 +17,7 @@ bool CanProcessor::sendMessage(const core::CanFrame frame)
 
 void CanProcessor::processMessage(const core::CanFrame frame)
 {
-  // TODOLater implement
-  return;
+  
 }
 
 }  // namespace hyped::motors
