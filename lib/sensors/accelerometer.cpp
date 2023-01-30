@@ -84,17 +84,17 @@ std::optional<core::RawAccelerationData> Accelerometer::read()
 
   const auto result_x = getRawAcceleration(Axis::x);
   if (!result_x) { return std::nullopt; }
-  const std::int16_t x_raw_acc     = result_x.value();
+  const std::int16_t x_raw_acc      = result_x.value();
   const std::int16_t x_acceleration = getAccelerationFromRaw(x_raw_acc);
 
   const auto result_y = getRawAcceleration(Axis::y);
   if (!result_y) { return std::nullopt; }
-  const std::int16_t y_raw_acc     = result_y.value();
+  const std::int16_t y_raw_acc      = result_y.value();
   const std::int16_t y_acceleration = getAccelerationFromRaw(y_raw_acc);
 
   const auto result_z = getRawAcceleration(Axis::z);
   if (!result_z) { return std::nullopt; }
-  const std::int16_t z_raw_acc     = result_z.value();
+  const std::int16_t z_raw_acc      = result_z.value();
   const std::int16_t z_acceleration = getAccelerationFromRaw(z_raw_acc);
 
   const std::optional<core::RawAccelerationData> acceleration_3axis{
