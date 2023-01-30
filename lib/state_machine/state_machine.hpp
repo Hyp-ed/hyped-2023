@@ -4,7 +4,6 @@
 #include "state.hpp"
 #include "types.hpp"
 
-#include <array>
 #include <optional>
 #include <unordered_map>
 
@@ -20,7 +19,7 @@ class StateMachine {
 
   void reset();
 
-  const std::unordered_map<TransitionKey, State, TransitionHasher> transitions
+  const std::unordered_map<SourceAndMessage, State> transitions
     = {{{State::kIdle, Message::mForward}, State::kCalibrating},
        {{State::kCalibrating, Message::mForward}, State::kReady},
        {{State::kReady, Message::mForward}, State::kAccelerating},
@@ -67,6 +66,7 @@ class StateMachine {
        {{State::kPECruising, Message::mResume}, State::kCruising},
        {{State::kPEBraking, Message::mResume}, State::kNominalBraking}};
 
+ private:
   State current_state;
 };
 }  // namespace hyped::state_machine
