@@ -9,9 +9,10 @@
 
 namespace hyped::navigation {
 
-class ImuDisplacement {
+class AccelerometerTrajectoryEstimator {
  public:
-  ImuDisplacement(const core::ITimeSource &time, const core::TimePoint initial_time);
+  AccelerometerTrajectoryEstimator(const core::ITimeSource &time,
+                                   const core::TimePoint initial_time);
   /**
    * @brief update the imu estimate for both displacement and velocity. Displacement is
    * used for cross checking agreement with wheel encooders, velocity is used for us to
@@ -20,12 +21,11 @@ class ImuDisplacement {
    * @param imu_acceleration kalman filtered single value for acceleration
    * @param imu_timestamp time at which easurement was taken
    */
-  void updateImuDisplacement(const core::Float imu_acceleration,
-                             const core::TimePoint imu_timestamp);
+  void update(const core::Float imu_acceleration, const core::TimePoint imu_timestamp);
 
-  core::Float getImuDisplacement();
+  core::Float getAccelerometerDisplacement() const;
 
-  core::Float getImuVelocity();
+  core::Float getAccelerometerVelocity() const;
 
  private:
   core::Float imu_displacement_;

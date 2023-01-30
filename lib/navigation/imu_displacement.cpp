@@ -6,7 +6,8 @@
 
 namespace hyped::navigation {
 
-ImuDisplacement::ImuDisplacement(const core::ITimeSource &time, const core::TimePoint initial_time)
+AccelerometerTrajectoryEstimator::AccelerometerTrajectoryEstimator(
+  const core::ITimeSource &time, const core::TimePoint initial_time)
     : time_(time),
       previous_timestamp_(initial_time),
       imu_displacement_(0),
@@ -14,8 +15,10 @@ ImuDisplacement::ImuDisplacement(const core::ITimeSource &time, const core::Time
 {
 }
 
-void ImuDisplacement::updateImuDisplacement(const core::Float imu_acceleration,
-                                            const core::TimePoint imu_timestamp)
+// TODOLater: change arguments to instead take some sort of "datapoint" struct with acc_val and
+// timestamp instead
+void AccelerometerTrajectoryEstimator::update(const core::Float imu_acceleration,
+                                              const core::TimePoint imu_timestamp)
 {
   core::Timer timer_(time_);
   const auto time_elapsed = timer_.measureElapsedTime(imu_timestamp, previous_timestamp_);
@@ -32,12 +35,12 @@ void ImuDisplacement::updateImuDisplacement(const core::Float imu_acceleration,
   previous_timestamp_ = imu_timestamp;
 }
 
-core::Float ImuDisplacement::getImuDisplacement()
+core::Float AccelerometerTrajectoryEstimator::getAccelerometerDisplacement() const
 {
   return imu_displacement_;
 }
 
-core::Float ImuDisplacement::getImuVelocity()
+core::Float AccelerometerTrajectoryEstimator::getAccelerometerVelocity() const
 {
   return imu_velocity_;
 }
