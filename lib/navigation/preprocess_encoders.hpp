@@ -32,19 +32,11 @@ class EncodersPreprocessor {
     core::Float lower_bound;
   };
 
-  /**
-   * @brief calculate the upper and lower bounds as well as the median for
-   * the input data array
-   *
-   * @param encoder_data
-   * @return std::optional<Statistics>
-   */
   std::optional<Statistics> getStatistics(const core::EncoderData &encoder_data) const;
 
   /**
-   * @brief tidies up the received data by detecting the outliers or data received from faulty
-     sensors and replaces them with median value of the dataset; if there are too many
-     outliers or faulty sensors then this function fails
+   * @brief detects new outliers and replaces values from faulty sensors with
+   * the median; fails if not enough reliable data is available
    *
    * @param encoder_data to be sanitised
    * @return consistent data with no outliers, if possible
