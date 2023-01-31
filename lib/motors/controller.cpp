@@ -94,7 +94,7 @@ std::optional<core::CanFrame> Controller::parseJsonCanFrame(
   }
   core::CanFrame new_message;
   new_message.can_id  = message["id"].GetInt();
-  new_message.can_dlc = 8;
+  new_message.can_dlc = kControllerCanFrameLength;
   // TODO sort endianness conversion for index and data
   //  newmessage.data[0&1] = index
   new_message.data[2] = message["subindex"].GetInt();

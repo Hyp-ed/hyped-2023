@@ -15,6 +15,8 @@
 
 namespace hyped::motors {
 enum class ControllerStatus { kControllerTemperatureExceeded, kUnrecoverableWarning, kNominal };
+// every frame sent to the controller contains 8 bytes
+static constexpr uint8_t kControllerCanFrameLength = 8;
 
 class Controller {
  public:
