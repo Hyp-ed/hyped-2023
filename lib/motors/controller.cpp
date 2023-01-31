@@ -61,8 +61,8 @@ std::optional<Controller> Controller::create(core::ILogger &logger,
 }
 
 Controller::Controller(core::ILogger &logger,
-                       const std::unordered_map<std::string, core::CanFrame> messages,
-                       const std::vector<core::CanFrame> configuration_messages)
+                       const std::unordered_map<std::string, core::CanFrame> &messages,
+                       const std::vector<core::CanFrame> &configuration_messages)
     : logger_(logger),
       configuration_messages_(configuration_messages),
       messages_(messages)
@@ -94,7 +94,7 @@ std::optional<core::CanFrame> Controller::parseJsonCanFrame(
   }
   core::CanFrame new_message;
   new_message.can_id  = message["id"].GetInt();
-  new_message.can_dlc = kControllerCanFrameLength;
+  new_message.can_dlc = io::kControllerCanFrameLength;
   // TODO sort endianness conversion for index and data
   //  newmessage.data[0&1] = index
   new_message.data[2] = message["subindex"].GetInt();

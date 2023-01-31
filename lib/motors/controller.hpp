@@ -10,13 +10,12 @@
 #include <rapidjson/error/en.h>
 #include <rapidjson/istreamwrapper.h>
 
-#include "core/logger.hpp"
-#include "core/types.hpp"
+#include <core/logger.hpp>
+#include <core/types.hpp>
+#include <io/can.hpp>
 
 namespace hyped::motors {
 enum class ControllerStatus { kControllerTemperatureExceeded, kUnrecoverableWarning, kNominal };
-// every frame sent to the controller contains 8 bytes
-static constexpr std::uint8_t kControllerCanFrameLength = 8;
 
 class Controller {
  public:
@@ -29,8 +28,8 @@ class Controller {
 
  private:
   Controller(core::ILogger &logger,
-             const std::unordered_map<std::string, core::CanFrame> messages,
-             const std::vector<core::CanFrame> configuration_messages);
+             const std::unordered_map<std::string, core::CanFrame> &messages,
+             const std::vector<core::CanFrame> &configuration_messages);
   core::ILogger &logger_;
   // TODO replace core::CanFrame with io::CanFrame once merged
   const std::unordered_map<std::string, core::CanFrame> messages_;
