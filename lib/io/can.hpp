@@ -36,6 +36,7 @@ struct sockaddr_can {
 #define PF_CAN 29
 #define AF_CAN 29
 #define CAN_RAW 1
+#define CAN_MAX_DLEN 8
 #endif
 
 class ICanProcessor {
