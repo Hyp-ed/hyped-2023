@@ -18,7 +18,6 @@ namespace hyped::sensors {
 
 enum Axis { x, y, z };
 static constexpr char AxisStrings[3][10] = {"x-axis", "y-axis", "z-axis"};
- 
 
 static constexpr std::uint8_t kDeviceAddress = 0x19;
 
