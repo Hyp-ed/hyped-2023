@@ -2,7 +2,9 @@
 
 namespace hyped::sensors {
 
-Accelerometer::Accelerometer(std::uint8_t channel, io::HardwareI2c &i2c, core::ILogger &logger)
+Accelerometer::Accelerometer(core::ILogger &logger,
+                             io::HardwareI2c &i2c,
+                             const std::uint8_t channel)
     : channel_(channel),
       logger_(logger),
       i2c_(i2c)
@@ -24,16 +26,16 @@ std::optional<std::int16_t> Accelerometer::getRawAcceleration(Axis axis)
   std::uint8_t low_byte_address, high_byte_address;
   switch (axis) {
     case Axis::x:
-      low_byte_address  = kXOutL;
-      high_byte_address = kXOutH;
+      low_byte_address  = kXOutLow;
+      high_byte_address = kXOutHigh;
       break;
     case Axis::y:
-      low_byte_address  = kYOutL;
-      high_byte_address = kYOutH;
+      low_byte_address  = kYOutLow;
+      high_byte_address = kYOutHigh;
       break;
     case Axis::z:
-      low_byte_address  = kZOutL;
-      high_byte_address = kZOutH;
+      low_byte_address  = kZOutLow;
+      high_byte_address = kZOutHigh;
       break;
   }
 
@@ -72,11 +74,12 @@ std::int16_t Accelerometer::getAccelerationFromRaw(std::int16_t rawAcc)
 std::optional<core::RawAccelerationData> Accelerometer::read()
 {
   // check to see if the values are ready to be read
-  auto data_ready = i2c_.readByte(kDeviceAddress, kDataReady);
+  const auto data_ready = i2c_.readByte(kDeviceAddress, kDataReady);
   if (!data_ready) {
     logger_.log(core::LogLevel::kFatal, "acceleration data could not be read");
     return std::nullopt;
   }
+  // todolater: here the error is not that bad, hence the return value should indicate that
   if (data_ready.value() % 2 == 0) {
     logger_.log(core::LogLevel::kInfo, "acceleration data not ready yet to be read");
     return std::nullopt;
@@ -110,12 +113,12 @@ std::optional<core::RawAccelerationData> Accelerometer::read()
 core::Result Accelerometer::configure()
 {
   // check we are communicating with the correct sensor
-  const auto device_id = i2c_.readByte(kDeviceAddress, kDevId);
+  const auto device_id = i2c_.readByte(kDeviceAddress, kDeviceId);
   if (!device_id) {
     logger_.log(core::LogLevel::kFatal, "Failure to read device id of accelerometer");
     return core::Result::kFailure;
   }
-  if (device_id.value() != expectedDevId) {
+  if (device_id.value() != kExpectedDeviceId) {
     logger_.log(core::LogLevel::kFatal, "Failure: accelerometer didn't give correct device id");
     return core::Result::kFailure;
   }
@@ -125,20 +128,20 @@ core::Result Accelerometer::configure()
   // Sampling rate of 200 Hz
   // Enable high performance mode
   const core::Result ctrl1_result
-    = i2c_.writeByteToRegister(kDeviceAddress, kCtrl1Addr, kCtrl1Value);
-  if (ctrl1_result == core::Result::kFailure) return core::Result::kFailure;
+    = i2c_.writeByteToRegister(kDeviceAddress, kCtrl1Address, kCtrl1Value);
+  if (ctrl1_result == core::Result::kFailure) { return core::Result::kFailure; };
 
   // Enable block data update
   // Enable address auto increment
   const core::Result ctrl2_result
-    = i2c_.writeByteToRegister(kDeviceAddress, kCtrl2Addr, kCtrl2Value);
-  if (ctrl2_result == core::Result::kFailure) return core::Result::kFailure;
+    = i2c_.writeByteToRegister(kDeviceAddress, kCtrl2Address, kCtrl2Value);
+  if (ctrl2_result == core::Result::kFailure) { return core::Result::kFailure; };
 
   // Full scale +-16g
   // Filter bandwidth = ODR/2
-  const core::Result ctrl3_result
-    = i2c_.writeByteToRegister(kDeviceAddress, kCtrl6Addr, kCtrl6Value);
-  if (ctrl3_result == core::Result::kFailure) return core::Result::kFailure;
+  const core::Result ctrl6_result
+    = i2c_.writeByteToRegister(kDeviceAddress, kCtrl6Address, kCtrl6Value);
+  if (ctrl6_result == core::Result::kFailure) { return core::Result::kFailure; };
 
   return core::Result::kSuccess;
 }

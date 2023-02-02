@@ -474,7 +474,7 @@ void Repl::addAccelerometerCommands(const std::uint8_t bus, const std::uint8_t d
     return;
   }
 
-  const auto accelerometer = std::make_shared<sensors::Accelerometer>(bus, *i2c, logger_);
+  const auto accelerometer = std::make_shared<sensors::Accelerometer>(logger_, *i2c, bus);
 
   accelerometer->configure();
 
