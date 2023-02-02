@@ -24,19 +24,17 @@ std::optional<std::int16_t> Temperature::read()
   }
   if (status_check_result.value() == kBusy) {
     logger_.log(hyped::core::LogLevel::kFatal,
-                "Failed to read, temperature is below lower limit at channel %d",
+                "Failed to read, temperature sensor is not ready to be read at channel %d",
                 channel_);
     return std::nullopt;
-  }
-  if (status_check_result.value() == kOverTemperatureHighLimit) {
+  } else if (status_check_result.value() == kOverTemperatureHighLimit) {
     logger_.log(hyped::core::LogLevel::kFatal,
                 "Failed to read, temperature is above higher limit at channel %d",
                 channel_);
     return std::nullopt;
-  }
-  if (status_check_result.value() == kUnderTemperatureLowLimit) {
+  } else if (status_check_result.value() == kUnderTemperatureLowLimit) {
     logger_.log(hyped::core::LogLevel::kFatal,
-                "Failed to read, temperature sensor is not ready to be read at channel %d",
+                "Failed to read, temperature is below lower limit at channel %d",
                 channel_);
     return std::nullopt;
   }
@@ -57,7 +55,7 @@ std::optional<std::int16_t> Temperature::read()
   const auto temperature = ((temperature_high_byte.value() << 8) | temperature_low_byte.value());
 
   logger_.log(
-    hyped::core::LogLevel::kFatal, "Successfully read temperature sensor at channel %d", channel_);
+    hyped::core::LogLevel::kDebug, "Successfully read temperature sensor at channel %d", channel_);
   // Scaling temperature as per the datasheet
   return temperature * 0.01;
 }
@@ -72,7 +70,7 @@ core::Result Temperature::configure()
                 channel_);
     return core::Result::kFailure;
   }
-  logger_.log(hyped::core::LogLevel::kFatal,
+  logger_.log(hyped::core::LogLevel::kDebug,
               "Successful to configure temperature sensor at channel %d",
               channel_);
   return core::Result::kSuccess;
