@@ -2,8 +2,8 @@
 
 namespace hyped::sensors {
 
-Temperature::Temperature(hyped::core::ILogger &log, io::I2c &i2c, const std::uint8_t channel)
-    : logger_(log),
+Temperature::Temperature(hyped::core::ILogger &logger, io::I2c &i2c, const std::uint8_t channel)
+    : logger_(logger),
       i2c_(i2c),
       channel_(channel)
 {
