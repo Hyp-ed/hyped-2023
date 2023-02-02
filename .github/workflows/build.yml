@@ -16,9 +16,9 @@ jobs:
         with:
           compiler: clang
           ubuntu: |
-            apt: libeigen3-dev
+            apt: libeigen3-dev rapidjson-dev libboost-all-dev
           macos: |
-            brew: eigen
+            brew: eigen rapidjson --HEAD boost
       - name: CMake
         run: cmake -S . -B build -DCMAKE_CXX_COMPILER=$(which clang++)
       - name: Build hyped

@@ -12,6 +12,10 @@ set(project HYPED)
 project(${project} CXX)
 enable_testing()
 
+find_package (Eigen3 REQUIRED NO_MODULE)
+find_package(RapidJSON REQUIRED)
+find_package(Boost REQUIRED)
+
 add_subdirectory(${CMAKE_SOURCE_DIR}/lib)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src)
 add_subdirectory(${CMAKE_SOURCE_DIR}/test)
