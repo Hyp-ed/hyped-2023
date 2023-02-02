@@ -19,6 +19,8 @@ namespace hyped::sensors {
 enum Axis { x, y, z };
 static constexpr char AxisStrings[3][10] = {"x-axis", "y-axis", "z-axis"};
 
+// ! these values come from the datasheet
+
 static constexpr std::uint8_t kDeviceAddress = 0x19;
 
 static constexpr std::uint8_t kCtrl1Address = 0x20;
@@ -44,22 +46,27 @@ static constexpr std::uint8_t kDataReady = 0x27;
 static constexpr std::uint8_t kDeviceId         = 0x0F;
 static constexpr std::uint8_t kExpectedDeviceId = 0x44;
 
-class Accelerometer : II2cMuxSensor<core::RawAccelerationData> {
+class Accelerometer : public II2cMuxSensor<core::RawAccelerationData> {
  public:
   Accelerometer(core::ILogger &logger, io::HardwareI2c &i2c, const std::uint8_t channel);
   ~Accelerometer();
 
-  virtual core::Result configure();
-  virtual std::optional<core::RawAccelerationData> read();
-  virtual std::uint8_t getChannel();
+  // configure the sensor according to what was found in the repo of the manufacturers
+  core::Result configure();
+  std::optional<core::RawAccelerationData> read();
+  std::uint8_t getChannel();
 
  private:
   core::ILogger &logger_;
   io::HardwareI2c &i2c_;
   const std::uint8_t channel_;
 
-  std::optional<std::int16_t> getRawAcceleration(Axis axis);
-  std::int16_t getAccelerationFromRaw(std::int16_t rawAcc);
+ private:
+  std::optional<std::int16_t> getRawAcceleration(const Axis axis);
+  std::int16_t getAccelerationFromRaw(const std::int16_t rawAcceleration);
+  void setRegisterAddressFromAxis(const Axis axis,
+                                  const std::uint8_t *low_byte_address,
+                                  const std::uint8_t *high_byte_address);
 };
 
 }  // namespace hyped::sensors

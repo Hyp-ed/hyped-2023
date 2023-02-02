@@ -5,9 +5,9 @@ namespace hyped::sensors {
 Accelerometer::Accelerometer(core::ILogger &logger,
                              io::HardwareI2c &i2c,
                              const std::uint8_t channel)
-    : channel_(channel),
-      logger_(logger),
-      i2c_(i2c)
+    : logger_(logger),
+      i2c_(i2c),
+      channel_(channel)
 {
 }
 
@@ -20,24 +20,10 @@ std::uint8_t Accelerometer::getChannel()
   return channel_;
 }
 
-std::optional<std::int16_t> Accelerometer::getRawAcceleration(Axis axis)
+std::optional<std::int16_t> Accelerometer::getRawAcceleration(const Axis axis)
 {
-  // based on the axis asked, choose the correct register address to read from
   std::uint8_t low_byte_address, high_byte_address;
-  switch (axis) {
-    case Axis::x:
-      low_byte_address  = kXOutLow;
-      high_byte_address = kXOutHigh;
-      break;
-    case Axis::y:
-      low_byte_address  = kYOutLow;
-      high_byte_address = kYOutHigh;
-      break;
-    case Axis::z:
-      low_byte_address  = kZOutLow;
-      high_byte_address = kZOutHigh;
-      break;
-  }
+  setRegisterAddressFromAxis(axis, &low_byte_address, &high_byte_address);
 
   const auto low_byte = i2c_.readByte(kDeviceAddress, low_byte_address);
   if (!low_byte) {
@@ -61,16 +47,37 @@ std::optional<std::int16_t> Accelerometer::getRawAcceleration(Axis axis)
   return raw_acceleration;
 }
 
-std::int16_t Accelerometer::getAccelerationFromRaw(std::int16_t rawAcc)
+void setRegisterAddressFromAxis(const Axis axis,
+                                const std::uint8_t *low_byte_address,
+                                const std::uint8_t *high_byte_address)
+{
+  switch (axis) {
+    case Axis::x:
+      *low_byte_address  = kXOutLow;
+      *high_byte_address = kXOutHigh;
+      break;
+    case Axis::y:
+      *low_byte_address  = kYOutLow;
+      *high_byte_address = kYOutHigh;
+      break;
+    case Axis::z:
+      *low_byte_address  = kZOutLow;
+      *high_byte_address = kZOutHigh;
+      break;
+  }
+}
+
+std::int16_t Accelerometer::getAccelerationFromRaw(const std::int16_t rawAcceleration)
 {
   // these values come from the data sheet. Don't chance them.
   std::int16_t acceleration
-    = static_cast<std::int16_t>((static_cast<int32_t>(rawAcc) * 488) / 1000);
+    = static_cast<std::int16_t>((static_cast<int32_t>(rawAcceleration) * 488) / 1000);
 
   return acceleration;
 }
 
-// todolater: check whether the range of values the accelerometer is correct, cause now the noise is
+// TODOlater: current settings of the accelerometer make it read in +-16g but with high noise. Check
+// whether other configuration could be better
 std::optional<core::RawAccelerationData> Accelerometer::read()
 {
   // check to see if the values are ready to be read
@@ -79,7 +86,7 @@ std::optional<core::RawAccelerationData> Accelerometer::read()
     logger_.log(core::LogLevel::kFatal, "acceleration data could not be read");
     return std::nullopt;
   }
-  // todolater: here the error is not that bad, hence the return value should indicate that
+  // TODOlater: here the error is not that bad, hence the return value should indicate that
   if (data_ready.value() % 2 == 0) {
     logger_.log(core::LogLevel::kInfo, "acceleration data not ready yet to be read");
     return std::nullopt;
@@ -87,18 +94,18 @@ std::optional<core::RawAccelerationData> Accelerometer::read()
 
   const auto result_x = getRawAcceleration(Axis::x);
   if (!result_x) { return std::nullopt; }
-  const std::int16_t x_raw_acc      = result_x.value();
-  const std::int16_t x_acceleration = getAccelerationFromRaw(x_raw_acc);
+  const std::int16_t x_raw_acceleration = result_x.value();
+  const std::int16_t x_acceleration     = getAccelerationFromRaw(x_raw_acceleration);
 
   const auto result_y = getRawAcceleration(Axis::y);
   if (!result_y) { return std::nullopt; }
-  const std::int16_t y_raw_acc      = result_y.value();
-  const std::int16_t y_acceleration = getAccelerationFromRaw(y_raw_acc);
+  const std::int16_t y_raw_acceleration = result_y.value();
+  const std::int16_t y_acceleration     = getAccelerationFromRaw(y_raw_acceleration);
 
   const auto result_z = getRawAcceleration(Axis::z);
   if (!result_z) { return std::nullopt; }
-  const std::int16_t z_raw_acc      = result_z.value();
-  const std::int16_t z_acceleration = getAccelerationFromRaw(z_raw_acc);
+  const std::int16_t z_raw_acceleration = result_z.value();
+  const std::int16_t z_acceleration     = getAccelerationFromRaw(z_raw_acceleration);
 
   const std::optional<core::RawAccelerationData> acceleration_3axis{
     std::in_place,
@@ -122,8 +129,6 @@ core::Result Accelerometer::configure()
     logger_.log(core::LogLevel::kFatal, "Failure: accelerometer didn't give correct device id");
     return core::Result::kFailure;
   }
-
-  // configure the sensor according to what was found in the repo of the manufacturers
 
   // Sampling rate of 200 Hz
   // Enable high performance mode

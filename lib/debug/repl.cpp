@@ -57,15 +57,6 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
     return std::nullopt;
   }
   const auto io = debugger["io"].GetObject();
-
-  if (!debugger.HasMember("sensors")) {
-    logger_.log(core::LogLevel::kFatal,
-                "Missing required field 'debugger.sensors' in configuration file at %s",
-                path.c_str());
-    return std::nullopt;
-  }
-  const auto sensors = debugger["sensors"].GetObject();
-
   if (!io.HasMember("adc")) {
     logger_.log(core::LogLevel::kFatal, "Missing required field 'io.adc' in configuration file");
     return std::nullopt;
@@ -87,7 +78,6 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
       repl->addAdcCommands(pin.GetUint());
     }
   }
-
   if (!io.HasMember("i2c")) {
     logger_.log(core::LogLevel::kFatal, "Missing required field 'io.i2c' in configuration file");
     return std::nullopt;
@@ -178,20 +168,24 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
       repl->addUartCommands(bus.GetUint());
     }
   }
-
+  if (!debugger.HasMember("sensors")) {
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'debugger.sensors' in configuration file at %s",
+                path.c_str());
+    return std::nullopt;
+  }
+  const auto sensors = debugger["sensors"].GetObject();
   if (!sensors.HasMember("accelerometer")) {
     logger_.log(core::LogLevel::kFatal,
                 "Missing required field 'sensors.accelerometer' in configuration file");
     return std::nullopt;
   }
   const auto accelerometer = sensors["accelerometer"].GetObject();
-
   if (!accelerometer.HasMember("enabled")) {
     logger_.log(core::LogLevel::kFatal,
                 "Missing required field 'sensors.accelerometer.enabled' in configuration file");
     return std::nullopt;
   }
-
   if (accelerometer["enabled"].GetBool()) {
     if (!accelerometer.HasMember("bus")) {
       logger_.log(core::LogLevel::kFatal,
@@ -259,10 +253,10 @@ void Repl::addAdcCommands(const std::uint8_t pin)
   adc_read_command.description = description.str();
   adc_read_command.handler     = [this, adc, pin]() {
     const auto value = adc->readValue();
-    if (value) {
-      logger_.log(core::LogLevel::kDebug, "ADC value from pin %d: %d", pin, *value);
-    } else {
+    if (!value) {
       logger_.log(core::LogLevel::kFatal, "Failed to read from ADC pin %d", pin);
+    } else {
+      logger_.log(core::LogLevel::kDebug, "ADC value from pin %d: %d", pin, *value);
     }
   };
   addCommand(adc_read_command);
@@ -467,44 +461,35 @@ void Repl::addAccelerometerCommands(const std::uint8_t bus, const std::uint8_t d
     return;
   }
   const auto i2c = std::make_shared<io::HardwareI2c>(*optional_i2c);
-
   if (device_address != 0x19) {
     logger_.log(core::LogLevel::kFatal,
                 "Asking for accelerometer on another address as what is hard coded");
     return;
   }
-
   const auto accelerometer = std::make_shared<sensors::Accelerometer>(logger_, *i2c, bus);
-
   accelerometer->configure();
-
   Command accelerometer_read_command;
   std::stringstream identifier;
   identifier << "accelerometer 0x" << std::hex << static_cast<int>(device_address) << " read";
   accelerometer_read_command.name = identifier.str();
-
   std::stringstream description;
   description << "Read accelerometer sensor 0x" << std::hex << static_cast<int>(device_address)
               << " on "
               << "I2C bus " << static_cast<int>(bus);
   accelerometer_read_command.description = description.str();
-
-  accelerometer_read_command.handler = [this, accelerometer, bus]() {
+  accelerometer_read_command.handler     = [this, accelerometer, bus]() {
     const auto value = accelerometer->read();
-
-    if (value) {
+    if (!value) {
+      logger_.log(core::LogLevel::kFatal, "Failed to read accelerometer from bus %d", bus);
+    } else {
       const core::RawAccelerationData result = value.value();
-
       logger_.log(core::LogLevel::kInfo,
                   "Acceleration in mg: \n x %d \n y %d \n z %d",
                   result.x,
                   result.y,
                   result.z);
-    } else {
-      logger_.log(core::LogLevel::kFatal, "Failed to read accelerometer from bus %d", bus);
     }
   };
-
   addCommand(accelerometer_read_command);
 }
 

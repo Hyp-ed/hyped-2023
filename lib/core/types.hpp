@@ -54,10 +54,10 @@ struct RawAccelerationData {
   {
   }
 
-  std::int16_t x;
-  std::int16_t y;
-  std::int16_t z;
-  TimePoint time;
+  const std::int16_t x;
+  const std::int16_t y;
+  const std::int16_t z;
+  const TimePoint time;
 };
 
 }  // namespace hyped::core
