@@ -22,7 +22,6 @@ std::optional<std::int16_t> Temperature::read()
                 channel_);
     return std::nullopt;
   }
-  // Status checks
   if (status_check_result.value() == kBusy) {
     logger_.log(hyped::core::LogLevel::kFatal,
                 "Failed to read, temperature is below lower limit at channel %d",
