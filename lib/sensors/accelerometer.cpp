@@ -47,9 +47,9 @@ std::optional<std::int16_t> Accelerometer::getRawAcceleration(const Axis axis)
   return raw_acceleration;
 }
 
-void setRegisterAddressFromAxis(const Axis axis,
-                                const std::uint8_t *low_byte_address,
-                                const std::uint8_t *high_byte_address)
+void Accelerometer::setRegisterAddressFromAxis(const Axis axis,
+                                               std::uint8_t *low_byte_address,
+                                               std::uint8_t *high_byte_address)
 {
   switch (axis) {
     case Axis::x:
