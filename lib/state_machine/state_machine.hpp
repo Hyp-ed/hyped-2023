@@ -17,8 +17,7 @@ class StateMachine {
 
   std::optional<Message> handleData();
 
-  void reset();
-
+ private:
   const std::unordered_map<SourceAndMessage, State> transitions
     = {{{State::kIdle, Message::mForward}, State::kCalibrating},
        {{State::kCalibrating, Message::mForward}, State::kReady},
@@ -66,7 +65,6 @@ class StateMachine {
        {{State::kPECruising, Message::mResume}, State::kCruising},
        {{State::kPEBraking, Message::mResume}, State::kNominalBraking}};
 
- private:
   State current_state;
 };
 }  // namespace hyped::state_machine

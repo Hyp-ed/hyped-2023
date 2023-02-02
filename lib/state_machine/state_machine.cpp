@@ -19,9 +19,4 @@ void StateMachine::handleMessage(const Message message)
   current_state = transitions.at({current_state, message});
 }
 
-void StateMachine::reset()
-{
-  current_state = State::kIdle;
-}
-
 }  // namespace hyped::state_machine
