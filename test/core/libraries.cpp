@@ -1,8 +1,10 @@
 #include <gtest/gtest.h>
-#include <boost/algorithm/string.hpp>
-#include <Eigen/Dense>
 
-TEST(Libraries, Eigen) {
+#include <Eigen/Dense>
+#include <boost/algorithm/string.hpp>
+
+TEST(Libraries, Eigen)
+{
   Eigen::Matrix3d m;
   m << 1, 2, 3, 4, 5, 6, 7, 8, 9;
   Eigen::Vector3d v(1, 2, 3);
@@ -12,7 +14,8 @@ TEST(Libraries, Eigen) {
   ASSERT_EQ(result(2), 50);
 }
 
-TEST(Libraries, Boost) {
+TEST(Libraries, Boost)
+{
   std::string s = "Hello World";
   boost::to_upper(s);
   ASSERT_EQ(s, "HELLO WORLD");
