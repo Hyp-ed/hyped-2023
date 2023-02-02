@@ -34,11 +34,11 @@ std::optional<std::int16_t> Accelerometer::getRawAcceleration(const Axis axis)
   const auto high_byte = i2c_.readByte(kDeviceAddress, high_byte_address);
   if (!high_byte) {
     logger_.log(core::LogLevel::kFatal,
-                "Failed to read the low byte for acceleration along the %s",
+                "Failed to read the high byte for acceleration along the %s",
                 AxisStrings[axis]);
     return std::nullopt;
   }
-  const auto raw_acceleration
+  const std::int16_t raw_acceleration
     = static_cast<std::int16_t>((high_byte.value() << 8) | low_byte.value());
   return raw_acceleration;
 }
@@ -88,24 +88,21 @@ std::optional<core::RawAccelerationData> Accelerometer::read()
   }
   const auto result_x = getRawAcceleration(Axis::x);
   if (!result_x) { return std::nullopt; }
-  const std::int16_t x_raw_acceleration = result_x.value();
-  const std::int16_t x_acceleration     = getAccelerationFromRaw(x_raw_acceleration);
-  const auto result_y                   = getRawAcceleration(Axis::y);
+  const std::int16_t x_acceleration = getAccelerationFromRaw(result_x.value());
+  const auto result_y               = getRawAcceleration(Axis::y);
   if (!result_y) { return std::nullopt; }
-  const std::int16_t y_raw_acceleration = result_y.value();
-  const std::int16_t y_acceleration     = getAccelerationFromRaw(y_raw_acceleration);
-  const auto result_z                   = getRawAcceleration(Axis::z);
+  const std::int16_t y_acceleration = getAccelerationFromRaw(result_y.value());
+  const auto result_z               = getRawAcceleration(Axis::z);
   if (!result_z) { return std::nullopt; }
-  const std::int16_t z_raw_acceleration = result_z.value();
-  const std::int16_t z_acceleration     = getAccelerationFromRaw(z_raw_acceleration);
-  const std::optional<core::RawAccelerationData> acceleration_3axis{
+  const std::int16_t z_acceleration = getAccelerationFromRaw(result_z.value());
+  const std::optional<core::RawAccelerationData> acceleration_3_axis{
     std::in_place,
     x_acceleration,
     y_acceleration,
     z_acceleration,
     std::chrono::system_clock::now()};
   logger_.log(core::LogLevel::kDebug, "Successfully read accelerometer data");
-  return acceleration_3axis;
+  return acceleration_3_axis;
 }
 
 core::Result Accelerometer::configure()
@@ -117,7 +114,7 @@ core::Result Accelerometer::configure()
     return core::Result::kFailure;
   }
   if (device_id.value() != kExpectedDeviceId) {
-    logger_.log(core::LogLevel::kFatal, "Failure: accelerometer didn't give correct device id");
+    logger_.log(core::LogLevel::kFatal, "Failure accelerometer didn't give correct device id");
     return core::Result::kFailure;
   }
   // Sampling rate of 200 Hz

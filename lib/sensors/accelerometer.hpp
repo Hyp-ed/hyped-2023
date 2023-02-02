@@ -5,9 +5,7 @@
 #include <unistd.h>
 
 #include <cstdint>
-#include <cstdio>
 #include <optional>
-#include <string>
 
 #include <core/logger.hpp>
 #include <core/types.hpp>
