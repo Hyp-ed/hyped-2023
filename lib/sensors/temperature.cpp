@@ -3,7 +3,7 @@
 namespace hyped::sensors {
 
 Temperature::Temperature(hyped::core::ILogger &log, io::I2c &i2c, const std::uint8_t channel)
-    : logger_(logger),
+    : logger_(log),
       i2c_(i2c),
       channel_(channel)
 {
@@ -42,13 +42,14 @@ std::optional<std::int16_t> Temperature::read()
     return std::nullopt;
   }
   // Reading the temperature and making checks if it retrieved the values
-  const auto temperature_high_byte = i2c_.readByte(kTemperatureDefaultAddress, kDataTH);
+  const auto temperature_high_byte
+    = i2c_.readByte(kTemperatureDefaultAddress, kDataTemperatureHigh);
   if (!temperature_high_byte) {
     logger_.log(
       hyped::core::LogLevel::kFatal, "Failed to read temperature high at channel %d", channel_);
     return std::nullopt;
   }
-  const auto temperature_low_byte = i2c_.readByte(kTemperatureDefaultAddress, kDataTL);
+  const auto temperature_low_byte = i2c_.readByte(kTemperatureDefaultAddress, kDataTemperatureLow);
   if (!temperature_low_byte) {
     logger_.log(
       hyped::core::LogLevel::kFatal, "Failed to read temperature low at channel %d", channel_);
