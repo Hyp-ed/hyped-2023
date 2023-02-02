@@ -5,7 +5,8 @@
 #include "types.hpp"
 
 #include <optional>
-#include <unordered_map>
+
+#include <boost/unordered/unordered_map.hpp>
 
 namespace hyped::state_machine {
 
@@ -18,7 +19,7 @@ class StateMachine {
   std::optional<Message> handleData();
 
  private:
-  const std::unordered_map<SourceAndMessage, State> transitions
+  const boost::unordered_map<SourceAndMessage, State> transitions
     = {{{State::kIdle, Message::mForward}, State::kCalibrating},
        {{State::kCalibrating, Message::mForward}, State::kReady},
        {{State::kReady, Message::mForward}, State::kAccelerating},
