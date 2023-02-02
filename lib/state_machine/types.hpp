@@ -4,6 +4,7 @@
 #include "state.hpp"
 
 #include <cstdint>
+
 #include <boost/functional/hash.hpp>
 
 namespace hyped::state_machine {
