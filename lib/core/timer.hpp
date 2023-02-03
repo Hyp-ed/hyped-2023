@@ -13,8 +13,7 @@ class Timer {
 
   Duration measureExecutionTime(const std::function<void(void)> task);
 
-  Duration measureElapsedTime(const TimePoint current_timepoint,
-                              const TimePoint previous_timepoint);
+  Duration elapsed(const TimePoint current_timepoint, const TimePoint previous_timepoint);
 
   Float elapsedTimeInSeconds(const Duration time_elapsed);
 

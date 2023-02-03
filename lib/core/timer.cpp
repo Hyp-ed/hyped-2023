@@ -14,16 +14,14 @@ Duration Timer::measureExecutionTime(const std::function<void(void)> task)
   return after - before;
 }
 
-Duration Timer::measureElapsedTime(const TimePoint current_timepoint,
-                                   const TimePoint previous_timepoint)
+Duration Timer::elapsed(const TimePoint current_timepoint, const TimePoint previous_timepoint)
 {
-  const Duration duration = previous_timepoint - previous_timepoint;
-  return duration;
+  return current_timepoint - previous_timepoint;
 }
 
 Float Timer::elapsedTimeInSeconds(const Duration time_elapsed)
 {
-  std::uint64_t nanoseconds_elapsed
+  const std::uint64_t nanoseconds_elapsed
     = std::chrono::duration_cast<std::chrono::nanoseconds>(time_elapsed).count();
   return static_cast<Float>(nanoseconds_elapsed) / kOneSecond;
 }
