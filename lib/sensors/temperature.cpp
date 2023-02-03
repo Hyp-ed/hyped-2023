@@ -2,7 +2,9 @@
 
 namespace hyped::sensors {
 
-Temperature::Temperature(hyped::core::ILogger &logger, io::I2c &i2c, const std::uint8_t channel)
+Temperature::Temperature(hyped::core::ILogger &logger,
+                         io::HardwareI2c &i2c,
+                         const std::uint8_t channel)
     : logger_(logger),
       i2c_(i2c),
       channel_(channel)
@@ -22,23 +24,23 @@ std::optional<std::int16_t> Temperature::read()
                 channel_);
     return std::nullopt;
   }
+  // TODOLater: change this from a fatal error to a debug and re-prompt read (with ROS)
   if (status_check_result.value() == kBusy) {
     logger_.log(hyped::core::LogLevel::kFatal,
                 "Failed to read, temperature sensor is not ready to be read at channel %d",
                 channel_);
     return std::nullopt;
-  } else if (status_check_result.value() == kOverTemperatureHighLimit) {
+  } else if (status_check_result.value() == kTemperatureOverUpperLimit) {
     logger_.log(hyped::core::LogLevel::kFatal,
-                "Failed to read, temperature is above higher limit at channel %d",
+                "Failed to read, temperature is above upper limit at channel %d",
                 channel_);
     return std::nullopt;
-  } else if (status_check_result.value() == kUnderTemperatureLowLimit) {
+  } else if (status_check_result.value() == kTemperatureUnderLowerLimit) {
     logger_.log(hyped::core::LogLevel::kFatal,
                 "Failed to read, temperature is below lower limit at channel %d",
                 channel_);
     return std::nullopt;
   }
-  // Reading the temperature and making checks if it retrieved the values
   const auto temperature_high_byte
     = i2c_.readByte(kTemperatureDefaultAddress, kDataTemperatureHigh);
   if (!temperature_high_byte) {
@@ -52,12 +54,12 @@ std::optional<std::int16_t> Temperature::read()
       hyped::core::LogLevel::kFatal, "Failed to read temperature low at channel %d", channel_);
     return std::nullopt;
   }
-  const auto temperature = ((temperature_high_byte.value() << 8) | temperature_low_byte.value());
-
+  const std::int16_t temperature
+    = ((temperature_high_byte.value() << 8) | temperature_low_byte.value());
   logger_.log(
     hyped::core::LogLevel::kDebug, "Successfully read temperature sensor at channel %d", channel_);
   // Scaling temperature as per the datasheet
-  return temperature * 0.01;
+  return temperature * kTemperatureScaleFactor;
 }
 
 core::Result Temperature::configure()

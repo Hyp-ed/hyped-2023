@@ -1,3 +1,5 @@
+#pragma once
+
 #include "consts.hpp"
 
 #include <optional>
@@ -28,11 +30,11 @@ class Navigator : public INavigator {
    */
   void encoderUpdate(const core::EncoderData &encoder_data);
   /**
-   * @brief preprocesses imu data and updates trajectory
+   * @brief preprocesses accelerometer data and updates trajectory
    *
-   * @param imu_data
+   * @param accelerometer_data
    */
-  void imuUpdate(const core::RawImuData &imu_data);
+  void accelerometerUpdate(const core::RawAccelerometerData &accelerometer_data);
 
  private:
   // previous readings
