@@ -9,7 +9,7 @@
 #include <io/hardware_i2c.hpp>
 
 namespace hyped::sensors {
-// Values from data sheet
+// Values and register names from data sheet
 static constexpr std::uint8_t kTemperatureDefaultAddress = 0x38;
 static constexpr std::uint8_t kCtrl                      = 0x04;
 static constexpr std::uint8_t kDataTemperatureHigh       = 0x07;

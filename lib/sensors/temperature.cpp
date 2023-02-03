@@ -27,12 +27,14 @@ std::optional<std::int16_t> Temperature::read()
                 "Failed to read, temperature sensor is not ready to be read at channel %d",
                 channel_);
     return std::nullopt;
-  } else if (status_check_result.value() == kTemperatureOverUpperLimit) {
+  }
+  if (status_check_result.value() == kTemperatureOverUpperLimit) {
     logger_.log(core::LogLevel::kFatal,
                 "Failed to read, temperature is above upper limit at channel %d",
                 channel_);
     return std::nullopt;
-  } else if (status_check_result.value() == kTemperatureUnderLowerLimit) {
+  }
+  if (status_check_result.value() == kTemperatureUnderLowerLimit) {
     logger_.log(core::LogLevel::kFatal,
                 "Failed to read, temperature is below lower limit at channel %d",
                 channel_);
@@ -41,18 +43,20 @@ std::optional<std::int16_t> Temperature::read()
   const auto temperature_high_byte
     = i2c_.readByte(kTemperatureDefaultAddress, kDataTemperatureHigh);
   if (!temperature_high_byte) {
-    logger_.log(core::LogLevel::kFatal, "Failed to read temperature high at channel %d", channel_);
+    logger_.log(
+      core::LogLevel::kFatal, "Failed to read high byte for temperature at channel %d", channel_);
     return std::nullopt;
   }
   const auto temperature_low_byte = i2c_.readByte(kTemperatureDefaultAddress, kDataTemperatureLow);
   if (!temperature_low_byte) {
-    logger_.log(core::LogLevel::kFatal, "Failed to read temperature low at channel %d", channel_);
+    logger_.log(
+      core::LogLevel::kFatal, "Failed to read low byte for temperature at channel %d", channel_);
     return std::nullopt;
   }
   const std::int16_t temperature
     = ((temperature_high_byte.value() << 8) | temperature_low_byte.value());
   logger_.log(
-    core::LogLevel::kDebug, "Successfully read temperature sensor at channel %d", channel_);
+    core::LogLevel::kDebug, "Successfully read from temperature sensor at channel %d", channel_);
   // Scaling temperature as per the datasheet
   return temperature * kTemperatureScaleFactor;
 }
