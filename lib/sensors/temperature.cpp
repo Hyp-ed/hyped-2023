@@ -2,7 +2,7 @@
 
 namespace hyped::sensors {
 
-Temperature::Temperature(core::ILogger &logger, io::HardwareI2c &i2c, const std::uint8_t channel)
+Temperature::Temperature(core::ILogger &logger, io::II2c &i2c, const std::uint8_t channel)
     : logger_(logger),
       i2c_(i2c),
       channel_(channel)
@@ -58,7 +58,7 @@ std::optional<std::int16_t> Temperature::read()
   logger_.log(
     core::LogLevel::kDebug, "Successfully read from temperature sensor at channel %d", channel_);
   // Scaling temperature as per the datasheet
-  return temperature * kTemperatureScaleFactor;
+  return static_cast<std::int16_t>(temperature * kTemperatureScaleFactor);
 }
 
 core::Result Temperature::configure()
@@ -75,7 +75,7 @@ core::Result Temperature::configure()
   return core::Result::kSuccess;
 }
 
-std::uint8_t Temperature::getChannel()
+std::uint8_t Temperature::getChannel() const
 {
   return channel_;
 }

@@ -6,7 +6,7 @@
 #include <optional>
 
 #include <core/logger.hpp>
-#include <io/hardware_i2c.hpp>
+#include <io/i2c.hpp>
 
 namespace hyped::sensors {
 // Values and register names from data sheet
@@ -25,16 +25,16 @@ static constexpr core::Float kTemperatureScaleFactor = 0.01;
 
 class Temperature : public II2cMuxSensor<std::int16_t> {
  public:
-  Temperature(core::ILogger &logger, io::HardwareI2c &i2c, const std::uint8_t channel);
+  Temperature(core::ILogger &logger, io::II2c &i2c, const std::uint8_t channel);
   ~Temperature();
 
   core::Result configure();
   std::optional<std::int16_t> read();
-  std::uint8_t getChannel();
+  std::uint8_t getChannel() const;
 
  private:
   core::ILogger &logger_;
-  io::HardwareI2c &i2c_;
+  io::II2c &i2c_;
   const std::uint8_t channel_;
 };
 
