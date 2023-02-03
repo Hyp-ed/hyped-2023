@@ -2,26 +2,25 @@
 
 namespace hyped::sensors {
 
-StripeSensor::StripeSensor(hyped::core::ILogger &log, const std::uint8_t newPin)
-    : pin(newPin),
-      log_(log)
+Keyence::Keyence(core::ILogger &log, const std::uint8_t newPin) : pin(newPin), logger_(log)
 {
-  hyped::io::HardwareGpio keyence(&log_);
-  keyence.getReader(newPin);
+  stripe_count_ = 0;
+  io::HardwareGpio hardware(logger_);
+  keyence = hardware.getReader(pin);
 };
 
-StripeSensor::~StripeSensor()
+Keyence::~Keyence()
 {
 }
 
-int StripeSensor::getStripeCount()
+int Keyence::getStripeCount()
 {
-  return stripeCount;
+  return stripe_count_;
 }
 
-void StripeSensor::updateStripes()
+void Keyence::updateStripes()
 {
-  if (keyence.read() == core::DigitalSignal::kHigh) { stripeCount++; };
+  if (keyence.read() == core::DigitalSignal::kHigh) { ++stripe_count_; };
 }
 
 }  // namespace hyped::sensors
