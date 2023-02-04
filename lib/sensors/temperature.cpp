@@ -2,7 +2,9 @@
 
 namespace hyped::sensors {
 
-Temperature::Temperature(core::ILogger &logger, io::II2c &i2c, const std::uint8_t channel)
+Temperature::Temperature(core::ILogger &logger,
+                         std::shared_ptr<io::II2c> i2c,
+                         const std::uint8_t channel)
     : logger_(logger),
       i2c_(i2c),
       channel_(channel)
@@ -15,7 +17,7 @@ Temperature::~Temperature()
 
 std::optional<std::int16_t> Temperature::read()
 {
-  const auto status_check_result = i2c_.readByte(kTemperatureDefaultAddress, kStatus);
+  const auto status_check_result = i2c_->readByte(kTemperatureDefaultAddress, kStatus);
   if (!status_check_result) {
     logger_.log(
       core::LogLevel::kFatal, "Failed to read temperature sensor status at channel %d", channel_);
@@ -41,13 +43,13 @@ std::optional<std::int16_t> Temperature::read()
     return std::nullopt;
   }
   const auto temperature_high_byte
-    = i2c_.readByte(kTemperatureDefaultAddress, kDataTemperatureHigh);
+    = i2c_->readByte(kTemperatureDefaultAddress, kDataTemperatureHigh);
   if (!temperature_high_byte) {
     logger_.log(
       core::LogLevel::kFatal, "Failed to read high byte for temperature at channel %d", channel_);
     return std::nullopt;
   }
-  const auto temperature_low_byte = i2c_.readByte(kTemperatureDefaultAddress, kDataTemperatureLow);
+  const auto temperature_low_byte = i2c_->readByte(kTemperatureDefaultAddress, kDataTemperatureLow);
   if (!temperature_low_byte) {
     logger_.log(
       core::LogLevel::kFatal, "Failed to read low byte for temperature at channel %d", channel_);
@@ -64,7 +66,7 @@ std::optional<std::int16_t> Temperature::read()
 core::Result Temperature::configure()
 {
   const core::Result write_result
-    = i2c_.writeByteToRegister(kTemperatureDefaultAddress, kCtrl, kConfigurationSetting);
+    = i2c_->writeByteToRegister(kTemperatureDefaultAddress, kCtrl, kConfigurationSetting);
   if (write_result == core::Result::kFailure) {
     logger_.log(
       core::LogLevel::kFatal, "Failed to configure temperature sensor at channel %d", channel_);

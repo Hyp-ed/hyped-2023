@@ -1,5 +1,7 @@
 #pragma once
 
+#include "time.hpp"
+
 #include <array>
 #include <cstdint>
 
@@ -37,5 +39,27 @@ static constexpr std::uint8_t kNumKeyence        = 2;
 using RawAccelerometerData = std::array<std::array<Float, kNumAxis>, kNumAccelerometers>;
 using RawEncoderData       = std::array<std::uint32_t, kNumEncoders>;
 using RawKeyenceData       = std::array<std::uint32_t, kNumKeyence>;
+
+// data produced by the accelerometer sensor
+// !! the values are in mg !!
+struct RawAccelerationData {
+  RawAccelerationData(const std::int32_t x,
+                      const std::int32_t y,
+                      const std::int32_t z,
+                      const TimePoint measured_at)
+      : x(x),
+        y(y),
+        z(z),
+        measured_at(measured_at)
+  {
+  }
+
+  const std::int32_t x;
+  const std::int32_t y;
+  const std::int32_t z;
+  const TimePoint measured_at;
+};
+
+enum class Axis { kX = 0, kY, kZ };
 
 }  // namespace hyped::core
