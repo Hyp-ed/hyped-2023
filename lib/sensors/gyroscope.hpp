@@ -10,7 +10,7 @@
 
 namespace hyped::sensors {
 
-static constexpr std::uint8_t kGyroscope             = 0x69;
+static constexpr std::uint8_t kDefaultGyroscopeAddress             = 0x69;
 static constexpr std::uint8_t kDataXHigh             = 0x29;
 static constexpr std::uint8_t kDataXLow              = 0x28;
 static constexpr std::uint8_t kDataYHigh             = 0x2B;
