@@ -243,7 +243,7 @@ void Repl::addI2cCommands(const std::uint8_t bus)
     logger_.log(core::LogLevel::kFatal, "Failed to create I2C instance on bus %d", bus);
     return;
   }
-  const auto i2c = std::make_shared<io::HardwareI2c>(*optional_i2c);
+  const auto i2c = std::move(*optional_i2c);
   {
     Command i2c_read_command;
     std::stringstream identifier;
