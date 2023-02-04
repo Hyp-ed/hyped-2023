@@ -25,14 +25,14 @@ std::optional<std::int16_t> Accelerometer::getRawAcceleration(const core::Axis a
   if (!low_byte) {
     logger_.log(core::LogLevel::kFatal,
                 "Failed to read the low byte for acceleration along the %s",
-                kAxisLabels[static_cast<size_t>(axis)]);
+                kAxisLabels[static_cast<std::size_t>(axis)]);
     return std::nullopt;
   }
   const auto high_byte = i2c_.readByte(kDefaultAccelerometerAddress, high_byte_address_);
   if (!high_byte) {
     logger_.log(core::LogLevel::kFatal,
                 "Failed to read the high byte for acceleration along the %s",
-                kAxisLabels[static_cast<size_t>(axis)]);
+                kAxisLabels[static_cast<std::size_t>(axis)]);
     return std::nullopt;
   }
   return static_cast<std::int16_t>((*high_byte << 8) | *low_byte);
