@@ -46,8 +46,8 @@ constexpr std::uint8_t kZOutHigh = 0x2D;
 
 constexpr std::uint8_t kDataReady = 0x27;
 
-constexpr std::uint8_t kDeviceIdAddress         = 0x0F;
-constexpr std::uint8_t kExpectedDeviceIdValue   = 0x44;
+constexpr std::uint8_t kDeviceIdAddress       = 0x0F;
+constexpr std::uint8_t kExpectedDeviceIdValue = 0x44;
 
 class Accelerometer : public II2cMuxSensor<core::RawAccelerationData> {
  public:
