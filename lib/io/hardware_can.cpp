@@ -22,8 +22,9 @@ std::optional<std::shared_ptr<HardwareCan>> HardwareCan::create(
   }
   const int interface_index = if_nametoindex(can_network_interface.c_str());
   if (!interface_index) {
-    logger.log(
-      core::LogLevel::kFatal, "Unable to find CAN network interface '%s'", can_network_interface);
+    logger.log(core::LogLevel::kFatal,
+               "Unable to find CAN network interface '%s'",
+               can_network_interface.c_str());
     close(socket_id);
     return std::nullopt;
   }
