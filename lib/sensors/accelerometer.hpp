@@ -62,14 +62,14 @@ class Accelerometer : public II2cMuxSensor<core::RawAccelerationData> {
  private:
   std::optional<std::int16_t> getRawAcceleration(const Axis axis);
   std::int32_t getAccelerationFromRawValue(const std::int16_t rawAcceleration);
-  void setRegisterAddressFromAxis(const Axis axis,
-                                  std::uint8_t *low_byte_address,
-                                  std::uint8_t *high_byte_address);
+  void setRegisterAddressFromAxis(const Axis axis);
 
  private:
   core::ILogger &logger_;
   io::HardwareI2c &i2c_;
   const std::uint8_t channel_;
+  std::uint8_t low_byte_address_;
+  std::uint8_t high_byte_address_;
 };
 
 }  // namespace hyped::sensors

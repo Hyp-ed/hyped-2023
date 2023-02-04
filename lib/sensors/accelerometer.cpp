@@ -22,16 +22,15 @@ std::uint8_t Accelerometer::getChannel()
 
 std::optional<std::int16_t> Accelerometer::getRawAcceleration(const Axis axis)
 {
-  std::uint8_t low_byte_address, high_byte_address;
-  setRegisterAddressFromAxis(axis, &low_byte_address, &high_byte_address);
-  const auto low_byte = i2c_.readByte(kDefaultAccelerometerAddress, low_byte_address);
+  setRegisterAddressFromAxis(axis);
+  const auto low_byte = i2c_.readByte(kDefaultAccelerometerAddress, low_byte_address_);
   if (!low_byte) {
     logger_.log(core::LogLevel::kFatal,
                 "Failed to read the low byte for acceleration along the %s",
                 AxisStrings[axis]);
     return std::nullopt;
   }
-  const auto high_byte = i2c_.readByte(kDefaultAccelerometerAddress, high_byte_address);
+  const auto high_byte = i2c_.readByte(kDefaultAccelerometerAddress, high_byte_address_);
   if (!high_byte) {
     logger_.log(core::LogLevel::kFatal,
                 "Failed to read the high byte for acceleration along the %s",
@@ -43,22 +42,20 @@ std::optional<std::int16_t> Accelerometer::getRawAcceleration(const Axis axis)
   return raw_acceleration;
 }
 
-void Accelerometer::setRegisterAddressFromAxis(const Axis axis,
-                                               std::uint8_t *low_byte_address,
-                                               std::uint8_t *high_byte_address)
+void Accelerometer::setRegisterAddressFromAxis(const Axis axis)
 {
   switch (axis) {
     case Axis::x:
-      *low_byte_address  = kXOutLow;
-      *high_byte_address = kXOutHigh;
+      low_byte_address_  = kXOutLow;
+      high_byte_address_ = kXOutHigh;
       break;
     case Axis::y:
-      *low_byte_address  = kYOutLow;
-      *high_byte_address = kYOutHigh;
+      low_byte_address_  = kYOutLow;
+      high_byte_address_ = kYOutHigh;
       break;
     case Axis::z:
-      *low_byte_address  = kZOutLow;
-      *high_byte_address = kZOutHigh;
+      low_byte_address_  = kZOutLow;
+      high_byte_address_ = kZOutHigh;
       break;
   }
 }
