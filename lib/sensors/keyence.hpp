@@ -10,14 +10,24 @@
 namespace hyped::sensors {
 class Keyence {
  public:
-  static std::optional<Keyence> create(core::ILogger &log, io::IGpio &gpio, std::uint8_t new_pin);
+  /**
+   * @brief Configures and creates an instance of Keyence
+   */
+  static std::optional<Keyence> create(core::ILogger &logger,
+                                       io::IGpio &gpio,
+                                       std::uint8_t new_pin);
   ~Keyence();
 
   std::uint8_t getStripeCount();
+
+  /**
+   * @brief Will increment stripe_count_ when called if a
+   * stripe is detected.
+   */
   void updateStripeCount();
 
  private:
-  Keyence(core::ILogger &log, std::shared_ptr<io::IGpioReader> gpio_reader);
+  Keyence(core::ILogger &logger, std::shared_ptr<io::IGpioReader> gpio_reader);
 
   std::uint8_t pin_;
   std::uint8_t stripe_count_;
