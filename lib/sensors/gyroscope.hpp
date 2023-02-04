@@ -10,23 +10,23 @@
 
 namespace hyped::sensors {
 
-static constexpr std::uint8_t kDefaultGyroscopeAddress             = 0x69;
-static constexpr std::uint8_t kDataXHigh             = 0x29;
-static constexpr std::uint8_t kDataXLow              = 0x28;
-static constexpr std::uint8_t kDataYHigh             = 0x2B;
-static constexpr std::uint8_t kDataYLow              = 0x2A;
-static constexpr std::uint8_t kDataZHigh             = 0x2D;
-static constexpr std::uint8_t kDataZLow              = 0x2C;
-static constexpr std::uint8_t kCtrl1                 = 0x20;
-static constexpr std::uint8_t kCtrl2                 = 0x21;
-static constexpr std::uint8_t kCtrl3                 = 0x22;
-static constexpr std::uint8_t kCtrl5                 = 0x24;
-static constexpr std::uint8_t kConfigurationSetting1 = 0xff;
-static constexpr std::uint8_t kConfigurationSetting2 = 0x20;
-static constexpr std::uint8_t kConfigurationSetting3 = 0xff;
-static constexpr std::uint8_t kConfigurationSetting5 = 0x40;
+static constexpr std::uint8_t kDefaultGyroscopeAddress = 0x69;
+static constexpr std::uint8_t kDataXHigh               = 0x29;
+static constexpr std::uint8_t kDataXLow                = 0x28;
+static constexpr std::uint8_t kDataYHigh               = 0x2B;
+static constexpr std::uint8_t kDataYLow                = 0x2A;
+static constexpr std::uint8_t kDataZHigh               = 0x2D;
+static constexpr std::uint8_t kDataZLow                = 0x2C;
+static constexpr std::uint8_t kCtrl1                   = 0x20;
+static constexpr std::uint8_t kCtrl2                   = 0x21;
+static constexpr std::uint8_t kCtrl3                   = 0x22;
+static constexpr std::uint8_t kCtrl5                   = 0x24;
+static constexpr std::uint8_t kConfigurationSetting1   = 0xff;
+static constexpr std::uint8_t kConfigurationSetting2   = 0x20;
+static constexpr std::uint8_t kConfigurationSetting3   = 0xff;
+static constexpr std::uint8_t kConfigurationSetting5   = 0x40;
 
-class Gyroscope{
+class Gyroscope {
  public:
   static std::optional<Gyroscope> create(core::ILogger &logger,
                                          io::II2c &i2c,
