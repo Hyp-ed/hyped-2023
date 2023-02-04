@@ -29,6 +29,7 @@ class Keyence {
  private:
   Keyence(core::ILogger &logger, std::shared_ptr<io::IGpioReader> gpio_reader);
 
+ private:
   std::uint8_t pin_;
   std::uint8_t stripe_count_;
   std::shared_ptr<io::IGpioReader> gpio_reader_;
