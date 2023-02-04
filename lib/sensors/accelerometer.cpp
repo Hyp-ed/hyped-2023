@@ -35,8 +35,7 @@ std::optional<std::int16_t> Accelerometer::getRawAcceleration(const Axis axis)
                 AxisStrings[static_cast<int>(axis)]);
     return std::nullopt;
   }
-  const std::int16_t raw_acceleration
-    = static_cast<std::int16_t>((high_byte.value() << 8) | low_byte.value());
+  const std::int16_t raw_acceleration = static_cast<std::int16_t>((*high_byte << 8) | *low_byte);
   return raw_acceleration;
 }
 
@@ -76,19 +75,19 @@ std::optional<core::RawAccelerationData> Accelerometer::read()
     return std::nullopt;
   }
   // TODOlater: here the error is not that bad, hence the return value should indicate that
-  if (data_ready.value() % 2 == 0) {
+  if (*data_ready % 2 == 0) {
     logger_.log(core::LogLevel::kFatal, "Failed to read acceleration data as it is not ready");
     return std::nullopt;
   }
   const auto result_x = getRawAcceleration(Axis::x);
   if (!result_x) { return std::nullopt; }
-  const std::int32_t x_acceleration = getAccelerationFromRawValue(result_x.value());
+  const std::int32_t x_acceleration = getAccelerationFromRawValue(*result_x);
   const auto result_y               = getRawAcceleration(Axis::y);
   if (!result_y) { return std::nullopt; }
-  const std::int32_t y_acceleration = getAccelerationFromRawValue(result_y.value());
+  const std::int32_t y_acceleration = getAccelerationFromRawValue(*result_y);
   const auto result_z               = getRawAcceleration(Axis::z);
   if (!result_z) { return std::nullopt; }
-  const std::int32_t z_acceleration = getAccelerationFromRawValue(result_z.value());
+  const std::int32_t z_acceleration = getAccelerationFromRawValue(*result_z);
   const std::optional<core::RawAccelerationData> acceleration_3_axis{
     std::in_place,
     x_acceleration,
@@ -107,7 +106,7 @@ core::Result Accelerometer::configure()
     logger_.log(core::LogLevel::kFatal, "Failure to read device id of accelerometer");
     return core::Result::kFailure;
   }
-  if (device_id.value() != kExpectedDeviceId) {
+  if (*device_id != kExpectedDeviceId) {
     logger_.log(core::LogLevel::kFatal, "Failure accelerometer didn't give correct device id");
     return core::Result::kFailure;
   }

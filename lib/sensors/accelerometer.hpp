@@ -14,7 +14,7 @@
 namespace hyped::sensors {
 
 enum class Axis { x = 0, y, z };
-static constexpr char AxisStrings[3][10] = {"x-axis", "y-axis", "z-axis"};
+static constexpr std::string_view AxisStrings[3] = {"x-axis", "y-axis", "z-axis"};
 
 // ! these values come from the datasheet
 
