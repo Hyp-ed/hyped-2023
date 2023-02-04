@@ -2,7 +2,7 @@
 
 #include <algorithm>
 
-#include "core/types.hpp"
+#include <core/types.hpp>
 
 namespace hyped::navigation::benchmark {
 
@@ -34,7 +34,7 @@ std::optional<core::RawEncoderData> Data::getEncoderDataAt(const core::TimePoint
   return it->second;
 }
 
-std::optional<core::RawAccelerometerData> Data::getAccelerationDataAt(
+std::optional<core::CombinedRawAccelerometerData> Data::getAccelerationDataAt(
   const core::TimePoint time_point) const
 {
   const auto it = acceleration_data_by_time.find(time_point);
@@ -65,74 +65,54 @@ Data DataBuilder::build()
   return data_;
 }
 
-core::Result DataBuilder::addEncoderData(const core::TimePoint &timestamp,
-                                         const core::RawEncoderData &encoder_data)
+core::Result DataBuilder::addEncoderData(const core::RawEncoderData &encoder_data)
 {
-  const auto was_insertion_successful
-    = data_.encoder_data_by_time.emplace(timestamp, encoder_data).second;
-  if (was_insertion_successful) {
-    return core::Result::kSuccess;
-  } else {
-    return core::Result::kFailure;
-  }
+  const auto it = data_.encoder_data_by_time.emplace(encoder_data.measured_at, encoder_data);
+  if (!(it.second)) { return core::Result::kFailure; }
+  return core::Result::kSuccess;
 }
 
 core::Result DataBuilder::addUniformEncoderData(const std::uint64_t nanos_since_epoch,
                                                 const std::uint32_t total_num_revolutions)
 {
-  const auto timestamp
+  const auto measured_at
     = std::chrono::system_clock::time_point(std::chrono::seconds(nanos_since_epoch));
-  core::RawEncoderData raw_encoder_data;
+  std::array<std::uint32_t, core::kNumEncoders> num_revolutions_per_wheel;
   for (std::size_t i = 0; i < core::kNumEncoders; ++i) {
-    raw_encoder_data.at(i) = total_num_revolutions;
+    num_revolutions_per_wheel.at(i) = total_num_revolutions;
   }
-  return addEncoderData(timestamp, raw_encoder_data);
+  return addEncoderData(core::Measurement(measured_at, num_revolutions_per_wheel));
 }
 
-core::Result DataBuilder::addAccelerationData(const core::TimePoint &timestamp,
-                                              const core::RawAccelerometerData &acceleration_data)
+core::Result DataBuilder::addAccelerationData(
+  const core::CombinedRawAccelerometerData &acceleration_data)
 {
-  const auto was_insertion_successful
-    = data_.acceleration_data_by_time.emplace(timestamp, acceleration_data).second;
-  if (was_insertion_successful) {
-    return core::Result::kSuccess;
-  } else {
-    return core::Result::kFailure;
-  }
+  const auto it
+    = data_.acceleration_data_by_time.emplace(acceleration_data.measured_at, acceleration_data);
+  if (!(it.second)) { return core::Result::kFailure; }
+  return core::Result::kSuccess;
 }
 
-core::Result DataBuilder::addUniformAccelerationData(
-  const std::uint64_t nanos_since_epoch,
-  const std::array<core::Float, core::kNumAxis> raw_acceleration)
+core::Result DataBuilder::addUniformAccelerationData(const std::uint64_t nanos_since_epoch,
+                                                     const core::RawAcceleration &raw_acceleration)
 {
-  const auto timestamp = core::timePointFromNanosSinceEpoch(nanos_since_epoch);
-  core::RawAccelerometerData raw_acceleration_data;
+  const auto measured_at = core::timePointFromNanosSinceEpoch(nanos_since_epoch);
+  std::array<core::RawAcceleration, core::kNumAccelerometers> raw_accelerometer_data;
   for (std::size_t i = 0; i < core::kNumAccelerometers; ++i) {
-    raw_acceleration_data.at(i) = raw_acceleration;
+    raw_accelerometer_data.at(i) = raw_acceleration;
   }
-  return addAccelerationData(timestamp, raw_acceleration_data);
+  return addAccelerationData(
+    core::CombinedRawAccelerometerData(measured_at, raw_accelerometer_data));
 }
 
-core::Result DataBuilder::addKeyenceData(const core::TimePoint &timestamp,
-                                         const core::RawKeyenceData &keyence_data)
+core::Result DataBuilder::addKeyenceData(const core::RawKeyenceData &keyence_data)
 {
-  const auto was_insertion_successful
-    = data_.keyence_data_by_time.emplace(timestamp, keyence_data).second;
-  if (was_insertion_successful) {
-    return core::Result::kSuccess;
-  } else {
-    return core::Result::kFailure;
-  }
+  const auto it = data_.keyence_data_by_time.emplace(keyence_data.measured_at, keyence_data);
+  if (!(it.second)) { return core::Result::kFailure; }
+  return core::Result::kSuccess;
 }
 
-core::Result DataBuilder::addKeyenceData(const std::uint64_t nanos_since_epoch,
-                                         const core::RawKeyenceData &keyence_data)
-{
-  const auto timestamp = core::timePointFromNanosSinceEpoch(nanos_since_epoch);
-  return addKeyenceData(timestamp, keyence_data);
-}
-
-core::Result DataBuilder::addTrajectoryData(const core::TimePoint &timestamp,
+core::Result DataBuilder::addTrajectoryData(const core::TimePoint timestamp,
                                             const core::Trajectory &trajectory)
 {
   const auto was_insertion_successful

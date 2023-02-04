@@ -3,8 +3,8 @@
 #include "consts.hpp"
 #include "types.hpp"
 
-#include "core/logger.hpp"
-#include "core/types.hpp"
+#include <core/logger.hpp>
+#include <core/types.hpp>
 
 namespace hyped::navigation {
 

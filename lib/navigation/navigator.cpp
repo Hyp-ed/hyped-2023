@@ -2,9 +2,13 @@
 
 #include <cstdint>
 
+#include "core/time.hpp"
+
 namespace hyped::navigation {
 
 Navigator::Navigator()
+    : previous_encoder_reading_(core::timePointFromSecondsSinceEpoch(0), {0, 0, 0}),
+      previous_keyence_reading_(core::timePointFromSecondsSinceEpoch(0), {0, 0})
 {
   // TODOLater: impement
 }

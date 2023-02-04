@@ -15,28 +15,28 @@ class Navigator : public INavigator {
   /**
    *@brief runs cross checking and returns trajectory
    */
-  std::optional<core::Trajectory> currentTrajectory();
+  virtual std::optional<core::Trajectory> currentTrajectory();
 
   /**
    * @brief preprocesses keyence data and updates trajectory
    *
    * @param keyence_data
    */
-  void keyenceUpdate(const core::RawKeyenceData &keyence_data);
+  virtual void keyenceUpdate(const core::RawKeyenceData &keyence_data);
 
   /**
    * @brief preprocesses encoder data and updates trajectory
    *
    * @param encoder_data
    */
-  void encoderUpdate(const core::RawEncoderData &encoder_data);
+  virtual void encoderUpdate(const core::RawEncoderData &encoder_data);
 
   /**
    * @brief preprocesses accelerometer data and updates trajectory
    *
    * @param accelerometer_data
    */
-  void accelerometerUpdate(const core::RawAccelerometerData &accelerometer_data);
+  virtual void accelerometerUpdate(const core::RawAccelerometerData &accelerometer_data);
 
  private:
   // previous readings

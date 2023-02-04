@@ -1,5 +1,7 @@
 #include "preprocess_encoders.hpp"
 
+#include <core/time.hpp>
+
 namespace hyped::navigation {
 
 EncodersPreprocessor::EncodersPreprocessor()
@@ -35,7 +37,7 @@ EncoderData EncodersPreprocessor::detectOutliers(const core::RawEncoderData &raw
   -also figure out return type/ what we update and update
   documentation as appropriate
   */
-  return {0, 0, 0, 0};
+  return EncoderData(core::timePointFromSecondsSinceEpoch(0), {0, 0, 0, 0});
 }
 
 void EncodersPreprocessor::checkReliable(const core::RawEncoderData &raw_encoder_data)

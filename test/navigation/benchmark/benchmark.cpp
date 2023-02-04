@@ -20,7 +20,7 @@ TEST(Benchmark, construction)
   core::WallClock wall_clock;
   navigation::benchmark::Benchmark benchmark(wall_clock, makeEmptyData());
   utils::ManualTime manual_time;
-  utils::NaiveNavigator naive_navigator(manual_time);
+  utils::NaiveNavigator naive_navigator;
   benchmark.run(manual_time, naive_navigator);
 }
 
@@ -31,7 +31,7 @@ navigation::benchmark::Data makeDataFromConstantAcceleration(const core::Float a
   for (std::size_t t = 1; t <= num_steps; ++t) {
     const core::Trajectory trajectory
       = {0.5f * acceleration * acceleration * t * t, acceleration * t, acceleration};
-    builder.addUniformAccelerationData(t * kNanosPerSecond, {trajectory.acceleration, 0.0, 0.0});
+    builder.addUniformAccelerationData(t * kNanosPerSecond, {.x = 1, .y = 0, .z = 0});
     builder.addUniformEncoderData(t * kNanosPerSecond,
                                   static_cast<std::uint32_t>(trajectory.displacement));
     builder.addTrajectoryData(t * kNanosPerSecond, trajectory);
@@ -45,7 +45,7 @@ TEST(Benchmark, naiveNavigation)
   const auto data = makeDataFromConstantAcceleration(1.0, 10);
   navigation::benchmark::Benchmark benchmark(wall_clock, data);
   utils::ManualTime manual_time;
-  utils::NaiveNavigator naive_navigator(manual_time);
+  utils::NaiveNavigator naive_navigator;
   const auto result = benchmark.run(manual_time, naive_navigator);
 }
 

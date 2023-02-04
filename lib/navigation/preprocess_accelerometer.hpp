@@ -10,8 +10,8 @@
 #include <cstdint>
 #include <optional>
 
-#include "core/logger.hpp"
-#include "core/types.hpp"
+#include <core/logger.hpp>
+#include <core/types.hpp>
 
 namespace hyped::navigation {
 class AccelerometerPreprocessor {
@@ -25,7 +25,7 @@ class AccelerometerPreprocessor {
    * @return clean accelerometer data or optionally fail
    */
   std::optional<AccelerometerData> processData(
-    const core::RawAccelerometerData raw_accelerometer_data);
+    const core::CombinedRawAccelerometerData &raw_accelerometer_data);
 
  private:
   core::ILogger &logger_;
