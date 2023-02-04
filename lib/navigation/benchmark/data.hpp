@@ -30,20 +30,20 @@ class DataBuilder {
 
   core::Result addEncoderData(const core::TimePoint &timestamp,
                               const core::RawEncoderData &encoder_data);
-  core::Result addUniformEncoderData(const std::uint64_t seconds_since_epoch,
+  core::Result addUniformEncoderData(const std::uint64_t nanos_since_epoch,
                                      const std::uint32_t total_num_revolutions);
   core::Result addAccelerationData(const core::TimePoint &timestamp,
                                    const core::RawAccelerometerData &acceleration_data);
   core::Result addUniformAccelerationData(
-    const std::uint64_t seconds_since_epoch,
+    const std::uint64_t nanos_since_epoch,
     const std::array<core::Float, core::kNumAxis> raw_acceleration);
   core::Result addKeyenceData(const core::TimePoint &timestamp,
                               const core::RawKeyenceData &keyence_data);
-  core::Result addKeyenceData(const std::uint64_t seconds_since_epoch,
+  core::Result addKeyenceData(const std::uint64_t nanos_since_epoch,
                               const core::RawKeyenceData &keyence_data);
   core::Result addTrajectoryData(const core::TimePoint &timestamp,
                                  const core::Trajectory &trajectory);
-  core::Result addTrajectoryData(const std::uint64_t seconds_since_epoch,
+  core::Result addTrajectoryData(const std::uint64_t nanos_since_epoch,
                                  const core::Trajectory &trajectory);
 
  private:

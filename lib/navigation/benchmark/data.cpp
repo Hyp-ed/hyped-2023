@@ -77,11 +77,11 @@ core::Result DataBuilder::addEncoderData(const core::TimePoint &timestamp,
   }
 }
 
-core::Result DataBuilder::addUniformEncoderData(const std::uint64_t seconds_since_epoch,
+core::Result DataBuilder::addUniformEncoderData(const std::uint64_t nanos_since_epoch,
                                                 const std::uint32_t total_num_revolutions)
 {
   const auto timestamp
-    = std::chrono::system_clock::time_point(std::chrono::seconds(seconds_since_epoch));
+    = std::chrono::system_clock::time_point(std::chrono::seconds(nanos_since_epoch));
   core::RawEncoderData raw_encoder_data;
   for (std::size_t i = 0; i < core::kNumEncoders; ++i) {
     raw_encoder_data.at(i) = total_num_revolutions;
@@ -102,11 +102,11 @@ core::Result DataBuilder::addAccelerationData(const core::TimePoint &timestamp,
 }
 
 core::Result DataBuilder::addUniformAccelerationData(
-  const std::uint64_t seconds_since_epoch,
+  const std::uint64_t nanos_since_epoch,
   const std::array<core::Float, core::kNumAxis> raw_acceleration)
 {
   const auto timestamp
-    = std::chrono::system_clock::time_point(std::chrono::seconds(seconds_since_epoch));
+    = std::chrono::system_clock::time_point(std::chrono::nanoseconds(nanos_since_epoch));
   core::RawAccelerometerData raw_acceleration_data;
   for (std::size_t i = 0; i < core::kNumAccelerometers; ++i) {
     raw_acceleration_data.at(i) = raw_acceleration;
@@ -126,11 +126,11 @@ core::Result DataBuilder::addKeyenceData(const core::TimePoint &timestamp,
   }
 }
 
-core::Result DataBuilder::addKeyenceData(const std::uint64_t seconds_since_epoch,
+core::Result DataBuilder::addKeyenceData(const std::uint64_t nanos_since_epoch,
                                          const core::RawKeyenceData &keyence_data)
 {
   const auto timestamp
-    = std::chrono::system_clock::time_point(std::chrono::seconds(seconds_since_epoch));
+    = std::chrono::system_clock::time_point(std::chrono::nanoseconds(nanos_since_epoch));
   return addKeyenceData(timestamp, keyence_data);
 }
 
@@ -150,7 +150,7 @@ core::Result DataBuilder::addTrajectoryData(const std::uint64_t seconds_since_ep
                                             const core::Trajectory &trajectory)
 {
   const auto timestamp
-    = std::chrono::system_clock::time_point(std::chrono::seconds(seconds_since_epoch));
+    = std::chrono::system_clock::time_point(std::chrono::nanoseconds(seconds_since_epoch));
   return addTrajectoryData(timestamp, trajectory);
 }
 

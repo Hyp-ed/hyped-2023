@@ -7,6 +7,8 @@
 
 namespace hyped::test {
 
+constexpr std::uint64_t kNanosPerSecond = 1'000'000'000;
+
 navigation::benchmark::Data makeEmptyData()
 {
   navigation::benchmark::DataBuilder builder;
@@ -29,9 +31,10 @@ navigation::benchmark::Data makeDataFromConstantAcceleration(const core::Float a
   for (std::size_t t = 1; t <= num_steps; ++t) {
     const core::Trajectory trajectory
       = {0.5f * acceleration * acceleration * t * t, acceleration * t, acceleration};
-    builder.addUniformAccelerationData(t, {trajectory.acceleration, 0.0, 0.0});
-    builder.addUniformEncoderData(t, static_cast<std::uint32_t>(trajectory.displacement));
-    builder.addTrajectoryData(t, trajectory);
+    builder.addUniformAccelerationData(t * kNanosPerSecond, {trajectory.acceleration, 0.0, 0.0});
+    builder.addUniformEncoderData(t * kNanosPerSecond,
+                                  static_cast<std::uint32_t>(trajectory.displacement));
+    builder.addTrajectoryData(t * kNanosPerSecond, trajectory);
   }
   return builder.build();
 }
