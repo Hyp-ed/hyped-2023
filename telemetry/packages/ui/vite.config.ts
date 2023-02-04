@@ -7,8 +7,8 @@ export default defineConfig({
   build: {
     rollupOptions: {
       input: {
-        main: resolve(__dirname, 'index.html'),
-        openmct: resolve(__dirname, 'src/openmct/index.html'),
+        main: resolve(__dirname, 'app/index.html'),
+        openmct: resolve(__dirname, 'openmct/index.html'),
       },
       onwarn(warning, warn) {
         if (warning.code === 'EVAL') return;
