@@ -1,38 +1,22 @@
 export interface ButtonProps {
-  /**
-   * The text to display on the button
-   * @default 'Click me'
-   * */
-  text?: string;
-  /**
-   * The type of button
-   * @default 'blue'
-   * */
-  colour?: 'blue' | 'green' | 'red';
-  /**
-   * The size of the button
-   * @default 'medium'
-   * */
-  size?: 'small' | 'medium' | 'large';
-  /**
-   * The function to call when the button is clicked
-   * */
+  text: string;
+  colour: 'green' | 'red';
   onClick: () => void;
 }
 
-const Button = ({ text, colour, size, onClick }: ButtonProps) => (
+const Button = ({ text, colour, onClick }: ButtonProps) => (
   <button
-    className={`px-4 py-8 rounded-lg shadow-md bg-green-500 hover:bg-green-700 transition text-white text-${size}`}
+    className={`px-4 py-8 rounded-lg shadow-lg ${
+      colour == 'red'
+        ? 'bg-red-600 hover:bg-red-700'
+        : colour == 'green'
+        ? 'bg-green-600 hover:bg-green-700'
+        : ''
+    } transition text-white text-xl font-bold`}
     onClick={onClick}
   >
-    {text}
+    {text.toUpperCase()}
   </button>
 );
 
 export default Button;
-
-Button.defaultProps = {
-  text: 'Click me',
-  type: 'blue',
-  size: 'medium',
-};
