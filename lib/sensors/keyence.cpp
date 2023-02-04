@@ -6,9 +6,10 @@ std::optional<Keyence> Keyence::create(core::ILogger &logger, io::IGpio &gpio, s
 {
   const auto reader = gpio.getReader(new_pin);
   if (!reader) {
-    logger.log(core::LogLevel::kFatal, "Failed to create GPIO reader");
+    logger.log(core::LogLevel::kFatal, "Failed to create Keyence instance");
     return std::nullopt;
   }
+  logger.log(core::LogLevel::kDebug, "Successfully created Keyence instance");
   return Keyence(logger, *reader);
 }
 
@@ -27,7 +28,10 @@ std::uint8_t Keyence::getStripeCount()
 
 void Keyence::updateStripeCount()
 {
-  if (gpio_reader_->read() == core::DigitalSignal::kHigh) { ++stripe_count_; };
+  if (gpio_reader_->read() == core::DigitalSignal::kHigh) {
+    ++stripe_count_;
+    logger_.log(core::LogLevel::kDebug, "Stripe count increased to %d", stripe_count_);
+  };
 }
 
 }  // namespace hyped::sensors
