@@ -1,9 +1,9 @@
-export interface ButtonProps {
+export interface CheckboxProps {
   text: string;
   onChange: () => void;
 }
 
-const Checkbox = ({ text, onChange }: ButtonProps) => {
+export const Checkbox = ({ text, onChange }: CheckboxProps) => {
   const id = `checkbox-${text.replace(' ', '-').toLowerCase()}`;
 
   return (
@@ -20,5 +20,3 @@ const Checkbox = ({ text, onChange }: ButtonProps) => {
     </div>
   );
 };
-
-export default Checkbox;

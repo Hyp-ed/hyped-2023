@@ -2,7 +2,10 @@
 <html>
   <head>
     <title>c-beam telemetry server</title>
-    <script type="module" src="openmct/dist/openmct.js"></script>
+    <!-- <script type="module" src="/node_modules/openmct/dist/openmct.js"></script> -->
+    <script type="module">
+      import 'openmct/dist/openmct.js'
+    </script>
     <script type="module" src="./plugins/lib/http.js"></script>
     <script type="module" src="./plugins/dictionary-plugin.js"></script>
     <script

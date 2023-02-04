@@ -1,14 +1,25 @@
-import { Button } from './components';
-
-/**
- * The background colour to match openmct
- */
-const BG_COLOUR = '#393939';
+import { Button, Checkbox } from './components';
 
 const App = () => {
+  const go = () => {
+    console.log('GO!');
+  };
+
+  const stop = () => {
+    console.log('STOP!');
+  };
+
+  const toggleMotorCooling = () => {
+    console.log('Toggle motor cooling');
+  };
+
+  const toggleActiveSuspension = () => {
+    console.log('Toggle active suspension');
+  };
+
   return (
     <main
-      className={`p-4 flex flex-col justify-between h-full bg-black text-white`}
+      className={`p-4 flex flex-col justify-between h-full bg-[#333] text-white`}
     >
       <div className="space-y-8">
         <h1 className="text-xl font-bold">Controls</h1>
@@ -19,14 +30,20 @@ const App = () => {
             <span className="text-sm">Latency: 0 ms</span>
           </div>
         </div>
-        {/* Buttons */}
-        <div className="grid grid-rows-10 gap-4">
-          <Button onClick={() => {}} colour="blue" />
-          <Button onClick={() => {}} colour="green" />
-          <Button onClick={() => {}} colour="red" />
+        {/* Controls */}
+        <div className="flex flex-col gap-4">
+          <Checkbox onChange={toggleMotorCooling} text="Motor Cooling" />
+          <Checkbox
+            onChange={toggleActiveSuspension}
+            text="Active Suspension"
+          />
+          <Button onClick={go} colour="green" text="GO" />
+          <Button onClick={stop} colour="red" text="STOP" />
         </div>
       </div>
-      <div className="mx-auto"><img src="hyped.svg" /></div>
+      <div className="mx-auto">
+        <img src="/hyped.png" />
+      </div>
     </main>
   );
 };
