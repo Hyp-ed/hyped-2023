@@ -56,7 +56,7 @@ class Accelerometer : public II2cMuxSensor<core::RawAccelerationData> {
 
   core::Result configure();
   std::optional<core::RawAccelerationData> read();
-  std::uint8_t getChannel();
+  std::uint8_t getChannel() const;
 
  private:
   std::optional<std::int16_t> getRawAcceleration(const Axis axis);

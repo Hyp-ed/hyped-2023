@@ -13,7 +13,7 @@ Accelerometer::~Accelerometer()
 {
 }
 
-std::uint8_t Accelerometer::getChannel()
+std::uint8_t Accelerometer::getChannel() const
 {
   return channel_;
 }
