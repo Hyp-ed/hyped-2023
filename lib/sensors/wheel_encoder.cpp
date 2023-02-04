@@ -18,12 +18,37 @@ WheelEncoder::~WheelEncoder()
 {
 }
 
-std::uint8_t WheelEncoder::getWheelTurnCount()
+std::optional<std::uint24_t> WheelEncoder::getWheelTurnCount()
 {
+  const auto low_byte = i2c_.readByte(kDefaultWheelEncoderAddress, low_byte_address_);
+  if (!low_byte) {
+    logger_.log(core::LogLevel::kFatal, "Failed to read the low byte for wheel encoder")
+    return std::nullopt;
+  }
+
+  const auto middle_byte = i2c_.readByte(kDefaultWheelEncoderAddress, middle_byte_address_);
+  if (!middle_byte) {
+    logger_.log(core::LogLevel::kFatal, "Failed to read the middle byte for wheel encoder")
+    return std::nullopt;
+  }
+
+  const auto high_byte = i2c_.readByte(kDefaultWheelEncoderAddress, middle_byte_address_);
+  if (!high_byte) {
+    logger_.log(core::LogLevel::kFatal, "Failed to read the high byte for wheel encoder")
+    return std::nullopt;
+  }
+
+  return static_cast<std::int24_t>((*high_byte << 16) | (*middle_byte << 8) | *low_byte);
 }
 
-void WheelEncoder::resetWheelTurnCount()
+core::Result WheelEncoder::resetWheelTurnCount()
 {
+  const core::Result reset_result = i2c_.writeByteToRegister(kDefaultWheelEncoderAddress, kFreeRegisterAddress, kFreeRegisterResetValue);
+  if (reset_result == core::Result::kFailure) {
+    logger_.log(core::LogLevel::kFatal, "Failed to reset count on the wheel encoder")
+    return core::Result::kFailure;
+  };
+  return core::Result.kSuccess;
 }
 
 }  // namespace hyped::sensors
