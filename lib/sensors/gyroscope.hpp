@@ -25,19 +25,24 @@ static constexpr std::uint8_t kConfigurationSetting1 = 0xff;
 static constexpr std::uint8_t kConfigurationSetting2 = 0x20;
 static constexpr std::uint8_t kConfigurationSetting3 = 0xff;
 static constexpr std::uint8_t kConfigurationSetting5 = 0x40;
+static constexpr std::uint8_t kStatus                = 0x27;
 
 class Gyroscope : public II2cMuxSensor<std::int16_t> {
  public:
-  Gyroscope(hyped::core::ILogger &logger, io::II2c &i2c, const std::uint8_t channel);
+  static std::optional<Gyroscope> create(core::ILogger &logger,
+                                         io::II2c &i2c,
+                                         const std::uint8_t channel);
   ~Gyroscope();
 
   core::Result configure();
-  std::optional<std::int16_t> read();
+  std::optional<std::int16_t> read(core::GyroscopeAxis axis);
   std::uint8_t getChannel();
 
  private:
-  hyped::core::ILogger &logger_;
-  hyped::io::II2c &i2c_;
+  Gyroscope(core::ILogger &logger, io::II2c &i2c, const std::uint8_t channel);
+
+  core::ILogger &logger_;
+  io::II2c &i2c_;
   const std::uint8_t channel_;
 };
 
