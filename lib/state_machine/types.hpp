@@ -5,7 +5,7 @@
 
 #include <cstdint>
 
-#include <boost/functional/hash.hpp>
+#include <boost/functional/hash/hash.hpp>
 
 namespace hyped::state_machine {
 struct SourceAndMessage {

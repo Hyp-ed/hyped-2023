@@ -19,7 +19,7 @@ class StateMachine {
   std::optional<Message> handleData();
 
  private:
-  const boost::unordered_map<SourceAndMessage, State> transitions
+  const boost::unordered_map<SourceAndMessage, State> transitionMap
     = {{{State::kIdle, Message::mForward}, State::kCalibrating},
        {{State::kCalibrating, Message::mForward}, State::kReady},
        {{State::kReady, Message::mForward}, State::kAccelerating},
