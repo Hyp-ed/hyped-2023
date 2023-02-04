@@ -1,4 +1,4 @@
-#include "stripe_sensor.hpp"
+#include "keyence.hpp"
 
 namespace hyped::sensors {
 

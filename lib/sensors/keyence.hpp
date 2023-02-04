@@ -24,4 +24,5 @@ class Keyence {
   std::shared_ptr<io::IGpioReader> gpio_reader_;
   core::ILogger &logger_;
 };
+
 }  // namespace hyped::sensors
