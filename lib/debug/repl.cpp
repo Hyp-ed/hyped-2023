@@ -460,7 +460,7 @@ void Repl::addAccelerometerCommands(const std::uint8_t bus, const std::uint8_t d
     logger_.log(core::LogLevel::kFatal, "Failed to create I2C instance on bus %d", bus);
     return;
   }
-  const auto i2c = std::make_shared<io::HardwareI2c>(*optional_i2c);
+  const auto i2c = std::move(*optional_i2c);
   if (device_address != sensors::kDefaultAccelerometerAddress) {
     logger_.log(core::LogLevel::kFatal,
                 "Asking for accelerometer on another address as what is hard coded");
