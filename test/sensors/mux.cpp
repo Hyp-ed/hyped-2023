@@ -15,7 +15,11 @@ TEST(Mux, construction)
   for (auto &sensor : sensors) {
     sensor = std::make_unique<utils::DummyI2cSensor>();
   }
-  utils::DummyI2c i2c;
+  utils::DummyI2c i2c([](const std::uint8_t, const std::uint8_t) { return std::nullopt; },
+                      [](const std::uint8_t, const std::uint8_t) { return core::Result::kSuccess; },
+                      [](const std::uint8_t, const std::uint8_t, const std::uint8_t) {
+                        return core::Result::kSuccess;
+                      });
   utils::DummyLogger logger;
   sensors::Mux<std::uint8_t, kSize> mux(logger, i2c, 0, sensors);
 }
