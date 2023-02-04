@@ -1,0 +1,12 @@
+version: '2'
+
+services:
+  talker:
+    image: hyped_ros
+    command: ros2 run demo_nodes_cpp talker
+    
+  listener:
+    image: hyped_ros
+    command: ros2 run demo_nodes_cpp listener
+    depends_on:
+      - talker
