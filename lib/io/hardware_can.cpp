@@ -1,7 +1,10 @@
 #include "hardware_can.hpp"
 
+#include <errno.h>
 #include <stdio.h>
 #include <unistd.h>
+
+#include <cstring>
 
 #include <net/if.h>
 #include <sys/ioctl.h>
@@ -19,7 +22,7 @@ std::optional<std::shared_ptr<HardwareCan>> HardwareCan::create(
   }
   const int interface_index = if_nametoindex(can_network_interface.c_str());
   if (!interface_index) {
-    logger.log(core::LogLevel::kFatal, "Unable to find CAN1 network interface");
+    logger.log(core::LogLevel::kFatal, "Unable to find CAN network interface");
     close(socket_id);
     return std::nullopt;
   }
@@ -32,10 +35,10 @@ std::optional<std::shared_ptr<HardwareCan>> HardwareCan::create(
     return std::nullopt;
   }
   logger.log(core::LogLevel::kInfo, "CAN socket successfully created");
-  return std::make_shared<HardwareCan>(HardwareCan(logger, socket_id));
+  return std::make_shared<HardwareCan>(logger, socket_id);
 }
 
-HardwareCan::HardwareCan(core::ILogger &logger, const std::int16_t socket)
+HardwareCan::HardwareCan(core::ILogger &logger, const int socket)
     : logger_(logger),
       processors_(),
       socket_(socket)
@@ -47,6 +50,11 @@ HardwareCan::~HardwareCan()
   close(socket_);
 }
 
+int HardwareCan::getSocket()
+{
+  return socket_;
+}
+
 core::Result HardwareCan::send(const io::CanFrame &data)
 {
   if (socket_ < 0) {
@@ -56,6 +64,7 @@ core::Result HardwareCan::send(const io::CanFrame &data)
   const int num_bytes_written = write(socket_, &data, sizeof(CanFrame));
   if (num_bytes_written != sizeof(CanFrame)) {
     logger_.log(core::LogLevel::kFatal, "Failed to send CAN data");
+    logger_.log(core::LogLevel::kFatal, "ErrNo string: %s", std::strerror(errno));
     return core::Result::kFailure;
   }
   // TODOLater make logger_ more elegant

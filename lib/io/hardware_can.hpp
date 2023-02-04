@@ -22,9 +22,10 @@ class HardwareCan : public ICan {
   std::optional<CanFrame> receive();
   core::Result listen();
   void addProcessor(const std::uint16_t id, std::shared_ptr<ICanProcessor> processor);
+  int getSocket();
+  HardwareCan(core::ILogger &logger, const int socket);
 
  private:
-  HardwareCan(core::ILogger &logger, const std::int16_t socket);
   int socket_;
   core::ILogger &logger_;
   std::unordered_map<std::uint32_t, std::vector<std::shared_ptr<ICanProcessor>>> processors_;
