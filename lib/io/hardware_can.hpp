@@ -17,13 +17,12 @@ class HardwareCan : public ICan {
  public:
   static std::optional<std::shared_ptr<HardwareCan>> create(
     core::ILogger &logger, const std::string &can_network_interface);
+  HardwareCan(core::ILogger &logger, const int socket);
   ~HardwareCan();
   core::Result send(const CanFrame &message);
   std::optional<CanFrame> receive();
   core::Result listen();
   void addProcessor(const std::uint16_t id, std::shared_ptr<ICanProcessor> processor);
-  int getSocket();
-  HardwareCan(core::ILogger &logger, const int socket);
 
  private:
   int socket_;

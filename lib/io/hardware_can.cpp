@@ -22,7 +22,8 @@ std::optional<std::shared_ptr<HardwareCan>> HardwareCan::create(
   }
   const int interface_index = if_nametoindex(can_network_interface.c_str());
   if (!interface_index) {
-    logger.log(core::LogLevel::kFatal, "Unable to find CAN network interface");
+    logger.log(
+      core::LogLevel::kFatal, "Unable to find CAN network interface '%s'", can_network_interface);
     close(socket_id);
     return std::nullopt;
   }
@@ -50,11 +51,6 @@ HardwareCan::~HardwareCan()
   close(socket_);
 }
 
-int HardwareCan::getSocket()
-{
-  return socket_;
-}
-
 core::Result HardwareCan::send(const io::CanFrame &data)
 {
   if (socket_ < 0) {
@@ -63,13 +59,13 @@ core::Result HardwareCan::send(const io::CanFrame &data)
   }
   const int num_bytes_written = write(socket_, &data, sizeof(CanFrame));
   if (num_bytes_written != sizeof(CanFrame)) {
-    logger_.log(core::LogLevel::kFatal, "Failed to send CAN data");
-    logger_.log(core::LogLevel::kFatal, "ErrNo string: %s", std::strerror(errno));
+    logger_.log(
+      core::LogLevel::kFatal, "Failed to send CAN data because: %s", std::strerror(errno));
     return core::Result::kFailure;
   }
   // TODOLater make logger_ more elegant
   logger_.log(core::LogLevel::kDebug,
-              "CAN data sent, ID:%i, DATA: %i %i %i %i %i %i %i %i",
+              "CAN message sent, ID: %i, DATA: %i %i %i %i %i %i %i %i",
               static_cast<int>(data.can_id),
               static_cast<int>(data.data[0]),
               static_cast<int>(data.data[1]),
