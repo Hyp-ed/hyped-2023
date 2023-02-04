@@ -59,7 +59,7 @@ void Accelerometer::setRegisterAddressFromAxis(const Axis axis)
 std::int32_t Accelerometer::getAccelerationFromRawValue(const std::int16_t rawAcceleration)
 {
   // these values come from the data sheet. Don't change them.
-  return (static_cast<int32_t>(rawAcceleration) * 488) / 1000;
+  return (static_cast<std::int32_t>(rawAcceleration) * 488) / 1000;
 }
 
 // TODOlater: current settings of the accelerometer make it read in +-16g but with high noise. Check
