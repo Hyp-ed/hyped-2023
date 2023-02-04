@@ -2,25 +2,32 @@
 
 namespace hyped::sensors {
 
-Keyence::Keyence(core::ILogger &log, const std::uint8_t newPin) : pin(newPin), logger_(log)
+std::optional<Keyence> Keyence::create(core::ILogger &logger, io::IGpio &gpio, std::uint8_t new_pin)
 {
-  stripe_count_ = 0;
-  io::HardwareGpio hardware(logger_);
-  keyence = hardware.getReader(pin);
-};
+  const auto reader = gpio.getReader(new_pin);
+  if (!reader) {
+    logger.log(core::LogLevel::kFatal, "Failed to create GPIO reader");
+    return std::nullopt;
+  }
+  return Keyence(logger, *reader);
+}
+
+Keyence::Keyence(core::ILogger &logger, std::shared_ptr<io::IGpioReader> gpio_reader)
+    : gpio_reader_(gpio_reader),
+      logger_(logger){};
 
 Keyence::~Keyence()
 {
 }
 
-int Keyence::getStripeCount()
+std::uint8_t Keyence::getStripeCount()
 {
   return stripe_count_;
 }
 
-void Keyence::updateStripes()
+void Keyence::updateStripeCount()
 {
-  if (keyence.read() == core::DigitalSignal::kHigh) { ++stripe_count_; };
+  if (gpio_reader_->read() == core::DigitalSignal::kHigh) { ++stripe_count_; };
 }
 
 }  // namespace hyped::sensors
