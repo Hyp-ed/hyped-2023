@@ -6,7 +6,7 @@
 
 #include <optional>
 
-#include <boost/unordered/unordered_map.hpp>
+#include <boost/unordered_map.hpp>
 
 namespace hyped::state_machine {
 
