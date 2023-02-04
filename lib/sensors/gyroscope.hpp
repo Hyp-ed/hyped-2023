@@ -10,6 +10,7 @@
 
 namespace hyped::sensors {
 
+// Registers taken from the data sheet
 static constexpr std::uint8_t kDefaultGyroscopeAddress = 0x69;
 static constexpr std::uint8_t kDataXHigh               = 0x29;
 static constexpr std::uint8_t kDataXLow                = 0x28;
@@ -33,8 +34,8 @@ class Gyroscope {
                                          const std::uint8_t channel);
   ~Gyroscope();
 
-  std::optional<std::int16_t> read(core::GyroscopeAxis axis);
-  std::uint8_t getChannel();
+  std::optional<std::int16_t> read(core::Axis axis);
+  const std::uint8_t getChannel();
 
  private:
   Gyroscope(core::ILogger &logger, io::II2c &i2c, const std::uint8_t channel);

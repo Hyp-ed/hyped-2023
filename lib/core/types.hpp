@@ -9,7 +9,7 @@ static constexpr float kEpsilon = 0.0001;
 
 enum class DigitalSignal { kLow = 0, kHigh };
 enum class Result { kSuccess = 0, kFailure };
-enum class GyroscopeAxis { kX, kY, kZ };
+enum class Axis { kX, kY, kZ };
 
 using Float = float;
 
