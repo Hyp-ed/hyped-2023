@@ -2,7 +2,36 @@
 
 namespace hyped::sensors {
 
-Accelerometer::Accelerometer(core::ILogger &logger, io::II2c &i2c, const std::uint8_t channel)
+std::optional<Accelerometer> Accelerometer::create(core::ILogger &logger,
+                                                   std::shared_ptr<io::II2c> i2c,
+                                                   const std::uint8_t channel,
+                                                   const std::uint8_t device_address)
+{
+  // check we are communicating with the correct sensor
+  const auto device_id = i2c->readByte(device_address, kDeviceIdAddress);
+  if (!device_id) {
+    logger.log(core::LogLevel::kFatal, "Failure to read device id of accelerometer");
+    return std::nullopt;
+  }
+  if (*device_id != kExpectedDeviceIdValue) {
+    logger.log(core::LogLevel::kFatal, "Failure accelerometer didn't give correct device id");
+    return std::nullopt;
+  }
+  const core::Result ctrl1_result
+    = i2c->writeByteToRegister(kDefaultAccelerometerAddress, kCtrl1Address, kCtrl1Value);
+  if (ctrl1_result == core::Result::kFailure) { return std::nullopt; };
+  const core::Result ctrl2_result
+    = i2c->writeByteToRegister(kDefaultAccelerometerAddress, kCtrl2Address, kCtrl2Value);
+  if (ctrl2_result == core::Result::kFailure) { return std::nullopt; };
+  const core::Result ctrl6_result
+    = i2c->writeByteToRegister(kDefaultAccelerometerAddress, kCtrl6Address, kCtrl6Value);
+  if (ctrl6_result == core::Result::kFailure) { return std::nullopt; };
+  return Accelerometer(logger, i2c, channel);
+}
+
+Accelerometer::Accelerometer(core::ILogger &logger,
+                             std::shared_ptr<io::II2c> i2c,
+                             const std::uint8_t channel)
     : logger_(logger),
       i2c_(i2c),
       channel_(channel)
@@ -21,14 +50,14 @@ std::uint8_t Accelerometer::getChannel() const
 std::optional<std::int16_t> Accelerometer::getRawAcceleration(const core::Axis axis)
 {
   setRegisterAddressFromAxis(axis);
-  const auto low_byte = i2c_.readByte(kDefaultAccelerometerAddress, low_byte_address_);
+  const auto low_byte = i2c_->readByte(kDefaultAccelerometerAddress, low_byte_address_);
   if (!low_byte) {
     logger_.log(core::LogLevel::kFatal,
                 "Failed to read the low byte for acceleration along the %s",
                 kAxisLabels[static_cast<std::size_t>(axis)]);
     return std::nullopt;
   }
-  const auto high_byte = i2c_.readByte(kDefaultAccelerometerAddress, high_byte_address_);
+  const auto high_byte = i2c_->readByte(kDefaultAccelerometerAddress, high_byte_address_);
   if (!high_byte) {
     logger_.log(core::LogLevel::kFatal,
                 "Failed to read the high byte for acceleration along the %s",
@@ -67,7 +96,7 @@ std::int32_t Accelerometer::getAccelerationFromRawValue(const std::int16_t rawAc
 std::optional<core::RawAccelerationData> Accelerometer::read()
 {
   // check to see if the values are ready to be read
-  const auto data_ready = i2c_.readByte(kDefaultAccelerometerAddress, kDataReady);
+  const auto data_ready = i2c_->readByte(kDefaultAccelerometerAddress, kDataReady);
   if (!data_ready) {
     logger_.log(core::LogLevel::kFatal, "Failed to read acceleration data");
     return std::nullopt;
@@ -94,30 +123,6 @@ std::optional<core::RawAccelerationData> Accelerometer::read()
     std::chrono::system_clock::now()};
   logger_.log(core::LogLevel::kDebug, "Successfully read accelerometer data");
   return acceleration_3_axis;
-}
-
-core::Result Accelerometer::configure()
-{
-  // check we are communicating with the correct sensor
-  const auto device_id = i2c_.readByte(kDefaultAccelerometerAddress, kDeviceIdAddress);
-  if (!device_id) {
-    logger_.log(core::LogLevel::kFatal, "Failure to read device id of accelerometer");
-    return core::Result::kFailure;
-  }
-  if (*device_id != kExpectedDeviceIdValue) {
-    logger_.log(core::LogLevel::kFatal, "Failure accelerometer didn't give correct device id");
-    return core::Result::kFailure;
-  }
-  const core::Result ctrl1_result
-    = i2c_.writeByteToRegister(kDefaultAccelerometerAddress, kCtrl1Address, kCtrl1Value);
-  if (ctrl1_result == core::Result::kFailure) { return core::Result::kFailure; };
-  const core::Result ctrl2_result
-    = i2c_.writeByteToRegister(kDefaultAccelerometerAddress, kCtrl2Address, kCtrl2Value);
-  if (ctrl2_result == core::Result::kFailure) { return core::Result::kFailure; };
-  const core::Result ctrl6_result
-    = i2c_.writeByteToRegister(kDefaultAccelerometerAddress, kCtrl6Address, kCtrl6Value);
-  if (ctrl6_result == core::Result::kFailure) { return core::Result::kFailure; };
-  return core::Result::kSuccess;
 }
 
 }  // namespace hyped::sensors

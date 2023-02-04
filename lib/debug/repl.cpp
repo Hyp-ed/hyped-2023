@@ -196,6 +196,27 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
     const auto bus            = accelerometer["bus"].GetUint();
     repl->addAccelerometerCommands(bus, device_address);
   }
+  if (!sensors.HasMember("temperature")) {
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'sensors.temperature' in configuration file");
+    return std::nullopt;
+  }
+  const auto temperature = sensors["temperature"].GetObject();
+  if (!temperature.HasMember("enabled")) {
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'sensors.temperature.enabled' in configuration file");
+    return std::nullopt;
+  }
+  if (temperature["enabled"].GetBool()) {
+    if (!temperature.HasMember("bus")) {
+      logger_.log(core::LogLevel::kFatal,
+                  "Missing required field 'sensors.temperature.bus' in configuration file");
+      return std::nullopt;
+    }
+    const auto device_address = temperature["device_address"].GetUint();
+    const auto bus            = temperature["bus"].GetUint();
+    repl->addTemperatureCommands(bus, device_address);
+  }
   return repl;
 }
 
@@ -411,7 +432,7 @@ void Repl::addSpiCommands(const std::uint8_t bus)
     description << "Read from SPI bus " << static_cast<int>(bus);
     spi_read_byte_command.description = description.str();
     spi_read_byte_command.handler     = [this, spi, bus]() {
-      std::uint8_t register_address;
+      std::uint16_t register_address;
       std::cout << "Register address: ";
       std::cin >> register_address;
       std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -451,46 +472,6 @@ void Repl::addSpiCommands(const std::uint8_t bus)
     };
     addCommand(spi_write_byte_command);
   }
-}
-
-void Repl::addAccelerometerCommands(const std::uint8_t bus, const std::uint8_t device_address)
-{
-  const auto optional_i2c = io::HardwareI2c::create(logger_, bus);
-  if (!optional_i2c) {
-    logger_.log(core::LogLevel::kFatal, "Failed to create I2C instance on bus %d", bus);
-    return;
-  }
-  const auto i2c = std::move(*optional_i2c);
-  if (device_address != sensors::kDefaultAccelerometerAddress) {
-    logger_.log(core::LogLevel::kFatal,
-                "Asking for accelerometer on another address as what is hard coded");
-    return;
-  }
-  const auto accelerometer = std::make_shared<sensors::Accelerometer>(logger_, *i2c, bus);
-  accelerometer->configure();
-  Command accelerometer_read_command;
-  std::stringstream identifier;
-  identifier << "accelerometer 0x" << std::hex << static_cast<int>(device_address) << " read";
-  accelerometer_read_command.name = identifier.str();
-  std::stringstream description;
-  description << "Read accelerometer sensor 0x" << std::hex << static_cast<int>(device_address)
-              << " on "
-              << "I2C bus " << static_cast<int>(bus);
-  accelerometer_read_command.description = description.str();
-  accelerometer_read_command.handler     = [this, accelerometer, bus]() {
-    const auto value = accelerometer->read();
-    if (!value) {
-      logger_.log(core::LogLevel::kFatal, "Failed to read accelerometer from bus %d", bus);
-    } else {
-      const core::RawAccelerationData result = value.value();
-      logger_.log(core::LogLevel::kInfo,
-                  "Acceleration in mg: \n x %d \n y %d \n z %d",
-                  result.x,
-                  result.y,
-                  result.z);
-    }
-  };
-  addCommand(accelerometer_read_command);
 }
 
 void Repl::addUartCommands(const std::uint8_t bus)
@@ -546,6 +527,73 @@ void Repl::addUartCommands(const std::uint8_t bus)
     };
     addCommand(uart_write_command);
   }
+}
+
+void Repl::addAccelerometerCommands(const std::uint8_t bus, const std::uint8_t device_address)
+{
+  const auto optional_i2c = io::HardwareI2c::create(logger_, bus);
+  if (!optional_i2c) {
+    logger_.log(core::LogLevel::kFatal, "Failed to create I2C instance on bus %d", bus);
+    return;
+  }
+  const auto i2c = std::move(*optional_i2c);
+  const auto optional_accelerometer
+    = sensors::Accelerometer::create(logger_, i2c, bus, device_address);
+  const auto accelerometer = std::make_shared<sensors::Accelerometer>(*optional_accelerometer);
+  Command accelerometer_read_command;
+  std::stringstream identifier;
+  identifier << "accelerometer 0x" << std::hex << static_cast<int>(device_address) << " read";
+  accelerometer_read_command.name = identifier.str();
+  std::stringstream description;
+  description << "Read accelerometer sensor 0x" << std::hex << static_cast<int>(device_address)
+              << " on "
+              << "I2C bus " << static_cast<int>(bus);
+  accelerometer_read_command.description = description.str();
+  accelerometer_read_command.handler     = [this, accelerometer, bus]() {
+    const auto value = accelerometer->read();
+    if (!value) {
+      logger_.log(core::LogLevel::kFatal, "Failed to read accelerometer from bus %d", bus);
+    } else {
+      const core::RawAccelerationData accelerometer_result = *value;
+      logger_.log(core::LogLevel::kInfo,
+                  "Acceleration in mg: \n x %d \n y %d \n z %d",
+                  accelerometer_result.x,
+                  accelerometer_result.y,
+                  accelerometer_result.z);
+    }
+  };
+  addCommand(accelerometer_read_command);
+}
+
+void Repl::addTemperatureCommands(const std::uint8_t bus, const std::uint8_t device_address)
+{
+  const auto optional_i2c = io::HardwareI2c::create(logger_, bus);
+  if (!optional_i2c) {
+    logger_.log(core::LogLevel::kFatal, "Failed to create I2C instance on bus %d", bus);
+    return;
+  }
+  const auto i2c                  = std::move(*optional_i2c);
+  const auto optional_temperature = sensors::Temperature::create(logger_, i2c, bus, device_address);
+  const auto temperature          = std::make_shared<sensors::Temperature>(*optional_temperature);
+  Command temperature_read_command;
+  std::stringstream identifier;
+  identifier << "temperature 0x" << std::hex << static_cast<int>(device_address) << " read";
+  temperature_read_command.name = identifier.str();
+  std::stringstream description;
+  description << "Read temperature sensor 0x" << std::hex << static_cast<int>(device_address)
+              << " on "
+              << "I2C bus " << static_cast<int>(bus);
+  temperature_read_command.description = description.str();
+  temperature_read_command.handler     = [this, temperature, bus]() {
+    const auto value = temperature->read();
+    if (!value) {
+      logger_.log(core::LogLevel::kFatal, "Failed to read accelerometer from bus %d", bus);
+    } else {
+      const std::int16_t temperature_result = *value;
+      logger_.log(core::LogLevel::kInfo, "Temperature in degrees Celsius: %d", temperature_result);
+    }
+  };
+  addCommand(temperature_read_command);
 }
 
 }  // namespace hyped::debug

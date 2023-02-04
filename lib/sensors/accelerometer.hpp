@@ -5,6 +5,7 @@
 #include <unistd.h>
 
 #include <cstdint>
+#include <memory>
 #include <optional>
 
 #include <core/logger.hpp>
@@ -50,21 +51,25 @@ constexpr std::uint8_t kExpectedDeviceIdValue = 0x44;
 
 class Accelerometer : public II2cMuxSensor<core::RawAccelerationData> {
  public:
-  Accelerometer(core::ILogger &logger, io::II2c &i2c, const std::uint8_t channel);
+  static std::optional<Accelerometer> create(core::ILogger &logger,
+                                             std::shared_ptr<io::II2c> i2c,
+                                             const std::uint8_t channel,
+                                             const std::uint8_t device_address
+                                             = kDefaultAccelerometerAddress);
   ~Accelerometer();
 
-  core::Result configure();
   std::optional<core::RawAccelerationData> read();
   std::uint8_t getChannel() const;
 
  private:
+  Accelerometer(core::ILogger &logger, std::shared_ptr<io::II2c> i2c, const std::uint8_t channel);
   std::optional<std::int16_t> getRawAcceleration(const core::Axis axis);
   std::int32_t getAccelerationFromRawValue(const std::int16_t rawAcceleration);
   void setRegisterAddressFromAxis(const core::Axis axis);
 
  private:
   core::ILogger &logger_;
-  io::II2c &i2c_;
+  std::shared_ptr<io::II2c> i2c_;
   const std::uint8_t channel_;
   std::uint8_t low_byte_address_;
   std::uint8_t high_byte_address_;

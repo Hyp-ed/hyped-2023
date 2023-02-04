@@ -71,14 +71,7 @@ std::optional<std::array<T, N>> Mux<T, N>::readAllChannels()
       logger_.log(core::LogLevel::kFatal, "Failed to select mux channel %d", channel);
       return std::nullopt;
     }
-    // Next ensure sensor is configured for operation
-    const auto configure_result = sensor->configure();
-    if (configure_result == core::Result::kFailure) {
-      logger_.log(core::LogLevel::kFatal, "Failed to configure sensor at mux channel %d", channel);
-      ++num_unusable_sensors;
-      continue;
-    }
-    // Finally read sensor data
+    // Then read sensor data
     const auto sensor_data = sensor->read();
     if (!sensor_data) {
       logger_.log(core::LogLevel::kFatal, "Failed to get mux data from channel %d", channel);

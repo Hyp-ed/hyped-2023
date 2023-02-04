@@ -26,14 +26,19 @@ static constexpr core::Float kTemperatureScaleFactor = 0.01;
 
 class Temperature : public II2cMuxSensor<std::int16_t> {
  public:
-  Temperature(core::ILogger &logger, std::shared_ptr<io::II2c> i2c, const std::uint8_t channel);
+  static std::optional<Temperature> create(core::ILogger &logger,
+                                           std::shared_ptr<io::II2c> i2c,
+                                           const std::uint8_t channel,
+                                           const std::uint8_t device_address
+                                           = kTemperatureDefaultAddress);
+
   ~Temperature();
 
-  core::Result configure();
   std::optional<std::int16_t> read();
   std::uint8_t getChannel() const;
 
  private:
+  Temperature(core::ILogger &logger, std::shared_ptr<io::II2c> i2c, const std::uint8_t channel);
   core::ILogger &logger_;
   std::shared_ptr<io::II2c> i2c_;
   const std::uint8_t channel_;

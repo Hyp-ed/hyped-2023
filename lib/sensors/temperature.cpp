@@ -2,6 +2,23 @@
 
 namespace hyped::sensors {
 
+std::optional<Temperature> Temperature::create(core::ILogger &logger,
+                                               std::shared_ptr<io::II2c> i2c,
+                                               const std::uint8_t channel,
+                                               const std::uint8_t device_address)
+{
+  const core::Result write_result
+    = i2c->writeByteToRegister(device_address, kCtrl, kConfigurationSetting);
+  if (write_result == core::Result::kFailure) {
+    logger.log(
+      core::LogLevel::kFatal, "Failed to configure temperature sensor at channel %d", channel);
+    return std::nullopt;
+  }
+  logger.log(
+    core::LogLevel::kDebug, "Successful to configure temperature sensor at channel %d", channel);
+  return Temperature(logger, i2c, channel);
+}
+
 Temperature::Temperature(core::ILogger &logger,
                          std::shared_ptr<io::II2c> i2c,
                          const std::uint8_t channel)
@@ -61,20 +78,6 @@ std::optional<std::int16_t> Temperature::read()
     core::LogLevel::kDebug, "Successfully read from temperature sensor at channel %d", channel_);
   // Scaling temperature as per the datasheet
   return static_cast<std::int16_t>(temperature * kTemperatureScaleFactor);
-}
-
-core::Result Temperature::configure()
-{
-  const core::Result write_result
-    = i2c_->writeByteToRegister(kTemperatureDefaultAddress, kCtrl, kConfigurationSetting);
-  if (write_result == core::Result::kFailure) {
-    logger_.log(
-      core::LogLevel::kFatal, "Failed to configure temperature sensor at channel %d", channel_);
-    return core::Result::kFailure;
-  }
-  logger_.log(
-    core::LogLevel::kDebug, "Successful to configure temperature sensor at channel %d", channel_);
-  return core::Result::kSuccess;
 }
 
 std::uint8_t Temperature::getChannel() const
