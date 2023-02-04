@@ -122,43 +122,6 @@ std::optional<Gyroscope> Gyroscope::create(core::ILogger &logger,
   return Gyroscope(logger, i2c, channel);
 }
 
-core::Result Gyroscope::configure()
-{
-  const core::Result write_result1
-    = i2c_.writeByteToRegister(kGyroscope, kCtrl1, kConfigurationSetting1);
-  if (write_result1 == hyped::core::Result::kFailure) {
-    logger_.log(hyped::core::LogLevel::kFatal,
-                "Failed to, configure gyroscope control 1 at channel %d",
-                channel_);
-    return core::Result::kFailure;
-  }
-  const core::Result write_result2
-    = i2c_.writeByteToRegister(kGyroscope, kCtrl2, kConfigurationSetting2);
-  if (write_result2 == hyped::core::Result::kFailure) {
-    logger_.log(hyped::core::LogLevel::kFatal,
-                "Failed to, configure gyroscope control 2 at channel %d",
-                channel_);
-    return core::Result::kFailure;
-  }
-  const core::Result write_result3
-    = i2c_.writeByteToRegister(kGyroscope, kCtrl3, kConfigurationSetting3);
-  if (write_result3 == hyped::core::Result::kFailure) {
-    logger_.log(hyped::core::LogLevel::kFatal,
-                "Failed to, configure gyroscope control 3 at channel %d",
-                channel_);
-    return core::Result::kFailure;
-  }
-  const core::Result write_result5
-    = i2c_.writeByteToRegister(kGyroscope, kCtrl5, kConfigurationSetting5);
-  if (write_result5 == hyped::core::Result::kFailure) {
-    logger_.log(hyped::core::LogLevel::kFatal,
-                "Failed to, configure gyroscope control 5 at channel %d",
-                channel_);
-    return core::Result::kFailure;
-  }
-  return core::Result::kSuccess;
-}
-
 std::uint8_t Gyroscope::getChannel()
 {
   return channel_;
