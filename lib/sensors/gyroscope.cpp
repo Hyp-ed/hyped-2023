@@ -114,7 +114,7 @@ std::optional<Gyroscope> Gyroscope::create(core::ILogger &logger,
   return Gyroscope(logger, i2c, channel);
 }
 
-const std::uint8_t Gyroscope::getChannel()
+std::uint8_t Gyroscope::getChannel() const
 {
   return channel_;
 }

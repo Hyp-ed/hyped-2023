@@ -35,7 +35,7 @@ class Gyroscope {
   ~Gyroscope();
 
   const std::optional<std::int16_t> read(core::Axis axis);
-  const std::uint8_t getChannel();
+  std::uint8_t getChannel() const;
 
  private:
   Gyroscope(core::ILogger &logger, io::II2c &i2c, const std::uint8_t channel);
