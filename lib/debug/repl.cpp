@@ -255,9 +255,9 @@ void Repl::addAdcCommands(const std::uint8_t pin)
     const auto value = adc->readValue();
     if (!value) {
       logger_.log(core::LogLevel::kFatal, "Failed to read from ADC pin %d", pin);
-    } else {
-      logger_.log(core::LogLevel::kDebug, "ADC value from pin %d: %d", pin, *value);
+      return;
     }
+    logger_.log(core::LogLevel::kDebug, "ADC value from pin %d: %d", pin, *value);
   };
   addCommand(adc_read_command);
 }

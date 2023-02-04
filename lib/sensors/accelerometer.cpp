@@ -35,8 +35,7 @@ std::optional<std::int16_t> Accelerometer::getRawAcceleration(const Axis axis)
                 AxisStrings[static_cast<int>(axis)]);
     return std::nullopt;
   }
-  const std::int16_t raw_acceleration = static_cast<std::int16_t>((*high_byte << 8) | *low_byte);
-  return raw_acceleration;
+  return static_cast<std::int16_t>((*high_byte << 8) | *low_byte);
 }
 
 void Accelerometer::setRegisterAddressFromAxis(const Axis axis)
@@ -60,8 +59,7 @@ void Accelerometer::setRegisterAddressFromAxis(const Axis axis)
 std::int32_t Accelerometer::getAccelerationFromRawValue(const std::int16_t rawAcceleration)
 {
   // these values come from the data sheet. Don't change them.
-  std::int32_t acceleration = (static_cast<int32_t>(rawAcceleration) * 488) / 1000;
-  return acceleration;
+  return  (static_cast<int32_t>(rawAcceleration) * 488) / 1000;
 }
 
 // TODOlater: current settings of the accelerometer make it read in +-16g but with high noise. Check
@@ -101,12 +99,12 @@ std::optional<core::RawAccelerationData> Accelerometer::read()
 core::Result Accelerometer::configure()
 {
   // check we are communicating with the correct sensor
-  const auto device_id = i2c_.readByte(kDefaultAccelerometerAddress, kDeviceId);
+  const auto device_id = i2c_.readByte(kDefaultAccelerometerAddress, kDeviceIdAddress);
   if (!device_id) {
     logger_.log(core::LogLevel::kFatal, "Failure to read device id of accelerometer");
     return core::Result::kFailure;
   }
-  if (*device_id != kExpectedDeviceId) {
+  if (*device_id != kExpectedDeviceIdValue) {
     logger_.log(core::LogLevel::kFatal, "Failure accelerometer didn't give correct device id");
     return core::Result::kFailure;
   }
