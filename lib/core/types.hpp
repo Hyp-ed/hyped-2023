@@ -62,4 +62,6 @@ struct RawAccelerationData {
   const TimePoint measured_at;
 };
 
+enum class Axis { kX = 0, kY, kZ };
+
 }  // namespace hyped::core

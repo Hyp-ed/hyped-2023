@@ -18,38 +18,38 @@ std::uint8_t Accelerometer::getChannel() const
   return channel_;
 }
 
-std::optional<std::int16_t> Accelerometer::getRawAcceleration(const Axis axis)
+std::optional<std::int16_t> Accelerometer::getRawAcceleration(const core::Axis axis)
 {
   setRegisterAddressFromAxis(axis);
   const auto low_byte = i2c_.readByte(kDefaultAccelerometerAddress, low_byte_address_);
   if (!low_byte) {
     logger_.log(core::LogLevel::kFatal,
                 "Failed to read the low byte for acceleration along the %s",
-                AxisStrings[static_cast<int>(axis)]);
+                kAxisLabels[static_cast<int>(axis)]);
     return std::nullopt;
   }
   const auto high_byte = i2c_.readByte(kDefaultAccelerometerAddress, high_byte_address_);
   if (!high_byte) {
     logger_.log(core::LogLevel::kFatal,
                 "Failed to read the high byte for acceleration along the %s",
-                AxisStrings[static_cast<int>(axis)]);
+                kAxisLabels[static_cast<int>(axis)]);
     return std::nullopt;
   }
   return static_cast<std::int16_t>((*high_byte << 8) | *low_byte);
 }
 
-void Accelerometer::setRegisterAddressFromAxis(const Axis axis)
+void Accelerometer::setRegisterAddressFromAxis(const core::Axis axis)
 {
   switch (axis) {
-    case Axis::x:
+    case core::Axis::kX:
       low_byte_address_  = kXOutLow;
       high_byte_address_ = kXOutHigh;
       break;
-    case Axis::y:
+    case core::Axis::kY:
       low_byte_address_  = kYOutLow;
       high_byte_address_ = kYOutHigh;
       break;
-    case Axis::z:
+    case core::Axis::kZ:
       low_byte_address_  = kZOutLow;
       high_byte_address_ = kZOutHigh;
       break;
@@ -77,13 +77,13 @@ std::optional<core::RawAccelerationData> Accelerometer::read()
     logger_.log(core::LogLevel::kFatal, "Failed to read acceleration data as it is not ready");
     return std::nullopt;
   }
-  const auto result_x = getRawAcceleration(Axis::x);
+  const auto result_x = getRawAcceleration(core::Axis::kX);
   if (!result_x) { return std::nullopt; }
   const std::int32_t x_acceleration = getAccelerationFromRawValue(*result_x);
-  const auto result_y               = getRawAcceleration(Axis::y);
+  const auto result_y               = getRawAcceleration(core::Axis::kY);
   if (!result_y) { return std::nullopt; }
   const std::int32_t y_acceleration = getAccelerationFromRawValue(*result_y);
-  const auto result_z               = getRawAcceleration(Axis::z);
+  const auto result_z               = getRawAcceleration(core::Axis::kZ);
   if (!result_z) { return std::nullopt; }
   const std::int32_t z_acceleration = getAccelerationFromRawValue(*result_z);
   const std::optional<core::RawAccelerationData> acceleration_3_axis{

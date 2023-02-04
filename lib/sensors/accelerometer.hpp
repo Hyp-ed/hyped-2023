@@ -13,8 +13,7 @@
 
 namespace hyped::sensors {
 
-enum class Axis { x = 0, y, z };
-constexpr std::string_view AxisStrings[3] = {"x-axis", "y-axis", "z-axis"};
+constexpr std::string_view kAxisLabels[3] = {"x-axis", "y-axis", "z-axis"};
 
 // ! these values come from the datasheet
 
@@ -59,9 +58,9 @@ class Accelerometer : public II2cMuxSensor<core::RawAccelerationData> {
   std::uint8_t getChannel() const;
 
  private:
-  std::optional<std::int16_t> getRawAcceleration(const Axis axis);
+  std::optional<std::int16_t> getRawAcceleration(const core::Axis axis);
   std::int32_t getAccelerationFromRawValue(const std::int16_t rawAcceleration);
-  void setRegisterAddressFromAxis(const Axis axis);
+  void setRegisterAddressFromAxis(const core::Axis axis);
 
  private:
   core::ILogger &logger_;
