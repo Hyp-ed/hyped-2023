@@ -2,7 +2,9 @@
 
 namespace hyped::sensors {
 
-std::optional<Keyence> Keyence::create(core::ILogger &logger, io::IGpio &gpio, std::uint8_t new_pin)
+std::optional<Keyence> Keyence::create(core::ILogger &logger,
+                                       io::IGpio &gpio,
+                                       const std::uint8_t new_pin)
 {
   const auto reader = gpio.getReader(new_pin);
   if (!reader) {
