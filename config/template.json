@@ -6,8 +6,10 @@
 				"pins": []
 			},
 			"i2c": {
-				"enabled": false,
-				"buses": []
+				"enabled": true,
+				"buses": [
+					2
+				]
 			},
 			"pwm": {
 				"enabled": false,
@@ -20,6 +22,13 @@
 			"uart": {
 				"enabled": false,
 				"buses": []
+			}
+		},
+		"sensors": {
+			"accelerometer": {
+				"enabled": true,
+				"bus": 2,
+				"device_address": 25
 			}
 		}
 	}

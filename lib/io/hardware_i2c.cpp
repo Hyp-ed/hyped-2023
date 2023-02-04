@@ -30,7 +30,6 @@ HardwareI2c::HardwareI2c(core::ILogger &logger, const int file_descriptor)
     : logger_(logger),
       file_descriptor_(file_descriptor),
       sensor_address_(0)
-
 {
 }
 
