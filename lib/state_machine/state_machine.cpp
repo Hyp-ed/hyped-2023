@@ -19,4 +19,16 @@ void StateMachine::handleMessage(const Message message)
   current_state = transitionMap.at({current_state, message});
 }
 
+Message StateMachine::stringToMessage(const std::string message_name)
+{
+  Message message = string_to_message.at(message_name);
+  return message;
+}
+
+std::string StateMachine::messageToString(const Message message)
+{
+  std::string message_name = message_to_string.at(message);
+  return message_name;
+}
+
 }  // namespace hyped::state_machine

@@ -5,6 +5,7 @@
 #include "types.hpp"
 
 #include <optional>
+#include <unordered_map>
 
 #include <boost/unordered_map.hpp>
 
@@ -18,7 +19,17 @@ class StateMachine {
 
   std::optional<Message> handleData();
 
+  Message stringToMessage(const std::string message_name);
+
+  std::string messageToString(const Message message);
+
  private:
+  const std::unordered_map<std::string, Message> string_to_message
+    = {{"mForward", Message::mForward}, {"mFailure", Message::mFailure}};
+
+  const std::unordered_map<Message, std::string> message_to_string
+    = {{Message::mForward, "mForward"}, {Message::mFailure, "mFailure"}};
+
   const boost::unordered_map<SourceAndMessage, State> transitionMap
     = {{{State::kIdle, Message::mForward}, State::kCalibrating},
        {{State::kCalibrating, Message::mForward}, State::kReady},
