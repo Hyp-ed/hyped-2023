@@ -10,8 +10,10 @@
   },
   "dependencies": {
     "openmct": "git+https://github.com/nasa/openmct.git#v2.1.5",
+    "@headlessui/react": "^1.7.9",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "victormono": "^1.5.4"
   },
   "devDependencies": {
     "@types/react": "^18.0.26",
