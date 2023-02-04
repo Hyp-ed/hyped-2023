@@ -25,9 +25,8 @@ static constexpr std::uint8_t kConfigurationSetting1 = 0xff;
 static constexpr std::uint8_t kConfigurationSetting2 = 0x20;
 static constexpr std::uint8_t kConfigurationSetting3 = 0xff;
 static constexpr std::uint8_t kConfigurationSetting5 = 0x40;
-static constexpr std::uint8_t kStatus                = 0x27;
 
-class Gyroscope : public II2cMuxSensor<std::int16_t> {
+class Gyroscope{
  public:
   static std::optional<Gyroscope> create(core::ILogger &logger,
                                          io::II2c &i2c,

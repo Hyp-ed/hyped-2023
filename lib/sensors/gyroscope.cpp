@@ -12,7 +12,7 @@ Gyroscope::Gyroscope(core::ILogger &logger, io::II2c &i2c, const std::uint8_t ch
 Gyroscope::~Gyroscope()
 {
 }
-// Todo add a parameter that would return only the axis required
+
 std::optional<std::int16_t> Gyroscope::read(core::GyroscopeAxis axis)
 {
   if (axis == core::GyroscopeAxis::kX) {
