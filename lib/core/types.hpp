@@ -49,18 +49,18 @@ struct RawAccelerationData {
   RawAccelerationData(const std::int32_t x,
                       const std::int32_t y,
                       const std::int32_t z,
-                      const TimePoint timePoint)
+                      const TimePoint time_point)
       : x(x),
         y(y),
         z(z),
-        timePoint(timePoint)
+        time_point(time_point)
   {
   }
 
   const std::int32_t x;
   const std::int32_t y;
   const std::int32_t z;
-  const TimePoint timePoint;
+  const TimePoint time_point;
 };
 
 }  // namespace hyped::core

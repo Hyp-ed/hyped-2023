@@ -2,9 +2,7 @@
 
 namespace hyped::sensors {
 
-Accelerometer::Accelerometer(core::ILogger &logger,
-                             io::HardwareI2c &i2c,
-                             const std::uint8_t channel)
+Accelerometer::Accelerometer(core::ILogger &logger, io::II2c &i2c, const std::uint8_t channel)
     : logger_(logger),
       i2c_(i2c),
       channel_(channel)
@@ -27,14 +25,14 @@ std::optional<std::int16_t> Accelerometer::getRawAcceleration(const Axis axis)
   if (!low_byte) {
     logger_.log(core::LogLevel::kFatal,
                 "Failed to read the low byte for acceleration along the %s",
-                AxisStrings[axis]);
+                AxisStrings[static_cast<int>(axis)]);
     return std::nullopt;
   }
   const auto high_byte = i2c_.readByte(kDefaultAccelerometerAddress, high_byte_address_);
   if (!high_byte) {
     logger_.log(core::LogLevel::kFatal,
                 "Failed to read the high byte for acceleration along the %s",
-                AxisStrings[axis]);
+                AxisStrings[static_cast<int>(axis)]);
     return std::nullopt;
   }
   const std::int16_t raw_acceleration
@@ -124,4 +122,5 @@ core::Result Accelerometer::configure()
   if (ctrl6_result == core::Result::kFailure) { return core::Result::kFailure; };
   return core::Result::kSuccess;
 }
+
 }  // namespace hyped::sensors

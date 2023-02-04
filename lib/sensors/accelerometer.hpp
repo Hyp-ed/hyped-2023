@@ -9,12 +9,11 @@
 
 #include <core/logger.hpp>
 #include <core/types.hpp>
-#include <io/hardware_i2c.hpp>
 #include <io/i2c.hpp>
 
 namespace hyped::sensors {
 
-enum Axis { x, y, z };
+enum class Axis { x = 0, y, z };
 static constexpr char AxisStrings[3][10] = {"x-axis", "y-axis", "z-axis"};
 
 // ! these values come from the datasheet
@@ -52,7 +51,7 @@ static constexpr std::uint8_t kExpectedDeviceId = 0x44;
 
 class Accelerometer : public II2cMuxSensor<core::RawAccelerationData> {
  public:
-  Accelerometer(core::ILogger &logger, io::HardwareI2c &i2c, const std::uint8_t channel);
+  Accelerometer(core::ILogger &logger, io::II2c &i2c, const std::uint8_t channel);
   ~Accelerometer();
 
   core::Result configure();
@@ -66,7 +65,7 @@ class Accelerometer : public II2cMuxSensor<core::RawAccelerationData> {
 
  private:
   core::ILogger &logger_;
-  io::HardwareI2c &i2c_;
+  io::II2c &i2c_;
   const std::uint8_t channel_;
   std::uint8_t low_byte_address_;
   std::uint8_t high_byte_address_;
