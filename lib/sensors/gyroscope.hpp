@@ -34,7 +34,7 @@ class Gyroscope {
                                          const std::uint8_t channel);
   ~Gyroscope();
 
-  std::optional<std::int16_t> read(core::Axis axis);
+  const std::optional<std::int16_t> read(core::Axis axis);
   const std::uint8_t getChannel();
 
  private:
