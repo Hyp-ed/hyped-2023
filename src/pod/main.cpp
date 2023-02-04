@@ -21,15 +21,15 @@ int main(int argc, char **argv)
     // }
     // logger.log(hyped::core::LogLevel::kDebug, "CAN socket enabled");
     // auto can = *maybe_can;
-    hyped::io::HardwareCan can = hyped::io::HardwareCan(logger);
-    can.initialise("can1");
+    // hyped::io::HardwareCan can = hyped::io::HardwareCan(logger);
+    // can.initialise("can1");
     hyped::io::CanFrame frame;
     frame.can_id  = 1;
     frame.can_dlc = 8;
     for (int i = 0; i < 8; i++) {
       frame.data[i] = 5;
     }
-    auto result = can.send(frame);
+    // auto result = can.send(frame);
     if (result == hyped::core::Result::kFailure) {
       logger.log(hyped::core::LogLevel::kFatal, "no can send");
     } else {
