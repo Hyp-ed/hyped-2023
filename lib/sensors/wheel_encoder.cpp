@@ -1,39 +1,29 @@
-#include "keyence.hpp"
+#include "WheelEncoder.hpp"
 
 namespace hyped::sensors {
 
-std::optional<Keyence> Keyence::create(core::ILogger &logger,
-                                       io::IGpio &gpio,
-                                       const std::uint8_t new_pin)
-{
-  const auto reader = gpio.getReader(new_pin);
-  if (!reader) {
-    logger.log(core::LogLevel::kFatal, "Failed to create Keyence instance");
-    return std::nullopt;
-  }
-  logger.log(core::LogLevel::kDebug, "Successfully created Keyence instance");
-  return Keyence(logger, *reader);
-}
-
-Keyence::Keyence(core::ILogger &logger, std::shared_ptr<io::IGpioReader> gpio_reader)
-    : gpio_reader_(gpio_reader),
-      logger_(logger){};
-
-Keyence::~Keyence()
+// TODOLater: here finish the implementation once other i2c instance has been made
+std::optional<WheelEncoder> WheelEncoder::create(core::ILogger &logger, io::II2c &i2c, const std::uint8_t channel)
 {
 }
 
-std::uint8_t Keyence::getStripeCount()
+WheelEncoder::WheelEncoder(core::ILogger &logger, io::II2c &i2c, const std::uint8_t channel)
+    : logger_(logger),
+      i2c_(i2c),
+      channel_(channel)
 {
-  return stripe_count_;
 }
 
-void Keyence::updateStripeCount()
+WheelEncoder::~WheelEncoder()
 {
-  if (gpio_reader_->read() == core::DigitalSignal::kHigh) {
-    ++stripe_count_;
-    logger_.log(core::LogLevel::kDebug, "Stripe count increased to %d", stripe_count_);
-  };
+}
+
+std::uint8_t WheelEncoder::getWheelTurnCount()
+{
+}
+
+void WheelEncoder::resetWheelTurnCount()
+{
 }
 
 }  // namespace hyped::sensors
