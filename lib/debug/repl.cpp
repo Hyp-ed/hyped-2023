@@ -217,7 +217,7 @@ void Repl::addAdcCommands(const std::uint8_t pin)
     logger_.log(core::LogLevel::kFatal, "Failed to create ADC instance on pin %d", pin);
     return;
   }
-  const auto adc = std::make_shared<io::Adc>(*optional_adc);
+  const auto adc = std::move(*optional_adc);
   Command adc_read_command;
   std::stringstream identifier;
   identifier << "adc " << static_cast<int>(pin) << " read";
@@ -253,7 +253,7 @@ void Repl::addI2cCommands(const std::uint8_t bus)
     description << "Read from I2C bus " << static_cast<int>(bus);
     i2c_read_command.description = description.str();
     i2c_read_command.handler     = [this, i2c, bus]() {
-      std::uint8_t device_address, register_address;
+      std::uint16_t device_address, register_address;
       std::cout << "Device address: ";
       std::cin >> device_address;
       std::cout << "Register address: ";
@@ -305,7 +305,7 @@ void Repl::addPwmCommands(const std::uint8_t module)
     logger_.log(core::LogLevel::kFatal, "Failed to create PWM module");
     return;
   }
-  const auto pwm = std::make_shared<io::Pwm>(optional_pwm.value());
+  const auto pwm = std::move(*optional_pwm);
   {
     Command pwm_run_command;
     std::stringstream identifier;
@@ -375,7 +375,7 @@ void Repl::addSpiCommands(const std::uint8_t bus)
     logger_.log(core::LogLevel::kFatal, "Failed to create I2C instance on bus %d", bus);
     return;
   }
-  const auto spi = std::make_shared<io::HardwareSpi>(*optional_spi);
+  const auto spi = std::move(*optional_spi);
   {
     Command spi_read_byte_command;
     std::stringstream identifier;
@@ -435,7 +435,7 @@ void Repl::addUartCommands(const std::uint8_t bus)
     logger_.log(core::LogLevel::kFatal, "Failed to create UART instance on bus %d", bus);
     return;
   }
-  const auto uart = std::make_shared<io::Uart>(*optional_uart);
+  const auto uart = std::move(*optional_uart);
   {
     Command uart_read_command;
     std::stringstream identifier;
