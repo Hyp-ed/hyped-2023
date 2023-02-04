@@ -5,10 +5,10 @@
 
 namespace hyped::io {
 
-std::optional<Uart> Uart::create(core::ILogger &logger,
-                                 const UartBus bus,
-                                 const BaudRate baud_rate,
-                                 const BitsPerByte bits_per_byte)
+std::optional<std::shared_ptr<Uart>> Uart::create(core::ILogger &logger,
+                                                  const UartBus bus,
+                                                  const BaudRate baud_rate,
+                                                  const BitsPerByte bits_per_byte)
 {
   char path[15];  // up to "/dev/ttyO5"
   snprintf(path, sizeof(path), "/dev/ttyO%d", static_cast<std::uint8_t>(bus));
@@ -38,7 +38,7 @@ std::optional<Uart> Uart::create(core::ILogger &logger,
     return std::nullopt;
   }
   logger.log(core::LogLevel::kDebug, "Successfully created UART instance");
-  return Uart(logger, file_descriptor);
+  return std::make_shared<Uart>(logger, file_descriptor);
 }
 
 core::Result Uart::configureFileForOperation(core::ILogger &logger,
