@@ -5,3 +5,9 @@ add_library(${target} STATIC ${headers} ${code})
 target_include_directories(${target}
     INTERFACE "${CMAKE_SOURCE_DIR}/lib"
 )
+export(
+    TARGETS ${target}
+    NAMESPACE Hyped::
+    FILE "${CMAKE_BINARY_DIR}/export/HypedCoreConfig.cmake"
+)
+export(PACKAGE ${target})

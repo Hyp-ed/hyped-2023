@@ -10,3 +10,9 @@ include_directories(${target}
     "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 target_link_libraries(${target} PUBLIC Eigen3::Eigen)
+export(
+    TARGETS ${target}
+    NAMESPACE Hyped::
+    FILE "${CMAKE_BINARY_DIR}/export/HypedNavigationConfig.cmake"
+)
+export(PACKAGE ${target})
