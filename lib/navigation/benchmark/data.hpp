@@ -11,13 +11,13 @@ namespace hyped::navigation::benchmark {
 
 struct Data {
   std::map<core::TimePoint, core::RawEncoderData> encoder_data_by_time;
-  std::map<core::TimePoint, core::RawAccelerationData> acceleration_data_by_time;
+  std::map<core::TimePoint, core::RawAccelerometerData> acceleration_data_by_time;
   std::map<core::TimePoint, core::RawKeyenceData> keyence_data_by_time;
   std::map<core::TimePoint, core::Trajectory> trajectory_data_by_time;
 
   std::vector<core::TimePoint> getRelevantTimes() const;
   std::optional<core::RawEncoderData> getEncoderDataAt(const core::TimePoint time_point) const;
-  std::optional<core::RawAccelerationData> getAccelerationDataAt(
+  std::optional<core::RawAccelerometerData> getAccelerationDataAt(
     const core::TimePoint time_point) const;
   std::optional<core::RawKeyenceData> getKeyenceDataAt(const core::TimePoint time_point) const;
   std::optional<core::Trajectory> getTrajectoryDataAt(const core::TimePoint time_point) const;
@@ -33,7 +33,7 @@ class DataBuilder {
   core::Result addUniformEncoderData(const std::uint64_t seconds_since_epoch,
                                      const std::uint32_t total_num_revolutions);
   core::Result addAccelerationData(const core::TimePoint &timestamp,
-                                   const core::RawAccelerationData &acceleration_data);
+                                   const core::RawAccelerometerData &acceleration_data);
   core::Result addUniformAccelerationData(
     const std::uint64_t seconds_since_epoch,
     const std::array<core::Float, core::kNumAxis> raw_acceleration);

@@ -10,6 +10,8 @@
 - `clang-format`
 - `CMake >= 3.12`
 - `eigen3`
+- `boost`
+- `rapidjson`
 
 ## Usage
 

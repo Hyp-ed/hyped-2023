@@ -10,7 +10,7 @@ namespace hyped::test {
 
 // TODOLater: improve testing method here!
 void testWithTrajectory(utils::NaiveNavigator &naive_navigator,
-                        const core::RawAccelerationData &acceleration_data,
+                        const core::RawAccelerometerData &acceleration_data,
                         const core::RawEncoderData &encoder_data,
                         const core::RawKeyenceData &keyence_data,
                         const core::Trajectory &expected_trajectory)

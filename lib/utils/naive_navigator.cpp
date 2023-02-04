@@ -33,10 +33,10 @@ void NaiveNavigator::encoderUpdate(const core::RawEncoderData &encoder_data)
   current_trajectory_.velocity     = encoder_average / (time_since_last_update / core::kOneSecond);
 }
 
-void NaiveNavigator::accelerometerUpdate(const core::RawAccelerationData &acceleration_data)
+void NaiveNavigator::accelerometerUpdate(const core::RawAccelerometerData &acceleration_data)
 {
   core::Float sum = 0.0;
-  for (std::size_t i = 0; i < core::kNumImus; ++i) {
+  for (std::size_t i = 0; i < core::kNumAccelerometers; ++i) {
     core::Float amplitude = 0.0;
     for (std::size_t j = 0; j < core::kNumAxis; ++j) {
       const auto acceleration = acceleration_data.at(i).at(j);
@@ -44,7 +44,10 @@ void NaiveNavigator::accelerometerUpdate(const core::RawAccelerationData &accele
     }
     sum += std::sqrt(amplitude);
   }
-  current_trajectory_.acceleration = sum / static_cast<core::Float>(core::kNumImus);
+  core::Float accelerometer_average = sum / static_cast<core::Float>(core::kNumAccelerometers);
+  current_trajectory_.acceleration  = accelerometer_average;
+  // TODOLater: improve this...
+  current_trajectory_.velocity = 0;
 }
 
 }  // namespace hyped::utils

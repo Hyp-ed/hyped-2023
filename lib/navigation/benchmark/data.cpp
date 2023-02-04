@@ -1,5 +1,9 @@
 #include "data.hpp"
 
+#include <algorithm>
+
+#include "core/types.hpp"
+
 namespace hyped::navigation::benchmark {
 
 std::vector<core::TimePoint> Data::getRelevantTimes() const
@@ -30,7 +34,7 @@ std::optional<core::RawEncoderData> Data::getEncoderDataAt(const core::TimePoint
   return it->second;
 }
 
-std::optional<core::RawAccelerationData> Data::getAccelerationDataAt(
+std::optional<core::RawAccelerometerData> Data::getAccelerationDataAt(
   const core::TimePoint time_point) const
 {
   const auto it = acceleration_data_by_time.find(time_point);
@@ -86,7 +90,7 @@ core::Result DataBuilder::addUniformEncoderData(const std::uint64_t seconds_sinc
 }
 
 core::Result DataBuilder::addAccelerationData(const core::TimePoint &timestamp,
-                                              const core::RawAccelerationData &acceleration_data)
+                                              const core::RawAccelerometerData &acceleration_data)
 {
   const auto was_insertion_successful
     = data_.acceleration_data_by_time.emplace(timestamp, acceleration_data).second;
@@ -103,8 +107,8 @@ core::Result DataBuilder::addUniformAccelerationData(
 {
   const auto timestamp
     = std::chrono::system_clock::time_point(std::chrono::seconds(seconds_since_epoch));
-  core::RawAccelerationData raw_acceleration_data;
-  for (std::size_t i = 0; i < core::kNumImus; ++i) {
+  core::RawAccelerometerData raw_acceleration_data;
+  for (std::size_t i = 0; i < core::kNumAccelerometers; ++i) {
     raw_acceleration_data.at(i) = raw_acceleration;
   }
   return addAccelerationData(timestamp, raw_acceleration_data);

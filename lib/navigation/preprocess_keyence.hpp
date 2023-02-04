@@ -3,21 +3,33 @@
 #include "consts.hpp"
 #include "types.hpp"
 
-#include <array>
-#include <cstdint>
-
+#include "core/logger.hpp"
 #include "core/types.hpp"
 
 namespace hyped::navigation {
 
+enum class KeyenceDataStatus { kAgreed = 0, kDisagreed };
+
 class KeyencePreprocessor {
  public:
-  KeyencePreprocessor();
+  /**
+   * @brief Construct a new Keyence Preprocessor object
+   *
+   * @param log_: Navigation logger
+   */
+  KeyencePreprocessor(core::ILogger &log_);
 
-  KeyenceData processData(const core::RawKeyenceData &keyence_data);
+  /**
+   * @brief Checks that keyences have not disagreed twice in a row.
+   *
+   * @param keyence_data: inputs from Keyence Sensors
+   * @return SensorDisagreement: enum indicating if Keyence Sensors have failed
+   */
+  SensorDisagreement checkKeyenceAgrees(const KeyenceData &keyence_data);
 
  private:
-  bool is_keyence_agreeing_;
+  core::ILogger &log_;
+  KeyenceDataStatus previous_data_status_;
 };
 
 }  // namespace hyped::navigation

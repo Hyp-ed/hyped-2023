@@ -1,4 +1,4 @@
-set(target hyped_test_navgation)
+set(target hyped_test_navigation)
 file(GLOB code "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
 add_executable(${target} ${code})
 target_include_directories(${target}
@@ -8,6 +8,7 @@ target_include_directories(${target}
 )
 target_link_libraries(${target}
     GTest::gtest_main
+    hyped_core
     hyped_navigation
     hyped_utils
 )

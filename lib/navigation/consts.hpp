@@ -16,4 +16,6 @@ static constexpr core::Float kStripeDistance    = 10.0;       // m TODOLater:che
 
 static constexpr core::Trajectory kZeroTrajectory = {0, 0, 0};
 
+inline core::Trajectory zero_trajectory = {0, 0, 0};
+
 }  // namespace hyped::navigation

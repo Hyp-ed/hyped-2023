@@ -23,18 +23,20 @@ class Navigator : public INavigator {
    * @param keyence_data
    */
   void keyenceUpdate(const core::RawKeyenceData &keyence_data);
+
   /**
    * @brief preprocesses encoder data and updates trajectory
    *
    * @param encoder_data
    */
   void encoderUpdate(const core::RawEncoderData &encoder_data);
+
   /**
-   * @brief preprocesses imu data and updates trajectory
+   * @brief preprocesses accelerometer data and updates trajectory
    *
-   * @param acceleration_data
+   * @param accelerometer_data
    */
-  void accelerometerUpdate(const core::RawAccelerationData &acceleration_data);
+  void accelerometerUpdate(const core::RawAccelerometerData &accelerometer_data);
 
  private:
   // previous readings

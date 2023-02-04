@@ -1,4 +1,5 @@
 #include "crosscheck.hpp"
+#include "types.hpp"
 
 namespace hyped::navigation {
 
@@ -7,14 +8,14 @@ Crosscheck::Crosscheck()
   // TODOLater: implement
 }
 
-SensorDisagreement Crosscheck::checkTrajectoryAgreement(const ImuData imu_data,
+SensorDisagreement Crosscheck::checkTrajectoryAgreement(const AccelerometerData accelerometer_data,
                                                         const EncoderData encoders_data,
                                                         const KeyenceData keyence_data)
 {
   /*
   TODOLater: implement
   basically:
-    - checkEncoderImu
+    - checkEncoderAccelerometer
     - checkEncooderKeyence
     - if all good, return true. else false and fail state
 
@@ -24,21 +25,22 @@ SensorDisagreement Crosscheck::checkTrajectoryAgreement(const ImuData imu_data,
   return SensorDisagreement::kAcceptable;
 }
 
-SensorDisagreement checkEncoderImu(const ImuData imu_data, const EncoderData encoders_data)
+SensorDisagreement Crosscheck::checkEncoderAccelerometer(const AccelerometerData accelerometer_data,
+                                                         const EncoderData encoders_data)
 {
   /*
   TODOLater: implement.
   plan:
-  - double integrate imu values (also TODOLater)
+  - double integrate z accelerometer values (also TODOLater)
   - if absolute diff between encoder displacement and
-  imu displacement too high, fail state and return false
+  accelerometer displacement too high, fail state and return false
   - otherwise all good, return true
   */
   return SensorDisagreement::kAcceptable;
 }
 
-SensorDisagreement checkEncoderKeyence(const EncoderData encoder_data,
-                                       const KeyenceData keyence_data)
+SensorDisagreement Crosscheck::checkEncoderKeyence(const EncoderData encoder_data,
+                                                   const KeyenceData keyence_data)
 {
   /*
   TODOLater: implement.
