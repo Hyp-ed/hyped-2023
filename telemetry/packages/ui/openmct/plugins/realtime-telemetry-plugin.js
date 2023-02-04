@@ -1,7 +1,7 @@
 // @ts-nocheck
 /* eslint-disable */
 
-function RealtimeTelemetryPlugin(namespaces) {
+export function RealtimeTelemetryPlugin(namespaces) {
   return function (openmct) {
     const socket = new WebSocket(`ws://${window.location.hostname}:8082`);
     const listeners = {};

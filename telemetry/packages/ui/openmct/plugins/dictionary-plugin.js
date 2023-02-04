@@ -54,7 +54,7 @@ const compositionProvider = function (config) {
   };
 };
 
-const DictionaryPlugin = function (dictionary) {
+export const DictionaryPlugin = function (dictionary) {
   return function install(openmct) {
     openmct.objects.addRoot({
       namespace: dictionary.namespace,

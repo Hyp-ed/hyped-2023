@@ -18,4 +18,14 @@ export default defineConfig({
       },
     },
   },
+  plugins: [
+    viteStaticCopy({
+      targets: [
+        {
+          src: '../../node_modules/openmct/dist/*',
+          dest: 'openmct-lib',
+        }
+      ]
+    })
+  ]
 });

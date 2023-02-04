@@ -1,7 +1,7 @@
 // @ts-nocheck
 /* eslint-disable */
 
-function HistoricalTelemetryPlugin(namespaces) {
+export function HistoricalTelemetryPlugin(namespaces) {
   return function install(openmct) {
     const provider = {
       supportsRequest(domainObject) {
