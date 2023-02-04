@@ -10,6 +10,8 @@ using TimePoint = std::chrono::system_clock::time_point;
 
 TimePoint timePointFromSecondsSinceEpoch(const std::uint64_t num_seconds_since_epoch);
 
+TimePoint timePointFromNanosSinceEpoch(const std::uint64_t num_seconds_since_epoch);
+
 /**
  * @brief Difference between points in time; nanosecond precision.
  */

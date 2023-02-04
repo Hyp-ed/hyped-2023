@@ -105,8 +105,7 @@ core::Result DataBuilder::addUniformAccelerationData(
   const std::uint64_t nanos_since_epoch,
   const std::array<core::Float, core::kNumAxis> raw_acceleration)
 {
-  const auto timestamp
-    = std::chrono::system_clock::time_point(std::chrono::nanoseconds(nanos_since_epoch));
+  const auto timestamp = core::timePointFromNanosSinceEpoch(nanos_since_epoch);
   core::RawAccelerometerData raw_acceleration_data;
   for (std::size_t i = 0; i < core::kNumAccelerometers; ++i) {
     raw_acceleration_data.at(i) = raw_acceleration;
