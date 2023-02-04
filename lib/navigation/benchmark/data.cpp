@@ -128,8 +128,7 @@ core::Result DataBuilder::addKeyenceData(const core::TimePoint &timestamp,
 core::Result DataBuilder::addKeyenceData(const std::uint64_t nanos_since_epoch,
                                          const core::RawKeyenceData &keyence_data)
 {
-  const auto timestamp
-    = std::chrono::system_clock::time_point(std::chrono::nanoseconds(nanos_since_epoch));
+  const auto timestamp = core::timePointFromNanosSinceEpoch(nanos_since_epoch);
   return addKeyenceData(timestamp, keyence_data);
 }
 
@@ -145,11 +144,10 @@ core::Result DataBuilder::addTrajectoryData(const core::TimePoint &timestamp,
   }
 }
 
-core::Result DataBuilder::addTrajectoryData(const std::uint64_t seconds_since_epoch,
+core::Result DataBuilder::addTrajectoryData(const std::uint64_t nanos_since_epoch,
                                             const core::Trajectory &trajectory)
 {
-  const auto timestamp
-    = std::chrono::system_clock::time_point(std::chrono::nanoseconds(seconds_since_epoch));
+  const auto timestamp = core::timePointFromNanosSinceEpoch(nanos_since_epoch);
   return addTrajectoryData(timestamp, trajectory);
 }
 
