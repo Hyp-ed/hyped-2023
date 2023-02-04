@@ -461,7 +461,7 @@ void Repl::addAccelerometerCommands(const std::uint8_t bus, const std::uint8_t d
     return;
   }
   const auto i2c = std::make_shared<io::HardwareI2c>(*optional_i2c);
-  if (device_address != 0x19) {
+  if (device_address != sensors::kDefaultAccelerometerAddress) {
     logger_.log(core::LogLevel::kFatal,
                 "Asking for accelerometer on another address as what is hard coded");
     return;

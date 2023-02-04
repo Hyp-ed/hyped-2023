@@ -46,21 +46,21 @@ using KeyenceData          = std::array<std::uint32_t, kNumKeyence>;
 // data produced by the accelerometer sensor
 // !! the values are in mg !!
 struct RawAccelerationData {
-  RawAccelerationData(const std::int16_t x,
-                      const std::int16_t y,
-                      const std::int16_t z,
-                      const TimePoint time)
+  RawAccelerationData(const std::int32_t x,
+                      const std::int32_t y,
+                      const std::int32_t z,
+                      const TimePoint timePoint)
       : x(x),
         y(y),
         z(z),
-        time(time)
+        timePoint(timePoint)
   {
   }
 
-  const std::int16_t x;
-  const std::int16_t y;
-  const std::int16_t z;
-  const TimePoint time;
+  const std::int32_t x;
+  const std::int32_t y;
+  const std::int32_t z;
+  const TimePoint timePoint;
 };
 
 }  // namespace hyped::core
