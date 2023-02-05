@@ -192,6 +192,12 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
                   "Missing required field 'sensors.accelerometer.bus' in configuration file");
       return std::nullopt;
     }
+    if (!accelerometer.HasMember("device_address")) {
+      logger_.log(
+        core::LogLevel::kFatal,
+        "Missing required field 'sensors.accelerometer.device_address' in configuration file");
+      return std::nullopt;
+    }
     const auto device_address = accelerometer["device_address"].GetUint();
     const auto bus            = accelerometer["bus"].GetUint();
     repl->addAccelerometerCommands(bus, device_address);
@@ -211,6 +217,12 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
     if (!temperature.HasMember("bus")) {
       logger_.log(core::LogLevel::kFatal,
                   "Missing required field 'sensors.temperature.bus' in configuration file");
+      return std::nullopt;
+    }
+    if (!temperature.HasMember("device_address")) {
+      logger_.log(
+        core::LogLevel::kFatal,
+        "Missing required field 'sensors.temperature.device_address' in configuration file");
       return std::nullopt;
     }
     const auto device_address = temperature["device_address"].GetUint();
