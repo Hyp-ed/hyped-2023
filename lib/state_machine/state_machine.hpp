@@ -19,18 +19,18 @@ class StateMachine {
 
   std::optional<Message> handleData();
 
-  Message stringToMessage(const std::string message_name);
+  Message stringToMessage(const std::string &message_name);
 
-  std::string messageToString(const Message message);
+  std::string messageToString(const Message &message);
 
  private:
-  const std::unordered_map<std::string, Message> string_to_message
+  const std::unordered_map<std::string, Message> StringMap
     = {{"mForward", Message::mForward}, {"mFailure", Message::mFailure}};
 
-  const std::unordered_map<Message, std::string> message_to_string
+  const std::unordered_map<Message, std::string> MessageMap
     = {{Message::mForward, "mForward"}, {Message::mFailure, "mFailure"}};
 
-  const boost::unordered_map<SourceAndMessage, State> transitionMap
+  const boost::unordered_map<SourceAndMessage, State> TransitionMap
     = {{{State::kIdle, Message::mForward}, State::kCalibrating},
        {{State::kCalibrating, Message::mForward}, State::kReady},
        {{State::kReady, Message::mForward}, State::kAccelerating},
