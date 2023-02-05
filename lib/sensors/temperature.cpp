@@ -40,9 +40,8 @@ std::optional<std::int16_t> Temperature::read()
       core::LogLevel::kFatal, "Failed to read temperature sensor status at channel %d", channel_);
     return std::nullopt;
   }
-  // TODOLater: change this from a fatal error to a debug and re-prompt read (with ROS)
   if (status_check_result.value() == kBusy) {
-    logger_.log(core::LogLevel::kFatal,
+    logger_.log(core::LogLevel::kWarn,
                 "Failed to read, temperature sensor is not ready to be read at channel %d",
                 channel_);
     return std::nullopt;
