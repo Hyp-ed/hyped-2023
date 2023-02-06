@@ -3,9 +3,6 @@
 namespace hyped::state_machine {
 
 // State class containing all the states
-enum class Message {
-  mForward,
-  mFailure
-};
+enum class Message { mForward, mFailure };
 
 }  // namespace hyped::state_machine
