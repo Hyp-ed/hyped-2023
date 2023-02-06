@@ -17,7 +17,7 @@ export const Checkbox = ({ text, onChange }: CheckboxProps) => {
     <Switch.Group>
       <div className="flex justify-between">
         {/* @ts-ignorenext-line */}
-        <Switch.Label className="mr-4">hello</Switch.Label>
+        <Switch.Label className="mr-4">{text}</Switch.Label>
         <div className="min-w-min">
           <Switch checked={enabled} onChange={setEnabled} as={Fragment}>
             {({ checked }) => (
