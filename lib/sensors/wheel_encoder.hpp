@@ -5,7 +5,7 @@
 #include <optional>
 
 #include <core/logger.hpp>
-#include <io/gpio.hpp>
+#include <io/i2c.hpp>
 
 namespace hyped::sensors {
 
@@ -26,7 +26,7 @@ class WheelEncoder {
   static std::optional<WheelEncoder> create(core::ILogger &logger, io::II2c &i2c, const std::uint8_t channel);
   ~WheelEncoder();
 
-  std::optional<std::uint24_t> getWheelTurnCount();
+  std::optional<std::uint32_t> getWheelTurnCount();
   core::Result resetWheelTurnCount();
 
  private:
