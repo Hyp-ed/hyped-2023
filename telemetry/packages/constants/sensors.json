@@ -1,0 +1,89 @@
+[
+  {
+    "name": "datalogger",
+    "objpath": "datalogger",
+    "measurements": [
+      {
+        "name": "temperature",
+        "objpath": "pod_1.temperature",
+        "options": {
+          "format": "float",
+          "units": "c"
+        },
+        "topic": "hyped.temperature"
+      },
+      {
+        "name": "keyence",
+        "objpath": "pod_1.keyence",
+        "options": {
+          "format": "float",
+          "units": "number of stripes"
+        },
+        "topic": "hyped.keyence"
+      },
+      {
+        "name": "accelerometer",
+        "objpath": "pod_1.accelerometer",
+        "options": {
+          "format": "float",
+          "units": "m/s^2"
+        },
+        "topic": "hyped.accelerometer"
+      },
+      {
+        "name": "keyence",
+        "objpath": "pod_1.keyence",
+        "options": {
+          "format": "float",
+          "units": "number of stripes"
+        },
+        "topic": "hyped.keyence"
+      },
+      {
+        "name": "wheel_encoder",
+        "objpath": "pod_1.wheel_encoder",
+        "options": {
+          "format": "float",
+          "units": "wheel rotations"
+        },
+        "topic": "hyped.wheel_encoder"
+      },
+      {
+        "name": "gyroscope",
+        "objpath": "pod_1.gyroscope",
+        "options": {
+          "format": "float",
+          "units": "°/s"
+        },
+        "topic": "hyped.gyroscope"
+      },
+      {
+        "name": "hall_effect",
+        "objpath": "pod_1.hall_effect",
+        "options": {
+          "format": "float",
+          "units": "teslas"
+        },
+        "topic": "hyped.hall_effect"
+      },
+      {
+        "name": "brake_feedback",
+        "objpath": "pod_1.brake_feedback",
+        "options": {
+          "format": "boolean",
+          "units": "brakes engaged"
+        },
+        "topic": "hyped.brake_feedback"
+      },
+      {
+        "name": "pressure",
+        "objpath": "pod_1.pressure",
+        "options": {
+          "format": "float",
+          "units": "pascals"
+        },
+        "topic": "hyped.pressure"
+      }
+    ]
+  }
+]

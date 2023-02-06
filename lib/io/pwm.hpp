@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <memory>
 #include <optional>
 #include <string>
 
@@ -31,7 +32,13 @@ class Pwm {
    * @param pwm_module the PWM module to use
    * @return a std::optional containing the PWM object if it was created successfully
    */
-  static std::optional<Pwm> create(core::ILogger &logger, const PwmModule pwm_module);
+  static std::optional<std::shared_ptr<Pwm>> create(core::ILogger &logger,
+                                                    const PwmModule pwm_module);
+  Pwm(core::ILogger &logger,
+      const int period_file,
+      const int duty_cycle_file,
+      const int polarity_file,
+      const int enable_file);
   ~Pwm();
 
   /**
@@ -74,12 +81,6 @@ class Pwm {
   core::Result setMode(const Mode mode);
 
  private:
-  Pwm(core::ILogger &logger,
-      const int period_file,
-      const int duty_cycle_file,
-      const int polarity_file,
-      const int enable_file);
-
   /**
    * @brief Get the corect folder name for the chosen PWM module
    * @param pwm_module the PWM module to get the folder name for

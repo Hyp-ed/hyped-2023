@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <cstring>
+#include <memory>
 
 #include <core/logger.hpp>
 #include <core/types.hpp>
@@ -67,12 +68,15 @@ class HardwareSpi : public ISpi {
    * @param bit_order - bit order to be used
    * @param clock  - clock frequency to be used
    */
-  static std::optional<HardwareSpi> create(core::ILogger &logger,
-                                           const SpiBus bus            = SpiBus::kSpi1,
-                                           const SpiMode mode          = SpiMode::kMode3,
-                                           const SpiWordSize word_size = SpiWordSize::kWordSize8,
-                                           const SpiBitOrder bit_order = SpiBitOrder::kMsbFirst,
-                                           const Clock clock           = Clock::k500KHz);
+  static std::optional<std::shared_ptr<HardwareSpi>> create(core::ILogger &logger,
+                                                            const SpiBus bus   = SpiBus::kSpi1,
+                                                            const SpiMode mode = SpiMode::kMode3,
+                                                            const SpiWordSize word_size
+                                                            = SpiWordSize::kWordSize8,
+                                                            const SpiBitOrder bit_order
+                                                            = SpiBitOrder::kMsbFirst,
+                                                            const Clock clock = Clock::k500KHz);
+  HardwareSpi(core::ILogger &logger, const int file_descriptor);
   ~HardwareSpi();
 
   core::Result read(const std::uint8_t register_address,
@@ -83,7 +87,6 @@ class HardwareSpi : public ISpi {
                      const std::uint16_t len);
 
  private:
-  HardwareSpi(core::ILogger &logger, const int file_descriptor);
   /**
    * @brief Get the address of the SPI bus in use
    * @param bus - SPI bus to be used
