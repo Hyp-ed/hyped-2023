@@ -28,6 +28,8 @@ export function DictionaryPlugin() {
     openmct.objects.addRoot({
       namespace: 'hyped',
       key: 'pod_1'
-    })
+    }, openmct.priority.HIGH)
+
+    openmct.types.
   }
 }
