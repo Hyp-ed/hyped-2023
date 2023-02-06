@@ -13,8 +13,8 @@
 
 namespace hyped::io {
 
-std::optional<HardwareI2c> HardwareI2c::create(core::ILogger &logger,
-                                               const std::uint8_t bus_address)
+std::optional<std::shared_ptr<HardwareI2c>> HardwareI2c::create(core::ILogger &logger,
+                                                                const std::uint8_t bus_address)
 {
   char path[13];  // up to "/dev/i2c-2"
   snprintf(path, sizeof(path), "/dev/i2c-%d", bus_address);
@@ -23,14 +23,13 @@ std::optional<HardwareI2c> HardwareI2c::create(core::ILogger &logger,
     logger.log(core::LogLevel::kFatal, "Failed to find i2c device");
     return std::nullopt;
   };
-  return HardwareI2c(logger, file_descriptor);
+  return std::make_shared<HardwareI2c>(logger, file_descriptor);
 }
 
 HardwareI2c::HardwareI2c(core::ILogger &logger, const int file_descriptor)
     : logger_(logger),
       file_descriptor_(file_descriptor),
       sensor_address_(0)
-
 {
 }
 

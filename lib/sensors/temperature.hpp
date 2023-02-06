@@ -3,6 +3,7 @@
 #include "i2c_sensors.hpp"
 
 #include <cstdint>
+#include <memory>
 #include <optional>
 
 #include <core/logger.hpp>
@@ -25,7 +26,7 @@ static constexpr core::Float kTemperatureScaleFactor = 0.01;
 
 class Temperature : public II2cMuxSensor<std::int16_t> {
  public:
-  Temperature(core::ILogger &logger, io::II2c &i2c, const std::uint8_t channel);
+  Temperature(core::ILogger &logger, std::shared_ptr<io::II2c> i2c, const std::uint8_t channel);
   ~Temperature();
 
   core::Result configure();
@@ -34,7 +35,7 @@ class Temperature : public II2cMuxSensor<std::int16_t> {
 
  private:
   core::ILogger &logger_;
-  io::II2c &i2c_;
+  std::shared_ptr<io::II2c> i2c_;
   const std::uint8_t channel_;
 };
 
