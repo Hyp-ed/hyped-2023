@@ -1,4 +1,4 @@
-import { Button, Checkbox, StatusIndicator } from './components';
+import { Button, Checkbox, Logo, StatusIndicator } from './components';
 
 const App = () => {
   const LATENCY = 10; // temp
@@ -61,9 +61,7 @@ const App = () => {
             <Button onClick={stop} colour="red" text="STOP" />
           </div>
         </div>
-        <div className="mx-auto">
-          <img src="/hyped.png" />
-        </div>
+        <Logo />
       </div>
     </main>
   );
