@@ -9,29 +9,30 @@
 namespace hyped::sensors {
 
 // The datasheet lists four possible I2C addresses; 0x40 has been defined as the default
-static constexpr std::uint8_t kdefault_i2c_address = 0x40;
-static constexpr std::uint8_t ki2c_address_2       = 0x41;
-static constexpr std::uint8_t ki2c_address_3       = 0x44;
-static constexpr std::uint8_t ki2c_address_4       = 0x45;
+constexpr std::uint8_t kDefaultI2cAddress = 0x40;
+constexpr std::uint8_t kI2cAddress2       = 0x41;
+constexpr std::uint8_t kI2cAddress3       = 0x44;
+constexpr std::uint8_t kI2cAddress4       = 0x45;
 // Registers with reference to the INA219 driver code
-static constexpr std::uint8_t kcurrent_reg = 0x04;
+constexpr std::uint8_t kCurrentReg = 0x04;
 
 class LowPowerCurrent {
  public:
   static std::optional<LowPowerCurrent> create(core::ILogger &logger,
                                                io::II2c &i2c,
-                                               std::uint8_t channel);
+                                               const std::uint8_t channel);
 
   ~LowPowerCurrent();
 
-  std::optional<float> readCurrent();
+  std::optional<core::Float> readCurrent();
+  std::uint8_t getChannel() const;
 
  private:
-  LowPowerCurrent(core::ILogger &logger, io::II2c &i2c, std::uint8_t channel);
+  LowPowerCurrent(core::ILogger &logger, io::II2c &i2c, const std::uint8_t channel);
 
  private:
   core::ILogger &logger_;
   io::II2c &i2c_;
-  std::uint8_t channel_;
+  const std::uint8_t channel_;
 };
 }  // namespace hyped::sensors
