@@ -1,0 +1,18 @@
+[
+  {
+    "name": "temperature",
+    "openMctIcon": "icon-telemetry"
+  },
+  {
+    "name": "acceleration",
+    "openMctIcon": "icon-telemetry"
+  },
+  {
+    "name": "keyence",
+    "openMctIcon": "icon-telemetry"
+  },
+  {
+    "name": "brake_feedback",
+    "openMctIcon": "icon-telemetry"
+  }
+]
