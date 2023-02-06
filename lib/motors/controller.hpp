@@ -15,6 +15,8 @@
 #include <io/can.hpp>
 
 namespace hyped::motors {
+// every frame sent to the controller contains 8 bytes
+static constexpr std::uint8_t kControllerCanFrameLength = 8;
 enum class ControllerStatus { kControllerTemperatureExceeded, kUnrecoverableWarning, kNominal };
 
 class Controller {
