@@ -66,7 +66,7 @@ class StateMachine {
        {{State::kPECruising, Message::mResume}, State::kCruising},
        {{State::kPEBraking, Message::mResume}, State::kNominalBraking}};
 
- private:
+ public:
   State current_state;
 };
 }  // namespace hyped::state_machine
