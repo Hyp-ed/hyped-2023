@@ -25,8 +25,8 @@ class HardwareCan : public ICan {
   void addProcessor(const std::uint16_t id, std::shared_ptr<ICanProcessor> processor);
 
  private:
-  int socket_;
   core::ILogger &logger_;
+  const int socket_;
   std::unordered_map<std::uint32_t, std::vector<std::shared_ptr<ICanProcessor>>> processors_;
 };
 

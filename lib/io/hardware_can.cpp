@@ -132,7 +132,7 @@ void HardwareCan::addProcessor(const std::uint16_t id, std::shared_ptr<ICanProce
   } else {
     id_and_processors->second.push_back(processor);
   }
-  logger_.log(core::LogLevel::kInfo, "Added processor for id %i", id);
+  logger_.log(core::LogLevel::kDebug, "Added processor for id %i", id);
 }
 
 }  // namespace hyped::io
