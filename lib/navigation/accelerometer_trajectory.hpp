@@ -19,7 +19,7 @@ class AccelerometerTrajectoryEstimator {
    * estimate velocity in the case we have no direct velocity sensors.
    *
    * @param imu_acceleration kalman filtered single value for acceleration
-   * @param imu_timestamp time at which easurement was taken
+   * @param imu_timestamp time at which measurement was taken
    */
   void update(const core::Float imu_acceleration, const core::TimePoint imu_timestamp);
 

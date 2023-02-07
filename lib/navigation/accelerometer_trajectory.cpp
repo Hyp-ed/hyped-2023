@@ -45,4 +45,5 @@ core::Float AccelerometerTrajectoryEstimator::getVelocityEstimate() const
 {
   return velocity_estimate_;
 }
+
 }  // namespace hyped::navigation
