@@ -34,7 +34,19 @@ class Temperature : public II2cMuxSensor<std::int16_t> {
 
   ~Temperature();
 
+  /*
+   * @brief Checks if the temperature sensor is ready to be read
+   * @return kSuccess if the sensor is ready to be read,
+   *         kFailure if the sensor is not ready to be read,
+   *         nullopt if there was an error reading the status register
+   */
+  std::optional<core::Result> isValueReady();
+
+  /**
+   * @brief Reads the temperature from the sensor
+   */
   std::optional<std::int16_t> read();
+
   std::uint8_t getChannel() const;
 
  private:

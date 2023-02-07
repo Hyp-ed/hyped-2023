@@ -32,7 +32,7 @@ Temperature::~Temperature()
 {
 }
 
-std::optional<std::int16_t> Temperature::read()
+std::optional<core::Result> Temperature::isValueReady()
 {
   const auto status_check_result = i2c_->readByte(kTemperatureDefaultAddress, kStatus);
   if (!status_check_result) {
@@ -44,20 +44,25 @@ std::optional<std::int16_t> Temperature::read()
     logger_.log(core::LogLevel::kWarn,
                 "Failed to read, temperature sensor is not ready to be read at channel %d",
                 channel_);
-    return std::nullopt;
+    return core::Result::kFailure;
   }
   if (status_check_result.value() == kTemperatureOverUpperLimit) {
-    logger_.log(core::LogLevel::kFatal,
+    logger_.log(core::LogLevel::kWarn,
                 "Failed to read, temperature is above upper limit at channel %d",
                 channel_);
-    return std::nullopt;
+    return core::Result::kFailure;
   }
   if (status_check_result.value() == kTemperatureUnderLowerLimit) {
-    logger_.log(core::LogLevel::kFatal,
+    logger_.log(core::LogLevel::kWarn,
                 "Failed to read, temperature is below lower limit at channel %d",
                 channel_);
-    return std::nullopt;
+    return core::Result::kFailure;
   }
+  return core::Result::kSuccess;
+}
+
+std::optional<std::int16_t> Temperature::read()
+{
   const auto temperature_high_byte
     = i2c_->readByte(kTemperatureDefaultAddress, kDataTemperatureHigh);
   if (!temperature_high_byte) {

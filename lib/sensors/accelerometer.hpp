@@ -58,7 +58,19 @@ class Accelerometer : public II2cMuxSensor<core::RawAccelerationData> {
                                              = kDefaultAccelerometerAddress);
   ~Accelerometer();
 
+  /*
+   * @brief Checks if the temperature sensor is ready to be read
+   * @return kSuccess if the sensor is ready to be read,
+   *         kFailure if the sensor is not ready to be read,
+   *         nullopt if there was an error reading the status register
+   */
+  std::optional<core::Result> isVaueReady();
+
+  /**
+   * @brief  Reads acceleration from all three axes and returns it as a struct
+   */
   std::optional<core::RawAccelerationData> read();
+
   std::uint8_t getChannel() const;
 
  private:

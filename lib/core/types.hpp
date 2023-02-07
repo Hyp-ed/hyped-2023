@@ -11,6 +11,7 @@ static constexpr float kEpsilon = 0.0001;
 
 enum class DigitalSignal { kLow = 0, kHigh };
 enum class Result { kSuccess = 0, kFailure };
+enum class Axis { kX = 0, kY, kZ };
 
 using Float = float;
 
@@ -43,7 +44,7 @@ using EncoderData          = std::array<std::uint32_t, kNumEncoders>;
 using KeyenceData          = std::array<std::uint32_t, kNumKeyence>;
 
 // data produced by the accelerometer sensor
-// !! the values are in mg !!
+// values are in mg
 struct RawAccelerationData {
   RawAccelerationData(const std::int32_t x,
                       const std::int32_t y,
@@ -61,7 +62,5 @@ struct RawAccelerationData {
   const std::int32_t z;
   const TimePoint measured_at;
 };
-
-enum class Axis { kX = 0, kY, kZ };
 
 }  // namespace hyped::core

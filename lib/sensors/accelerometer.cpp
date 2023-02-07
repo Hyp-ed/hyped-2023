@@ -42,9 +42,7 @@ Accelerometer::~Accelerometer()
 {
 }
 
-// TODOLater: current settings of the accelerometer make it read in +-16g but with high noise. Check
-// whether other configuration could be better
-std::optional<core::RawAccelerationData> Accelerometer::read()
+std::optional<core::Result> Accelerometer::isVaueReady()
 {
   // check to see if the values are ready to be read
   const auto data_ready = i2c_->readByte(kDefaultAccelerometerAddress, kDataReady);
@@ -54,8 +52,15 @@ std::optional<core::RawAccelerationData> Accelerometer::read()
   }
   if (*data_ready % 2 == 0) {
     logger_.log(core::LogLevel::kWarn, "Failed to read acceleration data as it is not ready");
-    return std::nullopt;
+    return core::Result::kFailure;
   }
+  return core::Result::kSuccess;
+}
+
+// TODOLater: current settings of the accelerometer make it read in +-16g but with high noise. Check
+// whether other configuration could be better
+std::optional<core::RawAccelerationData> Accelerometer::read()
+{
   const auto result_x = getRawAcceleration(core::Axis::kX);
   if (!result_x) { return std::nullopt; }
   const std::int32_t x_acceleration = getAccelerationFromRawValue(*result_x);
