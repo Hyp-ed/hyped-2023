@@ -17,14 +17,15 @@ LowPowerCurrent::LowPowerCurrent(core::ILogger &logger, io::II2c &i2c, const std
 
 LowPowerCurrent::~LowPowerCurrent(){};
 
-std::optional<core::Float> LowPowerCurrent::readCurrent()
+std::optional<std::uint8_t> LowPowerCurrent::readCurrent()
 {
-  if (!(i2c_.readByte(channel_, kCurrentReg))) {
+  const auto current = i2c_.readByte(channel_, kCurrentReg);
+  if (!current) {
     logger_.log(core::LogLevel::kFatal, "Failed to read current on channel %d", channel_);
     return std::nullopt;
   }
   logger_.log(core::LogLevel::kDebug, "Current read on channel %d successful", channel_);
-  return i2c_.readByte(channel_, kCurrentReg);
+  return current;
 };
 
 std::uint8_t LowPowerCurrent::getChannel() const

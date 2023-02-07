@@ -24,7 +24,7 @@ class LowPowerCurrent {
 
   ~LowPowerCurrent();
 
-  std::optional<core::Float> readCurrent();
+  std::optional<std::uint8_t> readCurrent();
   std::uint8_t getChannel() const;
 
  private:
