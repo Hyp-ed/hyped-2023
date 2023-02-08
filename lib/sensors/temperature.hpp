@@ -13,7 +13,7 @@ namespace hyped::sensors {
 // Values and register names from data sheet
 constexpr std::uint8_t kTemperatureDefaultAddress = 0x38;
 // Adding this since a singluar temperature sensor may be on a different address
-constexpr std::uint8_t kTemperatureAlternativeAddress = 0x39;
+constexpr std::uint8_t kTemperatureAlternativeAddress = 0x3F;
 constexpr std::uint8_t kCtrl                          = 0x04;
 constexpr std::uint8_t kDataTemperatureHigh           = 0x07;
 constexpr std::uint8_t kDataTemperatureLow            = 0x06;
