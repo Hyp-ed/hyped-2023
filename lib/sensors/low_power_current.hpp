@@ -16,6 +16,8 @@ constexpr std::uint8_t kI2cAddress4       = 0x45;
 // Registers with reference to the INA219 driver code
 constexpr std::uint8_t kCurrentReg = 0x04;
 
+constexpr std::uint16_t kAmpsDivisor = 1000;
+
 class LowPowerCurrent {
  public:
   static std::optional<LowPowerCurrent> create(core::ILogger &logger,
@@ -24,7 +26,7 @@ class LowPowerCurrent {
 
   ~LowPowerCurrent();
 
-  std::optional<std::uint8_t> readCurrent();
+  std::optional<core::Float> readCurrent();
   std::uint8_t getChannel() const;
 
  private:
