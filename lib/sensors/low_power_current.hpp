@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <memory>
 #include <optional>
 
 #include <core/logger.hpp>
@@ -21,7 +22,7 @@ constexpr std::uint16_t kAmpsDivisor = 1000;
 class LowPowerCurrent {
  public:
   static std::optional<LowPowerCurrent> create(core::ILogger &logger,
-                                               io::II2c &i2c,
+                                               std::shared_ptr<io::II2c> i2c,
                                                const std::uint8_t channel);
 
   ~LowPowerCurrent();
@@ -30,11 +31,11 @@ class LowPowerCurrent {
   std::uint8_t getChannel() const;
 
  private:
-  LowPowerCurrent(core::ILogger &logger, io::II2c &i2c, const std::uint8_t channel);
+  LowPowerCurrent(core::ILogger &logger, std::shared_ptr<io::II2c> i2c, const std::uint8_t channel);
 
  private:
   core::ILogger &logger_;
-  io::II2c &i2c_;
+  std::shared_ptr<io::II2c> i2c_;
   const std::uint8_t channel_;
 };
 }  // namespace hyped::sensors
