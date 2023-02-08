@@ -554,8 +554,8 @@ std::optional<std::shared_ptr<io::II2c>> Repl::getI2C(const std::uint8_t bus)
   if (i2c == i2c_.end()) {
     const auto new_i2c = io::HardwareI2c::create(logger_, bus);
     if (!new_i2c) { return std::nullopt; }
-    i2c_.emplace(bus, std::move(*new_i2c));
-    return new_i2c;
+    i2c_.emplace(bus, *new_i2c);
+    return *new_i2c;
   }
   return i2c->second;
 }
