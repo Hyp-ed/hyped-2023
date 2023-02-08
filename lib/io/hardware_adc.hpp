@@ -7,8 +7,12 @@
 #include <memory>
 
 #include <core/logger.hpp>
+#include <core/types.hpp>
 
 namespace hyped::io {
+
+constexpr std::uint16_t kMaxAdcRawValue = 4095;
+constexpr core::Float kMaxAdcVolatage   = 1.8;
 
 class HardwareAdc : public IAdc {
  public:

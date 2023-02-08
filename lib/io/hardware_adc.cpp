@@ -55,7 +55,8 @@ std::optional<std::uint16_t> HardwareAdc::resetAndRead4(const int file_descripto
     return std::nullopt;
   }
   const int raw_voltage = std::atoi(read_buffer);
-  return static_cast<std::uint16_t>(raw_voltage);  // max value is 2^12-1 = 4095
+  // convert raw voltage to voltage between [0, 1.8]
+  return static_cast<std::uint16_t>((raw_voltage / kMaxAdcRawValue) * kMaxAdcVolatage);
 }
 
 }  // namespace hyped::io
