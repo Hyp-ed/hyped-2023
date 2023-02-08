@@ -271,7 +271,7 @@ void Repl::addHelpCommand()
 
 void Repl::addAdcCommands(const std::uint8_t pin)
 {
-  const auto optional_adc = io::Adc::create(logger_, pin);
+  const auto optional_adc = io::HardwareAdc::create(logger_, pin);
   if (!optional_adc) {
     logger_.log(core::LogLevel::kFatal, "Failed to create ADC instance on pin %d", pin);
     return;

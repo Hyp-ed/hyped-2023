@@ -5,7 +5,8 @@
 
 namespace hyped::io {
 
-std::optional<std::shared_ptr<Adc>> Adc::create(core::ILogger &logger, const std::uint8_t pin)
+std::optional<std::shared_ptr<HardwareAdc>> HardwareAdc::create(core::ILogger &logger,
+                                                                const std::uint8_t pin)
 {
   char buf[100];
   snprintf(buf, sizeof(buf), "/sys/bus/iio/devices/iio:device0/in_voltage%i_raw", pin);
@@ -15,21 +16,21 @@ std::optional<std::shared_ptr<Adc>> Adc::create(core::ILogger &logger, const std
     return std::nullopt;
   }
   logger.log(core::LogLevel::kDebug, "Successfully created Adc instance");
-  return std::make_shared<Adc>(logger, file_descriptor);
+  return std::make_shared<HardwareAdc>(logger, file_descriptor);
 }
 
-Adc::Adc(core::ILogger &logger, const int file_descriptor)
+HardwareAdc::HardwareAdc(core::ILogger &logger, const int file_descriptor)
     : logger_(logger),
       file_descriptor_(file_descriptor)
 {
 }
 
-Adc::~Adc()
+HardwareAdc::~HardwareAdc()
 {
   close(file_descriptor_);
 }
 
-std::optional<std::uint16_t> Adc::readValue()
+std::optional<std::uint16_t> HardwareAdc::readValue()
 {
   const std::optional<std::uint16_t> raw_voltage = resetAndRead4(file_descriptor_);
   if (raw_voltage) {
@@ -40,7 +41,7 @@ std::optional<std::uint16_t> Adc::readValue()
   return std::nullopt;
 }
 
-std::optional<std::uint16_t> Adc::resetAndRead4(const int file_descriptor)
+std::optional<std::uint16_t> HardwareAdc::resetAndRead4(const int file_descriptor)
 {
   const auto offset = lseek(file_descriptor, 0, SEEK_SET);  // reset file pointer
   if (offset != 0) {

@@ -10,15 +10,16 @@
 
 namespace hyped::io {
 
-class Adc : public IAdc {
+class HardwareAdc : public IAdc {
  public:
   /**
    * @brief Creates an Adc instance
    * @param pin is one of the 6 analogue input pins on the bbb
    */
-  static std::optional<std::shared_ptr<Adc>> create(core::ILogger &logger, const std::uint8_t pin);
-  Adc(core::ILogger &logger, const int file_descriptor);
-  ~Adc();
+  static std::optional<std::shared_ptr<HardwareAdc>> create(core::ILogger &logger,
+                                                            const std::uint8_t pin);
+  HardwareAdc(core::ILogger &logger, const int file_descriptor);
+  ~HardwareAdc();
 
   std::optional<std::uint16_t> readValue();
 
