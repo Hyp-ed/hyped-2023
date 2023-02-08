@@ -5,7 +5,7 @@
 
 namespace hyped::io {
 
-std::optional<Adc> Adc::create(core::ILogger &logger, const std::uint8_t pin)
+std::optional<std::shared_ptr<Adc>> Adc::create(core::ILogger &logger, const std::uint8_t pin)
 {
   char buf[100];
   snprintf(buf, sizeof(buf), "/sys/bus/iio/devices/iio:device0/in_voltage%i_raw", pin);
@@ -15,7 +15,7 @@ std::optional<Adc> Adc::create(core::ILogger &logger, const std::uint8_t pin)
     return std::nullopt;
   }
   logger.log(core::LogLevel::kDebug, "Successfully created Adc instance");
-  return Adc(logger, file_descriptor);
+  return std::make_shared<Adc>(logger, file_descriptor);
 }
 
 Adc::Adc(core::ILogger &logger, const int file_descriptor)
