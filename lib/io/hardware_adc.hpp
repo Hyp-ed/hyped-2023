@@ -12,7 +12,7 @@
 namespace hyped::io {
 
 constexpr std::uint16_t kMaxAdcRawValue = 4095;
-constexpr core::Float kMaxAdcVolatage   = 1.8;
+constexpr core::Float kMaxAdcVoltage    = 1.8;
 
 class HardwareAdc : public IAdc {
  public:
