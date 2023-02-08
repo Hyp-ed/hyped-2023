@@ -10,7 +10,7 @@
 
 namespace hyped::debug {
 
-Repl::Repl(core::ILogger &logger) : logger_(logger)
+Repl::Repl(core::ILogger &logger) : logger_(logger), i2c_()
 {
 }
 
@@ -264,7 +264,7 @@ void Repl::addAdcCommands(const std::uint8_t pin)
 
 void Repl::addI2cCommands(const std::uint8_t bus)
 {
-  const auto optional_i2c = io::HardwareI2c::create(logger_, bus);
+  const auto optional_i2c = getI2C(bus);
   if (!optional_i2c) {
     logger_.log(core::LogLevel::kFatal, "Failed to create I2C instance on bus %d", bus);
     return;
@@ -546,6 +546,18 @@ void Repl::addUartCommands(const std::uint8_t bus)
     };
     addCommand(uart_write_command);
   }
+}
+
+std::optional<std::shared_ptr<io::II2c>> Repl::getI2C(const std::uint8_t bus)
+{
+  const auto i2c = i2c_.find(bus);
+  if (i2c == i2c_.end()) {
+    const auto new_i2c = io::HardwareI2c::create(logger_, bus);
+    if (!new_i2c) { return std::nullopt; }
+    i2c_.emplace(bus, i2c);
+    return new_i2c;
+  }
+  return i2c->second;
 }
 
 }  // namespace hyped::debug
