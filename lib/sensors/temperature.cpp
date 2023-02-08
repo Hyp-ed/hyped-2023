@@ -47,16 +47,16 @@ std::optional<core::Result> Temperature::isValueReady()
     return core::Result::kFailure;
   }
   if (status_check_result.value() == kTemperatureOverUpperLimit) {
-    logger_.log(core::LogLevel::kWarn,
+    logger_.log(core::LogLevel::kFatal,
                 "Failed to read, temperature is above upper limit at channel %d",
                 channel_);
-    return core::Result::kFailure;
+    return std::nullopt;
   }
   if (status_check_result.value() == kTemperatureUnderLowerLimit) {
-    logger_.log(core::LogLevel::kWarn,
+    logger_.log(core::LogLevel::kFatal,
                 "Failed to read, temperature is below lower limit at channel %d",
                 channel_);
-    return core::Result::kFailure;
+    return std::nullopt;
   }
   return core::Result::kSuccess;
 }

@@ -13,20 +13,17 @@ namespace hyped::sensors {
 // TODOLater: Implement this properly
 class Thermistor {
  public:
-  static std::optional<Thermistor> create(core::ILogger &logger,
-                                          std::shared_ptr<io::IAdc> adc,
-                                          const std::uint8_t new_pin);
+  static std::optional<Thermistor> create(core::ILogger &logger, std::shared_ptr<io::IAdc> adc);
   ~Thermistor();
 
   std::uint16_t getTemperature();
 
  private:
-  Thermistor(core::ILogger &logger, std::shared_ptr<io::IAdc> adc, const std::uint8_t new_pin);
+  Thermistor(core::ILogger &logger, std::shared_ptr<io::IAdc> adc);
 
  private:
   core::ILogger &logger_;
   std::shared_ptr<io::IAdc> adc_;
-  std::uint8_t pin_;
 };
 
 }  // namespace hyped::sensors

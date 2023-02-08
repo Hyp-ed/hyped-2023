@@ -10,11 +10,11 @@ std::optional<Accelerometer> Accelerometer::create(core::ILogger &logger,
   // check we are communicating with the correct sensor
   const auto device_id = i2c->readByte(device_address, kDeviceIdAddress);
   if (!device_id) {
-    logger.log(core::LogLevel::kFatal, "Failure to read device id of accelerometer");
+    logger.log(core::LogLevel::kFatal, "Failed to read the accelerometer device ID");
     return std::nullopt;
   }
   if (*device_id != kExpectedDeviceIdValue) {
-    logger.log(core::LogLevel::kFatal, "Failure accelerometer didn't give correct device id");
+    logger.log(core::LogLevel::kFatal, "Failure, mismatched device ID for accelerometer");
     return std::nullopt;
   }
   const core::Result ctrl1_result
@@ -42,7 +42,7 @@ Accelerometer::~Accelerometer()
 {
 }
 
-std::optional<core::Result> Accelerometer::isVaueReady()
+std::optional<core::Result> Accelerometer::isValueReady()
 {
   // check to see if the values are ready to be read
   const auto data_ready = i2c_->readByte(kDefaultAccelerometerAddress, kDataReady);

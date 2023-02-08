@@ -64,7 +64,7 @@ class Accelerometer : public II2cMuxSensor<core::RawAccelerationData> {
    *         kFailure if the sensor is not ready to be read,
    *         nullopt if there was an error reading the status register
    */
-  std::optional<core::Result> isVaueReady();
+  std::optional<core::Result> isValueReady();
 
   /**
    * @brief  Reads acceleration from all three axes and returns it as a struct

@@ -16,18 +16,16 @@ namespace hyped::sensors {
  */
 class I2cConverter {
  public:
-  static std::optional<I2cConverter> create(core::ILogger &logger,
-                                            const std::uint8_t device_address);
+  static std::optional<I2cConverter> create(core::ILogger &logger);
   ~I2cConverter();
 
   std::uint8_t getAddress();
 
  private:
-  I2cConverter(const std::uint8_t device_address);
+  I2cConverter();
 
  private:
   core::ILogger &logger_;
-  std::uint8_t address_;
 };
 
 }  // namespace hyped::sensors
