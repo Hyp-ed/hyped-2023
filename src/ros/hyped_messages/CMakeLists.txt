@@ -10,9 +10,10 @@ find_package(rosidl_default_generators REQUIRED)
 
 
 rosidl_generate_interfaces(${PROJECT_NAME}
-  "msg/State.msg"
   "msg/Acceleration.msg"
+  "msg/State.msg"
   "msg/Trajectory.msg"
+  "msg/IMUs.msg"
 )
 ament_export_dependencies(rosidl_default_runtime)
 
