@@ -1,0 +1,3 @@
+float32 displacement
+float32 velocity
+float32 acceleration
