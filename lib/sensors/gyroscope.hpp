@@ -3,6 +3,7 @@
 #include "i2c_sensors.hpp"
 
 #include <cstdint>
+#include <memory>
 #include <optional>
 
 #include <core/logger.hpp>
@@ -11,38 +12,44 @@
 namespace hyped::sensors {
 
 // Registers taken from the data sheet
-static constexpr std::uint8_t kDefaultGyroscopeAddress = 0x69;
-static constexpr std::uint8_t kDataXHigh               = 0x29;
-static constexpr std::uint8_t kDataXLow                = 0x28;
-static constexpr std::uint8_t kDataYHigh               = 0x2B;
-static constexpr std::uint8_t kDataYLow                = 0x2A;
-static constexpr std::uint8_t kDataZHigh               = 0x2D;
-static constexpr std::uint8_t kDataZLow                = 0x2C;
-static constexpr std::uint8_t kCtrl1                   = 0x20;
-static constexpr std::uint8_t kCtrl2                   = 0x21;
-static constexpr std::uint8_t kCtrl3                   = 0x22;
-static constexpr std::uint8_t kCtrl5                   = 0x24;
-static constexpr std::uint8_t kConfigurationSetting1   = 0xff;
-static constexpr std::uint8_t kConfigurationSetting2   = 0x20;
-static constexpr std::uint8_t kConfigurationSetting3   = 0xff;
-static constexpr std::uint8_t kConfigurationSetting5   = 0x40;
+constexpr std::uint8_t kDefaultGyroscopeAddress = 0x69;
+constexpr std::uint8_t kDataXHigh               = 0x29;
+constexpr std::uint8_t kDataXLow                = 0x28;
+constexpr std::uint8_t kDataYHigh               = 0x2B;
+constexpr std::uint8_t kDataYLow                = 0x2A;
+constexpr std::uint8_t kDataZHigh               = 0x2D;
+constexpr std::uint8_t kDataZLow                = 0x2C;
+constexpr std::uint8_t kCtrl1                   = 0x20;
+constexpr std::uint8_t kCtrl2                   = 0x21;
+constexpr std::uint8_t kCtrl3                   = 0x22;
+constexpr std::uint8_t kCtrl5                   = 0x24;
+constexpr std::uint8_t kConfigurationSetting1   = 0xff;
+constexpr std::uint8_t kConfigurationSetting2   = 0x20;
+constexpr std::uint8_t kConfigurationSetting3   = 0xff;
+constexpr std::uint8_t kConfigurationSetting5   = 0x40;
 
 class Gyroscope {
  public:
   static std::optional<Gyroscope> create(core::ILogger &logger,
-                                         io::II2c &i2c,
-                                         const std::uint8_t channel);
+                                         std::shared_ptr<io::II2c> i2c,
+                                         const std::uint8_t channel,
+                                         const std::uint8_t device_address
+                                         = kDefaultGyroscopeAddress);
   ~Gyroscope();
 
   const std::optional<std::int16_t> read(core::Axis axis);
   std::uint8_t getChannel() const;
 
  private:
-  Gyroscope(core::ILogger &logger, io::II2c &i2c, const std::uint8_t channel);
+  Gyroscope(core::ILogger &logger,
+            std::shared_ptr<io::II2c> i2c,
+            const std::uint8_t channel,
+            const std::uint8_t device_address);
 
   core::ILogger &logger_;
-  io::II2c &i2c_;
+  std::shared_ptr<io::II2c> i2c_;
   const std::uint8_t channel_;
+  const std::uint8_t device_address_;
 };
 
 }  // namespace hyped::sensors

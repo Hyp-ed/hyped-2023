@@ -29,6 +29,11 @@
 				"enabled": true,
 				"bus": 2,
 				"device_address": 25
+			},
+			"gyroscope": {
+				"enabled": true,
+				"bus": 2,
+				"device_address": 105
 			}
 		}
 	}
