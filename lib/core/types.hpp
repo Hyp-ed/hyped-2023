@@ -44,7 +44,7 @@ using EncoderData          = std::array<std::uint32_t, kNumEncoders>;
 using KeyenceData          = std::array<std::uint32_t, kNumKeyence>;
 
 // data produced by the accelerometer sensor
-// values are in mg
+// values are in milli-g (standard gravity)
 struct RawAccelerationData {
   RawAccelerationData(const std::int32_t x,
                       const std::int32_t y,
