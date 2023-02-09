@@ -7,7 +7,7 @@
 class MinimalPublisher : public rclcpp::Node {
  public:
   MinimalPublisher(hyped::core::ILogger &logger)
-      : Node("minimal_publisher"),
+      : Node("random_data_publisher"),
         minimum_(0),
         maximum_(10),
         count_(0),

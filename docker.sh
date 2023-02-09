@@ -45,7 +45,7 @@ if [ "$1" = "container" ]; then
     fi
   else
     echo "[!] $CONTAINER_NAME container does not exist"
-    docker run -it -v $(pwd):/home/hyped -v /dev:/dev --name $CONTAINER_NAME $IMAGE_NAME bash
+    docker run -it -v $(pwd):/home/hyped --name $CONTAINER_NAME $IMAGE_NAME bash
   fi
 elif [ "$1" = "pod" ]; then
   echo "[>] Running pod"
