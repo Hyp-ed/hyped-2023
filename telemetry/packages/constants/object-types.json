@@ -1,18 +1,22 @@
 [
   {
-    "name": "temperature",
+    "id": "temperature",
+    "name": "Temperature",
     "icon": "icon-telemetry"
   },
   {
-    "name": "acceleration",
+    "id": "acceleration",
+    "name": "Acceleration",
     "icon": "icon-telemetry"
   },
   {
-    "name": "keyence",
+    "id": "keyence",
+    "name": "Keyence",
     "icon": "icon-telemetry"
   },
   {
-    "name": "brake_feedback",
+    "id": "brake_feedback",
+    "name": "Brake Feedback",
     "icon": "icon-telemetry"
   }
 ]
