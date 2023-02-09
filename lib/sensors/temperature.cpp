@@ -16,15 +16,17 @@ std::optional<Temperature> Temperature::create(core::ILogger &logger,
   }
   logger.log(
     core::LogLevel::kDebug, "Successful to configure temperature sensor at channel %d", channel);
-  return Temperature(logger, i2c, channel);
+  return Temperature(logger, i2c, channel, device_address);
 }
 
 Temperature::Temperature(core::ILogger &logger,
                          std::shared_ptr<io::II2c> i2c,
-                         const std::uint8_t channel)
+                         const std::uint8_t channel,
+                         const std::uint8_t device_address)
     : logger_(logger),
       i2c_(i2c),
-      channel_(channel)
+      channel_(channel),
+      device_address_(device_address)
 {
 }
 
@@ -34,7 +36,7 @@ Temperature::~Temperature()
 
 std::optional<core::Result> Temperature::isValueReady()
 {
-  const auto status_check_result = i2c_->readByte(kTemperatureDefaultAddress, kStatus);
+  const auto status_check_result = i2c_->readByte(device_address_, kStatus);
   if (!status_check_result) {
     logger_.log(
       core::LogLevel::kFatal, "Failed to read temperature sensor status at channel %d", channel_);
@@ -63,14 +65,13 @@ std::optional<core::Result> Temperature::isValueReady()
 
 std::optional<std::int16_t> Temperature::read()
 {
-  const auto temperature_high_byte
-    = i2c_->readByte(kTemperatureDefaultAddress, kDataTemperatureHigh);
+  const auto temperature_high_byte = i2c_->readByte(device_address_, kDataTemperatureHigh);
   if (!temperature_high_byte) {
     logger_.log(
       core::LogLevel::kFatal, "Failed to read high byte for temperature at channel %d", channel_);
     return std::nullopt;
   }
-  const auto temperature_low_byte = i2c_->readByte(kTemperatureDefaultAddress, kDataTemperatureLow);
+  const auto temperature_low_byte = i2c_->readByte(device_address_, kDataTemperatureLow);
   if (!temperature_low_byte) {
     logger_.log(
       core::LogLevel::kFatal, "Failed to read low byte for temperature at channel %d", channel_);

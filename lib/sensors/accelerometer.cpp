@@ -18,23 +18,25 @@ std::optional<Accelerometer> Accelerometer::create(core::ILogger &logger,
     return std::nullopt;
   }
   const core::Result ctrl1_result
-    = i2c->writeByteToRegister(kDefaultAccelerometerAddress, kCtrl1Address, kCtrl1Value);
+    = i2c->writeByteToRegister(device_address, kCtrl1Address, kCtrl1Value);
   if (ctrl1_result == core::Result::kFailure) { return std::nullopt; };
   const core::Result ctrl2_result
-    = i2c->writeByteToRegister(kDefaultAccelerometerAddress, kCtrl2Address, kCtrl2Value);
+    = i2c->writeByteToRegister(device_address, kCtrl2Address, kCtrl2Value);
   if (ctrl2_result == core::Result::kFailure) { return std::nullopt; };
   const core::Result ctrl6_result
-    = i2c->writeByteToRegister(kDefaultAccelerometerAddress, kCtrl6Address, kCtrl6Value);
+    = i2c->writeByteToRegister(device_address, kCtrl6Address, kCtrl6Value);
   if (ctrl6_result == core::Result::kFailure) { return std::nullopt; };
-  return Accelerometer(logger, i2c, channel);
+  return Accelerometer(logger, i2c, channel, device_address);
 }
 
 Accelerometer::Accelerometer(core::ILogger &logger,
                              std::shared_ptr<io::II2c> i2c,
-                             const std::uint8_t channel)
+                             const std::uint8_t channel,
+                             const std::uint8_t device_address)
     : logger_(logger),
       i2c_(i2c),
-      channel_(channel)
+      channel_(channel),
+      device_address_(device_address)
 {
 }
 
@@ -45,7 +47,7 @@ Accelerometer::~Accelerometer()
 std::optional<core::Result> Accelerometer::isValueReady()
 {
   // check to see if the values are ready to be read
-  const auto data_ready = i2c_->readByte(kDefaultAccelerometerAddress, kDataReady);
+  const auto data_ready = i2c_->readByte(device_address_, kDataReady);
   if (!data_ready) {
     logger_.log(core::LogLevel::kFatal, "Failed to read acceleration data");
     return std::nullopt;
@@ -85,14 +87,14 @@ std::uint8_t Accelerometer::getChannel() const
 std::optional<std::int16_t> Accelerometer::getRawAcceleration(const core::Axis axis)
 {
   setRegisterAddressFromAxis(axis);
-  const auto low_byte = i2c_->readByte(kDefaultAccelerometerAddress, low_byte_address_);
+  const auto low_byte = i2c_->readByte(device_address_, low_byte_address_);
   if (!low_byte) {
     logger_.log(core::LogLevel::kFatal,
                 "Failed to read the low byte for acceleration along the %s",
                 kAxisLabels[static_cast<std::size_t>(axis)]);
     return std::nullopt;
   }
-  const auto high_byte = i2c_->readByte(kDefaultAccelerometerAddress, high_byte_address_);
+  const auto high_byte = i2c_->readByte(device_address_, high_byte_address_);
   if (!high_byte) {
     logger_.log(core::LogLevel::kFatal,
                 "Failed to read the high byte for acceleration along the %s",

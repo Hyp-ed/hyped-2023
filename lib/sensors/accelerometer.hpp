@@ -75,7 +75,10 @@ class Accelerometer : public II2cMuxSensor<core::RawAccelerationData> {
   std::uint8_t getChannel() const;
 
  private:
-  Accelerometer(core::ILogger &logger, std::shared_ptr<io::II2c> i2c, const std::uint8_t channel);
+  Accelerometer(core::ILogger &logger,
+                std::shared_ptr<io::II2c> i2c,
+                const std::uint8_t channe,
+                const std::uint8_t device_address);
   std::optional<std::int16_t> getRawAcceleration(const core::Axis axis);
   std::int32_t getAccelerationFromRawValue(const std::int16_t rawAcceleration);
   void setRegisterAddressFromAxis(const core::Axis axis);
@@ -86,6 +89,7 @@ class Accelerometer : public II2cMuxSensor<core::RawAccelerationData> {
   const std::uint8_t channel_;
   std::uint8_t low_byte_address_;
   std::uint8_t high_byte_address_;
+  const std::uint8_t device_address_;
 };
 
 }  // namespace hyped::sensors
