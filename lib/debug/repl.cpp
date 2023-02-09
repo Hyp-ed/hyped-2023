@@ -290,7 +290,7 @@ void Repl::addAdcCommands(const std::uint8_t pin)
       logger_.log(core::LogLevel::kFatal, "Failed to read from ADC pin %d", pin);
       return;
     }
-    logger_.log(core::LogLevel::kDebug, "ADC value from pin %d: %d", pin, *value);
+    logger_.log(core::LogLevel::kDebug, "ADC value from pin %d: %f", pin, *value);
   };
   addCommand(adc_read_command);
 }

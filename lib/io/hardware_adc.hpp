@@ -25,14 +25,14 @@ class HardwareAdc : public IAdc {
   HardwareAdc(core::ILogger &logger, const int file_descriptor);
   ~HardwareAdc();
 
-  std::optional<std::uint16_t> readValue();
+  std::optional<core::Float> readValue();
 
  private:
   /**
    * @param    file_descriptor specifying the file voltage values are read from
    * @return   std::uint16_t returns two bytes of current voltage data
    */
-  std::optional<std::uint16_t> resetAndRead4(const int file_descriptor);
+  std::optional<core::Float> resetAndRead4(const int file_descriptor);
 
  private:
   core::ILogger &logger_;

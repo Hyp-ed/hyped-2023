@@ -30,9 +30,9 @@ HardwareAdc::~HardwareAdc()
   close(file_descriptor_);
 }
 
-std::optional<std::uint16_t> HardwareAdc::readValue()
+std::optional<core::Float> HardwareAdc::readValue()
 {
-  const std::optional<std::uint16_t> raw_voltage = resetAndRead4(file_descriptor_);
+  const std::optional<core::Float> raw_voltage = resetAndRead4(file_descriptor_);
   if (raw_voltage) {
     logger_.log(
       core::LogLevel::kDebug, "Raw voltage from ADC pin %d: %i", pin_, raw_voltage.value());
@@ -41,7 +41,7 @@ std::optional<std::uint16_t> HardwareAdc::readValue()
   return std::nullopt;
 }
 
-std::optional<std::uint16_t> HardwareAdc::resetAndRead4(const int file_descriptor)
+std::optional<core::Float> HardwareAdc::resetAndRead4(const int file_descriptor)
 {
   const auto offset = lseek(file_descriptor, 0, SEEK_SET);  // reset file pointer
   if (offset != 0) {
@@ -56,7 +56,7 @@ std::optional<std::uint16_t> HardwareAdc::resetAndRead4(const int file_descripto
   }
   const int raw_voltage = std::atoi(read_buffer);
   // convert raw voltage to voltage between [0, 1.8] in V
-  return static_cast<std::uint16_t>((raw_voltage / kMaxAdcRawValue) * kMaxAdcVoltage);
+  return static_cast<core::Float>((raw_voltage / kMaxAdcRawValue) * kMaxAdcVoltage);
 }
 
 }  // namespace hyped::io
