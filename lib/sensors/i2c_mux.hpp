@@ -109,13 +109,12 @@ core::Result I2cMux<T, N>::selectChannel(const std::uint8_t channel)
   }
   const std::uint8_t channel_buffer = 1 << channel;
   const auto i2c_write_result       = i2c_->writeByte(mux_address_, channel_buffer);
-  if (i2c_write_result == core::Result::kSuccess) {
-    logger_.log(core::LogLevel::kInfo, "I2c Mux Channel %d selected", channel);
-    return core::Result::kSuccess;
-  } else {
+  if (i2c_write_result == core::Result::kFailure) {
     logger_.log(core::LogLevel::kFatal, "Failed to select i2c mux channel %d", channel);
     return core::Result::kFailure;
   }
+  logger_.log(core::LogLevel::kInfo, "I2c Mux Channel %d selected", channel);
+  return core::Result::kSuccess;
 }
 
 template<typename T, std::uint8_t N>
@@ -123,13 +122,12 @@ core::Result I2cMux<T, N>::closeAllChannels()
 {
   const std::uint8_t clear_channel_buffer = 0x00;
   const auto i2c_write_result             = i2c_->writeByte(mux_address_, clear_channel_buffer);
-  if (i2c_write_result == core::Result::kSuccess) {
-    logger_.log(core::LogLevel::kInfo, "All i2c mux channels closed");
-    return core::Result::kSuccess;
-  } else {
+  if (i2c_write_result == core::Result::kFailure) {
     logger_.log(core::LogLevel::kFatal, "Failed to close all i2c mux channels");
     return core::Result::kFailure;
   }
+  logger_.log(core::LogLevel::kInfo, "All i2c mux channels closed");
+  return core::Result::kSuccess;
 }
 
 }  // namespace hyped::sensors
