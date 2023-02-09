@@ -1,8 +1,11 @@
 #pragma once
 
+#include <cstdint>
 #include <functional>
 #include <iostream>
 #include <map>
+#include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
