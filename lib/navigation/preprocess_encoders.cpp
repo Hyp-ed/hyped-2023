@@ -69,21 +69,18 @@ std::optional<core::EncoderData> EncodersPreprocessor::sanitise(
     return std::nullopt;
   }
   auto sanitised_data = encoder_data;
-  for(std::size_t i = 0; i< sanitised_data.size(); ++i){
-    if(sanitised_data.at(i) > statistics->upper_bound
-       || sanitised_data.at(i) < statistics->lower_bound || !are_encoders_reliable_.at(i) ){
-          ++num_consecutive_outliers_per_encoder_.at(i);
-           sanitised_data.at(i) = statistics->median;
-       }
-    else{
-     num_consecutive_outliers_per_encoder_.at(i) = 0;
-   }
+  for (std::size_t i = 0; i < sanitised_data.size(); ++i) {
+    if (sanitised_data.at(i) > statistics->upper_bound
+        || sanitised_data.at(i) < statistics->lower_bound || !are_encoders_reliable_.at(i)) {
+      ++num_consecutive_outliers_per_encoder_.at(i);
+      sanitised_data.at(i) = statistics->median;
+    } else {
+      num_consecutive_outliers_per_encoder_.at(i) = 0;
+    }
   }
   if (checkReliable() == SensorChecks::kUnacceptable) { return std::nullopt; }
-  for(std::size_t i = 0; i < are_encoders_reliable_.size(); ++i){
-    if(!are_encoders_reliable_.at(i)){
-       sanitised_data.at(i) = statistics->median;
-    }
+  for (std::size_t i = 0; i < are_encoders_reliable_.size(); ++i) {
+    if (!are_encoders_reliable_.at(i)) { sanitised_data.at(i) = statistics->median; }
   }
   return sanitised_data;
 }
