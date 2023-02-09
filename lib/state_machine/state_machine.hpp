@@ -24,13 +24,13 @@ class StateMachine {
   std::string messageToString(const Message &message);
 
  private:
-  const std::unordered_map<std::string, Message> StringMap
+  const std::unordered_map<std::string, Message> string_to_message_
     = {{"mForward", Message::mForward}, {"mFailure", Message::mFailure}};
 
-  const std::unordered_map<Message, std::string> MessageMap
+  const std::unordered_map<Message, std::string> message_to_string_
     = {{Message::mForward, "mForward"}, {Message::mFailure, "mFailure"}};
 
-  const boost::unordered_map<SourceAndMessage, State> TransitionMap
+  const boost::unordered_map<SourceAndMessage, State> transition_to_state_
     = {{{State::kIdle, Message::mForward}, State::kCalibrating},
        {{State::kCalibrating, Message::mForward}, State::kReady},
        {{State::kReady, Message::mForward}, State::kAccelerating},
