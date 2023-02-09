@@ -19,8 +19,6 @@ class I2cConverter {
   static std::optional<I2cConverter> create(core::ILogger &logger);
   ~I2cConverter();
 
-  std::uint8_t getAddress();
-
  private:
   I2cConverter();
 

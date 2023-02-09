@@ -16,8 +16,6 @@ class Thermistor {
   static std::optional<Thermistor> create(core::ILogger &logger, std::shared_ptr<io::IAdc> adc);
   ~Thermistor();
 
-  std::uint16_t getTemperature();
-
  private:
   Thermistor(core::ILogger &logger, std::shared_ptr<io::IAdc> adc);
 
