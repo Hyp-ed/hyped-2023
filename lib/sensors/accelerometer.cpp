@@ -70,12 +70,9 @@ std::optional<core::RawAccelerationData> Accelerometer::read()
   const auto result_z               = getRawAcceleration(core::Axis::kZ);
   if (!result_z) { return std::nullopt; }
   const std::int32_t z_acceleration = getAccelerationFromRawValue(*result_z);
+  core::WallClock time;
   const std::optional<core::RawAccelerationData> acceleration_3_axis{
-    std::in_place,
-    x_acceleration,
-    y_acceleration,
-    z_acceleration,
-    std::chrono::system_clock::now()};
+    std::in_place, x_acceleration, y_acceleration, z_acceleration, time.now()};
   logger_.log(core::LogLevel::kDebug, "Successfully read accelerometer data");
   return acceleration_3_axis;
 }

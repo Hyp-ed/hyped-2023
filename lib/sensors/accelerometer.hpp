@@ -10,6 +10,7 @@
 
 #include <core/logger.hpp>
 #include <core/types.hpp>
+#include <core/wall_clock.hpp>
 #include <io/i2c.hpp>
 
 namespace hyped::sensors {
