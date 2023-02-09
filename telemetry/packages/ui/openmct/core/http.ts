@@ -7,7 +7,7 @@ export const http = ky.create({
     beforeRequest: [
       (request) => {
         if (HTTP_DEBUG) console.log('Request:', request)
-      } 
+    } 
     ],
     afterResponse: [
       (request, options, response) => {

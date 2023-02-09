@@ -30,6 +30,6 @@ export function DictionaryPlugin() {
       key: 'pod_1'
     }, openmct.priority.HIGH)
 
-    openmct.types.
+    // openmct.types.
   }
 }
