@@ -99,14 +99,16 @@ std::optional<core::CanFrame> Controller::parseJsonCanFrame(
   const uint16_t index = message["index"].GetInt();
   new_message.data[0]  = index && 0xFF;
   new_message.data[1]  = index && 0xFF00;
-  new_message.data[2]  = message["subindex"].GetInt();
-  new_message.data[3]  = 0;  // padding
+  // subindex doesn't need converted
+  new_message.data[2] = message["subindex"].GetInt();
+  // padding
+  new_message.data[3] = 0;
   // convert data to little endian
   const uint32_t data = message["data"].GetInt();
-  new_message.data[4] = index && 0xFF;
-  new_message.data[5] = index && 0xFF00;
-  new_message.data[6] = index && 0xFF0000;
-  new_message.data[7] = index && 0xFF000000;
+  new_message.data[4] = data && 0xFF;
+  new_message.data[5] = data && 0xFF00;
+  new_message.data[6] = data && 0xFF0000;
+  new_message.data[7] = data && 0xFF000000;
   return new_message;
 }
 
