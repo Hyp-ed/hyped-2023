@@ -27,8 +27,8 @@ std::optional<core::Float> LowPowerCurrent::readCurrent()
     return std::nullopt;
   }
   logger_.log(core::LogLevel::kDebug, "Current read on channel %d successful", channel_);
-  // Return current in Amps
-  return (core::Float)byte.value() / kAmpsDivisor;
+  // Divide milliAmps output by 1,000 to return Amps value
+  return static_cast<core::Float>(byte.value() / 1000);
 };
 
 std::uint8_t LowPowerCurrent::getChannel() const
