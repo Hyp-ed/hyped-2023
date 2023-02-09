@@ -1,7 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { DictionaryService } from './Dictionary.service';
 
-@Controller('dictionary')
+@Controller('openmct/dictionary')
 export class DictionaryController {
   constructor(private dictionaryService: DictionaryService) {}
 
