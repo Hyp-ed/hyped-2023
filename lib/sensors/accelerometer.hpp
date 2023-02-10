@@ -77,7 +77,7 @@ class Accelerometer : public II2cMuxSensor<core::RawAccelerationData> {
  private:
   Accelerometer(core::ILogger &logger,
                 std::shared_ptr<io::II2c> i2c,
-                const std::uint8_t channe,
+                const std::uint8_t channel,
                 const std::uint8_t device_address);
   std::optional<std::int16_t> getRawAcceleration(const core::Axis axis);
   std::int32_t getAccelerationFromRawValue(const std::int16_t rawAcceleration);

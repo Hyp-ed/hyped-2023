@@ -17,14 +17,11 @@ std::optional<Accelerometer> Accelerometer::create(core::ILogger &logger,
     logger.log(core::LogLevel::kFatal, "Failure, mismatched device ID for accelerometer");
     return std::nullopt;
   }
-  const core::Result ctrl1_result
-    = i2c->writeByteToRegister(device_address, kCtrl1Address, kCtrl1Value);
+  const auto ctrl1_result = i2c->writeByteToRegister(device_address, kCtrl1Address, kCtrl1Value);
   if (ctrl1_result == core::Result::kFailure) { return std::nullopt; };
-  const core::Result ctrl2_result
-    = i2c->writeByteToRegister(device_address, kCtrl2Address, kCtrl2Value);
+  const auto ctrl2_result = i2c->writeByteToRegister(device_address, kCtrl2Address, kCtrl2Value);
   if (ctrl2_result == core::Result::kFailure) { return std::nullopt; };
-  const core::Result ctrl6_result
-    = i2c->writeByteToRegister(device_address, kCtrl6Address, kCtrl6Value);
+  const auto ctrl6_result = i2c->writeByteToRegister(device_address, kCtrl6Address, kCtrl6Value);
   if (ctrl6_result == core::Result::kFailure) { return std::nullopt; };
   return Accelerometer(logger, i2c, channel, device_address);
 }

@@ -12,7 +12,7 @@ namespace hyped::sensors {
 
 constexpr std::uint8_t kDefaultMuxAddress = 0x70;
 constexpr std::uint8_t kMaxNumChannels    = 8;
-// perentage of sensors that can be unusable before the mux is considered unusable
+// percentage of sensors that can be unusable before the mux is considered unusable
 constexpr core::Float kFailureThreshold = 0.25;  // TODOLater: finalize this value with Electronics
 
 /**

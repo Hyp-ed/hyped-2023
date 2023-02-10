@@ -3,8 +3,8 @@
 #include <cstdint>
 #include <optional>
 
-#include "io/i2c.hpp"
 #include <core/logger.hpp>
+#include <io/i2c.hpp>
 
 namespace hyped::sensors {
 
