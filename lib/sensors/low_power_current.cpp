@@ -15,25 +15,29 @@ LowPowerCurrent::LowPowerCurrent(core::ILogger &logger,
                                  const std::uint8_t channel)
     : logger_(logger),
       channel_(channel),
-      i2c_(i2c){};
+      i2c_(i2c)
+{
+}
 
-LowPowerCurrent::~LowPowerCurrent(){};
+LowPowerCurrent::~LowPowerCurrent()
+{
+}
 
 std::optional<core::Float> LowPowerCurrent::readCurrent()
 {
-  const auto byte = i2c_->readByte(channel_, kCurrentReg);
+  const auto byte = i2c_->readByte(channel_, kCurrentRegister);
   if (!byte) {
     logger_.log(core::LogLevel::kFatal, "Failed to read current on channel %d", channel_);
     return std::nullopt;
   }
   logger_.log(core::LogLevel::kDebug, "Current read on channel %d successful", channel_);
   // Divide milliAmps output by 1,000 to return Amps value
-  return static_cast<core::Float>(byte.value() / 1000);
-};
+  return static_cast<core::Float>(*byte) / 1000;
+}
 
 std::uint8_t LowPowerCurrent::getChannel() const
 {
   return channel_;
-};
+}
 
 }  // namespace hyped::sensors

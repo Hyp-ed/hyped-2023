@@ -5,6 +5,7 @@
 #include <optional>
 
 #include <core/logger.hpp>
+#include <core/types.hpp>
 #include <io/i2c.hpp>
 
 namespace hyped::sensors {
@@ -15,7 +16,7 @@ constexpr std::uint8_t kI2cAddress2       = 0x41;
 constexpr std::uint8_t kI2cAddress3       = 0x44;
 constexpr std::uint8_t kI2cAddress4       = 0x45;
 // Registers with reference to the INA219 driver code
-constexpr std::uint8_t kCurrentReg = 0x04;
+constexpr std::uint8_t kCurrentRegister = 0x04;
 
 class LowPowerCurrent {
  public:
