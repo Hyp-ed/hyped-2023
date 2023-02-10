@@ -1,8 +1,8 @@
-import { Button, Checkbox, Logo, StatusIndicator } from './components';
+import { Button, Toggle, Logo, StatusIndicator } from './components';
 
 const App = () => {
   const LATENCY = 10; // temp
-  const STATUS: 'connected' | 'disconnected' | 'connecting' = 'connecting';
+  const STATUS: 'connected' | 'disconnected' | 'connecting' = 'connected';
 
   /**
    * Starts pod
@@ -39,19 +39,19 @@ const App = () => {
       className={`px-4 py-8 flex flex-col justify-between h-full bg-[#393939] text-white select-none text-gray-100`}
     >
       <div className="flex flex-col justify-between h-full">
-        <div>
+        <div className="space-y-2">
           <StatusIndicator status={STATUS} />
           <p>
             <span className="italic">Latency: </span>
             <span className="text-sm">{LATENCY} ms</span>
           </p>
-          <h1 className="text-4xl font-black">Controls</h1>
+          <h1 className="text-5xl font-title font-black">Controls</h1>
         </div>
         <div>
           <div className="flex flex-col gap-4 mb-16">
-            <p className="text-xl font-bold">Options:</p>
-            <Checkbox onChange={toggleMotorCooling} text="Motor Cooling" />
-            <Checkbox
+            <p className="text-2xl font-bold">Options:</p>
+            <Toggle onChange={toggleMotorCooling} text="Motor Cooling" />
+            <Toggle
               onChange={toggleActiveSuspension}
               text="Active Suspension"
             />

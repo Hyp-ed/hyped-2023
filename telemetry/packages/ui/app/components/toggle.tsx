@@ -1,12 +1,12 @@
 import { Switch } from '@headlessui/react';
 import { Fragment, useEffect, useState } from 'react';
 
-export interface CheckboxProps {
+export interface ToggleProps {
   text: string;
   onChange: (active: boolean) => void;
 }
 
-export const Checkbox = ({ text, onChange }: CheckboxProps) => {
+export const Toggle = ({ text, onChange }: ToggleProps) => {
   const [enabled, setEnabled] = useState(false);
 
   useEffect(() => {
