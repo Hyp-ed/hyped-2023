@@ -2,6 +2,7 @@
 
 namespace hyped::sensors {
 
+// TODO: Implement failure state for create
 std::optional<LowPowerCurrent> LowPowerCurrent::create(core::ILogger &logger,
                                                        std::shared_ptr<io::II2c> i2c,
                                                        const std::uint8_t channel
