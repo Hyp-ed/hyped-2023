@@ -531,9 +531,8 @@ void Repl::addGyroscopeCommands(const std::uint8_t bus, const std::uint8_t devic
         break;
       }
       default: {
-        logger_.log(core::LogLevel::kFatal,
-                    "Failed to read recognise the gyroscope axis that was inputted from bus %d",
-                    bus);
+        logger_.log(
+          core::LogLevel::kFatal, "Failed to read gyroscope due to invalid axis from bus %d", bus);
       }
     }
 

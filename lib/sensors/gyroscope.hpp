@@ -7,6 +7,7 @@
 #include <optional>
 
 #include <core/logger.hpp>
+#include <core/types.hpp>
 #include <io/i2c.hpp>
 
 namespace hyped::sensors {

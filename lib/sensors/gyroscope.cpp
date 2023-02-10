@@ -33,11 +33,10 @@ const std::optional<std::int16_t> Gyroscope::read(core::Axis axis)
           core::LogLevel::kFatal, "Failed to read gyroscope X-axis low at channel %d", channel_);
         return std::nullopt;
       }
-      const auto x_axis = ((gyroscope_x_high_byte.value() << 8) | gyroscope_x_low_byte.value());
+      const auto x_axis = ((*gyroscope_x_high_byte << 8) | *gyroscope_x_low_byte);
       logger_.log(
         core::LogLevel::kDebug, "Successfully read x-axis from gyroscope at channel %d", channel_);
-      // Todo figure out what type needs to be returned for all axis
-      return static_cast<uint16_t>(x_axis * 0.00875);
+      return static_cast<std::uint16_t>(x_axis * 0.00875);
     }
     case core::Axis::kY: {
       const auto gyroscope_y_high_byte = i2c_->readByte(device_address_, kDataYHigh);
@@ -52,10 +51,10 @@ const std::optional<std::int16_t> Gyroscope::read(core::Axis axis)
           core::LogLevel::kFatal, "Failed to read gyroscope Y-axis low at channel %d", channel_);
         return std::nullopt;
       }
-      const auto y_axis = ((gyroscope_y_high_byte.value() << 8) | gyroscope_y_low_byte.value());
+      const auto y_axis = ((*gyroscope_y_high_byte << 8) | *gyroscope_y_low_byte);
       logger_.log(
         core::LogLevel::kDebug, "Successfully read y-axis from gyroscope at channel %d", channel_);
-      return static_cast<uint16_t>(y_axis * 0.00875);
+      return static_cast<std::uint16_t>(y_axis * 0.00875);
     }
     case core::Axis::kZ: {
       const auto gyroscope_z_high_byte = i2c_->readByte(device_address_, kDataZHigh);
@@ -70,17 +69,16 @@ const std::optional<std::int16_t> Gyroscope::read(core::Axis axis)
           core::LogLevel::kFatal, "Failed to read gyroscope Z-axis low at channel %d", channel_);
         return std::nullopt;
       }
-      const auto z_axis = ((gyroscope_z_high_byte.value() << 8) | gyroscope_z_low_byte.value());
+      const auto z_axis = ((*gyroscope_z_high_byte << 8) | *gyroscope_z_low_byte);
       logger_.log(
         core::LogLevel::kDebug, "Successfully read z-axis from gyroscope at channel %d", channel_);
-      return static_cast<uint16_t>(z_axis * 0.00875);
+      return static_cast<std::uint16_t>(z_axis * 0.00875);
     }
     default: {
       logger_.log(core::LogLevel::kFatal, "Gave an invalid axis");
       return std::nullopt;
     }
   }
-
 }
 
 std::optional<Gyroscope> Gyroscope::create(core::ILogger &logger,
@@ -88,35 +86,35 @@ std::optional<Gyroscope> Gyroscope::create(core::ILogger &logger,
                                            const std::uint8_t channel,
                                            const std::uint8_t device_address)
 {
-  const core::Result write_result_from_Ctrl1
+  const core::Result write_result_from_ctrl1
     = i2c->writeByteToRegister(device_address, kCtrl1, kConfigurationSetting1);
-  if (write_result_from_Ctrl1 == core::Result::kFailure) {
+  if (write_result_from_ctrl1 == core::Result::kFailure) {
     logger.log(
       core::LogLevel::kFatal,
       "Failed to configure the power mode setting in first control gyroscope at channel %d",
       channel);
     return std::nullopt;
   }
-  const core::Result write_result_from_Ctrl2
+  const core::Result write_result_from_ctrl2
     = i2c->writeByteToRegister(device_address, kCtrl2, kConfigurationSetting2);
-  if (write_result_from_Ctrl2 == core::Result::kFailure) {
+  if (write_result_from_ctrl2 == core::Result::kFailure) {
     logger.log(core::LogLevel::kFatal,
                "Failed to configure the High pass filter in second control gyroscope at channel %d",
                channel);
     return std::nullopt;
   }
-  const core::Result write_result_from_Ctrl3
+  const core::Result write_result_from_ctrl3
     = i2c->writeByteToRegister(device_address, kCtrl3, kConfigurationSetting3);
-  if (write_result_from_Ctrl3 == core::Result::kFailure) {
+  if (write_result_from_ctrl3 == core::Result::kFailure) {
     logger.log(
       core::LogLevel::kFatal,
       "Failed to configure the Boot and Interrupts in third control gyroscope at channel %d",
       channel);
     return std::nullopt;
   }
-  const core::Result write_result_from_Ctrl5
+  const core::Result write_result_from_ctrl5
     = i2c->writeByteToRegister(device_address, kCtrl5, kConfigurationSetting5);
-  if (write_result_from_Ctrl5 == core::Result::kFailure) {
+  if (write_result_from_ctrl5 == core::Result::kFailure) {
     logger.log(core::LogLevel::kFatal,
                "Failed to enable FIFO in fifth control gyroscope at channel %d",
                channel);
