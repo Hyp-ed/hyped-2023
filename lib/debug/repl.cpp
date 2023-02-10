@@ -564,7 +564,7 @@ void Repl::addAccelerometerCommands(const std::uint8_t bus, const std::uint8_t d
   accelerometer_read_command.handler     = [this, accelerometer, bus]() {
     const auto value = accelerometer->read();
     if (!value) {
-      logger_.log(core::LogLevel::kFatal, "Failed to read accelerometer from bus %d", bus);
+      logger_.log(core::LogLevel::kFatal, "Failed to read the accelerometer from bus %d", bus);
     } else {
       const core::RawAccelerationData accelerometer_result = *value;
       logger_.log(core::LogLevel::kInfo,
@@ -599,7 +599,7 @@ void Repl::addTemperatureCommands(const std::uint8_t bus, const std::uint8_t dev
   temperature_read_command.handler     = [this, temperature, bus]() {
     const auto value = temperature->read();
     if (!value) {
-      logger_.log(core::LogLevel::kFatal, "Failed to read accelerometer from bus %d", bus);
+      logger_.log(core::LogLevel::kFatal, "Failed to read the temperature sensor from bus %d", bus);
     } else {
       const std::int16_t temperature_result = *value;
       logger_.log(core::LogLevel::kInfo, "Temperature in degrees Celsius: %d", temperature_result);
