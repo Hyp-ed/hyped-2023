@@ -17,20 +17,16 @@ namespace hyped::sensors {
 
 constexpr std::string_view kAxisLabels[3] = {"x-axis", "y-axis", "z-axis"};
 
-// ! these values come from the datasheet
-
+// these values come from the datasheet
 constexpr std::uint8_t kDefaultAccelerometerAddress = 0x19;
-
-constexpr std::uint8_t kCtrl1Address = 0x20;
+constexpr std::uint8_t kCtrl1Address                = 0x20;
 // Sampling rate of 200 Hz
 // Enable high performance mode
-constexpr std::uint8_t kCtrl1Value = 0x64;
-
+constexpr std::uint8_t kCtrl1Value   = 0x64;
 constexpr std::uint8_t kCtrl2Address = 0x21;
 // Enable block data update
 // Enable address auto increment
-constexpr std::uint8_t kCtrl2Value = 0x0;
-
+constexpr std::uint8_t kCtrl2Value   = 0x0;
 constexpr std::uint8_t kCtrl6Address = 0x25;
 // Full scale +-16g
 // Filter bandwidth = ODR/2
