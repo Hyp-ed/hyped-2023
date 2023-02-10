@@ -4,12 +4,12 @@ namespace hyped::state_machine {
 
 // State class containing all the states
 enum class Message {
-  mForward,
-  mFailure,
-  mFailureBrake,
-  mMotorBrake,
-  mFrictionBrake,
-  mNominalBrake
+  kNextNominalState,
+  kFailure,
+  kFailureBrake,
+  kMotorBrake,
+  kFrictionBrake,
+  kNominalBrake
 };
 
 }  // namespace hyped::state_machine

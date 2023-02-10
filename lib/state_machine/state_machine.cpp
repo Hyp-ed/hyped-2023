@@ -3,10 +3,10 @@
 namespace hyped::state_machine {
 
 // TODOLater implement
-std::optional<Message> StateMachine::handleData()
+std::optional<Message> StateMachine::checkTransition()
 {
   /*
-  check if a transition is needed with current data
+  check if a transition is needed with current data from ros node
   then run transition to move to next state
   return transition message or no transition
   */
@@ -21,14 +21,12 @@ void StateMachine::handleMessage(const Message message)
 
 Message StateMachine::stringToMessage(const std::string &message_name)
 {
-  Message message = string_to_message_.at(message_name);
-  return message;
+  return string_to_message_.at(message_name);
 }
 
 std::string StateMachine::messageToString(const Message &message)
 {
-  std::string message_name = message_to_string_.at(message);
-  return message_name;
+  return message_to_string_.at(message);
 }
 
 }  // namespace hyped::state_machine

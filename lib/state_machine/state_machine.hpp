@@ -15,9 +15,10 @@ class StateMachine {
  public:
   StateMachine() { current_state = State::kIdle; };
 
-  void handleMessage(const Message message);
+  // TODOLater handle ros messages and transition accordingly
+  std::optional<Message> checkTransition();
 
-  std::optional<Message> handleData();
+  void handleMessage(const Message message);
 
   Message stringToMessage(const std::string &message_name);
 
@@ -25,35 +26,35 @@ class StateMachine {
 
  private:
   const std::unordered_map<std::string, Message> string_to_message_
-    = {{"mForward", Message::mForward}, {"mFailure", Message::mFailure}};
+    = {{"kNextNominalState", Message::kNextNominalState}, {"kFailure", Message::kFailure}};
 
   const std::unordered_map<Message, std::string> message_to_string_
-    = {{Message::mForward, "mForward"}, {Message::mFailure, "mFailure"}};
+    = {{Message::kNextNominalState, "kNextNominalState"}, {Message::kFailure, "kFailure"}};
 
   const boost::unordered_map<SourceAndMessage, State> transition_to_state_
-    = {{{State::kIdle, Message::mForward}, State::kCalibrating},
-       {{State::kCalibrating, Message::mForward}, State::kReady},
-       {{State::kReady, Message::mForward}, State::kAccelerating},
-       {{State::kAccelerating, Message::mForward}, State::kCruising},
-       {{State::kCruising, Message::mForward}, State::kNominalBraking},
-       {{State::kNominalBraking, Message::mForward}, State::kStopped},
-       {{State::kStopped, Message::mForward}, State::kOff},
-       {{State::kAccelerating, Message::mFailureBrake}, State::kFailureBraking},
-       {{State::kAccelerating, Message::mMotorBrake}, State::kMotorBraking},
-       {{State::kAccelerating, Message::mFrictionBrake}, State::kFrictionBraking},
-       {{State::kCruising, Message::mFailureBrake}, State::kFailureBraking},
-       {{State::kCruising, Message::mFrictionBrake}, State::kFrictionBraking},
-       {{State::kCruising, Message::mMotorBrake}, State::kMotorBraking},
-       {{State::kNominalBraking, Message::mMotorBrake}, State::kMotorBraking},
-       {{State::kNominalBraking, Message::mFrictionBrake}, State::kFrictionBraking},
-       {{State::kNominalBraking, Message::mFailureBrake}, State::kFailureBraking},
-       {{State::kMotorBraking, Message::mFailureBrake}, State::kFailureBraking},
-       {{State::kMotorBraking, Message::mFrictionBrake}, State::kFrictionBraking},
-       {{State::kMotorBraking, Message::mFailure}, State::kFailureStopped},
-       {{State::kFrictionBraking, Message::mFailureBrake}, State::kFailureBraking},
-       {{State::kFrictionBraking, Message::mFailure}, State::kFailureStopped},
-       {{State::kFailureBraking, Message::mFailure}, State::kFailureStopped},
-       {{State::kFailureStopped, Message::mFailure}, State::kOff}};
+    = {{{State::kIdle, Message::kNextNominalState}, State::kCalibrating},
+       {{State::kCalibrating, Message::kNextNominalState}, State::kReady},
+       {{State::kReady, Message::kNextNominalState}, State::kAccelerating},
+       {{State::kAccelerating, Message::kNextNominalState}, State::kCruising},
+       {{State::kCruising, Message::kNextNominalState}, State::kNominalBraking},
+       {{State::kNominalBraking, Message::kNextNominalState}, State::kStopped},
+       {{State::kStopped, Message::kNextNominalState}, State::kOff},
+       {{State::kAccelerating, Message::kFailureBrake}, State::kFailureBraking},
+       {{State::kAccelerating, Message::kMotorBrake}, State::kMotorBraking},
+       {{State::kAccelerating, Message::kFrictionBrake}, State::kFrictionBraking},
+       {{State::kCruising, Message::kFailureBrake}, State::kFailureBraking},
+       {{State::kCruising, Message::kFrictionBrake}, State::kFrictionBraking},
+       {{State::kCruising, Message::kMotorBrake}, State::kMotorBraking},
+       {{State::kNominalBraking, Message::kMotorBrake}, State::kMotorBraking},
+       {{State::kNominalBraking, Message::kFrictionBrake}, State::kFrictionBraking},
+       {{State::kNominalBraking, Message::kFailureBrake}, State::kFailureBraking},
+       {{State::kMotorBraking, Message::kFailureBrake}, State::kFailureBraking},
+       {{State::kMotorBraking, Message::kFrictionBrake}, State::kFrictionBraking},
+       {{State::kMotorBraking, Message::kFailure}, State::kFailureStopped},
+       {{State::kFrictionBraking, Message::kFailureBrake}, State::kFailureBraking},
+       {{State::kFrictionBraking, Message::kFailure}, State::kFailureStopped},
+       {{State::kFailureBraking, Message::kFailure}, State::kFailureStopped},
+       {{State::kFailureStopped, Message::kFailure}, State::kOff}};
 
   State current_state;
 };
