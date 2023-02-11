@@ -1,5 +1,7 @@
 #pragma once
 
+#include <functional>
+
 #include <io/i2c.hpp>
 
 namespace hyped::utils {
@@ -13,14 +15,29 @@ namespace hyped::utils {
  */
 class DummyI2c : public io::II2c {
  public:
-  DummyI2c();
+  using ReadHandler = std::function<std::optional<std::uint8_t>(
+    const std::uint8_t device_address, const std::uint8_t register_address)>;
+  using WriteByteHandler
+    = std::function<core::Result(const std::uint8_t device_address, const std::uint8_t data)>;
+  using WriteByteToRegisterHandler = std::function<core::Result(const std::uint8_t device_address,
+                                                                const std::uint8_t register_address,
+                                                                const std::uint8_t data)>;
 
-  virtual std::optional<std::uint8_t> readByte(const std::uint8_t device_address,
-                                               const std::uint8_t register_address);
-  virtual core::Result writeByteToRegister(const std::uint8_t device_address,
-                                           const std::uint8_t register_address,
-                                           const std::uint8_t data);
-  virtual core::Result writeByte(const std::uint8_t device_address, const std::uint8_t data);
+  DummyI2c(ReadHandler read_handler,
+           WriteByteHandler write_byte_handler,
+           WriteByteToRegisterHandler write_byte_to_register_handler);
+
+  std::optional<std::uint8_t> readByte(const std::uint8_t device_address,
+                                       const std::uint8_t register_address);
+  core::Result writeByteToRegister(const std::uint8_t device_address,
+                                   const std::uint8_t register_address,
+                                   const std::uint8_t data);
+  core::Result writeByte(const std::uint8_t device_address, const std::uint8_t data);
+
+ private:
+  ReadHandler read_handler_;
+  WriteByteHandler write_byte_handler_;
+  WriteByteToRegisterHandler write_byte_to_register_handler_;
 };
 
 }  // namespace hyped::utils
