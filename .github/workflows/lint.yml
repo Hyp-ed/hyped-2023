@@ -19,7 +19,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Run todo check
         run: |
-          if grep -rE -n 'TODO|FIXME' * | grep -v 'TODOLater'; then
+          if grep -riE -n 'TODO|FIXME' * | grep -v -i 'TODOLater'; then
             exit 1
           else
             echo "All good"
@@ -45,7 +45,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Run check for extra hyped namespace prefix
         run: |
-          if grep -rE -n "hyped::" | grep -v "namespace"; then
+          if grep -riE -n "hyped::" | grep -v "namespace"; then
             echo "[ERROR] found redundant hyped:: prefix"
             exit 1
           fi
