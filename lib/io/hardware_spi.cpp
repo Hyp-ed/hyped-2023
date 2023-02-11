@@ -122,15 +122,15 @@ std::uint32_t HardwareSpi::getClockValue(SpiClock clock)
 {
   switch (clock) {
     case SpiClock::k500KHz:
-      return 500000;
+      return 500'000;
     case SpiClock::k1MHz:
-      return 1000000;
+      return 1'000'000;
     case SpiClock::k4MHz:
-      return 4000000;
+      return 4'000'000;
     case SpiClock::k16MHz:
-      return 16000000;
+      return 16'000'000;
     case SpiClock::k20MHz:
-      return 20000000;
+      return 20'000'000;
     default:  // for compiler
       return 0;
   }

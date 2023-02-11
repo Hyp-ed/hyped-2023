@@ -8,8 +8,9 @@ namespace hyped::io {
 std::optional<std::shared_ptr<HardwareAdc>> HardwareAdc::create(core::ILogger &logger,
                                                                 const std::uint8_t pin)
 {
-  if (pin < 0 || pin > 6) {
-    logger.log(core::LogLevel::kFatal, "Failed to create HardwareAdc object: invalid pin");
+  // Seven analogue input pins on the BBB (0-indexed)
+  if (pin > 6) {
+    logger.log(core::LogLevel::kFatal, "Failed to create HardwareAdc object: invalid pin %d", pin);
     return std::nullopt;
   }
   char buf[100];
@@ -37,11 +38,12 @@ HardwareAdc::~HardwareAdc()
 std::optional<core::Float> HardwareAdc::readValue()
 {
   const auto raw_voltage = resetAndRead4(file_descriptor_);
-  if (raw_voltage) {
-    logger_.log(core::LogLevel::kDebug, "Raw voltage from ADC pin %d: %i", pin_, *raw_voltage);
-    return *raw_voltage;
+  if (!raw_voltage) {
+    logger_.log(core::LogLevel::kFatal, "Failed to read voltage from ADC");
+    return std::nullopt;
   }
-  return std::nullopt;
+  logger_.log(core::LogLevel::kDebug, "Raw voltage from ADC pin %d: %i", pin_, *raw_voltage);
+  return *raw_voltage;
 }
 
 std::optional<core::Float> HardwareAdc::resetAndRead4(const int file_descriptor)

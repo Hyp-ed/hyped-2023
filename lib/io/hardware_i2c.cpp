@@ -16,7 +16,8 @@ namespace hyped::io {
 std::optional<std::shared_ptr<HardwareI2c>> HardwareI2c::create(core::ILogger &logger,
                                                                 const std::uint8_t bus)
 {
-  if (bus < 0 || bus > 2) {
+  // Three I2C buses on the BBB (0-indexed)
+  if (bus > 2) {
     logger.log(core::LogLevel::kFatal, "Failed to create HardwareI2c object: invalid bus");
     return std::nullopt;
   }

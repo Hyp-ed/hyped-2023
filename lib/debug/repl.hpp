@@ -7,7 +7,6 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <vector>
 
 #include <core/logger.hpp>
 #include <io/hardware_adc.hpp>
