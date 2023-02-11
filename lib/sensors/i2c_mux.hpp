@@ -83,7 +83,7 @@ std::optional<std::array<T, N>> I2cMux<T, N>::readAllChannels()
       ++num_unusable_sensors;
       continue;
     }
-    mux_data.at(i)                    = sensor_data.value();
+    mux_data.at(i)                    = *sensor_data;
     const auto closing_channel_result = closeAllChannels();
     if (closing_channel_result == core::Result::kFailure) {
       logger_.log(core::LogLevel::kFatal, "Failed to close all i2c mux channels while reading");

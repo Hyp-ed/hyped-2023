@@ -42,19 +42,19 @@ std::optional<core::Result> Temperature::isValueReady()
       core::LogLevel::kFatal, "Failed to read temperature sensor status at channel %d", channel_);
     return std::nullopt;
   }
-  if (status_check_result.value() == kBusy) {
+  if (*status_check_result == kBusy) {
     logger_.log(core::LogLevel::kWarn,
                 "Failed to read, temperature sensor is not ready to be read at channel %d",
                 channel_);
     return core::Result::kFailure;
   }
-  if (status_check_result.value() == kTemperatureOverUpperLimit) {
+  if (*status_check_result == kTemperatureOverUpperLimit) {
     logger_.log(core::LogLevel::kFatal,
                 "Failed to read, temperature is above upper limit at channel %d",
                 channel_);
     return std::nullopt;
   }
-  if (status_check_result.value() == kTemperatureUnderLowerLimit) {
+  if (*status_check_result == kTemperatureUnderLowerLimit) {
     logger_.log(core::LogLevel::kFatal,
                 "Failed to read, temperature is below lower limit at channel %d",
                 channel_);
@@ -77,8 +77,7 @@ std::optional<std::int16_t> Temperature::read()
       core::LogLevel::kFatal, "Failed to read low byte for temperature at channel %d", channel_);
     return std::nullopt;
   }
-  const std::int16_t temperature
-    = ((temperature_high_byte.value() << 8) | temperature_low_byte.value());
+  const std::int16_t temperature = ((*temperature_high_byte << 8) | *temperature_low_byte);
   logger_.log(
     core::LogLevel::kDebug, "Successfully read from temperature sensor at channel %d", channel_);
   // Scaling temperature as per the datasheet

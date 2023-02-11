@@ -34,8 +34,7 @@ std::optional<core::Float> HardwareAdc::readValue()
 {
   const std::optional<core::Float> raw_voltage = resetAndRead4(file_descriptor_);
   if (raw_voltage) {
-    logger_.log(
-      core::LogLevel::kDebug, "Raw voltage from ADC pin %d: %i", pin_, raw_voltage.value());
+    logger_.log(core::LogLevel::kDebug, "Raw voltage from ADC pin %d: %i", pin_, *raw_voltage);
     return *raw_voltage;
   }
   return std::nullopt;
