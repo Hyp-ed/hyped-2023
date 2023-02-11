@@ -11,14 +11,14 @@
 
 namespace hyped::io {
 
-constexpr std::uint16_t kMaxAdcRawValue = 4095;
+constexpr std::uint16_t kMaxAdcRawValue = 4096;
 constexpr core::Float kMaxAdcVoltage    = 1.8;
 
 class HardwareAdc : public IAdc {
  public:
   /**
    * @brief Creates an Adc instance
-   * @param pin is one of the 6 analogue input pins on the bbb
+   * @param pin is one of the 7 analogue input pins on the bbb
    */
   static std::optional<std::shared_ptr<HardwareAdc>> create(core::ILogger &logger,
                                                             const std::uint8_t pin);

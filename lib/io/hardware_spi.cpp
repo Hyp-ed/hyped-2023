@@ -12,7 +12,7 @@ std::optional<std::shared_ptr<HardwareSpi>> HardwareSpi::create(core::ILogger &l
                                                                 const SpiMode mode,
                                                                 const SpiWordSize word_size,
                                                                 const SpiBitOrder bit_order,
-                                                                const Clock clock)
+                                                                const SpiClock clock)
 {
   // SPI bus only works in kernel mode on Linux, so we need to call the provided driver
   const char *spi_bus_address = getSpiBusAddress(bus);
@@ -118,18 +118,18 @@ const char *HardwareSpi::getSpiBusAddress(const SpiBus bus)
   }
 }
 
-std::uint32_t HardwareSpi::getClockValue(Clock clock)
+std::uint32_t HardwareSpi::getClockValue(SpiClock clock)
 {
   switch (clock) {
-    case Clock::k500KHz:
+    case SpiClock::k500KHz:
       return 500000;
-    case Clock::k1MHz:
+    case SpiClock::k1MHz:
       return 1000000;
-    case Clock::k4MHz:
+    case SpiClock::k4MHz:
       return 4000000;
-    case Clock::k16MHz:
+    case SpiClock::k16MHz:
       return 16000000;
-    case Clock::k20MHz:
+    case SpiClock::k20MHz:
       return 20000000;
     default:  // for compiler
       return 0;

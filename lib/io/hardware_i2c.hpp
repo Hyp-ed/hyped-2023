@@ -16,7 +16,7 @@ class HardwareI2c : public II2c {
    * @param bus_address is the address of the I2C bus on the BBB.
    */
   static std::optional<std::shared_ptr<HardwareI2c>> create(core::ILogger &logger,
-                                                            const std::uint8_t bus_address);
+                                                            const std::uint8_t bus);
   HardwareI2c(core::ILogger &logger, const int file_descriptor);
   ~HardwareI2c();
 

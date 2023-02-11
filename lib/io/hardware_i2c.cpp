@@ -14,10 +14,14 @@
 namespace hyped::io {
 
 std::optional<std::shared_ptr<HardwareI2c>> HardwareI2c::create(core::ILogger &logger,
-                                                                const std::uint8_t bus_address)
+                                                                const std::uint8_t bus)
 {
+  if (bus < 0 || bus > 2) {
+    logger.log(core::LogLevel::kFatal, "Failed to create HardwareI2c object: invalid bus");
+    return std::nullopt;
+  }
   char path[13];  // up to "/dev/i2c-2"
-  snprintf(path, sizeof(path), "/dev/i2c-%d", bus_address);
+  snprintf(path, sizeof(path), "/dev/i2c-%d", bus);
   const int file_descriptor = open(path, O_RDWR, 0);
   if (file_descriptor < 0) {
     logger.log(core::LogLevel::kFatal, "Failed to find i2c device");

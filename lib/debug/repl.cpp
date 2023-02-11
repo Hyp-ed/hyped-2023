@@ -429,7 +429,12 @@ void Repl::addPwmCommands(const std::uint8_t module)
 
 void Repl::addSpiCommands(const std::uint8_t bus)
 {
-  const auto optional_spi = io::HardwareSpi::create(logger_);
+  const auto optional_spi = io::HardwareSpi::create(logger_,
+                                                    io::SpiBus::kSpi1,
+                                                    io::SpiMode::kMode3,
+                                                    io::SpiWordSize::kWordSize8,
+                                                    io::SpiBitOrder::kMsbFirst,
+                                                    io::SpiClock::k500KHz);
   if (!optional_spi) {
     logger_.log(core::LogLevel::kFatal, "Failed to create I2C instance on bus %d", bus);
     return;
@@ -488,8 +493,9 @@ void Repl::addSpiCommands(const std::uint8_t bus)
 
 void Repl::addUartCommands(const std::uint8_t bus)
 {
-  const UartBus uart_bus   = static_cast<UartBus>(bus);
-  const auto optional_uart = io::Uart::create(logger_, uart_bus, BaudRate::kB38400);
+  const io::UartBus uart_bus = static_cast<io::UartBus>(bus);
+  const auto optional_uart
+    = io::Uart::create(logger_, uart_bus, io::UartBaudRate::kB38400, io::UartBitsPerByte::k8);
   if (!optional_uart) {
     logger_.log(core::LogLevel::kFatal, "Failed to create UART instance on bus %d", bus);
     return;

@@ -8,6 +8,10 @@ namespace hyped::io {
 std::optional<std::shared_ptr<HardwareAdc>> HardwareAdc::create(core::ILogger &logger,
                                                                 const std::uint8_t pin)
 {
+  if (pin < 0 || pin > 6) {
+    logger.log(core::LogLevel::kFatal, "Failed to create HardwareAdc object: invalid pin");
+    return std::nullopt;
+  }
   char buf[100];
   snprintf(buf, sizeof(buf), "/sys/bus/iio/devices/iio:device0/in_voltage%i_raw", pin);
   const int file_descriptor = open(buf, O_RDONLY);
@@ -32,7 +36,7 @@ HardwareAdc::~HardwareAdc()
 
 std::optional<core::Float> HardwareAdc::readValue()
 {
-  const std::optional<core::Float> raw_voltage = resetAndRead4(file_descriptor_);
+  const auto raw_voltage = resetAndRead4(file_descriptor_);
   if (raw_voltage) {
     logger_.log(core::LogLevel::kDebug, "Raw voltage from ADC pin %d: %i", pin_, *raw_voltage);
     return *raw_voltage;
@@ -55,7 +59,7 @@ std::optional<core::Float> HardwareAdc::resetAndRead4(const int file_descriptor)
   }
   const int raw_voltage = std::atoi(read_buffer);
   // convert raw voltage to voltage between [0, 1.8] in V
-  return static_cast<core::Float>((raw_voltage / kMaxAdcRawValue) * kMaxAdcVoltage);
+  return (static_cast<core::Float>(raw_voltage) / kMaxAdcRawValue) * kMaxAdcVoltage;
 }
 
 }  // namespace hyped::io
