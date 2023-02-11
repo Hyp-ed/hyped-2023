@@ -56,10 +56,10 @@ class Accelerometer : public II2cMuxSensor<core::RawAccelerationData> {
   ~Accelerometer();
 
   /*
-   * @brief Checks if the temperature sensor is ready to be read
+   * @brief Checks if the accelerometer is ready to be read
    * @return kSuccess if the sensor is ready to be read,
    *         kFailure if the sensor is not ready to be read,
-   *         nullopt if there was an error reading the status register
+   *         nullopt if there was an error reading the sensor
    */
   std::optional<core::Result> isValueReady();
 
