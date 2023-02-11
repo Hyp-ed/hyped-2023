@@ -1,9 +1,10 @@
 #pragma once
 
 #include "consts.hpp"
+#include "types.hpp"
 
-#include "core/logger.hpp"
-#include "core/types.hpp"
+#include <core/logger.hpp>
+#include <core/types.hpp>
 
 namespace hyped::navigation {
 
@@ -22,12 +23,10 @@ class KeyencePreprocessor {
    * @brief Checks that keyences have not disagreed twice in a row.
    *
    * @param keyence_data: inputs from Keyence Sensors
-   * @return SensorChecks: enum indicating if Keyence Sensors have failed
+   * @return SensorDisagreement: enum indicating if Keyence Sensors have failed
    */
-  SensorChecks checkKeyenceAgrees(const core::KeyenceData &keyence_data);
-  /**
-   *
-   */
+  SensorDisagreement checkKeyenceAgrees(const KeyenceData &keyence_data);
+
  private:
   core::ILogger &log_;
   KeyenceDataStatus previous_data_status_;

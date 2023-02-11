@@ -228,7 +228,7 @@ void Repl::addCommand(const Command &cmd)
 
 void Repl::addQuitCommand()
 {
-  addCommand(Command{"quit", "Quit the REPL", [this]() { exit(0); }});
+  addCommand(Command{"quit", "Quit the REPL", []() { exit(0); }});
 }
 
 void Repl::addHelpCommand()
@@ -340,7 +340,7 @@ void Repl::addPwmCommands(const std::uint8_t module)
     std::stringstream description;
     description << "Run PWM module: " << static_cast<int>(pwm_module);
     pwm_run_command.description = description.str();
-    pwm_run_command.handler     = [this, pwm, pwm_module]() {
+    pwm_run_command.handler     = [this, pwm]() {
       std::uint32_t period;
       std::cout << "Period: ";
       std::cin >> period;
@@ -383,7 +383,7 @@ void Repl::addPwmCommands(const std::uint8_t module)
     std::stringstream description;
     description << "Stop PWM module: " << static_cast<int>(pwm_module);
     pwm_stop_command.description = description.str();
-    pwm_stop_command.handler     = [this, pwm, pwm_module]() {
+    pwm_stop_command.handler     = [this, pwm]() {
       const core::Result disable_result = pwm->setMode(io::Mode::kStop);
       if (disable_result == core::Result::kFailure) {
         logger_.log(core::LogLevel::kFatal, "Failed to stop PWM module");
@@ -415,7 +415,7 @@ void Repl::addSpiCommands(const std::uint8_t bus)
       std::cout << "Register address: ";
       std::cin >> register_address;
       std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-      std::uint8_t read_buffer;
+      std::uint8_t read_buffer  = 0;
       const core::Result result = spi->read(register_address, &read_buffer, 1);
       if (result == core::Result::kSuccess) {
         logger_.log(core::LogLevel::kDebug, "SPI value from bus %d: %d", bus, read_buffer);
@@ -466,7 +466,8 @@ void Repl::addAccelerometerCommands(const std::uint8_t bus, const std::uint8_t d
                 "Asking for accelerometer on another address as what is hard coded");
     return;
   }
-  const auto accelerometer = std::make_shared<sensors::Accelerometer>(logger_, *i2c, bus);
+  const auto accelerometer
+    = std::make_shared<sensors::Accelerometer>(logger_, wall_clock_, *i2c, bus);
   accelerometer->configure();
   Command accelerometer_read_command;
   std::stringstream identifier;
@@ -478,16 +479,16 @@ void Repl::addAccelerometerCommands(const std::uint8_t bus, const std::uint8_t d
               << "I2C bus " << static_cast<int>(bus);
   accelerometer_read_command.description = description.str();
   accelerometer_read_command.handler     = [this, accelerometer, bus]() {
-    const auto value = accelerometer->read();
-    if (!value) {
+    const auto acceleration = accelerometer->read();
+    if (!acceleration) {
       logger_.log(core::LogLevel::kFatal, "Failed to read accelerometer from bus %d", bus);
     } else {
-      const core::RawAccelerationData result = value.value();
+      // TODOLater: Print timestamp
       logger_.log(core::LogLevel::kInfo,
                   "Acceleration in mg: \n x %d \n y %d \n z %d",
-                  result.x,
-                  result.y,
-                  result.z);
+                  acceleration->value.x,
+                  acceleration->value.y,
+                  acceleration->value.z);
     }
   };
   addCommand(accelerometer_read_command);

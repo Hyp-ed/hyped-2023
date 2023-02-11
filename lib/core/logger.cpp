@@ -4,10 +4,10 @@
 
 namespace hyped::core {
 
-Logger::Logger(const char *const label, const LogLevel level, const core::ITimeSource &time_source_)
+Logger::Logger(const char *const label, const LogLevel level, const core::ITimeSource &time_source)
     : label_(label),
       level_(level),
-      time_source_(time_source_)
+      time_source_(time_source)
 {
 }
 
@@ -47,8 +47,8 @@ void Logger::log(const LogLevel level, const char *format, ...)
         file = stderr;
         printHead(file, "FATAL");
         break;
-      default:
-        break;
+      case LogLevel::kNone:
+        return;
     }
     va_list args;
     va_start(args, format);

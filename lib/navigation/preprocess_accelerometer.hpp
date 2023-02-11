@@ -1,6 +1,7 @@
 #pragma once
 
 #include "consts.hpp"
+#include "types.hpp"
 
 #include <cmath>
 
@@ -9,8 +10,8 @@
 #include <cstdint>
 #include <optional>
 
-#include "core/logger.hpp"
-#include "core/types.hpp"
+#include <core/logger.hpp>
+#include <core/types.hpp>
 
 namespace hyped::navigation {
 class AccelerometerPreprocessor {
@@ -23,8 +24,8 @@ class AccelerometerPreprocessor {
    * @param raw_accelerometer_data
    * @return clean accelerometer data or optionally fail
    */
-  std::optional<core::AccelerometerData> processData(
-    const core::RawAccelerometerData raw_accelerometer_data);
+  std::optional<AccelerometerData> processData(
+    const core::CombinedRawAccelerometerData &raw_accelerometer_data);
 
  private:
   core::ILogger &logger_;
@@ -41,14 +42,14 @@ class AccelerometerPreprocessor {
    * @param accelerometer_data
    * @return filtered accelerometer data
    */
-  core::AccelerometerData detectOutliers(core::AccelerometerData accelerometer_data);
+  AccelerometerData detectOutliers(AccelerometerData accelerometer_data);
 
   /**
    * @brief check the reliability of all accelerometer's
    *
-   * @return SensorChecks with value kAcceptable or kUnacceptable
+   * @return SensorDisagreement with value kAcceptable or kUnacceptable
    */
-  SensorChecks checkReliable();
+  SensorDisagreement checkReliable();
 
   // TODOLater: Optimize this further
   /**

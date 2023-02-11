@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <core/logger.hpp>
+#include <core/wall_clock.hpp>
 #include <sensors/mux.hpp>
 #include <utils/dummy_i2c.hpp>
 #include <utils/dummy_i2c_sensor.hpp>
@@ -11,9 +12,10 @@ namespace hyped::test {
 TEST(Mux, construction)
 {
   static constexpr std::uint8_t kSize = 8;
+  core::WallClock wall_clock;
   std::array<std::unique_ptr<sensors::II2cMuxSensor<std::uint8_t>>, kSize> sensors;
   for (auto &sensor : sensors) {
-    sensor = std::make_unique<utils::DummyI2cSensor>();
+    sensor = std::make_unique<utils::DummyI2cSensor>(wall_clock);
   }
   utils::DummyI2c i2c;
   utils::DummyLogger logger;

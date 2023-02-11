@@ -36,7 +36,7 @@ class ILogger {
 
 class Logger : public ILogger {
  public:
-  Logger(const char *const label, const LogLevel level, const core::ITimeSource &timer);
+  Logger(const char *const label, const LogLevel level, const core::ITimeSource &time_source);
 
   void log(const LogLevel level, const char *format, ...);
 

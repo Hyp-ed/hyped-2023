@@ -9,23 +9,23 @@ KeyencePreprocessor::KeyencePreprocessor(core::ILogger &logger)
       previous_data_status_(KeyenceDataStatus::kAgreed)
 {
 }
-SensorChecks KeyencePreprocessor::checkKeyenceAgrees(const core::KeyenceData &keyence_data)
+
+SensorDisagreement KeyencePreprocessor::checkKeyenceAgrees(const KeyenceData &keyence_data)
 {
-  KeyenceDataStatus current_data_status = KeyenceDataStatus::kDisagreed;
-  for (std::size_t i = 0; i < keyence_data.size() - 1; ++i) {
-    if (keyence_data.at(i) != keyence_data.at(i + 1)) {
+  KeyenceDataStatus current_data_status = KeyenceDataStatus::kAgreed;
+  for (std::size_t i = 1; i < keyence_data.value.size(); ++i) {
+    if (keyence_data.value.at(0) != keyence_data.value.at(i)) {
       current_data_status = KeyenceDataStatus::kDisagreed;
+      break;
     }
   }
-
   if (current_data_status == KeyenceDataStatus::kDisagreed
       && previous_data_status_ == KeyenceDataStatus::kDisagreed) {
     log_.log(core::LogLevel::kFatal, "Keyence disagreement for two consecutive readings.");
-    return SensorChecks::kUnacceptable;
+    return SensorDisagreement::kUnacceptable;
   }
   previous_data_status_ = current_data_status;
-
-  return SensorChecks::kAcceptable;
+  return SensorDisagreement::kAcceptable;
 }
 
 }  // namespace hyped::navigation

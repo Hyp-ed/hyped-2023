@@ -3,9 +3,11 @@
 namespace hyped::sensors {
 
 Temperature::Temperature(core::ILogger &logger,
+                         core::ITimeSource &time_source,
                          std::shared_ptr<io::II2c> i2c,
                          const std::uint8_t channel)
     : logger_(logger),
+      time_source_(time_source),
       i2c_(i2c),
       channel_(channel)
 {
@@ -15,7 +17,7 @@ Temperature::~Temperature()
 {
 }
 
-std::optional<std::int16_t> Temperature::read()
+std::optional<core::Measurement<std::int16_t>> Temperature::read()
 {
   const auto status_check_result = i2c_->readByte(kTemperatureDefaultAddress, kStatus);
   if (!status_check_result) {
@@ -60,7 +62,8 @@ std::optional<std::int16_t> Temperature::read()
   logger_.log(
     core::LogLevel::kDebug, "Successfully read from temperature sensor at channel %d", channel_);
   // Scaling temperature as per the datasheet
-  return static_cast<std::int16_t>(temperature * kTemperatureScaleFactor);
+  return core::Measurement(time_source_.now(),
+                           static_cast<std::int16_t>(temperature * kTemperatureScaleFactor));
 }
 
 core::Result Temperature::configure()

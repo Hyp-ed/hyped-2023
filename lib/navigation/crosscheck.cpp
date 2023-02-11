@@ -1,4 +1,5 @@
 #include "crosscheck.hpp"
+#include "types.hpp"
 
 namespace hyped::navigation {
 
@@ -7,9 +8,9 @@ Crosscheck::Crosscheck()
   // TODOLater: implement
 }
 
-SensorChecks Crosscheck::checkTrajectoryAgreement(const core::AccelerometerData accelerometer_data,
-                                                  const core::EncoderData encoders_data,
-                                                  const core::KeyenceData keyence_data)
+SensorDisagreement Crosscheck::checkTrajectoryAgreement(const AccelerometerData accelerometer_data,
+                                                        const EncoderData encoders_data,
+                                                        const KeyenceData keyence_data)
 {
   /*
   TODOLater: implement
@@ -21,11 +22,11 @@ SensorChecks Crosscheck::checkTrajectoryAgreement(const core::AccelerometerData 
     Also need to figure out how data flow is going to work with the historic data and what we use.
     The basic infrastrucutre is there for now so will be a problem for another day.
   */
-  return SensorChecks::kAcceptable;
+  return SensorDisagreement::kAcceptable;
 }
 
-SensorChecks checkEncoderAccelerometer(const core::AccelerometerData accelerometer_data,
-                                       const core::EncoderData encoders_data)
+SensorDisagreement Crosscheck::checkEncoderAccelerometer(const AccelerometerData accelerometer_data,
+                                                         const EncoderData encoders_data)
 {
   /*
   TODOLater: implement.
@@ -35,11 +36,11 @@ SensorChecks checkEncoderAccelerometer(const core::AccelerometerData acceleromet
   accelerometer displacement too high, fail state and return false
   - otherwise all good, return true
   */
-  return SensorChecks::kAcceptable;
+  return SensorDisagreement::kAcceptable;
 }
 
-SensorChecks checkEncoderKeyence(const core::EncoderData encoder_data,
-                                 const core::KeyenceData keyence_data)
+SensorDisagreement Crosscheck::checkEncoderKeyence(const EncoderData encoder_data,
+                                                   const KeyenceData keyence_data)
 {
   /*
   TODOLater: implement.
@@ -48,6 +49,6 @@ SensorChecks checkEncoderKeyence(const core::EncoderData encoder_data,
   keyence displacement too high, fail state and return false
   - otherwise all good, return true
   */
-  return SensorChecks::kAcceptable;
+  return SensorDisagreement::kAcceptable;
 }
 }  // namespace hyped::navigation

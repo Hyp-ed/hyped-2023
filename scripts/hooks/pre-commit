@@ -1,7 +1,7 @@
 #!/bin/sh
 
 FILES=$(git diff --cached --name-only | grep "*.[ch]pp$")
-clang-format -Werror --dry-run $FILES
+clang-format -Werror --dry-run $(find lib src test -type f | grep ".[ch]pp$")
 
 cmake -S . -B build
 cmake --build build -j

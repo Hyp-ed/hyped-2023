@@ -1,9 +1,15 @@
 #include "accelerometer.hpp"
 
+#include <core/types.hpp>
+
 namespace hyped::sensors {
 
-Accelerometer::Accelerometer(core::ILogger &logger, io::II2c &i2c, const std::uint8_t channel)
+Accelerometer::Accelerometer(core::ILogger &logger,
+                             core::ITimeSource &time_source,
+                             io::II2c &i2c,
+                             const std::uint8_t channel)
     : logger_(logger),
+      time_source_(time_source),
       i2c_(i2c),
       channel_(channel)
 {
@@ -64,7 +70,7 @@ std::int32_t Accelerometer::getAccelerationFromRawValue(const std::int16_t rawAc
 
 // TODOLater: current settings of the accelerometer make it read in +-16g but with high noise. Check
 // whether other configuration could be better
-std::optional<core::RawAccelerationData> Accelerometer::read()
+std::optional<core::Measurement<core::RawAcceleration>> Accelerometer::read()
 {
   // check to see if the values are ready to be read
   const auto data_ready = i2c_.readByte(kDefaultAccelerometerAddress, kDataReady);
@@ -79,21 +85,15 @@ std::optional<core::RawAccelerationData> Accelerometer::read()
   }
   const auto result_x = getRawAcceleration(core::Axis::kX);
   if (!result_x) { return std::nullopt; }
-  const std::int32_t x_acceleration = getAccelerationFromRawValue(*result_x);
-  const auto result_y               = getRawAcceleration(core::Axis::kY);
+  const auto result_y = getRawAcceleration(core::Axis::kY);
   if (!result_y) { return std::nullopt; }
-  const std::int32_t y_acceleration = getAccelerationFromRawValue(*result_y);
-  const auto result_z               = getRawAcceleration(core::Axis::kZ);
+  const auto result_z = getRawAcceleration(core::Axis::kZ);
   if (!result_z) { return std::nullopt; }
-  const std::int32_t z_acceleration = getAccelerationFromRawValue(*result_z);
-  const std::optional<core::RawAccelerationData> acceleration_3_axis{
-    std::in_place,
-    x_acceleration,
-    y_acceleration,
-    z_acceleration,
-    std::chrono::system_clock::now()};
+  const core::RawAcceleration raw_acceleration = {.x = getAccelerationFromRawValue(*result_x),
+                                                  .y = getAccelerationFromRawValue(*result_y),
+                                                  .z = getAccelerationFromRawValue(*result_z)};
   logger_.log(core::LogLevel::kDebug, "Successfully read accelerometer data");
-  return acceleration_3_axis;
+  return core::Measurement<core::RawAcceleration>(time_source_.now(), raw_acceleration);
 }
 
 core::Result Accelerometer::configure()

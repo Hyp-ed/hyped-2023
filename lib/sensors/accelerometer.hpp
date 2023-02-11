@@ -7,7 +7,9 @@
 #include <cstdint>
 #include <optional>
 
+#include "core/time.hpp"
 #include <core/logger.hpp>
+#include <core/time.hpp>
 #include <core/types.hpp>
 #include <io/i2c.hpp>
 
@@ -48,14 +50,17 @@ constexpr std::uint8_t kDataReady = 0x27;
 constexpr std::uint8_t kDeviceIdAddress       = 0x0F;
 constexpr std::uint8_t kExpectedDeviceIdValue = 0x44;
 
-class Accelerometer : public II2cMuxSensor<core::RawAccelerationData> {
+class Accelerometer : public II2cMuxSensor<core::RawAcceleration> {
  public:
-  Accelerometer(core::ILogger &logger, io::II2c &i2c, const std::uint8_t channel);
+  Accelerometer(core::ILogger &logger,
+                core::ITimeSource &time_source,
+                io::II2c &i2c,
+                const std::uint8_t channel);
   ~Accelerometer();
 
-  core::Result configure();
-  std::optional<core::RawAccelerationData> read();
-  std::uint8_t getChannel() const;
+  virtual core::Result configure();
+  virtual std::optional<core::Measurement<core::RawAcceleration>> read();
+  virtual std::uint8_t getChannel() const;
 
  private:
   std::optional<std::int16_t> getRawAcceleration(const core::Axis axis);
@@ -64,6 +69,7 @@ class Accelerometer : public II2cMuxSensor<core::RawAccelerationData> {
 
  private:
   core::ILogger &logger_;
+  core::ITimeSource &time_source_;
   io::II2c &i2c_;
   const std::uint8_t channel_;
   std::uint8_t low_byte_address_;

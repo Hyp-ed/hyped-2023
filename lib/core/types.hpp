@@ -23,7 +23,6 @@ struct CanFrame {
   std::array<std::uint8_t, 8> data;
 };
 
-// current trajectory struct
 struct Trajectory {
   Float displacement;
   Float velocity;
@@ -36,31 +35,25 @@ static constexpr std::uint8_t kNumAxis           = 3;
 static constexpr std::uint8_t kNumEncoders       = 4;
 static constexpr std::uint8_t kNumKeyence        = 2;
 
-// data format for raw sensor data
-using RawAccelerometerData = std::array<std::array<Float, kNumAxis>, kNumAccelerometers>;
-using AccelerometerData    = std::array<Float, kNumAccelerometers>;
-using EncoderData          = std::array<std::uint32_t, kNumEncoders>;
-using KeyenceData          = std::array<std::uint32_t, kNumKeyence>;
-
-// data produced by the accelerometer sensor
-// !! the values are in mg !!
-struct RawAccelerationData {
-  RawAccelerationData(const std::int32_t x,
-                      const std::int32_t y,
-                      const std::int32_t z,
-                      const TimePoint measured_at)
-      : x(x),
-        y(y),
-        z(z),
-        measured_at(measured_at)
+template<typename T>
+struct Measurement {
+  Measurement(const TimePoint &measured_at, const T &value) : measured_at(measured_at), value(value)
   {
   }
 
-  const std::int32_t x;
-  const std::int32_t y;
-  const std::int32_t z;
-  const TimePoint measured_at;
+  TimePoint measured_at;
+  T value;
 };
+
+struct RawAcceleration {
+  std::int32_t x;  // mg
+  std::int32_t y;  // mg
+  std::int32_t z;  // mg
+};
+using RawAccelerometerData         = Measurement<RawAcceleration>;
+using CombinedRawAccelerometerData = Measurement<std::array<RawAcceleration, kNumAccelerometers>>;
+using RawEncoderData               = Measurement<std::array<std::uint32_t, kNumEncoders>>;
+using RawKeyenceData               = Measurement<std::array<std::uint32_t, kNumKeyence>>;
 
 enum class Axis { kX = 0, kY, kZ };
 

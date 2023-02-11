@@ -1,0 +1,3 @@
+#!/bin/sh
+clang-format -i $(find lib src test -type f | grep ".[ch]pp$")
+

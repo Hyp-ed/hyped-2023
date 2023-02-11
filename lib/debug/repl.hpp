@@ -7,6 +7,7 @@
 #include <vector>
 
 #include <core/logger.hpp>
+#include <core/wall_clock.hpp>
 #include <io/hardware_adc.hpp>
 #include <io/hardware_gpio.hpp>
 #include <io/hardware_i2c.hpp>
@@ -44,6 +45,7 @@ class Repl {
   void addUartCommands(const std::uint8_t bus);
 
   core::ILogger &logger_;
+  core::WallClock wall_clock_;
   std::map<std::string, Command> command_map_;
 };
 
