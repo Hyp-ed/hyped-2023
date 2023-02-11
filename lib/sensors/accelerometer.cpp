@@ -62,7 +62,7 @@ std::int32_t Accelerometer::getAccelerationFromRawValue(const std::int16_t rawAc
   return (static_cast<std::int32_t>(rawAcceleration) * 488) / 1000;
 }
 
-// TODOlater: current settings of the accelerometer make it read in +-16g but with high noise. Check
+// TODOLater: current settings of the accelerometer make it read in +-16g but with high noise. Check
 // whether other configuration could be better
 std::optional<core::RawAccelerationData> Accelerometer::read()
 {
@@ -72,7 +72,7 @@ std::optional<core::RawAccelerationData> Accelerometer::read()
     logger_.log(core::LogLevel::kFatal, "Failed to read acceleration data");
     return std::nullopt;
   }
-  // TODOlater: here the error is not that bad, hence the return value should indicate that
+  // TODOLater: here the error is not that bad, hence the return value should indicate that
   if (*data_ready % 2 == 0) {
     logger_.log(core::LogLevel::kFatal, "Failed to read acceleration data as it is not ready");
     return std::nullopt;

@@ -2,7 +2,7 @@
 
 ![Logo](https://uploads-ssl.webflow.com/5e88b996ec626f7dad28c40f/5eda270ec8019d2f43ed1b39_New-Logo-2020-(transparent-background).png)
 
-![Build Shield](https://img.shields.io/github/workflow/status/hyp-ed/hyped-2023/Build) ![TODO Shield](https://img.shields.io/github/search/hyp-ed/hyped-2023/TODOLater?color=red&label=TODO%20counter)
+![Build Shield](https://github.com/Hyp-ed/hyped-2023/actions/workflows/build.yml/badge.svg) ![TODO Shield](https://img.shields.io/github/search/hyp-ed/hyped-2023/TODOLater?color=red&label=TODO%20counter)
 
 ## Dependencies
 
