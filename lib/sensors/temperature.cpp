@@ -33,7 +33,7 @@ Temperature::~Temperature()
 {
 }
 
-std::optional<core::Result> Temperature::isValueReady()
+std::optional<core::Result> Temperature::checkStatus()
 {
   const auto status_check_result = i2c_->readByte(device_address_, kStatus);
   if (!status_check_result) {
