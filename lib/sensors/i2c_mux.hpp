@@ -14,7 +14,7 @@
 namespace hyped::sensors {
 
 constexpr std::uint8_t kDefaultMuxAddress = 0x70;
-constexpr std::uint8_t kMaxNumChannels    = 8;
+constexpr std::uint8_t kMaxNumMuxChannels = 8;
 // percentage of sensors that can be unusable before the mux is considered unusable
 constexpr core::Float kFailureThreshold = 0.25;  // TODOLater: finalize this value with Electronics
 
@@ -106,7 +106,7 @@ std::optional<std::array<T, N>> I2cMux<T, N>::readAllChannels()
 template<typename T, std::uint8_t N>
 core::Result I2cMux<T, N>::selectChannel(const std::uint8_t channel)
 {
-  if (channel >= kMaxNumChannels) {
+  if (channel >= kMaxNumMuxChannels) {
     logger_.log(core::LogLevel::kFatal, "I2c Mux Channel number %d is not selectable", channel);
     return core::Result::kFailure;
   }

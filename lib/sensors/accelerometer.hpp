@@ -63,9 +63,6 @@ class Accelerometer : public II2cMuxSensor<core::RawAccelerationData> {
    */
   std::optional<core::Result> isValueReady();
 
-  /**
-   * @brief  Reads acceleration from all three axes and returns it as a struct
-   */
   std::optional<core::RawAccelerationData> read();
 
   std::uint8_t getChannel() const;
