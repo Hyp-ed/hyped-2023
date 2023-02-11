@@ -25,7 +25,7 @@ class HardwareAdc : public IAdc {
   HardwareAdc(core::ILogger &logger, const int file_descriptor);
   ~HardwareAdc();
 
-  std::optional<core::Float> readValue();
+  virtual std::optional<core::Float> readValue();
 
  private:
   /**

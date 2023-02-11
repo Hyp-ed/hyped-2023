@@ -79,12 +79,12 @@ class HardwareSpi : public ISpi {
   HardwareSpi(core::ILogger &logger, const int file_descriptor);
   ~HardwareSpi();
 
-  core::Result read(const std::uint8_t register_address,
-                    const std::uint8_t *rx,
-                    const std::uint16_t len);
-  core::Result write(const std::uint8_t register_address,
-                     const std::uint8_t *tx,
-                     const std::uint16_t len);
+  virtual core::Result read(const std::uint8_t register_address,
+                            const std::uint8_t *rx,
+                            const std::uint16_t len);
+  virtual core::Result write(const std::uint8_t register_address,
+                             const std::uint8_t *tx,
+                             const std::uint16_t len);
 
  private:
   /**
