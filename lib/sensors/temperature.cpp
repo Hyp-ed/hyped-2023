@@ -7,6 +7,11 @@ std::optional<Temperature> Temperature::create(core::ILogger &logger,
                                                const std::uint8_t channel,
                                                const std::uint8_t device_address)
 {
+  if (device_address != kDefaultTemperatureAddress
+      || device_address != kAlternativeTemperatureAddress) {
+    logger.log(core::LogLevel::kFatal, "Invalid device address for temperature sensor");
+    return std::nullopt;
+  }
   const auto write_result = i2c->writeByteToRegister(device_address, kCtrl, kConfigurationSetting);
   if (write_result == core::Result::kFailure) {
     logger.log(

@@ -18,8 +18,9 @@ namespace hyped::sensors {
 constexpr std::string_view kAxisLabels[3] = {"x-axis", "y-axis", "z-axis"};
 
 // these values come from the datasheet
-constexpr std::uint8_t kDefaultAccelerometerAddress = 0x19;
-constexpr std::uint8_t kCtrl1Address                = 0x20;
+constexpr std::uint8_t kDefaultAccelerometerAddress     = 0x19;
+constexpr std::uint8_t kAlternativeAccelerometerAddress = 0x18;
+constexpr std::uint8_t kCtrl1Address                    = 0x20;
 // Sampling rate of 200 Hz
 // Enable high performance mode
 constexpr std::uint8_t kCtrl1Value   = 0x64;
@@ -51,8 +52,7 @@ class Accelerometer : public II2cMuxSensor<core::RawAccelerationData> {
   static std::optional<Accelerometer> create(core::ILogger &logger,
                                              std::shared_ptr<io::II2c> i2c,
                                              const std::uint8_t channel,
-                                             const std::uint8_t device_address
-                                             = kDefaultAccelerometerAddress);
+                                             const std::uint8_t device_address);
   ~Accelerometer();
 
   /*

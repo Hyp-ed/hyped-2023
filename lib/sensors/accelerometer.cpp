@@ -7,6 +7,11 @@ std::optional<Accelerometer> Accelerometer::create(core::ILogger &logger,
                                                    const std::uint8_t channel,
                                                    const std::uint8_t device_address)
 {
+  if (device_address != kDefaultAccelerometerAddress
+      || device_address != kAlternativeAccelerometerAddress) {
+    logger.log(core::LogLevel::kFatal, "Invalid device address for accelerometer");
+    return std::nullopt;
+  }
   // check we are communicating with the correct sensor
   const auto device_id = i2c->readByte(device_address, kDeviceIdAddress);
   if (!device_id) {
