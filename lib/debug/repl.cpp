@@ -493,6 +493,59 @@ void Repl::addAccelerometerCommands(const std::uint8_t bus, const std::uint8_t d
   addCommand(accelerometer_read_command);
 }
 
+void Repl::addGyroscopeCommands(const std::uint8_t bus, const std::uint8_t device_address)
+{
+  const auto optional_i2c = io::HardwareI2c::create(logger_, bus);
+  if (!optional_i2c) {
+    logger_.log(core::LogLevel::kFatal, "Failed to create I2C instance on bus %d", bus);
+    return;
+  }
+  const auto i2c                = std::move(*optional_i2c);
+  const auto optional_gyroscope = sensors::Gyroscope::create(logger_, i2c, bus, device_address);
+  const auto gyroscope          = std::make_shared<sensors::Gyroscope>(*optional_gyroscope);
+  Command gyroscope_read_command;
+  std::stringstream identifier;
+  identifier << "gyroscope 0x" << std::hex << static_cast<int>(device_address) << " read";
+  gyroscope_read_command.name = identifier.str();
+  std::stringstream description;
+  description << "Read gyroscope sensor 0x" << std::hex << static_cast<int>(device_address)
+              << " on "
+              << "I2C bus " << static_cast<int>(bus);
+  gyroscope_read_command.description = description.str();
+  gyroscope_read_command.handler     = [this, gyroscope, bus]() {
+    std::uint16_t axis;
+    std::cout << "axis (0 is x, 1 is y, 2 is z): ";
+    std::cin >> axis;
+    std::optional<std::int16_t> value;
+    switch (axis) {
+      case 0: {
+        value = gyroscope->read(core::Axis::kX);
+        break;
+      }
+      case 1: {
+        value = gyroscope->read(core::Axis::kY);
+        break;
+      }
+      case 2: {
+        value = gyroscope->read(core::Axis::kZ);
+        break;
+      }
+      default: {
+        logger_.log(
+          core::LogLevel::kFatal, "Failed to read gyroscope due to invalid axis from bus %d", bus);
+      }
+    }
+
+    if (!value) {
+      logger_.log(core::LogLevel::kFatal, "Failed to read gyroscope from bus %d", bus);
+    } else {
+      const auto result = value.value();
+      logger_.log(core::LogLevel::kInfo, "Gyroscope is : %d", result);
+    }
+  };
+  addCommand(gyroscope_read_command);
+}
+
 void Repl::addUartCommands(const std::uint8_t bus)
 {
   const UartBus uart_bus   = static_cast<UartBus>(bus);
