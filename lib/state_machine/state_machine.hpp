@@ -18,7 +18,7 @@ class StateMachine {
   // TODOLater handle ros messages and transition accordingly
   std::optional<Message> checkTransition();
 
-  void handleMessage(const Message message);
+  void handleMessage(const Message &message);
 
   Message stringToMessage(const std::string &message_name);
 

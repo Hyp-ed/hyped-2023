@@ -18,7 +18,7 @@ std::optional<Message> StateMachine::checkTransition()
 }
 
 // Transition to next state
-void StateMachine::handleMessage(const Message message)
+void StateMachine::handleMessage(const Message &message)
 {
   current_state_ = transition_to_state_.at({current_state_, message});
 }
