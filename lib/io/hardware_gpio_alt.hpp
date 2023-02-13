@@ -2,6 +2,8 @@
 
 #include "gpio.hpp"
 
+#include <cstdint>
+#include <optional>
 #include <string>
 
 #include <core/types.hpp>

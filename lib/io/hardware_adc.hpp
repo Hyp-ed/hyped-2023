@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <cstdlib>  // for atoi
 #include <memory>
+#include <optional>
 
 #include <core/logger.hpp>
 #include <core/types.hpp>

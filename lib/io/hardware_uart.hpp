@@ -5,7 +5,12 @@
 #include <strings.h>
 #include <termios.h>
 
+#include <cstdint>
 #include <memory>
+#include <optional>
+
+#include <core/logger.hpp>
+#include <core/types.hpp>
 #ifdef __APPLE__
 #define B460800 0010004
 #define B500000 0010005
@@ -19,11 +24,6 @@
 #define B3000000 0010015
 #define B3500000 0010016
 #endif
-
-#include <cstdio>
-
-#include <core/logger.hpp>
-#include <core/types.hpp>
 
 namespace hyped::io {
 

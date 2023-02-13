@@ -2,7 +2,9 @@
 
 #include "i2c.hpp"
 
+#include <cstdint>
 #include <memory>
+#include <optional>
 
 #include <core/logger.hpp>
 #include <core/types.hpp>
