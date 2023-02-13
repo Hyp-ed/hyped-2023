@@ -1,6 +1,5 @@
 #pragma once
 
-#include "consts.hpp"
 #include "state.hpp"
 #include "types.hpp"
 
