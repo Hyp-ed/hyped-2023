@@ -2,6 +2,10 @@
 
 namespace hyped::state_machine {
 
+StateMachine::StateMachine() : current_state_{State::kIdle}
+{
+}
+
 // TODOLater implement
 std::optional<Message> StateMachine::checkTransition()
 {
@@ -16,7 +20,7 @@ std::optional<Message> StateMachine::checkTransition()
 // Transition to next state
 void StateMachine::handleMessage(const Message message)
 {
-  current_state = transition_to_state_.at({current_state, message});
+  current_state_ = transition_to_state_.at({current_state_, message});
 }
 
 Message StateMachine::stringToMessage(const std::string &message_name)

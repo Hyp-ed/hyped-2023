@@ -13,7 +13,7 @@ namespace hyped::state_machine {
 
 class StateMachine {
  public:
-  StateMachine() { current_state = State::kIdle; };
+  StateMachine();
 
   // TODOLater handle ros messages and transition accordingly
   std::optional<Message> checkTransition();
@@ -56,6 +56,6 @@ class StateMachine {
        {{State::kFailureBraking, Message::kFailure}, State::kFailureStopped},
        {{State::kFailureStopped, Message::kFailure}, State::kOff}};
 
-  State current_state;
+  State current_state_;
 };
 }  // namespace hyped::state_machine
