@@ -12,12 +12,11 @@ std::optional<core::DigitalSignal> HardwareGpioReader::read()
   // pinMap just 0000.... with 1 flipped in pin number.
   // So AND with readAddr to extract the specific pin
   const std::uint8_t out = 0;
-  if (*gpio_readAddr & pin_map){
+  if (*gpio_readAddr & pin_map) {
     return core::DigitalSignal::kHigh;
   } else {
     return core::DigitalSignal::kLow;
   }
-
 }
 
 core::Result HardwareGpioWriter::write(const core::DigitalSignal state)
@@ -80,7 +79,8 @@ std::optional<std::shared_ptr<IGpioReader>> HardwareGpio::getReader(const std::u
   gpio_read = reinterpret_cast<volatile std::uint32_t *>(base + pin_read);
 
   // Keep track of intialized pins
-  initialized_readers_[pin] = std::shared_ptr<HardwareGpioReader>(new HardwareGpioReader(pin_map, gpio_read));
+  initialized_readers_[pin]
+    = std::shared_ptr<HardwareGpioReader>(new HardwareGpioReader(pin_map, gpio_read));
   std::shared_ptr<IGpioReader> reader = initialized_readers_[pin];
   return reader;
 }
@@ -93,7 +93,7 @@ std::optional<std::shared_ptr<IGpioWriter>> HardwareGpio::getWriter(const std::u
     return writer;
   }
 
-  const std::uint32_t bank   = pin / 32;
+  const std::uint32_t bank    = pin / 32;
   const std::uint32_t pin_id  = pin % 32;
   const std::uint32_t pin_map = (1 << pin_id);
 
