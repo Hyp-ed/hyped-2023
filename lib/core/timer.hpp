@@ -7,6 +7,8 @@
 
 namespace hyped::core {
 
+constexpr std::uint32_t kOneSecond = 1'000'000'000;
+
 class Timer {
  public:
   Timer(const ITimeSource &time);
@@ -19,7 +21,6 @@ class Timer {
 
  private:
   const ITimeSource &time_;
-  static constexpr std::uint32_t kOneSecond = 1'000'000'000;
 };
 
 }  // namespace hyped::core
