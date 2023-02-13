@@ -30,13 +30,22 @@ bool CanProcessor::sendMessage(const core::CanFrame frame)
 
 void CanProcessor::processMessage(const core::CanFrame frame)
 {
-  if (frame.can_id == 0x80) {
+  if (frame.can_id == 0x580) {
     // TODO: convert frame.data into index, subindex and data 
-    if (frame.data) {
-      controller_->processErrorMessage(little_endian_array_to_big_endian_int(frame.data[0]));
-    } else {
-      controller_->processWarningMessage(little_endian_array_to_big_endian_int(frame.data[1]));
-    }
+   
+   //Retrieve data and index from can frame
+    uint16_t SDORef =  (static_cast<uint64_t>(frame.data[1]) << 8) | static_cast<uint64_t>(frame.data[0]);
+    uint32_t data = (static_cast<uint64_t>(frame.data[7]) << 24) | (static_cast<uint64_t>(frame.data[6]) << 16) | (static_cast<uint64_t>(frame.data[5]) << 8) | static_cast<uint64_t>(frame.data[4]);
+    
+    //Process data from can frame
+    if ((SDORef  == 0x603f) && frame.data[2] == 0x00) {
+      //Error message received
+      controller_->processErrorMessage(data);
+    } else if ((SDORef  == 0x2027) && frame.data[2] == 0x00){
+            //Warning message received
+      controller_->processWarningMessage(data);
+    } 
+  
 
   } else {
     // TODO: Implement
