@@ -7,19 +7,6 @@
 
 namespace hyped::motors {
 
-uint64_t CanProcessor::little_endian_array_to_big_endian_int(
-  const std::uint8_t little_endian_array[8])
-{
-  return (static_cast<uint64_t>(little_endian_array[7]) << 56
-          | static_cast<uint64_t>(little_endian_array[6]) << 48
-          | static_cast<uint64_t>(little_endian_array[5]) << 40
-          | static_cast<uint64_t>(little_endian_array[4]) << 32
-          | (static_cast<uint64_t>(little_endian_array[3]) << 24)
-          | (static_cast<uint64_t>(little_endian_array[2]) << 16)
-          | (static_cast<uint64_t>(little_endian_array[1]) << 8)
-          | static_cast<uint64_t>(little_endian_array[0]));
-}
-
 CanProcessor::CanProcessor(std::shared_ptr<Controller> controller)
 {
   controller_ = controller;
