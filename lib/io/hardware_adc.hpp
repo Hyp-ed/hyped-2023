@@ -12,9 +12,6 @@
 
 namespace hyped::io {
 
-constexpr std::uint16_t kMaxAdcRawValue = 4096;
-constexpr core::Float kMaxAdcVoltage    = 1.8;
-
 class HardwareAdc : public IAdc {
  public:
   /**
@@ -39,6 +36,10 @@ class HardwareAdc : public IAdc {
   core::ILogger &logger_;
   std::uint8_t pin_;
   const int file_descriptor_;
+
+ private:
+  static constexpr std::uint16_t kMaxAdcRawValue = 4096;
+  static constexpr core::Float kMaxAdcVoltage    = 1.8;
 };
 
 }  // namespace hyped::io

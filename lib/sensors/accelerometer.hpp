@@ -17,35 +17,9 @@ namespace hyped::sensors {
 
 constexpr std::string_view kAxisLabels[3] = {"x-axis", "y-axis", "z-axis"};
 
-// these values come from the datasheet
+// possible addresses for the accelerometer (from the datasheet)
 constexpr std::uint8_t kDefaultAccelerometerAddress     = 0x19;
 constexpr std::uint8_t kAlternativeAccelerometerAddress = 0x18;
-constexpr std::uint8_t kCtrl1Address                    = 0x20;
-// Sampling rate of 200 Hz
-// Enable high performance mode
-constexpr std::uint8_t kCtrl1Value   = 0x64;
-constexpr std::uint8_t kCtrl2Address = 0x21;
-// Enable block data update
-// Enable address auto increment
-constexpr std::uint8_t kCtrl2Value   = 0x0;
-constexpr std::uint8_t kCtrl6Address = 0x25;
-// Full scale +-16g
-// Filter bandwidth = ODR/2
-constexpr std::uint8_t kCtrl6Value = 0x30;
-
-constexpr std::uint8_t kXOutLow  = 0x28;
-constexpr std::uint8_t kXOutHigh = 0x29;
-
-constexpr std::uint8_t kYOutLow  = 0x2A;
-constexpr std::uint8_t kYOutHigh = 0x2B;
-
-constexpr std::uint8_t kZOutLow  = 0x2C;
-constexpr std::uint8_t kZOutHigh = 0x2D;
-
-constexpr std::uint8_t kDataReady = 0x27;
-
-constexpr std::uint8_t kDeviceIdAddress       = 0x0F;
-constexpr std::uint8_t kExpectedDeviceIdValue = 0x44;
 
 class Accelerometer : public II2cMuxSensor<core::RawAccelerationData> {
  public:
@@ -83,6 +57,34 @@ class Accelerometer : public II2cMuxSensor<core::RawAccelerationData> {
   std::uint8_t low_byte_address_;
   std::uint8_t high_byte_address_;
   const std::uint8_t device_address_;
+
+ private:
+  // Register addresses/values taken from the datasheet
+  static constexpr std::uint8_t kCtrl1Address = 0x20;
+  // Sampling rate of 200 Hz
+  // Enable high performance mode
+  static constexpr std::uint8_t kCtrl1Value   = 0x64;
+  static constexpr std::uint8_t kCtrl2Address = 0x21;
+  // Enable block data update
+  // Enable address auto increment
+  static constexpr std::uint8_t kCtrl2Value   = 0x0;
+  static constexpr std::uint8_t kCtrl6Address = 0x25;
+  // Full scale +-16g
+  // Filter bandwidth = ODR/2
+  static constexpr std::uint8_t kCtrl6Value = 0x30;
+  // Register addresses for the x, y, and z axis
+  static constexpr std::uint8_t kXOutLow  = 0x28;
+  static constexpr std::uint8_t kXOutHigh = 0x29;
+
+  static constexpr std::uint8_t kYOutLow  = 0x2A;
+  static constexpr std::uint8_t kYOutHigh = 0x2B;
+
+  static constexpr std::uint8_t kZOutLow  = 0x2C;
+  static constexpr std::uint8_t kZOutHigh = 0x2D;
+
+  static constexpr std::uint8_t kDataReady             = 0x27;
+  static constexpr std::uint8_t kDeviceIdAddress       = 0x0F;
+  static constexpr std::uint8_t kExpectedDeviceIdValue = 0x44;
 };
 
 }  // namespace hyped::sensors
