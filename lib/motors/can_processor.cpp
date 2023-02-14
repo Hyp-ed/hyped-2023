@@ -26,11 +26,12 @@ void CanProcessor::processMessage(const core::CanFrame frame)
     // TODO: convert frame.data into index, subindex and data
 
     // Retrieve data and index from can frame
-    std::uint16_t SDORef
-      = (static_cast<uint64_t>(frame.data[1]) << 8) | static_cast<uint64_t>(frame.data[0]);
-    std::uint32_t data
-      = (static_cast<uint64_t>(frame.data[7]) << 24) | (static_cast<uint64_t>(frame.data[6]) << 16)
-        | (static_cast<uint64_t>(frame.data[5]) << 8) | static_cast<uint64_t>(frame.data[4]);
+    std::uint16_t SDORef = (static_cast<std::uint64_t>(frame.data[1]) << 8)
+                           | static_cast<std::uint64_t>(frame.data[0]);
+    std::uint32_t data = (static_cast<std::uint64_t>(frame.data[7]) << 24)
+                         | (static_cast<std::uint64_t>(frame.data[6]) << 16)
+                         | (static_cast<std::uint64_t>(frame.data[5]) << 8)
+                         | static_cast<std::uint64_t>(frame.data[4]);
 
     // Process data from can frame
     if ((SDORef == 0x603f) && frame.data[2] == 0x00) {
