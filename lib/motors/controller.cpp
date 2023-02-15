@@ -93,32 +93,65 @@ std::optional<core::CanFrame> Controller::parseJsonCanFrame(
     return std::nullopt;
   }
   core::CanFrame new_message;
-  try {
-    const std::string can_id_hex = message["id"].GetString();
-    new_message.can_id           = std::stoul(can_id_hex, nullptr, 16);
-    new_message.can_dlc          = motors::kControllerCanFrameLength;
-    // convert index to little endian for controller
-    const std::string index_hex = message["index"].GetString();
-    const uint16_t index        = std::stoul(index_hex, nullptr, 16);
-    new_message.data[0]         = index & 0xFF;
-    new_message.data[1]         = index & 0xFF00;
-    // subindex doesn't need converted
-    const std::string subindex_hex = message["subindex"].GetString();
-    new_message.data[2]            = std::stoul(subindex_hex, nullptr, 16);
-    // padding
-    new_message.data[3] = 0;
-    // convert data to little endian
-    const std::string data_hex = message["data"].GetString();
-    const uint32_t data        = std::stoul(data_hex, nullptr, 16);
-    new_message.data[4]        = data & 0xFF;
-    new_message.data[5]        = data & 0xFF00;
-    new_message.data[6]        = data & 0xFF0000;
-    new_message.data[7]        = data & 0xFF000000;
-    return new_message;
-  } catch (const std::exception &e) {
-    logger.log(core::LogLevel::kFatal, "Cannot parse hex value in CAN message file");
+  std::stringstream can_id_hex;
+  can_id_hex << std::hex << message["id"].GetString();
+  if (!can_id_hex.good()) {
+    logger.log(core::LogLevel::kFatal, "Invalid message ID in CAN message file");
     return std::nullopt;
   }
+  if (can_id_hex.eof()) {
+    logger.log(core::LogLevel::kFatal, "No message ID in CAN message file");
+    return std::nullopt;
+  }
+  can_id_hex >> new_message.can_id;
+  new_message.can_dlc = motors::kControllerCanFrameLength;
+  // convert index to little endian for controller
+  std::stringstream index_hex;
+  index_hex << std::hex << message["index"].GetString();
+  if (!index_hex.good()) {
+    logger.log(core::LogLevel::kFatal, "Invalid message index in CAN message file");
+    return std::nullopt;
+  }
+  if (index_hex.eof()) {
+    logger.log(core::LogLevel::kFatal, "No message index in CAN message file");
+    return std::nullopt;
+  }
+  uint16_t index;
+  index_hex >> index;
+  new_message.data[0] = index & 0xFF;
+  new_message.data[1] = index & 0xFF00;
+  // subindex doesn't need converted
+  std::stringstream subindex_hex;
+  subindex_hex << std::hex << message["subindex"].GetString();
+  if (!subindex_hex.good()) {
+    logger.log(core::LogLevel::kFatal, "Invalid message subindex in CAN message file");
+    return std::nullopt;
+  }
+  if (subindex_hex.eof()) {
+    logger.log(core::LogLevel::kFatal, "No message subindex in CAN message file");
+    return std::nullopt;
+  }
+  subindex_hex >> new_message.data[2];
+  // padding
+  new_message.data[3] = 0;
+  // convert data to little endian
+  std::stringstream data_hex;
+  data_hex << std::hex << message["data"].GetString();
+  if (!data_hex.good()) {
+    logger.log(core::LogLevel::kFatal, "Invalid message data in CAN message file");
+    return std::nullopt;
+  }
+  if (data_hex.eof()) {
+    logger.log(core::LogLevel::kFatal, "No message data in CAN message file");
+    return std::nullopt;
+  }
+  uint32_t data;
+  data_hex >> data;
+  new_message.data[4] = data & 0xFF;
+  new_message.data[5] = data & 0xFF00;
+  new_message.data[6] = data & 0xFF0000;
+  new_message.data[7] = data & 0xFF000000;
+  return new_message;
 }
 
 void Controller::processErrorMessage(const std::uint16_t error_code)
