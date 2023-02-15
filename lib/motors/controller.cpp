@@ -117,7 +117,7 @@ std::optional<core::CanFrame> Controller::parseJsonCanFrame(
     logger.log(core::LogLevel::kFatal, "No message index in CAN message file");
     return std::nullopt;
   }
-  uint16_t index;
+  std::uint16_t index;
   index_hex >> index;
   new_message.data[0] = index & 0xFF;
   new_message.data[1] = index & 0xFF00;
@@ -146,7 +146,7 @@ std::optional<core::CanFrame> Controller::parseJsonCanFrame(
     logger.log(core::LogLevel::kFatal, "No message data in CAN message file");
     return std::nullopt;
   }
-  uint32_t data;
+  std::uint32_t data;
   data_hex >> data;
   new_message.data[4] = data & 0xFF;
   new_message.data[5] = data & 0xFF00;
