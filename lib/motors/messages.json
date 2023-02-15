@@ -2,20 +2,20 @@
     "config_messages": [
         {
             "example_config_message": {
-                "id": 123,
-                "index": 123,
-                "subindex": 234,
-                "data": 2344
+                "id": "0x123",
+                "index": "0x2345",
+                "subindex": "0x12",
+                "data": "0x1234ABCD"
             }
         }
     ],
     "messages": [
         {
             "example_message": {
-                "id": 123,
-                "index": 123,
-                "subindex": 234,
-                "data": 2344
+                "id": "0x123",
+                "index": "0x2345",
+                "subindex": "0x12",
+                "data": "0x1234ABCD"
             }
         }
     ]

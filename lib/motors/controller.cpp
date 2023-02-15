@@ -93,23 +93,32 @@ std::optional<core::CanFrame> Controller::parseJsonCanFrame(
     return std::nullopt;
   }
   core::CanFrame new_message;
-  new_message.can_id  = message["id"].GetInt();
-  new_message.can_dlc = motors::kControllerCanFrameLength;
-  // convert index to little endian for controller
-  const std::uint16_t index = message["index"].GetInt();
-  new_message.data[0]       = index & 0xFF;
-  new_message.data[1]       = index & 0xFF00;
-  // subindex doesn't need converted
-  new_message.data[2] = message["subindex"].GetInt();
-  // padding
-  new_message.data[3] = 0;
-  // convert data to little endian
-  const std::uint32_t data = message["data"].GetInt();
-  new_message.data[4]      = data & 0xFF;
-  new_message.data[5]      = data & 0xFF00;
-  new_message.data[6]      = data & 0xFF0000;
-  new_message.data[7]      = data & 0xFF000000;
-  return new_message;
+  try {
+    const std::string can_id_hex = message["id"].GetString();
+    new_message.can_id           = std::stoul(can_id_hex, nullptr, 16);
+    new_message.can_dlc          = motors::kControllerCanFrameLength;
+    // convert index to little endian for controller
+    const std::string index_hex = message["index"].GetString();
+    const uint16_t index        = std::stoul(index_hex, nullptr, 16);
+    new_message.data[0]         = index & 0xFF;
+    new_message.data[1]         = index & 0xFF00;
+    // subindex doesn't need converted
+    const std::string subindex_hex = message["subindex"].GetString();
+    new_message.data[2]            = std::stoul(subindex_hex, nullptr, 16);
+    // padding
+    new_message.data[3] = 0;
+    // convert data to little endian
+    const std::string data_hex = message["data"].GetString();
+    const uint32_t data        = std::stoul(data_hex, nullptr, 16);
+    new_message.data[4]        = data & 0xFF;
+    new_message.data[5]        = data & 0xFF00;
+    new_message.data[6]        = data & 0xFF0000;
+    new_message.data[7]        = data & 0xFF000000;
+    return new_message;
+  } catch (const std::exception &e) {
+    logger.log(core::LogLevel::kFatal, "Cannot parse hex value in CAN message file");
+    return std::nullopt;
+  }
 }
 
 void Controller::processErrorMessage(const std::uint16_t error_code)
