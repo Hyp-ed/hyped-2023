@@ -1,6 +1,7 @@
 #include "controller.hpp"
 
 #include <fstream>
+#include <sstream>
 
 namespace hyped::motors {
 
