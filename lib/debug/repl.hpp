@@ -41,7 +41,7 @@ class Repl {
   void addHelpCommand();
   void addAdcCommands(const std::uint8_t pin);
   void addI2cCommands(const std::uint8_t bus);
-  void addPwmCommands(const std::uint8_t module);
+  void addPwmCommands(const std::uint8_t module, const std::uint32_t period);
   void addSpiCommands(const std::uint8_t bus);
   void addAccelerometerCommands(const std::uint8_t bus, const std::uint8_t device_address);
   void addTemperatureCommands(const std::uint8_t bus, const std::uint8_t device_address);
