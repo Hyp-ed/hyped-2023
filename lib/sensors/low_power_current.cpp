@@ -35,9 +35,4 @@ std::optional<core::Float> LowPowerCurrent::readCurrent()
   return static_cast<core::Float>(*byte) / 1000;
 }
 
-std::uint8_t LowPowerCurrent::getDeviceAddress() const
-{
-  return device_address_;
-}
-
 }  // namespace hyped::sensors
