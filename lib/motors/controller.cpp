@@ -36,7 +36,7 @@ std::optional<Controller> Controller::create(core::ILogger &logger,
   }
   const auto configuration_messages = document["config_messages"].GetArray();
   std::vector<core::CanFrame> controller_configuration_messages;
-  for (auto &message : configuration_messages) {
+  for (rapidjson::GenericValue<rapidjson::UTF8<>> &message : configuration_messages) {
     const auto new_message = Controller::parseJsonCanFrame(logger, message.GetObject());
     if (!new_message) {
       logger.log(core::LogLevel::kFatal,
@@ -48,7 +48,8 @@ std::optional<Controller> Controller::create(core::ILogger &logger,
   }
   std::unordered_map<std::string, core::CanFrame> controller_messages;
   const auto messages = document["messages"].GetObject();
-  for (auto &message : messages) {
+  for (rapidjson::GenericMember<rapidjson::UTF8<>, rapidjson::MemoryPoolAllocator<>> &message :
+       messages) {
     const auto new_message = Controller::parseJsonCanFrame(logger, message.value.GetObject());
     if (!new_message) {
       logger.log(core::LogLevel::kFatal,
