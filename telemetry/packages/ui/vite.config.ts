@@ -12,11 +12,6 @@ export default defineConfig(({ command, mode }) => {
           app: resolve(__dirname, 'app/index.html'),
           openmct: resolve(__dirname, 'openmct/index.html'),
         },
-        onwarn(warning, warn) {
-          // Can potentially be removed
-          if (warning.code === 'EVAL') return;
-          warn(warning);
-        },
       },
     },
     plugins: [
