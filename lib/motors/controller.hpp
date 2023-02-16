@@ -26,7 +26,7 @@ class Controller {
   void processErrorMessage(const std::uint16_t error_code);
   ControllerStatus processWarningMessage(const std::uint8_t warning_code);
   static std::optional<core::CanFrame> parseJsonCanFrame(
-    core::ILogger &logger, rapidjson::GenericObject<false, rapidjson::Value> message);
+    core::ILogger &logger, rapidjson::GenericObject<true, rapidjson::Value> message);
 
  private:
   Controller(core::ILogger &logger,
