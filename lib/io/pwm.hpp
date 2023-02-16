@@ -22,15 +22,13 @@ enum class PwmModule {
 };
 enum class Polarity { kActiveHigh = 0, kActiveLow };
 enum class Mode { kStop = 0, kRun };
+
 // use this class if a high‐frequency periodic switching signal is required
 // PWM can achieve frequencies of 1 MHz or higher, without a significant CPU load
 class Pwm {
  public:
   /**
-   * @brief Create a PWM object and get all relevant file descriptors to do I/O operations
-   * @param logger the logger to use
-   * @param pwm_module the PWM module to use
-   * @return a std::optional containing the PWM object if it was created successfully
+   * @brief Creates a PWM object and gets all the relevant file descriptors to do I/O operations
    */
   static std::optional<std::shared_ptr<Pwm>> create(core::ILogger &logger,
                                                     const PwmModule pwm_module);
