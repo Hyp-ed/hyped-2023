@@ -37,7 +37,7 @@ std::optional<Controller> Controller::create(core::ILogger &logger,
   const auto configuration_messages = document["config_messages"].GetArray();
   std::vector<core::CanFrame> controller_configuration_messages;
   for (auto &message : configuration_messages) {
-    const auto new_message = Controller::parseJsonCanFrame(message.GetObject(), logger);
+    const auto new_message = Controller::parseJsonCanFrame(logger, message.GetObject());
     if (!new_message) {
       logger.log(core::LogLevel::kFatal,
                  "Invalid CAN configuration frame in JSON message file at path %s",
@@ -49,7 +49,7 @@ std::optional<Controller> Controller::create(core::ILogger &logger,
   std::unordered_map<std::string, core::CanFrame> controller_messages;
   const auto messages = document["messages"].GetObject();
   for (auto &message : messages) {
-    const auto new_message = Controller::parseJsonCanFrame(message.value.GetObject(), logger);
+    const auto new_message = Controller::parseJsonCanFrame(logger, message.value.GetObject());
     if (!new_message) {
       logger.log(core::LogLevel::kFatal,
                  "Invalid CAN frame in JSON message file at path %s",
@@ -71,7 +71,7 @@ Controller::Controller(core::ILogger &logger,
 }
 
 std::optional<core::CanFrame> Controller::parseJsonCanFrame(
-  rapidjson::GenericObject<false, rapidjson::Value> message, core::ILogger &logger)
+  core::ILogger &logger, rapidjson::GenericObject<false, rapidjson::Value> message)
 {
   if (!message.HasMember("id")) {
     logger.log(core::LogLevel::kFatal,
@@ -93,7 +93,6 @@ std::optional<core::CanFrame> Controller::parseJsonCanFrame(
                "Missing required field 'data' in message in CAN message file");
     return std::nullopt;
   }
-  core::CanFrame new_message;
   std::stringstream can_id_hex;
   can_id_hex << std::hex << message["id"].GetString();
   if (!can_id_hex.good()) {
@@ -104,6 +103,7 @@ std::optional<core::CanFrame> Controller::parseJsonCanFrame(
     logger.log(core::LogLevel::kFatal, "No message ID in CAN message file");
     return std::nullopt;
   }
+  core::CanFrame new_message;
   can_id_hex >> new_message.can_id;
   new_message.can_dlc = motors::kControllerCanFrameLength;
   // convert index to little endian for controller
