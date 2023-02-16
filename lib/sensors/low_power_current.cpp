@@ -2,6 +2,14 @@
 
 namespace hyped::sensors {
 
+// TODOLater: Confirm failure states for create
+std::optional<LowPowerCurrent> LowPowerCurrent::create(core::ILogger &logger,
+                                                       std::shared_ptr<io::II2c> i2c,
+                                                       const std::uint8_t device_address)
+{
+  return LowPowerCurrent(logger, i2c, device_address);
+}
+
 LowPowerCurrent::LowPowerCurrent(core::ILogger &logger,
                                  std::shared_ptr<io::II2c> i2c,
                                  const std::uint8_t device_address)
@@ -17,7 +25,7 @@ LowPowerCurrent::~LowPowerCurrent()
 
 std::optional<core::Float> LowPowerCurrent::readCurrent()
 {
-  const auto byte = i2c_->readByte(device_address_, kLowPowerCurrectRegister);
+  const auto byte = i2c_->readByte(device_address_, kLowPowerCurrentRegister);
   if (!byte) {
     logger_.log(core::LogLevel::kFatal, "Failed to read current on channel %d", device_address_);
     return std::nullopt;

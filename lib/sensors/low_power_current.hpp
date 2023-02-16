@@ -12,23 +12,28 @@ namespace hyped::sensors {
 
 // Four possible device addresses, as per the datasheet
 // 0x40 has been chosen as the default
-constexpr std::uint8_t kDefaultLowPowerCurrectAddress = 0x40;
-constexpr std::uint8_t kLowPowerCurrectAddress2       = 0x41;
-constexpr std::uint8_t kLowPowerCurrectAddress3       = 0x44;
-constexpr std::uint8_t kLowPowerCurrectAddress4       = 0x45;
+constexpr std::uint8_t kDefaultLowPowerCurrentAddress = 0x40;
+constexpr std::uint8_t kLowPowerCurrentAddress2       = 0x41;
+constexpr std::uint8_t kLowPowerCurrentAddress3       = 0x44;
+constexpr std::uint8_t kLowPowerCurrentAddress4       = 0x45;
 // Registers with reference to the INA219 driver code
-constexpr std::uint8_t kLowPowerCurrectRegister = 0x04;
+constexpr std::uint8_t kLowPowerCurrentRegister = 0x04;
 
+// TODOLater: Test this code with hardware
 class LowPowerCurrent {
  public:
-  LowPowerCurrent(core::ILogger &logger,
-                  std::shared_ptr<io::II2c> i2c,
-                  const std::uint8_t device_address);
-
+  std::optional<LowPowerCurrent> create(core::ILogger &logger,
+                                        std::shared_ptr<io::II2c> i2c,
+                                        const std::uint8_t device_address);
   ~LowPowerCurrent();
 
   std::optional<core::Float> readCurrent();
   std::uint8_t getDeviceAddress() const;
+
+ private:
+  LowPowerCurrent(core::ILogger &logger,
+                  std::shared_ptr<io::II2c> i2c,
+                  const std::uint8_t device_address);
 
  private:
   core::ILogger &logger_;
