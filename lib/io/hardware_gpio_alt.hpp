@@ -14,7 +14,6 @@ namespace hyped::io {
 enum class Edge { kNone = 0, kRising, kFalling, kBoth };
 enum class Direction { kIn = 0, kOut };
 
-class HardwareGpio;  // forward declaration
 class HardwareGpioReader : public IGpioReader {
  public:
   HardwareGpioReader(core::ILogger &logger, const int read_file_descritor);
