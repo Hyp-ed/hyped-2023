@@ -365,8 +365,7 @@ void Repl::addI2cCommands(const std::uint8_t bus)
 void Repl::addPwmCommands(const std::uint8_t module, const std::uint32_t period)
 {
   const io::PwmModule pwm_module = static_cast<io::PwmModule>(module);
-  const auto optional_pwm
-    = io::Pwm::create(logger_, pwm_module, period, hyped::io::Polarity::kActiveHigh);
+  const auto optional_pwm = io::Pwm::create(logger_, pwm_module, period, io::Polarity::kActiveHigh);
   if (!optional_pwm) {
     logger_.log(core::LogLevel::kFatal, "Failed to create PWM module");
     return;
