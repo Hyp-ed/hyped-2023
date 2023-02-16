@@ -1,7 +1,7 @@
 import { OpenMCT } from "openmct/dist/openmct"
 import { http } from "../core/http"
 import { ObjectIdentitifer } from "../types/ObjectIdentifier"
-import { ObjectType } from "../types/objectType"
+import { ObjectType } from "../types/ObjectType"
 
 function getDictionary() {
   return http.get('openmct/dictionary').json().then((data) => {
