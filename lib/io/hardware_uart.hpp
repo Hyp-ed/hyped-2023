@@ -4,6 +4,8 @@
 
 #include <strings.h>
 #include <termios.h>
+
+#include <memory>
 #ifdef __APPLE__
 #define B460800 0010004
 #define B500000 0010005
@@ -59,19 +61,18 @@ class Uart : public IUart {
    * @brief  Creates a UART object.
    * @details  Defaults to 8 bits per byte
    */
-  static std::optional<Uart> create(
+  static std::optional<std::shared_ptr<Uart>> create(
     core::ILogger &logger,
     const UartBus bus,
     const BaudRate baud_rate,  // TODOLater: Figure out a default for this by testing
     const BitsPerByte bits_per_byte = BitsPerByte::k8);
+  Uart(core::ILogger &logger, const int file_descriptor);
   ~Uart();
 
   core::Result sendBytes(const char *tx, const std::uint8_t length);
   core::Result readBytes(unsigned char *rx, const std::uint8_t length);
 
  private:
-  Uart(core::ILogger &logger, const int file_descriptor);
-
   /**
    * @brief  Configures the UART file descriptor with the provided masks and pre-set settings
    */

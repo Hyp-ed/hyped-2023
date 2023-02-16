@@ -7,12 +7,12 @@
 
 namespace hyped::io {
 
-std::optional<HardwareSpi> HardwareSpi::create(core::ILogger &logger,
-                                               const SpiBus bus,
-                                               const SpiMode mode,
-                                               const SpiWordSize word_size,
-                                               const SpiBitOrder bit_order,
-                                               const Clock clock)
+std::optional<std::shared_ptr<HardwareSpi>> HardwareSpi::create(core::ILogger &logger,
+                                                                const SpiBus bus,
+                                                                const SpiMode mode,
+                                                                const SpiWordSize word_size,
+                                                                const SpiBitOrder bit_order,
+                                                                const Clock clock)
 {
   // SPI bus only works in kernel mode on Linux, so we need to call the provided driver
   const char *spi_bus_address = getSpiBusAddress(bus);
@@ -51,7 +51,7 @@ std::optional<HardwareSpi> HardwareSpi::create(core::ILogger &logger,
     return std::nullopt;
   }
   logger.log(core::LogLevel::kDebug, "Successfully initialised SPI");
-  return HardwareSpi(logger, file_descriptor);
+  return std::make_shared<HardwareSpi>(logger, file_descriptor);
 }
 
 HardwareSpi::HardwareSpi(core::ILogger &logger, const int file_descriptor)
