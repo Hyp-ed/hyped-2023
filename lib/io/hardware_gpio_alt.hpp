@@ -14,37 +14,35 @@ namespace hyped::io {
 enum class Edge { kNone = 0, kRising, kFalling, kBoth };
 enum class Direction { kIn = 0, kOut };
 
+class HardwareGpio;  // forward declaration
 class HardwareGpioReader : public IGpioReader {
  public:
+  HardwareGpioReader(core::ILogger &logger, const int read_file_descritor);
+  ~HardwareGpioReader();
   /**
    * @brief Read a high or low from the GPIO pin.
    */
   virtual std::optional<core::DigitalSignal> read();
-  ~HardwareGpioReader();
 
  private:
-  HardwareGpioReader(core::ILogger &logger, const int read_file_descritor);
-
   core::ILogger &logger_;
   const int read_file_descriptor_;
-  friend class HardwareGpio;
 };
 
 class HardwareGpioWriter : public IGpioWriter {
  public:
+  HardwareGpioWriter(core::ILogger &logger, const int write_file_descriptor);
+  ~HardwareGpioWriter();
+
   /**
    * @brief Writes a high or low to the GPIO pin.
    * @param state The digital signal to write to the pin.
    */
   virtual core::Result write(const core::DigitalSignal state);
-  ~HardwareGpioWriter();
 
  private:
-  HardwareGpioWriter(core::ILogger &logger, const int write_file_descriptor);
-
   core::ILogger &logger_;
   const int write_file_descriptor_;
-  friend class HardwareGpio;
 };
 
 /**

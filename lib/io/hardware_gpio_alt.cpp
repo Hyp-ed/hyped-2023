@@ -86,8 +86,7 @@ std::optional<std::shared_ptr<IGpioReader>> HardwareGpio::getReader(const std::u
     logger_.log(core::LogLevel::kFatal, "Failed to get file descriptor for GPIO %d", pin);
     return std::nullopt;
   }
-  HardwareGpioReader reader(logger_, read_file_descriptor);
-  return std::make_shared<HardwareGpioReader>(reader);
+  return std::make_shared<HardwareGpioReader>(logger_, read_file_descriptor);
 }
 
 std::optional<std::shared_ptr<IGpioWriter>> HardwareGpio::getWriter(const std::uint8_t pin,
@@ -103,8 +102,7 @@ std::optional<std::shared_ptr<IGpioWriter>> HardwareGpio::getWriter(const std::u
     logger_.log(core::LogLevel::kFatal, "Failed to get file descriptor for GPIO %d", pin);
     return std::nullopt;
   }
-  HardwareGpioWriter writer(logger_, write_file_descriptor);
-  return std::make_shared<HardwareGpioWriter>(writer);
+  return std::make_shared<HardwareGpioWriter>(logger_, write_file_descriptor);
 }
 
 core::Result HardwareGpio::exportPin(const std::uint8_t pin)
