@@ -20,12 +20,12 @@ std::optional<core::DigitalSignal> HardwareGpioReader::read()
 {
   // Read the value from the file
   char read_buffer[2];
-  const auto offset = lseek(read_file_descriptor_, 0, SEEK_SET);
+  const off_t offset = lseek(read_file_descriptor_, 0, SEEK_SET);
   if (offset != 0) {
     logger_.log(core::LogLevel::kFatal, "Failed to reset file offset");
     return std::nullopt;
   }
-  const auto read_result = ::read(read_file_descriptor_, read_buffer, sizeof(read_buffer));
+  const ssize_t read_result = ::read(read_file_descriptor_, read_buffer, sizeof(read_buffer));
   if (read_result != sizeof(read_buffer)) {
     logger_.log(core::LogLevel::kFatal, "Failed to read GPIO value");
     return std::nullopt;
@@ -60,7 +60,7 @@ core::Result HardwareGpioWriter::write(const core::DigitalSignal state)
   char write_buffer[2];
   snprintf(write_buffer, sizeof(write_buffer), "%d", signal_value);
   // Write the value to the file
-  const auto write_result = ::write(write_file_descriptor_, write_buffer, sizeof(write_buffer));
+  const ssize_t write_result = ::write(write_file_descriptor_, write_buffer, sizeof(write_buffer));
   if (write_result != sizeof(write_buffer)) {
     logger_.log(core::LogLevel::kFatal, "Failed to write GPIO value");
     return core::Result::kFailure;
@@ -76,7 +76,7 @@ HardwareGpio::HardwareGpio(core::ILogger &log) : logger_(log)
 std::optional<std::shared_ptr<IGpioReader>> HardwareGpio::getReader(const std::uint8_t pin,
                                                                     const Edge edge)
 {
-  const auto initialise_result = initialisePin(pin, edge, Direction::kIn);
+  const core::Result initialise_result = initialisePin(pin, edge, Direction::kIn);
   if (initialise_result == core::Result::kFailure) {
     logger_.log(core::LogLevel::kFatal, "Failed to initialise GPIO %d", pin);
     return std::nullopt;
@@ -92,7 +92,7 @@ std::optional<std::shared_ptr<IGpioReader>> HardwareGpio::getReader(const std::u
 std::optional<std::shared_ptr<IGpioWriter>> HardwareGpio::getWriter(const std::uint8_t pin,
                                                                     const Edge edge)
 {
-  const auto initialise_result = initialisePin(pin, edge, Direction::kOut);
+  const core::Result initialise_result = initialisePin(pin, edge, Direction::kOut);
   if (initialise_result == core::Result::kFailure) {
     logger_.log(core::LogLevel::kFatal, "Failed to initialise GPIO %d", pin);
     return std::nullopt;
@@ -114,7 +114,7 @@ core::Result HardwareGpio::exportPin(const std::uint8_t pin)
   }
   char write_buffer[4];
   snprintf(write_buffer, sizeof(write_buffer), "%d", pin);
-  const auto write_result = write(export_file_descriptor, write_buffer, sizeof(write_buffer));
+  const ssize_t write_result = write(export_file_descriptor, write_buffer, sizeof(write_buffer));
   close(export_file_descriptor);
   if (write_result != sizeof(write_buffer)) {
     logger_.log(core::LogLevel::kFatal, "Failed to export GPIO %d", pin);
@@ -131,10 +131,10 @@ core::Result HardwareGpio::initialisePin(const std::uint8_t pin,
   // First check if the pin is already exported, and export it if not
   char file_path_buffer[50];
   snprintf(file_path_buffer, sizeof(file_path_buffer), "/sys/class/gpio/gpio%d", pin);
-  const auto access_result = access(file_path_buffer, F_OK);  // Check if the file exists
+  const int access_result = access(file_path_buffer, F_OK);  // Check if the file exists
   if (access_result < 0) {
     logger_.log(core::LogLevel::kDebug, "GPIO %d not exported, exporting", pin);
-    const auto export_result = exportPin(pin);
+    const core::Result export_result = exportPin(pin);
     if (export_result == core::Result::kFailure) {
       logger_.log(core::LogLevel::kFatal, "Failed to export GPIO %d while initialising", pin);
       return core::Result::kFailure;
@@ -148,7 +148,7 @@ core::Result HardwareGpio::initialisePin(const std::uint8_t pin,
     return core::Result::kFailure;
   }
   const std::string direction_string = getDirectionString(direction);
-  const auto direction_write_result
+  const ssize_t direction_write_result
     = write(direction_file_descriptor, direction_string.c_str(), direction_string.size() + 1);
   close(direction_file_descriptor);
   if (direction_write_result != 3) {
@@ -163,7 +163,7 @@ core::Result HardwareGpio::initialisePin(const std::uint8_t pin,
     return core::Result::kFailure;
   }
   const std::string edge_string = getEdgeString(edge);
-  const auto edge_write_result
+  const ssize_t edge_write_result
     = write(edge_file_descriptor, edge_string.c_str(), edge_string.size() + 1);
   close(edge_file_descriptor);
   if (edge_write_result != edge_string.size() + 1) {

@@ -87,7 +87,7 @@ core::Result Pwm::setMode(const Mode mode)
   const std::uint8_t mode_value = static_cast<std::uint8_t>(mode);
   char write_buffer[2];
   snprintf(write_buffer, sizeof(write_buffer), "%d", mode_value);
-  const auto num_bytes_written = write(enable_file_, write_buffer, sizeof(write_buffer));
+  const ssize_t num_bytes_written = write(enable_file_, write_buffer, sizeof(write_buffer));
   if (num_bytes_written != sizeof(write_buffer)) {
     logger_.log(core::LogLevel::kFatal, "Failed to write to PWM enable file");
     return core::Result::kFailure;
@@ -114,7 +114,7 @@ core::Result Pwm::setDutyCycleByPercentage(const core::Float duty_cycle)
                 "Failed to set duty cycle, percentage cannot be less than or equal to 0.0");
     return core::Result::kFailure;
   }
-  const auto time_active = static_cast<std::uint32_t>(duty_cycle * current_period_);
+  const std::uint32_t time_active = static_cast<std::uint32_t>(duty_cycle * current_period_);
   return setDutyCycleByTime(time_active);
 }
 
@@ -128,7 +128,7 @@ core::Result Pwm::setDutyCycleByTime(const std::uint32_t time_active)
   }
   char write_buffer[10];
   snprintf(write_buffer, sizeof(write_buffer), "%d", current_time_active_);
-  const auto num_bytes_written = write(duty_cycle_file_, write_buffer, sizeof(write_buffer));
+  const ssize_t num_bytes_written = write(duty_cycle_file_, write_buffer, sizeof(write_buffer));
   if (num_bytes_written != sizeof(write_buffer)) {
     logger_.log(core::LogLevel::kFatal, "Failed to write to PWM duty cycle file");
     return core::Result::kFailure;
@@ -142,7 +142,7 @@ core::Result Pwm::setPeriod(const std::uint32_t period, const int period_file)
 {
   char write_buffer[10];
   snprintf(write_buffer, sizeof(write_buffer), "%d", period);
-  const auto num_bytes_written = write(period_file, write_buffer, sizeof(write_buffer));
+  const ssize_t num_bytes_written = write(period_file, write_buffer, sizeof(write_buffer));
   if (num_bytes_written != sizeof(write_buffer)) { return core::Result::kFailure; }
   close(period_file);
   return core::Result::kSuccess;
@@ -153,7 +153,7 @@ core::Result Pwm::setPolarity(const Polarity polarity, const int polarity_file)
   const std::uint8_t polarity_value = static_cast<std::uint8_t>(polarity);
   char write_buffer[2];
   snprintf(write_buffer, sizeof(write_buffer), "%d", polarity_value);
-  const auto num_bytes_written = write(polarity_file, write_buffer, sizeof(write_buffer));
+  const ssize_t num_bytes_written = write(polarity_file, write_buffer, sizeof(write_buffer));
   if (num_bytes_written != sizeof(write_buffer)) { return core::Result::kFailure; }
   close(polarity_file);
   return core::Result::kSuccess;
