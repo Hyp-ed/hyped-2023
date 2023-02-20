@@ -1,6 +1,5 @@
 #pragma once
 
-#include "i2c_mux.hpp"
 #include "mux_sensors.hpp"
 
 #include <unistd.h>

@@ -22,7 +22,6 @@ TEST(I2cMux, construction)
   const auto maybe_mux = sensors::I2cMux<std::uint8_t, kSize>::create(logger, i2c, 0, sensors);
   ASSERT_TRUE(maybe_mux);
   const auto mux = *maybe_mux;
-  // sensors::I2cMux < std::uint8_t, kSize> mux(logger, i2c, 0, sensors);
 }
 
 }  // namespace hyped::test
