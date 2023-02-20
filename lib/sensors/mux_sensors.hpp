@@ -8,17 +8,17 @@
 namespace hyped::sensors {
 
 /**
- * If a sensor is to be used with an I2C mux, it must inherit from this abstract class.
+ * If a sensor is to be used with any mux, it must inherit from this abstract class.
  */
 template<typename T>
-class II2cMuxSensor {
+class IMuxSensor {
  public:
   /*
    * This function carries out the initilization steps for a particular sensor.
    */
   virtual std::optional<T> read()         = 0;
   virtual std::uint8_t getChannel() const = 0;
-  virtual ~II2cMuxSensor() {}
+  virtual ~IMuxSensor() {}
 };
 
 }  // namespace hyped::sensors

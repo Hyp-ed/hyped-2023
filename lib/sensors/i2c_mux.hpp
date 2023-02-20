@@ -1,6 +1,6 @@
 #pragma once
 
-#include "i2c_sensors.hpp"
+#include "mux_sensors.hpp"
 
 #include <array>
 #include <cstdint>
@@ -13,10 +13,7 @@
 
 namespace hyped::sensors {
 
-constexpr std::uint8_t kDefaultMuxAddress = 0x70;
-constexpr std::uint8_t kMaxNumMuxChannels = 8;
-// percentage of sensors that can be unusable before the mux is considered unusable
-constexpr core::Float kFailureThreshold = 0.25;  // TODOLater: finalize this value with Electronics
+constexpr std::uint8_t kDefaultI2cMuxAddress = 0x70;
 
 /**
  * @brief Mux for sensors using I2C
@@ -26,10 +23,16 @@ constexpr core::Float kFailureThreshold = 0.25;  // TODOLater: finalize this val
 template<class T, std::uint8_t N>
 class I2cMux {
  public:
+  static std::optional<std::shared_ptr<I2cMux<T, N>>> create(
+    core::ILogger &logger,
+    std::shared_ptr<io::II2c> i2c,
+    const std::uint8_t mux_address,
+    std::array<std::unique_ptr<IMuxSensor<T>>, N> &sensors);
+
   I2cMux(core::ILogger &logger,
          std::shared_ptr<io::II2c> i2c,
          const std::uint8_t mux_address,
-         std::array<std::unique_ptr<II2cMuxSensor<T>>, N> &sensors);
+         std::array<std::unique_ptr<IMuxSensor<T>>, N> &sensors);
   ~I2cMux();
 
   std::optional<std::array<T, N>> readAllChannels();
@@ -38,25 +41,50 @@ class I2cMux {
   core::Result selectChannel(const std::uint8_t channel);
   core::Result closeAllChannels();
 
+ private:
   core::ILogger &logger_;
   std::shared_ptr<io::II2c> i2c_;
   const std::uint8_t mux_address_;
-  const std::array<std::unique_ptr<II2cMuxSensor<T>>, N> sensors_;
+  const std::array<std::unique_ptr<IMuxSensor<T>>, N> sensors_;
   const std::uint8_t max_num_unusable_sensors_;
+
+ private:
+  static constexpr std::uint8_t kMaxNumI2cMuxChannels = 8;
+  // percentage of sensors that can be unusable before the mux is considered unusable
+  static constexpr core::Float kFailureThreshold
+    = 0.25;  // TODOLater: finalize this value with Electronics
 };
+
+template<typename T, std::uint8_t N>
+std::optional<std::shared_ptr<I2cMux<T, N>>> I2cMux<T, N>::create(
+  core::ILogger &logger,
+  std::shared_ptr<io::II2c> i2c,
+  const std::uint8_t mux_address,
+  std::array<std::unique_ptr<IMuxSensor<T>>, N> &sensors)
+{
+  if (N > 8) {
+    logger.log(core::LogLevel::kFatal, "The I2c mux can only have up to 8 channels");
+    return std::nullopt;
+  }
+  if (sensors.size() != N) {
+    logger.log(core::LogLevel::kFatal,
+               "The number of sensors does not match the number of channels");
+    return std::nullopt;
+  }
+  return std::make_shared<I2cMux<T, N>>(logger, i2c, mux_address, sensors);
+}
 
 template<typename T, std::uint8_t N>
 I2cMux<T, N>::I2cMux(core::ILogger &logger,
                      std::shared_ptr<io::II2c> i2c,
                      const std::uint8_t mux_address,
-                     std::array<std::unique_ptr<II2cMuxSensor<T>>, N> &sensors)
+                     std::array<std::unique_ptr<IMuxSensor<T>>, N> &sensors)
     : logger_(logger),
       i2c_(i2c),
       mux_address_(mux_address),
       sensors_(std::move(sensors)),
       max_num_unusable_sensors_(static_cast<std::uint8_t>(kFailureThreshold * N))
 {
-  static_assert(N <= 8, "The I2c mux can only have up to 8 channels");
 }
 
 template<typename T, std::uint8_t N>
@@ -106,7 +134,7 @@ std::optional<std::array<T, N>> I2cMux<T, N>::readAllChannels()
 template<typename T, std::uint8_t N>
 core::Result I2cMux<T, N>::selectChannel(const std::uint8_t channel)
 {
-  if (channel >= kMaxNumMuxChannels) {
+  if (channel >= kMaxNumI2cMuxChannels) {
     logger_.log(core::LogLevel::kFatal, "I2c Mux Channel number %d is not selectable", channel);
     return core::Result::kFailure;
   }
