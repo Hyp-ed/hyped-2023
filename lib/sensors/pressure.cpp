@@ -1,32 +1,30 @@
 #include "pressure.hpp"
 
 namespace hyped::sensors {
-
-std::optional<Pressure> Pressure::create(core::ILogger &logger,
-                                        io::IAdc &adc)
+std::optional<SuspensionPressure> SuspensionPressure::create(core::ILogger &logger,
+                                                             std::shared_ptr<io::IAdc> adc)
 {
-  logger.log(core::LogLevel::kDebug, "Successfully created Pressure instance");
-  return Pressure(logger, adc);
+  logger.log(core::LogLevel::kDebug, "Successfully created SuspensionPressure instance");
+  return SuspensionPressure(logger, adc);
 }
 
-Pressure::Pressure(core::ILogger &logger, std::shared_ptr<io::IAdc> adc)
+SuspensionPressure::SuspensionPressure(core::ILogger &logger, std::shared_ptr<io::IAdc> adc)
     : adc_(adc),
       logger_(logger)
 {
 }
 
-Pressure::~Pressure()
+SuspensionPressure::~SuspensionPressure()
 {
 }
 
-std::uint8_t Pressure::getPressure()
+std::optional<std::uint8_t> SuspensionPressure::getPressure()
 {
-  const auto optionalResult = adc.readValue();
-  if (!optionalResult) {
-    logger_.log(core::LogLevel::kFatal, "Failue for Pressure sensor to read adc value");
+  const auto pressure_result = adc_->readValue();
+  if (!pressure_result) {
+    logger_.log(core::LogLevel::kFatal, "Failue for SuspensionPressure sensor to read adc value");
   }
 
-  return *optionalResult;
+  return *pressure_result;
 }
-
 }  // namespace hyped::sensors

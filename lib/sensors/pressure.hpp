@@ -8,20 +8,20 @@
 #include <io/adc.hpp>
 
 namespace hyped::sensors {
-class Pressure {
+// TODOLater: test with hardware once we have it
+class SuspensionPressure {
  public:
-  static std::optional<Pressure> create(core::ILogger &logger,
-                                        io::IAdc &adc);
-  ~Pressure();
+  static std::optional<SuspensionPressure> create(core::ILogger &logger,
+                                                  std::shared_ptr<io::IAdc> adc);
+  ~SuspensionPressure();
 
-  std::uint8_t getPressure();
+  std::optional<std::uint8_t> getPressure();
 
  private:
-  Pressure(core::ILogger &logger, std::shared_ptr<io::IAdc> adc);
+  SuspensionPressure(core::ILogger &logger, std::shared_ptr<io::IAdc> adc);
 
  private:
   std::shared_ptr<io::IAdc> adc_;
   core::ILogger &logger_;
 };
-
 }  // namespace hyped::sensors
