@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <cstring>
 #include <memory>
+#include <optional>
 
 #include <core/logger.hpp>
 #include <core/types.hpp>
@@ -40,6 +41,8 @@ struct spi_ioc_transfer {
 #define SPI_CS_HIGH 0x04
 #endif  // if LINUX
 
+namespace hyped::io {
+
 // All values and configuration options used are sourced from the AM335x and AMIC110 Sitara™
 // Processors Technical Reference Manual, please refer to the manual for more information.
 
@@ -52,39 +55,30 @@ enum class SpiMode { kMode0 = 0, kMode1, kMode2, kMode3 };
 enum class SpiWordSize { kWordSize4 = 4, kWordSize8 = 8, kWordSize16 = 16, kWordSize32 = 32 };
 enum class SpiBitOrder { kMsbFirst = 0, kLsbFirst };
 // Maximum clock frequency for SPI is 100MHz
-enum class Clock { k500KHz, k1MHz, k4MHz, k16MHz, k20MHz };
-
-namespace hyped::io {
+enum class SpiClock { k500KHz, k1MHz, k4MHz, k16MHz, k20MHz };
 
 class HardwareSpi : public ISpi {
  public:
   /**
-   * @brief Construct a new Spi object. By default we initialise to SPI1, Mode 3 (SPICLK
-   * active low and sampling occurs on the rising edge) with 8-bit words and MSB first.
-   * @param logger - logger to be used
-   * @param bus    - SPI bus to be used
-   * @param mode   - SPI mode to be used
-   * @param word_size - word size to be used
-   * @param bit_order - bit order to be used
-   * @param clock  - clock frequency to be used
+   * @brief Construct a new Spi object. A typical setting could be to SpiBus::SPI1, SpiMode::kMode3
+   * (SPICLK active low and sampling occurs on the rising edge), SpiWordSize::kWordSize8, and
+   * SpiClock::k500KHz
    */
   static std::optional<std::shared_ptr<HardwareSpi>> create(core::ILogger &logger,
-                                                            const SpiBus bus   = SpiBus::kSpi1,
-                                                            const SpiMode mode = SpiMode::kMode3,
-                                                            const SpiWordSize word_size
-                                                            = SpiWordSize::kWordSize8,
-                                                            const SpiBitOrder bit_order
-                                                            = SpiBitOrder::kMsbFirst,
-                                                            const Clock clock = Clock::k500KHz);
+                                                            const SpiBus bus,
+                                                            const SpiMode mode,
+                                                            const SpiWordSize word_size,
+                                                            const SpiBitOrder bit_order,
+                                                            const SpiClock clock);
   HardwareSpi(core::ILogger &logger, const int file_descriptor);
   ~HardwareSpi();
 
-  core::Result read(const std::uint8_t register_address,
-                    const std::uint8_t *rx,
-                    const std::uint16_t len);
-  core::Result write(const std::uint8_t register_address,
-                     const std::uint8_t *tx,
-                     const std::uint16_t len);
+  virtual core::Result read(const std::uint8_t register_address,
+                            const std::uint8_t *rx,
+                            const std::uint16_t len);
+  virtual core::Result write(const std::uint8_t register_address,
+                             const std::uint8_t *tx,
+                             const std::uint16_t len);
 
  private:
   /**
@@ -98,7 +92,7 @@ class HardwareSpi : public ISpi {
    * @param clock - clock frequency to be set
    * @return std::uint32_t - actual clock frequency
    */
-  static std::uint32_t getClockValue(const Clock clock);
+  static std::uint32_t getClockValue(const SpiClock clock);
 
  private:
   core::ILogger &logger_;

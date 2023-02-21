@@ -14,8 +14,12 @@ class DummySpi : public io::ISpi {
   DummySpi()  = default;
   ~DummySpi() = default;
 
-  core::Result read(const std::uint8_t addr, const std::uint8_t *rx, const std::uint16_t len);
-  core::Result write(const std::uint8_t addr, const std::uint8_t *tx, const std::uint16_t len);
+  virtual core::Result read(const std::uint8_t addr,
+                            const std::uint8_t *rx,
+                            const std::uint16_t len);
+  virtual core::Result write(const std::uint8_t addr,
+                             const std::uint8_t *tx,
+                             const std::uint16_t len);
 };
 
 }  // namespace hyped::utils

@@ -2,22 +2,24 @@
 
 #include "gpio.hpp"
 
+#include <cstdint>
+#include <optional>
 #include <string>
 
 #include <core/types.hpp>
 
+namespace hyped::io {
+
 // Edge is used to set the interrupt trigger for the pin.
 enum class Edge { kNone = 0, kRising, kFalling, kBoth };
 enum class Direction { kIn = 0, kOut };
-
-namespace hyped::io {
 
 class HardwareGpioReader : public IGpioReader {
  public:
   /**
    * @brief Read a high or low from the GPIO pin.
    */
-  std::optional<core::DigitalSignal> read();
+  virtual std::optional<core::DigitalSignal> read();
   ~HardwareGpioReader();
 
  private:
@@ -34,7 +36,7 @@ class HardwareGpioWriter : public IGpioWriter {
    * @brief Writes a high or low to the GPIO pin.
    * @param state The digital signal to write to the pin.
    */
-  core::Result write(const core::DigitalSignal state);
+  virtual core::Result write(const core::DigitalSignal state);
   ~HardwareGpioWriter();
 
  private:
@@ -54,10 +56,10 @@ class HardwareGpio {
  public:
   HardwareGpio(core::ILogger &logger);
 
-  std::optional<std::shared_ptr<IGpioReader>> getReader(const std::uint8_t pin,
-                                                        const Edge edge = Edge::kBoth);
-  std::optional<std::shared_ptr<IGpioWriter>> getWriter(const std::uint8_t pin,
-                                                        const Edge edge = Edge::kBoth);
+  virtual std::optional<std::shared_ptr<IGpioReader>> getReader(const std::uint8_t pin,
+                                                                const Edge edge);
+  virtual std::optional<std::shared_ptr<IGpioWriter>> getWriter(const std::uint8_t pin,
+                                                                const Edge edge);
 
  private:
   /**
