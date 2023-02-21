@@ -9,7 +9,7 @@ class DummyAdc : public io::IAdc {
   DummyAdc()  = default;
   ~DummyAdc() = default;
 
-  std::optional<std::uint16_t> readValue();
+  virtual std::optional<core::Float> readValue();
 };
 
 }  // namespace hyped::utils

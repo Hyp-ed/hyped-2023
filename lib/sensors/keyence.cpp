@@ -3,10 +3,10 @@
 namespace hyped::sensors {
 
 std::optional<Keyence> Keyence::create(core::ILogger &logger,
-                                       io::IGpio &gpio,
+                                       std::shared_ptr<io::IGpio> gpio,
                                        const std::uint8_t new_pin)
 {
-  const auto reader = gpio.getReader(new_pin);
+  const auto reader = gpio->getReader(new_pin);
   if (!reader) {
     logger.log(core::LogLevel::kFatal, "Failed to create Keyence instance");
     return std::nullopt;
