@@ -47,8 +47,7 @@ class ICanProcessor {
 class ICan {
  public:
   virtual core::Result send(const CanFrame &message)                                          = 0;
-  virtual std::optional<CanFrame> receive()                                                   = 0;
-  virtual core::Result listen()                                                               = 0;
+  virtual core::Result receive()                                                              = 0;
   virtual void addProcessor(const std::uint16_t id, std::shared_ptr<ICanProcessor> processor) = 0;
 };
 }  // namespace hyped::io

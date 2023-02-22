@@ -79,46 +79,38 @@ core::Result HardwareCan::send(const io::CanFrame &data)
   return core::Result::kSuccess;
 }
 
-std::optional<CanFrame> HardwareCan::receive()
+core::Result HardwareCan::receive()
 {
-  CanFrame received_message;
+  if (ioctl(socket_, FIONREAD) < sizeof(CanFrame)) { return core::Result::kFailure; }
+  CanFrame message;
   if (ioctl(socket_, FIONREAD) < sizeof(CanFrame)) {
     logger_.log(core::LogLevel::kDebug, "No CAN data in rx queue");
-    return std::nullopt;
+    return core::Result::kFailure;
   }
-  const int num_bytes_read = read(socket_, &received_message, sizeof(CanFrame));
+  const int num_bytes_read = read(socket_, &message, sizeof(CanFrame));
   if (num_bytes_read < sizeof(CanFrame)) {
     logger_.log(core::LogLevel::kFatal, "Failed to receive CAN data");
-    return std::nullopt;
+    return core::Result::kFailure;
   }
   // TODOLater make logger more elegant
   logger_.log(core::LogLevel::kDebug,
               "CAN message received, ID:%i, DATA: %i %i %i %i %i %i %i %i",
-              static_cast<int>(received_message.can_id),
-              static_cast<int>(received_message.data[0]),
-              static_cast<int>(received_message.data[1]),
-              static_cast<int>(received_message.data[2]),
-              static_cast<int>(received_message.data[3]),
-              static_cast<int>(received_message.data[4]),
-              static_cast<int>(received_message.data[5]),
-              static_cast<int>(received_message.data[6]),
-              static_cast<int>(received_message.data[7]));
-
-  return received_message;
-}
-
-core::Result HardwareCan::listen()
-{
-  if (ioctl(socket_, FIONREAD) < sizeof(CanFrame)) { return core::Result::kFailure; }
-  const auto message = receive();
-  if (!message) { return core::Result::kFailure; }
-  const auto subscribed_processors = processors_.find(message->can_id);
+              static_cast<int>(message.can_id),
+              static_cast<int>(message.data[0]),
+              static_cast<int>(message.data[1]),
+              static_cast<int>(message.data[2]),
+              static_cast<int>(message.data[3]),
+              static_cast<int>(message.data[4]),
+              static_cast<int>(message.data[5]),
+              static_cast<int>(message.data[6]),
+              static_cast<int>(message.data[7]));
+  const auto subscribed_processors = processors_.find(message.can_id);
   if (subscribed_processors == processors_.end()) {
-    logger_.log(core::LogLevel::kFatal, "No CanProccessor associated with id %i", message->can_id);
+    logger_.log(core::LogLevel::kFatal, "No CanProccessor associated with id %i", message.can_id);
     return core::Result::kFailure;
   }
   for (auto &processor : subscribed_processors->second) {
-    processor->processMessage(*message);
+    processor->processMessage(message);
   }
   return core::Result::kSuccess;
 }
