@@ -22,9 +22,9 @@ std::optional<std::uint8_t> SuspensionPressure::getPressure()
 {
   const auto pressure_result = adc_->readValue();
   if (!pressure_result) {
-    logger_.log(core::LogLevel::kFatal, "Failue for SuspensionPressure sensor to read adc value");
+    logger_.log(core::LogLevel::kFatal, "Failed to read value from suspension pressure sensor");
   }
-
   return *pressure_result;
 }
+
 }  // namespace hyped::sensors
