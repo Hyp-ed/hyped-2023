@@ -9,16 +9,6 @@
 
 namespace hyped::sensors {
 
-// ! these values still have to be found
-constexpr std::uint8_t kDefaultWheelEncoderAddress = 0x0;
-
-constexpr std::uint8_t low_byte_address_    = 0x0;
-constexpr std::uint8_t middle_byte_address_ = 0x0;
-constexpr std::uint8_t high_byte_address_   = 0x0;
-
-constexpr std::uint8_t kFreeRegisterAddress = 0x0;
-constexpr std::uint8_t kFreeRegisterValue   = 0x2;
-
 class WheelEncoder {
  public:
   static std::optional<WheelEncoder> create(core::ILogger &logger,
@@ -36,6 +26,15 @@ class WheelEncoder {
   core::ILogger &logger_;
   std::shared_ptr<io::II2c> i2c_;
   const std::uint8_t channel_;
+
+ private:
+  // ! these values still have to be found
+  static constexpr std::uint8_t kDefaultWheelEncoderAddress = 0x0;
+  static constexpr std::uint8_t low_byte_address_           = 0x0;
+  static constexpr std::uint8_t middle_byte_address_        = 0x0;
+  static constexpr std::uint8_t high_byte_address_          = 0x0;
+  static constexpr std::uint8_t kFreeRegisterAddress        = 0x0;
+  static constexpr std::uint8_t kFreeRegisterValue          = 0x2;
 };
 
 }  // namespace hyped::sensors

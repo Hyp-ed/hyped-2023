@@ -6,7 +6,6 @@ std::optional<WheelEncoder> WheelEncoder::create(core::ILogger &logger,
                                                  std::shared_ptr<io::II2c> i2c,
                                                  const std::uint8_t channel)
 {
-  // resetWheelTurnCount();
   return WheelEncoder(logger, i2c, channel);
 }
 
