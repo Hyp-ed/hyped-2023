@@ -32,9 +32,9 @@ class Controller {
   Controller(core::ILogger &logger,
              const std::unordered_map<std::string, core::CanFrame> &messages,
              const std::vector<core::CanFrame> &configuration_messages);
-  core::ILogger &logger_;
 
  private:
+  core::ILogger &logger_;
   // TODOLater replace core::CanFrame with io::CanFrame once merged
   const std::unordered_map<std::string, core::CanFrame> messages_;
   const std::vector<core::CanFrame> configuration_messages_;
