@@ -25,19 +25,19 @@ class Controller {
                                           const std::string &message_file_path);
   void processErrorMessage(const std::uint16_t error_code);
   ControllerStatus processWarningMessage(const std::uint8_t warning_code);
-  static std::optional<core::CanFrame> parseJsonCanFrame(
+  static std::optional<io::CanFrame> parseJsonCanFrame(
     core::ILogger &logger, rapidjson::GenericObject<true, rapidjson::Value> message);
 
  private:
   Controller(core::ILogger &logger,
-             const std::unordered_map<std::string, core::CanFrame> &messages,
-             const std::vector<core::CanFrame> &configuration_messages);
+             const std::unordered_map<std::string, io::CanFrame> &messages,
+             const std::vector<io::CanFrame> &configuration_messages);
 
  private:
   core::ILogger &logger_;
-  // TODOLater replace core::CanFrame with io::CanFrame once merged
-  const std::unordered_map<std::string, core::CanFrame> messages_;
-  const std::vector<core::CanFrame> configuration_messages_;
+  // TODOLater replace io::CanFrame with io::CanFrame once merged
+  const std::unordered_map<std::string, io::CanFrame> messages_;
+  const std::vector<io::CanFrame> configuration_messages_;
 };
 
 }  // namespace hyped::motors
