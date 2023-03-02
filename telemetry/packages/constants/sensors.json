@@ -1,89 +1,80 @@
-[
-  {
-    "name": "datalogger",
-    "objpath": "datalogger",
+{
+  "1": {
+    "name": "Pod 1",
+    "key": "pod.1",
     "measurements": [
       {
-        "name": "temperature",
-        "objpath": "pod_1.temperature",
-        "options": {
-          "format": "float",
-          "units": "c"
-        },
-        "topic": "hyped.temperature"
+        "name": "Temperature - Shell Front",
+        "key": "temperature.shell_front",
+        "format": "float",
+        "type": "temperature",
+        "units": "°C",
+        "range": {
+          "min": -20,
+          "max": 50
+        }
       },
       {
-        "name": "keyence",
-        "objpath": "pod_1.keyence",
-        "options": {
-          "format": "float",
-          "units": "number of stripes"
-        },
-        "topic": "hyped.keyence"
+        "name": "Temperature - Shell Middle",
+        "key": "temperature.shell_middle",
+        "format": "float",
+        "type": "temperature",
+        "units": "°C",
+        "range": {
+          "min": -20,
+          "max": 50
+        }
       },
       {
-        "name": "accelerometer",
-        "objpath": "pod_1.accelerometer",
-        "options": {
-          "format": "float",
-          "units": "m/s^2"
-        },
-        "topic": "hyped.accelerometer"
+        "name": "Temperature - Shell Back",
+        "key": "temperature.shell_back",
+        "format": "float",
+        "type": "temperature",
+        "units": "°C",
+        "range": {
+          "min": -20,
+          "max": 50
+        }
       },
       {
-        "name": "keyence",
-        "objpath": "pod_1.keyence",
-        "options": {
-          "format": "float",
-          "units": "number of stripes"
-        },
-        "topic": "hyped.keyence"
+        "name": "Accelerometer",
+        "key": "accelerometer",
+        "format": "float",
+        "type": "acceleration",
+        "units": "ms^-2",
+        "range": {
+          "min": -10,
+          "max": 10
+        }
       },
       {
-        "name": "wheel_encoder",
-        "objpath": "pod_1.wheel_encoder",
-        "options": {
-          "format": "float",
-          "units": "wheel rotations"
-        },
-        "topic": "hyped.wheel_encoder"
+        "name": "Keyence",
+        "key": "keyence",
+        "format": "integer",
+        "type": "keyence",
+        "units": "number of stripes",
+        "range": {
+          "min": 0,
+          "max": 100
+        }
       },
       {
-        "name": "gyroscope",
-        "objpath": "pod_1.gyroscope",
-        "options": {
-          "format": "float",
-          "units": "°/s"
-        },
-        "topic": "hyped.gyroscope"
-      },
-      {
-        "name": "hall_effect",
-        "objpath": "pod_1.hall_effect",
-        "options": {
-          "format": "float",
-          "units": "teslas"
-        },
-        "topic": "hyped.hall_effect"
-      },
-      {
-        "name": "brake_feedback",
-        "objpath": "pod_1.brake_feedback",
-        "options": {
-          "format": "boolean",
-          "units": "brakes engaged"
-        },
-        "topic": "hyped.brake_feedback"
-      },
-      {
-        "name": "pressure",
-        "objpath": "pod_1.pressure",
-        "options": {
-          "format": "float",
-          "units": "pascals"
-        },
-        "topic": "hyped.pressure"
+        "name": "Brake Feedback",
+        "key": "brake_feedback",
+        "format": "enum",
+        "type": "brake_feedback",
+        "units": "brakes engaged",
+        "enumerations": [
+          {
+            "key": "ON",
+            "value": 1
+          },
+          {
+            "key": "OFF",
+            "value": 0
+          }
+        ]
       }
     ]
   }
-]
+}

@@ -9,15 +9,16 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "openmct": "git+https://github.com/nasa/openmct.git#v2.1.5",
     "@headlessui/react": "^1.7.9",
+    "ky": "^0.33.2",
+    "openmct": "git+https://github.com/nasa/openmct.git#v2.1.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "victormono": "^1.5.4"
   },
   "devDependencies": {
-    "@types/react": "^18.0.26",
-    "@types/react-dom": "^18.0.9",
+    "@types/react": "^18.0.28",
+    "@types/react-dom": "^18.0.11",
     "@vitejs/plugin-react-swc": "^3.0.0",
     "autoprefixer": "^10.4.13",
     "postcss": "^8.4.21",
