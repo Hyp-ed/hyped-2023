@@ -17,9 +17,15 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@hyped/telemetry-constants": "*",
+    "@influxdata/influxdb-client": "^1.33.1",
     "@nestjs/common": "^9.2.1",
     "@nestjs/core": "^9.2.1",
+    "@nestjs/microservices": "^9.2.1",
     "@nestjs/platform-express": "^9.2.1",
+    "dotenv": "^16.0.3",
+    "env-var": "^7.3.0",
+    "mqtt": "^4.3.7",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.0"
   },

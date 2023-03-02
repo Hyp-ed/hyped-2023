@@ -11,7 +11,7 @@ namespace hyped::sensors {
 class Keyence {
  public:
   static std::optional<Keyence> create(core::ILogger &logger,
-                                       io::IGpio &gpio,
+                                       std::shared_ptr<io::IGpio> gpio,
                                        const std::uint8_t new_pin);
   ~Keyence();
 

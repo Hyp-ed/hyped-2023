@@ -2,7 +2,7 @@
 
 namespace hyped::utils {
 
-std::optional<std::uint16_t> DummyAdc::readValue()
+std::optional<core::Float> DummyAdc::readValue()
 {
   return std::nullopt;
 }
