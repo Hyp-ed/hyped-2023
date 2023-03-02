@@ -39,6 +39,7 @@
         flex-grow: 0;
         flex-shrink: 1;
         overflow-x: auto;
+        width: 100%;
       }
       #resizeBar {
         width: 5px;
@@ -47,9 +48,6 @@
         margin: 0 0 0 auto;
         background: #535353;
         cursor: col-resize;
-      }
-      #root {
-        width: 100%;
       }
     </style>
   </head>
@@ -61,6 +59,7 @@
     </div>
     <script type="module" src="./main.tsx"></script>
     <script>
+      // https://stackoverflow.com/questions/12194469/best-way-to-do-a-split-pane-in-html
       let isMouseDown = false;
       resizeBar.addEventListener('mousedown', mouseDown);
 

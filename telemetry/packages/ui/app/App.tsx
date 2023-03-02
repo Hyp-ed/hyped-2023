@@ -43,9 +43,7 @@ const App = () => {
   };
 
   return (
-    <main
-      className={`px-4 py-8 flex flex-col justify-between h-full bg-[#393939]select-none text-gray-100`}
-    >
+    <main className="px-4 py-8 flex flex-col justify-between h-full bg-[#393939] select-none text-gray-100">
       <div className="flex flex-col justify-between h-full">
         <div className="space-y-2">
           <StatusIndicator status={STATUS} />
@@ -57,7 +55,7 @@ const App = () => {
         </div>
         <div>
           <div className="flex flex-col gap-4 mb-16">
-            <p className="text-2xl font-bold">Options:</p>
+            <p className="text-3xl font-title font-bold underline">Options</p>
             <Toggle onChange={toggleMotorCooling} text="Motor Cooling" />
             <Toggle
               onChange={toggleActiveSuspension}

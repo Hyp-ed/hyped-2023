@@ -6,7 +6,7 @@ import 'victormono';
 import '@fontsource/raleway';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-  // ts@ignore
+  // @ts-ignore
   <React.StrictMode>
     <App />
   </React.StrictMode>,
