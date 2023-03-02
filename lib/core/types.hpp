@@ -15,15 +15,6 @@ enum class Axis { kX = 0, kY, kZ };
 
 using Float = float;
 
-struct CanFrame {
-  std::uint32_t can_id; /* 32 bit CAN_ID + EFF/RTR/ERR flags */
-  std::uint8_t can_dlc; /* frame payload length in byte (0 .. CAN_MAX_DLEN) */
-  std::uint8_t __pad;   /* padding */
-  std::uint8_t __res0;  /* reserved / padding */
-  std::uint8_t __res1;  /* reserved / padding */
-  std::array<std::uint8_t, 8> data;
-};
-
 // current trajectory struct
 struct Trajectory {
   Float displacement;
