@@ -6,12 +6,20 @@ namespace hyped::navigation {
 
 Navigator::Navigator()
 {
-  // TODOLater: implement
+  // TODOLater: implement, add log and timesource so far
 }
 
 std::optional<core::Trajectory> Navigator::currentTrajectory()
 {
   /*
+  TODO:
+  - instantiate kalman
+  - make all the arguents (store some as class data members?)
+  - kalman.filter(*all the arguments*)
+  - state_est = Kalman.getStateEstimate()
+  - run cross checkers
+  - if no oopsies, return trajectory
+
   TODOLater: call cross-checker now to ensure return
   trajectory is accurate and delicious.
 

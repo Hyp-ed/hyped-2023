@@ -10,16 +10,19 @@
 
 namespace hyped::navigation {
 
+// State dimension 3, measurement dimension 1
 template<std::size_t state_dimension, std::size_t measurement_dimension>
 class KalmanFilter {
  public:
+  // in order acc, velocity, displacement
   using StateVector           = Eigen::Matrix<core::Float, state_dimension, 1>;
   using StateTransitionMatrix = Eigen::Matrix<core::Float, state_dimension, state_dimension>;
   using StateTransitionCovarianceMatrix
     = Eigen::Matrix<core::Float, state_dimension, state_dimension>;
   using ErrorCovarianceMatrix = Eigen::Matrix<core::Float, state_dimension, state_dimension>;
-  using MeasurementMatrix     = Eigen::Matrix<core::Float, measurement_dimension, state_dimension>;
-  using MeasurementVector     = Eigen::Matrix<core::Float, measurement_dimension, 1>;
+  using MeasurementMatrix
+    = Eigen::Matrix<core::Float, measurement_dimension, state_dimension>;          //[1, 0, 0]
+  using MeasurementVector = Eigen::Matrix<core::Float, measurement_dimension, 1>;  //[acc_val, 0, 0]
   using MeasurementNoiseCovarianceMatrix
     = Eigen::Matrix<core::Float, measurement_dimension, measurement_dimension>;
 
@@ -41,6 +44,7 @@ class KalmanFilter {
               const MeasurementNoiseCovarianceMatrix &measurement_noise_covariance,
               const MeasurementVector &measurement)
   {
+    // TODO: figure out how to make transition matrix given time delta - in main nav section
     const auto apriori_state_estimate = transition_matrix * state_estimate_;
     const auto apriori_error_covariance
       = (transition_matrix.transpose() * error_covariance_ * transition_matrix)
