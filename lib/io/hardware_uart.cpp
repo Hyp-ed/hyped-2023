@@ -7,8 +7,8 @@ namespace hyped::io {
 
 std::optional<std::shared_ptr<Uart>> Uart::create(core::ILogger &logger,
                                                   const UartBus bus,
-                                                  const BaudRate baud_rate,
-                                                  const BitsPerByte bits_per_byte)
+                                                  const UartBaudRate baud_rate,
+                                                  const UartBitsPerByte bits_per_byte)
 {
   char path[15];  // up to "/dev/ttyO5"
   snprintf(path, sizeof(path), "/dev/ttyO%d", static_cast<std::uint8_t>(bus));

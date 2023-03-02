@@ -3,15 +3,15 @@
 #include <cstdint>
 
 #include <core/types.hpp>
+#include <io/hardware_can.hpp>
 
 namespace hyped::motors {
 
-class CanProcessor {
+class CanProcessor : public io::ICanProcessor {
  public:
   CanProcessor();
 
-  bool sendMessage(const core::CanFrame frame);
-  void processMessage(const core::CanFrame frame);
+  void processMessage(const io::CanFrame &frame);
 };
 
 }  // namespace hyped::motors
