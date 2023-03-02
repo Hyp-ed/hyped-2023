@@ -81,9 +81,9 @@ class EncodersPreprocessor {
   Quartile getQuartiles(std::array<std::uint32_t, N> &reliable_data) const
   {
     std::sort(reliable_data.begin(), reliable_data.end());
-    return {.q1     = getSpecificQuantile(reliable_data, 0.25),
+    return {.first_quartile     = getSpecificQuantile(reliable_data, 0.25),
             .median = getSpecificQuantile(reliable_data, 0.5),
-            .q3     = getSpecificQuantile(reliable_data, 0.75)};
+            .third_quartile     = getSpecificQuantile(reliable_data, 0.75)};
   }
 
   core::ILogger &logger_;

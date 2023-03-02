@@ -20,9 +20,9 @@ enum class SensorChecks { kUnacceptable = 0, kAcceptable };
 inline core::Trajectory zero_trajectory = {0, 0, 0};
 
 struct Quartile {
-  core::Float q1;
+  core::Float first_quartile;
   core::Float median;
-  core::Float q3;
+  core::Float third_quartile;
 };
 
 class INavigator {

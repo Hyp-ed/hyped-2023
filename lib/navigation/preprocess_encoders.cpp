@@ -1,7 +1,5 @@
-#include "consts.hpp"
 #include "preprocess_encoders.hpp"
 
-#include "core/types.hpp"
 
 namespace hyped::navigation {
 
@@ -37,7 +35,7 @@ std::optional<EncodersPreprocessor::Statistics> EncodersPreprocessor::getStatist
   if (num_reliable_encoders_ == core::kNumEncoders) {
     auto reliable_data                    = encoder_data;
     const Quartile quartiles              = getQuartiles(reliable_data);
-    const core::Float interquartile_range = quartiles.q3 - quartiles.q1;
+    const core::Float interquartile_range = quartiles.third_quartile - quartiles.first_quartile;
     return {
       {.median      = quartiles.median,
        .upper_bound = quartiles.median + static_cast<core::Float>(1.5) * interquartile_range,
@@ -52,7 +50,7 @@ std::optional<EncodersPreprocessor::Statistics> EncodersPreprocessor::getStatist
       }
     }
     const Quartile quartiles              = getQuartiles(reliable_data);
-    const core::Float interquartile_range = quartiles.q3 - quartiles.q1;
+    const core::Float interquartile_range = quartiles.third_quartile - quartiles.first_quartile;
     return {
       {.median      = quartiles.median,
        .upper_bound = quartiles.median + static_cast<core::Float>(1.2) * interquartile_range,
