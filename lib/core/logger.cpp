@@ -43,6 +43,10 @@ void Logger::log(const LogLevel level, const char *format, ...)
         file = stdout;
         printHead(file, "INFO");
         break;
+      case LogLevel::kWarn:
+        file = stderr;
+        printHead(file, "WARN");
+        break;
       case LogLevel::kFatal:
         file = stderr;
         printHead(file, "FATAL");

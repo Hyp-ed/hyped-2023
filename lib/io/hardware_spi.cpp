@@ -7,12 +7,12 @@
 
 namespace hyped::io {
 
-std::optional<HardwareSpi> HardwareSpi::create(core::ILogger &logger,
-                                               const SpiBus bus,
-                                               const SpiMode mode,
-                                               const SpiWordSize word_size,
-                                               const SpiBitOrder bit_order,
-                                               const Clock clock)
+std::optional<std::shared_ptr<HardwareSpi>> HardwareSpi::create(core::ILogger &logger,
+                                                                const SpiBus bus,
+                                                                const SpiMode mode,
+                                                                const SpiWordSize word_size,
+                                                                const SpiBitOrder bit_order,
+                                                                const SpiClock clock)
 {
   // SPI bus only works in kernel mode on Linux, so we need to call the provided driver
   const char *spi_bus_address = getSpiBusAddress(bus);
@@ -51,7 +51,7 @@ std::optional<HardwareSpi> HardwareSpi::create(core::ILogger &logger,
     return std::nullopt;
   }
   logger.log(core::LogLevel::kDebug, "Successfully initialised SPI");
-  return HardwareSpi(logger, file_descriptor);
+  return std::make_shared<HardwareSpi>(logger, file_descriptor);
 }
 
 HardwareSpi::HardwareSpi(core::ILogger &logger, const int file_descriptor)
@@ -118,19 +118,19 @@ const char *HardwareSpi::getSpiBusAddress(const SpiBus bus)
   }
 }
 
-std::uint32_t HardwareSpi::getClockValue(Clock clock)
+std::uint32_t HardwareSpi::getClockValue(SpiClock clock)
 {
   switch (clock) {
-    case Clock::k500KHz:
-      return 500000;
-    case Clock::k1MHz:
-      return 1000000;
-    case Clock::k4MHz:
-      return 4000000;
-    case Clock::k16MHz:
-      return 16000000;
-    case Clock::k20MHz:
-      return 20000000;
+    case SpiClock::k500KHz:
+      return 500'000;
+    case SpiClock::k1MHz:
+      return 1'000'000;
+    case SpiClock::k4MHz:
+      return 4'000'000;
+    case SpiClock::k16MHz:
+      return 16'000'000;
+    case SpiClock::k20MHz:
+      return 20'000'000;
     default:  // for compiler
       return 0;
   }

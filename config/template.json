@@ -21,6 +21,18 @@
 				"enabled": false,
 				"buses": []
 			}
+		},
+		"sensors": {
+			"accelerometer": {
+				"enabled": false,
+				"bus": 2,
+				"device_address": 25
+			},
+			"temperature": {
+				"enabled": false,
+				"bus": 2,
+				"device_address": 56
+			}
 		}
 	}
 }

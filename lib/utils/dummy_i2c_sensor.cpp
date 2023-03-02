@@ -16,7 +16,7 @@ std::optional<std::uint8_t> DummyI2cSensor::read()
   return 0;
 }
 
-std::uint8_t DummyI2cSensor::getChannel()
+std::uint8_t DummyI2cSensor::getChannel() const
 {
   return 0;
 }

@@ -27,7 +27,14 @@
 
 namespace hyped::core {
 
-enum class LogLevel { kNone = 0, kDebug, kInfo, kFatal };
+/**
+ * kNone: no logging
+ * kDebug: logging debug info (successess, values read, etc.)
+ * kInfo: logging of important events (state changes, etc.)
+ * kWarn: logging non-fatal unexpected events that do not stop the program
+ * kFatal: logging fatal unexpected events that stop the program
+ */
+enum class LogLevel { kNone = 0, kDebug, kInfo, kWarn, kFatal };
 
 class ILogger {
  public:
