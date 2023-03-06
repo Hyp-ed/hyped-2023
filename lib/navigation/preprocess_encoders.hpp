@@ -8,8 +8,8 @@
 #include <cstdint>
 #include <optional>
 
-#include "core/logger.hpp"
-#include "core/types.hpp"
+#include <core/logger.hpp>
+#include <core/types.hpp>
 
 namespace hyped::navigation {
 
@@ -66,8 +66,8 @@ class EncodersPreprocessor {
     const core::Float theoretical_index = (num_reliable_encoders_ - 1) * fraction;
     const std::size_t low_index         = static_cast<std::size_t>(std::floor(theoretical_index));
     const std::size_t high_index        = static_cast<std::size_t>(std::ceil(theoretical_index));
-    const auto low                      = static_cast<core::Float>(reliable_data.at(low_index));
-    const auto high                     = static_cast<core::Float>(reliable_data.at(high_index));
+    const core::Float low               = static_cast<core::Float>(reliable_data.at(low_index));
+    const core::Float high              = static_cast<core::Float>(reliable_data.at(high_index));
     return (low + high) / 2.0;
   }
 
@@ -81,16 +81,16 @@ class EncodersPreprocessor {
   Quartile getQuartiles(std::array<std::uint32_t, N> &reliable_data) const
   {
     std::sort(reliable_data.begin(), reliable_data.end());
-    return {.first_quartile     = getSpecificQuantile(reliable_data, 0.25),
-            .median = getSpecificQuantile(reliable_data, 0.5),
-            .third_quartile     = getSpecificQuantile(reliable_data, 0.75)};
+    return {.first_quartile = getSpecificQuantile(reliable_data, 0.25),
+            .median         = getSpecificQuantile(reliable_data, 0.5),
+            .third_quartile = getSpecificQuantile(reliable_data, 0.75)};
   }
 
   core::ILogger &logger_;
   std::array<uint16_t, core::kNumEncoders> num_consecutive_outliers_per_encoder_;
   std::array<bool, core::kNumEncoders> are_encoders_reliable_;
   std::uint8_t num_reliable_encoders_;
-  const std::uint8_t max_consecutive_outliers_;
+  constexpr std::uint8_t max_consecutive_outliers_;
 };
 
 }  // namespace hyped::navigation

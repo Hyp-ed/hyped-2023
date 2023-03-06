@@ -17,7 +17,6 @@ bool checkArrayEquality(core::EncoderData &encoder_data_a, core::EncoderData &en
   for (std::size_t i = 0; i < encoder_data_a.size(); ++i) {
     if (std::fabs(encoder_data_a.at(i) - encoder_data_b.at(i)) > core::kEpsilon) { return false; }
   }
-
   return true;
 }
 
