@@ -24,7 +24,7 @@ if(BUILD_TESTING)
 endif()
 
 add_executable(publisher src/publisher.cpp)
-add_executable(subscriber src/subscriver.cpp)
+add_executable(subscriber src/subscriber.cpp)
 ament_target_dependencies(publisher subscriber rclcpp std_msgs hyped_messages)
 target_link_libraries(publisher
   Hyped::hyped_core
