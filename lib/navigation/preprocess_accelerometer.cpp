@@ -2,8 +2,10 @@
 
 namespace hyped::navigation {
 
-AccelerometerPreprocessor::AccelerometerPreprocessor(core::ILogger &logger)
+AccelerometerPreprocessor::AccelerometerPreprocessor(core::ILogger &logger,
+                                                     const core::ITimeSource &time)
     : logger_(logger),
+      time_(time),
       num_outliers_per_accelerometer_({0, 0, 0, 0}),
       are_accelerometers_reliable_({true, true, true, true}),
       num_reliable_accelerometers_(core::kNumAccelerometers)
@@ -22,7 +24,7 @@ std::optional<core::AccelerometerData> AccelerometerPreprocessor::processData(
     }
     accelerometer_data.at(i) = std::sqrt(magnitude);
   }
-  const core::AccelerometerData accel_data = detectOutliers(accelerometer_data);
+  const core::AccelerometerData accel_data = handleOutliers(accelerometer_data);
   SensorChecks sensorcheck                 = checkReliable();
 
   if (sensorcheck == SensorChecks::kUnacceptable) {
@@ -32,7 +34,7 @@ std::optional<core::AccelerometerData> AccelerometerPreprocessor::processData(
   }
 }
 
-core::AccelerometerData AccelerometerPreprocessor::detectOutliers(
+core::AccelerometerData AccelerometerPreprocessor::handleOutliers(
   core::AccelerometerData accelerometer_data)
 {
   // core::AccelerometerData accelerometer_data;
@@ -80,6 +82,24 @@ core::AccelerometerData AccelerometerPreprocessor::detectOutliers(
     }
   }
   return accelerometer_data;
+}
+
+// TODO: implement this to return the matrix as a fuction of time_delta.
+Eigen::Matrix<core::Float, 3, 3> AccelerometerPreprocessor::getStateTransitionMatrix(
+  const core::Duration time_delta)
+{
+  // so it compiles
+  Eigen::Matrix<core::Float, 3, 3> x;
+  x(0, 0) = 1;
+  x(0, 1) = 1;
+  x(0, 2) = 1;
+  x(1, 0) = 1;
+  x(1, 1) = 1;
+  x(1, 2) = 1;
+  x(2, 0) = 1;
+  x(2, 1) = 1;
+  x(2, 2) = 1;
+  return x;
 }
 
 SensorChecks AccelerometerPreprocessor::checkReliable()

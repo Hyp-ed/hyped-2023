@@ -24,7 +24,7 @@ TEST(Accelerometer, equal_data)
 {
   utils::ManualTime manual_time;
   core::Logger logger("test", core::LogLevel::kFatal, manual_time);
-  navigation::AccelerometerPreprocessor accelerometer_processer(logger);
+  navigation::AccelerometerPreprocessor accelerometer_processer(logger, manual_time);
   const core::RawAccelerometerData data = {{1, 1, 1}};
   const core::AccelerometerData answer  = {static_cast<core::Float>(std::sqrt(3.0))};
   const auto final_data                 = accelerometer_processer.processData(data);
@@ -35,7 +35,7 @@ TEST(Accelerometer, not_equal_data)
 {
   utils::ManualTime manual_time;
   core::Logger logger("test", core::LogLevel::kFatal, manual_time);
-  navigation::AccelerometerPreprocessor accelerometer_processer(logger);
+  navigation::AccelerometerPreprocessor accelerometer_processer(logger, manual_time);
   const core::RawAccelerometerData data = {{{3, 5, 6}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1}}};
   const core::AccelerometerData answer  = {static_cast<core::Float>(std::sqrt(3.0))};
   const auto final_data                 = accelerometer_processer.processData(data);
@@ -46,7 +46,7 @@ TEST(Accelerometer, one_unreliable_sensor)
 {
   utils::ManualTime manual_time;
   core::Logger logger("test", core::LogLevel::kFatal, manual_time);
-  navigation::AccelerometerPreprocessor accelerometer_processer(logger);
+  navigation::AccelerometerPreprocessor accelerometer_processer(logger, manual_time);
   const core::RawAccelerometerData data = {{{3, 5, 6}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1}}};
   for (std::size_t i; i < 22; ++i) {
     accelerometer_processer.processData(data);
