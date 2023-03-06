@@ -7,9 +7,9 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-# uncomment the following section in order to fill in
-# further dependencies manually.
-# find_package(<dependency> REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(rosidl_default_generators REQUIRED)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -23,4 +23,20 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
+add_executable(publisher src/publisher.cpp)
+add_executable(subscriber src/subscriver.cpp)
+ament_target_dependencies(publisher subscriber rclcpp std_msgs hyped_messages)
+target_link_libraries(publisher
+  Hyped::hyped_core
+)
+target_link_libraries(subscriber
+  Hyped::hyped_core
+)
+
+install(TARGETS
+  publisher
+  subscriber
+  DESTINATION lib/${PROJECT_NAME})
+
 ament_package()
+
