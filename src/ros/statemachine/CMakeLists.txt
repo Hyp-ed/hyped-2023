@@ -11,6 +11,15 @@ find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 
+set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} /home/hyped/build/export)
+find_package(Eigen3 REQUIRED)
+find_package(HypedCore REQUIRED)
+find_package(HypedIO REQUIRED)
+find_package(HypedMotorControllers REQUIRED)
+find_package(HypedNavigation REQUIRED)
+find_package(HypedSensors REQUIRED)
+find_package(hyped_messages REQUIRED)
+
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   # the following line skips the linter which checks for copyrights
