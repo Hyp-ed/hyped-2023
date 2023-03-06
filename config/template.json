@@ -20,6 +20,10 @@
 			"uart": {
 				"enabled": false,
 				"buses": []
+			},
+			"can":{
+				"enabled": false,
+				"buses": []
 			}
 		},
 		"sensors": {
