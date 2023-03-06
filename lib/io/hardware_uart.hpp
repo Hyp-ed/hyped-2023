@@ -4,6 +4,13 @@
 
 #include <strings.h>
 #include <termios.h>
+
+#include <cstdint>
+#include <memory>
+#include <optional>
+
+#include <core/logger.hpp>
+#include <core/types.hpp>
 #ifdef __APPLE__
 #define B460800 0010004
 #define B500000 0010005
@@ -18,14 +25,11 @@
 #define B3500000 0010016
 #endif
 
-#include <cstdio>
-
-#include <core/logger.hpp>
-#include <core/types.hpp>
+namespace hyped::io {
 
 // Uart3 not exposed in BBB headers
 enum class UartBus { kUart0 = 0, kUart1 = 1, kUart2 = 2, kUart4 = 4, kUart5 = 5 };
-enum class BaudRate {
+enum class UartBaudRate {
   kB300     = B300,
   kB600     = B600,
   kB1200    = B1200,
@@ -49,29 +53,27 @@ enum class BaudRate {
   kB3000000 = B3000000,
   kB3500000 = B3500000
 };
-enum class BitsPerByte { k5 = CS5, k6 = CS6, k7 = CS7, k8 = CS8 };
-
-namespace hyped::io {
+enum class UartBitsPerByte { k5 = CS5, k6 = CS6, k7 = CS7, k8 = CS8 };
 
 class Uart : public IUart {
  public:
   /**
    * @brief  Creates a UART object.
-   * @details  Defaults to 8 bits per byte
+   * A typical setting would be UartBus::kUart1, BaudRate::{TODOLater: Test to find},
+   * BitsPerByte::k8
    */
-  static std::optional<Uart> create(
+  static std::optional<std::shared_ptr<Uart>> create(
     core::ILogger &logger,
     const UartBus bus,
-    const BaudRate baud_rate,  // TODOLater: Figure out a default for this by testing
-    const BitsPerByte bits_per_byte = BitsPerByte::k8);
+    const UartBaudRate baud_rate,  // TODOLater: Figure out a default for this by testing
+    const UartBitsPerByte bits_per_byte);
+  Uart(core::ILogger &logger, const int file_descriptor);
   ~Uart();
 
-  core::Result sendBytes(const char *tx, const std::uint8_t length);
-  core::Result readBytes(unsigned char *rx, const std::uint8_t length);
+  virtual core::Result sendBytes(const char *tx, const std::uint8_t length);
+  virtual core::Result readBytes(unsigned char *rx, const std::uint8_t length);
 
  private:
-  Uart(core::ILogger &logger, const int file_descriptor);
-
   /**
    * @brief  Configures the UART file descriptor with the provided masks and pre-set settings
    */

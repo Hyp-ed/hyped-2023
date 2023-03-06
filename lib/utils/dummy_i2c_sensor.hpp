@@ -9,7 +9,7 @@ class DummyI2cSensor : public sensors::II2cMuxSensor<std::uint8_t> {
   DummyI2cSensor();
   virtual core::Result configure();
   virtual std::optional<std::uint8_t> read();
-  virtual std::uint8_t getChannel();
+  virtual std::uint8_t getChannel() const;
 };
 
 }  // namespace hyped::utils

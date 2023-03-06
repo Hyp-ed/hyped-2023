@@ -26,13 +26,13 @@ const objectProvider = {
           location: 'ROOT'
         }
       } else {
-        // TODO: Type :)
+        // TODOLater: Type :)
         const measurement = dictionary.measurements.find((measurement: any) => measurement.key === identifier.key)
 
         return {
           identifier,
           name: measurement.name,
-          // TODO: Maybe should check this exists
+          // TODOLater: Maybe should check this exists
           type: `hyped.${measurement.type}`,
           telemetry: {
             values: measurement.values

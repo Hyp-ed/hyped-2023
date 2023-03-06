@@ -1,10 +1,12 @@
 #pragma once
 
+#include <cstdint>
 #include <functional>
 #include <iostream>
 #include <map>
+#include <memory>
+#include <optional>
 #include <string>
-#include <vector>
 
 #include <core/logger.hpp>
 #include <io/hardware_adc.hpp>
@@ -13,6 +15,8 @@
 #include <io/hardware_spi.hpp>
 #include <io/hardware_uart.hpp>
 #include <io/pwm.hpp>
+#include <sensors/accelerometer.hpp>
+#include <sensors/temperature.hpp>
 
 namespace hyped::debug {
 
@@ -39,6 +43,8 @@ class Repl {
   void addI2cCommands(const std::uint8_t bus);
   void addPwmCommands(const std::uint8_t module);
   void addSpiCommands(const std::uint8_t bus);
+  void addAccelerometerCommands(const std::uint8_t bus, const std::uint8_t device_address);
+  void addTemperatureCommands(const std::uint8_t bus, const std::uint8_t device_address);
   void addUartCommands(const std::uint8_t bus);
 
   core::ILogger &logger_;
