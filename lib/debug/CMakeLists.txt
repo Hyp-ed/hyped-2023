@@ -1,16 +1,5 @@
 set(target hyped_debug)
 
-include(FetchContent)
-FetchContent_Declare(
-  rapidjson
-  GIT_REPOSITORY https://github.com/Tencent/rapidjson.git
-  GIT_TAG        master
-)
-FetchContent_GetProperties(rapidjson)
-if(NOT rapidjson_POPULATED)
-    FetchContent_Populate(rapidjson)
-endif()
-
 file(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
 file(GLOB code "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
 add_library(${target} STATIC ${headers} ${code})
