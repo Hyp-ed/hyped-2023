@@ -1,9 +1,159 @@
 #include "controller.hpp"
 
+#include <fstream>
+#include <sstream>
+
 namespace hyped::motors {
 
-Controller::Controller(core::ILogger &logger) : logger_(logger)
+std::optional<Controller> Controller::create(core::ILogger &logger,
+                                             const std::string &message_file_path)
 {
+  std::ifstream input_stream(message_file_path);
+  if (!input_stream.is_open()) {
+    logger.log(core::LogLevel::kFatal, "Failed to open file %s", message_file_path.c_str());
+    return std::nullopt;
+  }
+  rapidjson::IStreamWrapper input_stream_wrapper(input_stream);
+  rapidjson::Document document;
+  const rapidjson::ParseResult result = document.ParseStream(input_stream_wrapper);
+  if (!result) {
+    logger.log(core::LogLevel::kFatal,
+               "Error parsing JSON: %s",
+               rapidjson::GetParseError_En(document.GetParseError()));
+    return std::nullopt;
+  }
+  if (!document.HasMember("config_messages")) {
+    logger.log(core::LogLevel::kFatal,
+               "Missing required field 'config_messages' in can message file at %s",
+               message_file_path.c_str());
+    return std::nullopt;
+  }
+  if (!document.HasMember("messages")) {
+    logger.log(core::LogLevel::kFatal,
+               "Missing required field 'messages' in can message file at %s",
+               message_file_path.c_str());
+    return std::nullopt;
+  }
+  const auto configuration_messages = document["config_messages"].GetArray();
+  std::vector<io::CanFrame> controller_configuration_messages;
+  for (const rapidjson::GenericValue<rapidjson::UTF8<>> &message : configuration_messages) {
+    const auto new_message = Controller::parseJsonCanFrame(logger, message.GetObject());
+    if (!new_message) {
+      logger.log(core::LogLevel::kFatal,
+                 "Invalid CAN configuration frame in JSON message file at path %s",
+                 message_file_path.c_str());
+      return std::nullopt;
+    }
+    controller_configuration_messages.push_back(*new_message);
+  }
+  std::unordered_map<std::string, io::CanFrame> controller_messages;
+  const auto messages = document["messages"].GetObject();
+  for (const rapidjson::GenericMember<rapidjson::UTF8<>, rapidjson::MemoryPoolAllocator<>>
+         &message : messages) {
+    const auto new_message = Controller::parseJsonCanFrame(logger, message.value.GetObject());
+    if (!new_message) {
+      logger.log(core::LogLevel::kFatal,
+                 "Invalid CAN frame in JSON message file at path %s",
+                 message_file_path.c_str());
+      return std::nullopt;
+    }
+    controller_messages.emplace(message.name.GetString(), *new_message);
+  }
+  return Controller(logger, controller_messages, controller_configuration_messages);
+}
+
+Controller::Controller(core::ILogger &logger,
+                       const std::unordered_map<std::string, io::CanFrame> &messages,
+                       const std::vector<io::CanFrame> &configuration_messages)
+    : logger_(logger),
+      configuration_messages_(configuration_messages),
+      messages_(messages)
+{
+}
+
+std::optional<io::CanFrame> Controller::parseJsonCanFrame(
+  core::ILogger &logger, rapidjson::GenericObject<true, rapidjson::Value> message)
+{
+  if (!message.HasMember("id")) {
+    logger.log(core::LogLevel::kFatal,
+               "Missing required field 'id' in message in CAN message file");
+    return std::nullopt;
+  }
+  if (!message.HasMember("index")) {
+    logger.log(core::LogLevel::kFatal,
+               "Missing required field 'index' in message in CAN message file");
+    return std::nullopt;
+  }
+  if (!message.HasMember("subindex")) {
+    logger.log(core::LogLevel::kFatal,
+               "Missing required field 'subindex' in message in CAN message file");
+    return std::nullopt;
+  }
+  if (!message.HasMember("data")) {
+    logger.log(core::LogLevel::kFatal,
+               "Missing required field 'data' in message in CAN message file");
+    return std::nullopt;
+  }
+  std::stringstream can_id_hex;
+  can_id_hex << std::hex << message["id"].GetString();
+  if (!can_id_hex.good()) {
+    logger.log(core::LogLevel::kFatal, "Invalid message ID in CAN message file");
+    return std::nullopt;
+  }
+  if (can_id_hex.eof()) {
+    logger.log(core::LogLevel::kFatal, "No message ID in CAN message file");
+    return std::nullopt;
+  }
+  io::CanFrame new_message;
+  can_id_hex >> new_message.can_id;
+  new_message.can_dlc = motors::kControllerCanFrameLength;
+  // convert index to little endian for controller
+  std::stringstream index_hex;
+  index_hex << std::hex << message["index"].GetString();
+  if (!index_hex.good()) {
+    logger.log(core::LogLevel::kFatal, "Invalid message index in CAN message file");
+    return std::nullopt;
+  }
+  if (index_hex.eof()) {
+    logger.log(core::LogLevel::kFatal, "No message index in CAN message file");
+    return std::nullopt;
+  }
+  std::uint16_t index;
+  index_hex >> index;
+  new_message.data[0] = index & 0xFF;
+  new_message.data[1] = index & 0xFF00;
+  // subindex doesn't need converted
+  std::stringstream subindex_hex;
+  subindex_hex << std::hex << message["subindex"].GetString();
+  if (!subindex_hex.good()) {
+    logger.log(core::LogLevel::kFatal, "Invalid message subindex in CAN message file");
+    return std::nullopt;
+  }
+  if (subindex_hex.eof()) {
+    logger.log(core::LogLevel::kFatal, "No message subindex in CAN message file");
+    return std::nullopt;
+  }
+  subindex_hex >> new_message.data[2];
+  // padding
+  new_message.data[3] = 0;
+  // convert data to little endian
+  std::stringstream data_hex;
+  data_hex << std::hex << message["data"].GetString();
+  if (!data_hex.good()) {
+    logger.log(core::LogLevel::kFatal, "Invalid message data in CAN message file");
+    return std::nullopt;
+  }
+  if (data_hex.eof()) {
+    logger.log(core::LogLevel::kFatal, "No message data in CAN message file");
+    return std::nullopt;
+  }
+  std::uint32_t data;
+  data_hex >> data;
+  new_message.data[4] = data & 0xFF;
+  new_message.data[5] = data & 0xFF00;
+  new_message.data[6] = data & 0xFF0000;
+  new_message.data[7] = data & 0xFF000000;
+  return new_message;
 }
 
 void Controller::processErrorMessage(const std::uint16_t error_code)

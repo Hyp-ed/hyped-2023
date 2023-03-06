@@ -12,6 +12,19 @@ set(project HYPED)
 project(${project} CXX)
 enable_testing()
 
+find_package (Eigen3 REQUIRED NO_MODULE)
+find_package(Boost REQUIRED)
+include(FetchContent)
+FetchContent_Declare(
+  rapidjson
+  GIT_REPOSITORY https://github.com/Tencent/rapidjson.git
+  GIT_TAG        master
+)
+FetchContent_GetProperties(rapidjson)
+if(NOT rapidjson_POPULATED)
+    FetchContent_Populate(rapidjson)
+endif()
+
 add_subdirectory(${CMAKE_SOURCE_DIR}/lib)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src)
 add_subdirectory(${CMAKE_SOURCE_DIR}/test)

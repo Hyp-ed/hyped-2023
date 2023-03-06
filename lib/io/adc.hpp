@@ -1,7 +1,8 @@
 #pragma once
 
-#include <cstdint>
 #include <optional>
+
+#include <core/types.hpp>
 
 namespace hyped::io {
 
@@ -9,9 +10,9 @@ class IAdc {
  public:
   /**
    * @brief reads AIN value
-   * @return two bytes in range [0,4095] because the BBB has 12-bit ADCs (2^12 = 4096)
+   * @return a voltage value from 0 to 1.8V
    */
-  std::optional<std::uint16_t> readValue();
+  virtual std::optional<core::Float> readValue() = 0;
 };
 
 }  // namespace hyped::io
