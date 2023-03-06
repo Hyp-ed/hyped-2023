@@ -24,14 +24,19 @@ if(BUILD_TESTING)
 endif()
 
 add_executable(publisher src/publisher.cpp)
+ament_target_dependencies(publisher rclcpp std_msgs)
+target_link_libraries(
+  publisher
+  Hyped::hyped_core
+)
+
 add_executable(subscriber src/subscriber.cpp)
-ament_target_dependencies(publisher subscriber rclcpp std_msgs hyped_messages)
-target_link_libraries(publisher
+ament_target_dependencies(subscriber rclcpp std_msgs)
+target_link_libraries(
+  subscriber
   Hyped::hyped_core
 )
-target_link_libraries(subscriber
-  Hyped::hyped_core
-)
+
 
 install(TARGETS
   publisher
