@@ -1,3 +1,5 @@
+#pragma once
+
 #include <core/types.hpp>
 #include <io/gpio.hpp>
 
