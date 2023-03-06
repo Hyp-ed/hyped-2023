@@ -41,11 +41,11 @@ if [ "$1" = "container" ]; then
       echo "  - Starting container"
       docker start $CONTAINER_NAME > /dev/null
       echo "    - Attaching to container"
-      docker exec -it $CONTAINER_NAME bash
+      docker exec -it -v $CONTAINER_NAME bash
     fi
   else
     echo "[!] $CONTAINER_NAME container does not exist"
-    docker run -it -v $(pwd):/home/hyped --name $CONTAINER_NAME $IMAGE_NAME bash
+    docker run -it -v $(pwd):/home/hyped -v ~/.ssh:/home/user/.ssh:ro --name $CONTAINER_NAME $IMAGE_NAME bash
   fi
 elif [ "$1" = "pod" ]; then
   echo "[>] Running pod"
