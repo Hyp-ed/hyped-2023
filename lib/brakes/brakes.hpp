@@ -5,11 +5,11 @@
 
 class Brakes {
  public:
-  Brakes(const std::uint8_t pin_, const hyped::io::IGpio gpio);
+  Brakes(const std::uint8_t pin_, const io::IGpio gpio);
   void stop();
   void release();
 
  private:
   const std::uint8_t pin_;
-  hyped::io::IGpioWriter writer;
+  io::IGpioWriter writer;
 }

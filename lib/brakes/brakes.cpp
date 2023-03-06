@@ -1,6 +1,6 @@
 #include "brakes.hpp"
 
-brakes::Brakes(const std::uint8_t pin, const hyped::io::IGpio gpio) : pin_(pin)
+brakes::Brakes(const std::uint8_t pin, const io::IGpio gpio) : pin_(pin)
 {
   writer = gpio.getWriter(pin);
 }
