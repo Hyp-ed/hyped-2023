@@ -35,8 +35,8 @@ std::optional<EncodersPreprocessor::Statistics> EncodersPreprocessor::getStatist
     const Quartile quartiles              = getQuartiles(reliable_data);
     const core::Float interquartile_range = quartiles.third_quartile - quartiles.first_quartile;
     return {{.median      = quartiles.median,
-             .upper_bound = quartiles.median + 1.5 * interquartile_range,
-             .lower_bound = quartiles.median - 1.5 * interquartile_range}};
+             .upper_bound = quartiles.median + 1.5F * interquartile_range,
+             .lower_bound = quartiles.median - 1.5F * interquartile_range}};
   }
   std::array<std::uint32_t, core::kNumEncoders - 1> reliable_data;
   std::size_t j = 0;
@@ -49,8 +49,8 @@ std::optional<EncodersPreprocessor::Statistics> EncodersPreprocessor::getStatist
   const Quartile quartiles              = getQuartiles(reliable_data);
   const core::Float interquartile_range = quartiles.third_quartile - quartiles.first_quartile;
   return {{.median      = quartiles.median,
-           .upper_bound = quartiles.median + 1.2 * interquartile_range,
-           .lower_bound = quartiles.median - 1.2 * interquartile_range}};
+           .upper_bound = quartiles.median + 1.2F * interquartile_range,
+           .lower_bound = quartiles.median - 1.2F * interquartile_range}};
 }
 
 std::optional<core::EncoderData> EncodersPreprocessor::sanitise(

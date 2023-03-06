@@ -90,7 +90,7 @@ class EncodersPreprocessor {
   std::array<uint16_t, core::kNumEncoders> num_consecutive_outliers_per_encoder_;
   std::array<bool, core::kNumEncoders> are_encoders_reliable_;
   std::uint8_t num_reliable_encoders_;
-  constexpr std::uint8_t max_consecutive_outliers_;
+  const std::uint8_t max_consecutive_outliers_;
 };
 
 }  // namespace hyped::navigation
