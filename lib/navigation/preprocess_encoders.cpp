@@ -64,11 +64,10 @@ std::optional<core::EncoderData> EncodersPreprocessor::sanitise(
   const auto encoder_statistics = *encoder_statistics_optional;
   auto sanitised_data           = encoder_data;
   for (std::size_t i = 0; i < sanitised_data.size(); ++i) {
-    if (!are_encoders_reliable_.at(i)){
+    if (!are_encoders_reliable_.at(i)) {
       sanitised_data.at(i) = encoder_statistics.median;
-    }
-    else if (sanitised_data.at(i) > encoder_statistics.upper_bound
-        || sanitised_data.at(i) < encoder_statistics.lower_bound) {
+    } else if (sanitised_data.at(i) > encoder_statistics.upper_bound
+               || sanitised_data.at(i) < encoder_statistics.lower_bound) {
       ++num_consecutive_outliers_per_encoder_.at(i);
       sanitised_data.at(i) = encoder_statistics.median;
     } else {
