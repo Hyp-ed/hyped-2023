@@ -1,0 +1,24 @@
+name: Telemetry Build
+
+on:
+  push:
+    paths:
+      - "telemetry/**"
+
+jobs:
+  telemetry-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        run: cd telemetry
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "18.14.0"
+          cache: "yarn"
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Build
+        run: yarn build
