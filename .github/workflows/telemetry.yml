@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-        run: cd telemetry
+      - run: cd telemetry
 
       - uses: actions/setup-node@v3
         with:
