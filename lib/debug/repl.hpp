@@ -46,6 +46,8 @@ class Repl {
   void addAccelerometerCommands(const std::uint8_t bus, const std::uint8_t device_address);
   void addTemperatureCommands(const std::uint8_t bus, const std::uint8_t device_address);
   void addUartCommands(const std::uint8_t bus);
+  void addCanCommands(const std::string bus);
+
 
   core::ILogger &logger_;
   std::map<std::string, Command> command_map_;

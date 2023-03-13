@@ -7,6 +7,8 @@
 #include <rapidjson/document.h>
 #include <rapidjson/error/en.h>
 #include <rapidjson/istreamwrapper.h>
+#include <io/hardware_can.hpp>
+
 
 namespace hyped::debug {
 
@@ -614,4 +616,43 @@ void Repl::addTemperatureCommands(const std::uint8_t bus, const std::uint8_t dev
   addCommand(temperature_read_command);
 }
 
+void Repl::addCanCommands(const std::string bus)
+  
+{
+  std::optional<std::shared_ptr<HardwareCan>> HardwareCan::create(
+  core::ILogger &logger, const std::string &can_network_interface)
+  
+  const int socket_id = socket(PF_CAN, SOCK_RAW, CAN_RAW);
+  
+  if (socket_id < 0) {
+    logger.log(core::LogLevel::kFatal, "Unable to open CAN socket");
+    return std::nullopt;
+  }
+    Command can_send_command;
+    std::stringstream identifier;
+    identifier << "can" <<  "send";
+    can_send_command.name = identifier.str();
+    std::stringstream description;
+    description << "Sending can message to can bus " << bus;
+    can_send_command.description = description.str();
+    can_send_command.handler     = {
+      std::string data;
+      std::cout << "Data: ";
+      std::getline(std::cin, data);
+      if (data.length() > 255) {
+        logger_.log(core::LogLevel::kFatal, "Data too long for UART bus: %d", bus);
+        return;
+      }
+      const core::Result result = uart->sendBytes(data.c_str(), data.length());
+      if (result == core::Result::kSuccess) {
+        logger_.log(core::LogLevel::kDebug, "Successfully wrote to UART bus %d", bus);
+      } else {
+        logger_.log(core::LogLevel::kFatal, "Failed to write to UART bus: %d", bus);
+      }
+    };
+    addCommand(can_send_command);
+  }
+
+
 }  // namespace hyped::debug
+
