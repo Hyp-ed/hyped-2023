@@ -8,8 +8,8 @@ enum class Message {
   kFailure,
   kFailureBrake,
   kMotorBrake,
+  kPreFrictionBrake,
   kFrictionBrake,
-  kNominalBrake
 };
 
 }  // namespace hyped::state_machine
