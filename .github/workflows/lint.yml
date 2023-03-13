@@ -33,7 +33,7 @@ jobs:
         run: |
           IDENTIFIERS="uint8_t uint16_t uint32_t uint64_t int8_t int16_t int32_t int64_t size_t"
           for identifier in $IDENTIFIERS; do
-            if grep -r -n "$identifier" | grep -v "std::" | grep -v "lint.yml"; then
+            if grep -r -n "$identifier" | grep -v "std::" | grep -v "ssize_t" | grep -v "lint.yml"; then
               echo "[ERROR] found $identifier without std:: prefix"
               exit 1
             fi
