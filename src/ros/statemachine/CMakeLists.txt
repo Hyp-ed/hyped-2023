@@ -32,24 +32,24 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
-add_executable(publisher src/publisher.cpp)
-ament_target_dependencies(publisher rclcpp std_msgs)
+add_executable(publisherTest src/publisherTest.cpp)
+ament_target_dependencies(publisherTest rclcpp std_msgs)
 target_link_libraries(
-  publisher
+  publisherTest
   Hyped::hyped_core
 )
 
-add_executable(subscriber src/subscriber.cpp)
-ament_target_dependencies(subscriber rclcpp std_msgs)
+add_executable(subscriberTest src/subscriberTest.cpp)
+ament_target_dependencies(subscriberTest rclcpp std_msgs)
 target_link_libraries(
-  subscriber
+  subscriberTest
   Hyped::hyped_core
 )
 
 
 install(TARGETS
-  publisher
-  subscriber
+  publisherTest
+  subscriberTest
   DESTINATION lib/${PROJECT_NAME})
 
 ament_package()
