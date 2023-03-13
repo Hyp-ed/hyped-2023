@@ -2,8 +2,8 @@ name: Linter
 
 on:
   push:
-     paths-ignore: 
-        - "telemetry/**"
+    paths-ignore: 
+      - "telemetry/**"
 
 jobs:
   clang-format:
