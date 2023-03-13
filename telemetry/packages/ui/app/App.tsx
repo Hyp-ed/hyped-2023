@@ -1,7 +1,7 @@
 import { Button, Toggle, Logo, StatusIndicator } from './components';
 
 const App = () => {
-  const LATENCY = 10; // temp
+  const LATENCY = 11; // temp
   const STATUS: 'connected' | 'disconnected' | 'connecting' = 'connected';
 
   /**
