@@ -72,7 +72,7 @@ core::Result HardwareI2c::writeByteToRegister(const std::uint8_t device_address,
 {
   if (sensor_address_ != device_address) { setSensorAddress(device_address); }
   const std::uint8_t write_buffer[2] = {register_address, data};
-  const auto num_bytes_written       = write(file_descriptor_, write_buffer, 2);
+  const ssize_t num_bytes_written    = write(file_descriptor_, write_buffer, 2);
   if (num_bytes_written != 2) {
     logger_.log(core::LogLevel::kFatal, "Failed to write to i2c device");
     return core::Result::kFailure;
@@ -85,7 +85,7 @@ core::Result HardwareI2c::writeByte(const std::uint8_t device_address, const std
 {
   if (sensor_address_ != device_address) { setSensorAddress(device_address); }
   const std::uint8_t write_buffer[1] = {data};
-  const auto num_bytes_written       = write(file_descriptor_, write_buffer, 1);
+  const ssize_t num_bytes_written    = write(file_descriptor_, write_buffer, 1);
   if (num_bytes_written != 1) {
     logger_.log(core::LogLevel::kFatal, "Failed to write to i2c device");
     return core::Result::kFailure;

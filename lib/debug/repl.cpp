@@ -116,6 +116,12 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
       return std::nullopt;
     }
     const auto modules = pwm["modules"].GetArray();
+    if (!pwm.HasMember("period")) {
+      logger_.log(core::LogLevel::kFatal,
+                  "Missing required field 'io.pwm.period' in configuration file");
+      return std::nullopt;
+    }
+    const std::uint32_t period = pwm["period"].GetUint();
     for (auto &module : modules) {
       const std::uint8_t module_id = module.GetUint();
       if (module_id > 7 || module_id < 0) {
@@ -123,7 +129,7 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
           core::LogLevel::kFatal, "Invalid module id %d in configuration file", module_id);
         return std::nullopt;
       }
-      repl->addPwmCommands(module_id);
+      repl->addPwmCommands(module_id, period);
     }
   }
   if (!io.HasMember("spi")) {
@@ -356,10 +362,10 @@ void Repl::addI2cCommands(const std::uint8_t bus)
   }
 }
 
-void Repl::addPwmCommands(const std::uint8_t module)
+void Repl::addPwmCommands(const std::uint8_t module, const std::uint32_t period)
 {
   const io::PwmModule pwm_module = static_cast<io::PwmModule>(module);
-  const auto optional_pwm        = io::Pwm::create(logger_, pwm_module);
+  const auto optional_pwm = io::Pwm::create(logger_, pwm_module, period, io::Polarity::kActiveHigh);
   if (!optional_pwm) {
     logger_.log(core::LogLevel::kFatal, "Failed to create PWM module");
     return;
@@ -384,20 +390,9 @@ void Repl::addPwmCommands(const std::uint8_t module)
       std::cout << "Polarity (0 for active high and 1 for active low): ";
       std::cin >> polarity;
       std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-      const core::Result period_set_result = pwm->setPeriod(period);
-      if (period_set_result == core::Result::kFailure) {
-        logger_.log(core::LogLevel::kFatal, "Failed to set PWM period");
-        return;
-      }
       const core::Result duty_cycle_set_result = pwm->setDutyCycleByPercentage(duty_cycle);
       if (duty_cycle_set_result == core::Result::kFailure) {
         logger_.log(core::LogLevel::kFatal, "Failed to set PWM duty cycle");
-        return;
-      }
-      const core::Result polarity_set_result
-        = pwm->setPolarity(static_cast<io::Polarity>(polarity));
-      if (polarity_set_result == core::Result::kFailure) {
-        logger_.log(core::LogLevel::kFatal, "Failed to set PWM polarity");
         return;
       }
       const core::Result enable_result = pwm->setMode(io::Mode::kRun);
