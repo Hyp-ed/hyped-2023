@@ -10,7 +10,7 @@ enum class State {
   kAccelerating,
   kCruising,
   kMotorBraking,
-  kPreFrictionBraking
+  kPreFrictionBraking,
   kFrictionBraking,
   kFailureBraking,
   kStopped,
