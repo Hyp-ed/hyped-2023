@@ -18,18 +18,14 @@ class StateMachine {
   std::optional<Message> checkTransition();
 
   void handleMessage(const Message &message);
-
   Message stringToMessage(const std::string &message_name);
-
   std::string messageToString(const Message &message);
 
  private:
   const std::unordered_map<std::string, Message> string_to_message_
     = {{"kNextNominalState", Message::kNextNominalState}, {"kFailure", Message::kFailure}};
-
   const std::unordered_map<Message, std::string> message_to_string_
     = {{Message::kNextNominalState, "kNextNominalState"}, {Message::kFailure, "kFailure"}};
-
   const boost::unordered_map<SourceAndMessage, State> transition_to_state_
     = {{{State::kIdle, Message::kNextNominalState}, State::kCalibrating},
        {{State::kCalibrating, Message::kNextNominalState}, State::kReady},
@@ -56,4 +52,5 @@ class StateMachine {
 
   State current_state_;
 };
+
 }  // namespace hyped::state_machine

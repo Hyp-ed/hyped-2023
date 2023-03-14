@@ -2,7 +2,7 @@
 
 namespace hyped::state_machine {
 
-// State class containing all the states
+// Message class containing all the states
 enum class Message {
   kNextNominalState,
   kFailure,
