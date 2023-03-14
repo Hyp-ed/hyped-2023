@@ -2,7 +2,6 @@
 
 namespace hyped::state_machine {
 
-// State class containing all the states
 enum class State {
   kIdle,
   kCalibrating,

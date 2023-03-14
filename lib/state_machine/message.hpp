@@ -2,7 +2,7 @@
 
 namespace hyped::state_machine {
 
-// Message class containing all the states
+// Message class containing messages that prompt transitions
 enum class Message {
   kNextNominalState,
   kFailure,
