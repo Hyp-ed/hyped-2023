@@ -62,4 +62,5 @@ TEST(Encoder, one_unreliable_sensor)
   auto final_data          = encoder_processer.processData(data);
   ASSERT_TRUE(checkArrayEquality(*final_data, answer));
 }
+
 }  // namespace hyped::test

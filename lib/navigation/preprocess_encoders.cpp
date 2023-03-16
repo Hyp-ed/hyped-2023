@@ -14,9 +14,9 @@ EncodersPreprocessor::EncodersPreprocessor(core::ILogger &logger)
 std::optional<core::EncoderData> EncodersPreprocessor::processData(
   const core::EncoderData &raw_encoder_data)
 {
-  const auto encoder_data = sanitise(raw_encoder_data);
-  const auto sensors      = checkReliable();
-  if (sensors == SensorChecks::kUnacceptable) { return std::nullopt; }
+  const auto encoder_data                = sanitise(raw_encoder_data);
+  const auto encoders_reliability_result = checkReliable();
+  if (encoders_reliability_result == SensorChecks::kUnacceptable) { return std::nullopt; }
   return encoder_data;
 }
 
@@ -58,7 +58,7 @@ std::optional<core::EncoderData> EncodersPreprocessor::sanitise(
 {
   const auto encoder_statistics_optional = getStatistics(encoder_data);
   if (!encoder_statistics_optional) {
-    logger_.log(core::LogLevel::kFatal, "Failed to obtain statistics for measurement");
+    logger_.log(core::LogLevel::kFatal, "Failed to obtain quantiles for data");
     return std::nullopt;
   }
   const auto encoder_statistics = *encoder_statistics_optional;
@@ -74,10 +74,6 @@ std::optional<core::EncoderData> EncodersPreprocessor::sanitise(
       num_consecutive_outliers_per_encoder_.at(i) = 0;
     }
   }
-  if (checkReliable() == SensorChecks::kUnacceptable) { return std::nullopt; }
-  for (std::size_t i = 0; i < are_encoders_reliable_.size(); ++i) {
-    if (!are_encoders_reliable_.at(i)) { sanitised_data.at(i) = encoder_statistics.median; }
-  }
   return sanitised_data;
 }
 
@@ -85,14 +81,14 @@ SensorChecks EncodersPreprocessor::checkReliable()
 {
   if (num_reliable_encoders_ > core::kNumEncoders) {
     logger_.log(core::LogLevel::kFatal,
-                "Number of reliable encoders is greater than number of encoders");
+                "Number of reliable encoders is greater than total number of encoders");
   }
   for (std::size_t i = 0; i < core::kNumEncoders; ++i) {
     // changes reliable sensor to false if max consecutive outliers are reached
     if (num_consecutive_outliers_per_encoder_.at(i) > max_consecutive_outliers_
         && are_encoders_reliable_.at(i)) {
       are_encoders_reliable_.at(i) = false;  // the encoder is now unrealiable
-      logger_.log(core::LogLevel::kWarn, "Sensor %d is now labelled as unreliable", i);
+      logger_.log(core::LogLevel::kWarn, "Encoder %d is now labelled as unreliable", i);
       --num_reliable_encoders_;
     }
   }
