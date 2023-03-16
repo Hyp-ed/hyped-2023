@@ -6270,6 +6270,11 @@ neo-async@^2.6.0, neo-async@^2.6.2:
   resolved "https://registry.npmjs.org/neo-async/-/neo-async-2.6.2.tgz"
   integrity sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==
 
+nest-mqtt@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/nest-mqtt/-/nest-mqtt-0.2.0.tgz#635fea3a862c8938b340b2a7fd78ff341310328b"
+  integrity sha512-ZLPYX1/xjLATSwat3lRJpe7/rKkKmB4JRDyd+2cja3NLOLWuGovi9/5w+HTHspnntuURA6Jix3RTC/GHqYWW+Q==
+
 nice-try@^1.0.4:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/nice-try/-/nice-try-1.0.5.tgz#a3378a7696ce7d223e88fc9b764bd7ef1089e366"
