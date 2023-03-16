@@ -100,4 +100,14 @@ SensorChecks EncodersPreprocessor::checkReliable()
   return SensorChecks::kAcceptable;
 }
 
+// instantiate getSpecificQuantile for core::kNumEncoders
+template <> core::Float EncodersPreprocessor::getSpecificQuantile(
+  const std::array<std::uint32_t, core::kNumEncoders> &data,
+  core::Float quantile);
+
+// instantiate getSpecificQuantile for core::kNumEncoders - 1
+template <> core::Float EncodersPreprocessor::getSpecificQuantile(
+  const std::array<std::uint32_t, core::kNumEncoders - 1> &data,
+  core::Float quantile);
+
 }  // namespace hyped::navigation
