@@ -59,9 +59,10 @@ class EncodersPreprocessor {
    * @param fraction in [0, 1] corresponding to the quantile (e.g. 0.25 for the 25th percentile)
    * @return the quantile that we require
    */
+
   template<std::size_t N>
   core::Float getSpecificQuantile(const std::array<std::uint32_t, N> &reliable_data,
-                                  const core::Float fraction)
+                                  const core::Float fraction) const
   {
     const core::Float theoretical_index = (num_reliable_encoders_ - 1) * fraction;
     const std::size_t low_index         = static_cast<std::size_t>(std::floor(theoretical_index));
