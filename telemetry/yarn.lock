@@ -2178,6 +2178,13 @@
   resolved "https://registry.npmjs.org/@types/qs/-/qs-6.9.7.tgz"
   integrity sha512-FGa1F62FT09qcrueBA6qYTrJPVDzah9a+493+o2PCXsesWHIn27G98TsSMs3WPNbZIEj4+VJf6saSFpvD+3Zsw==
 
+"@types/random@^3.0.1":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/@types/random/-/random-3.0.1.tgz#3c23bcf886f2fa0ebd7e530d7eaa706f9f5ed944"
+  integrity sha512-k0IlRd4nh6ZIMzHJNgAPftmOog2CogqmxdBQ0JsH4VwrZXU5QQEzBCUQEL1Q0p0U84RwzwCJINBRRmK4Yxl1Tg==
+  dependencies:
+    random "*"
+
 "@types/range-parser@*":
   version "1.2.4"
   resolved "https://registry.npmjs.org/@types/range-parser/-/range-parser-1.2.4.tgz"
@@ -7130,7 +7137,7 @@ quick-lru@^5.1.1:
   resolved "https://registry.yarnpkg.com/quick-lru/-/quick-lru-5.1.1.tgz#366493e6b3e42a3a6885e2e99d18f80fb7a8c932"
   integrity sha512-WuyALRjWPDGtt/wzJiadO5AXY+8hZ80hVpe6MyivgraREW751X3SbhRvG3eLKOYN+8VEvqLcf3wdnt44Z4S4SA==
 
-random@^4.1.0:
+random@*, random@^4.1.0:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/random/-/random-4.1.0.tgz#3e0fff0eea0d311e6a80fd2c91e72bb064dec363"
   integrity sha512-6Ajb7XmMSE9EFAMGC3kg9mvE7fGlBip25mYYuSMzw/uUSrmGilvZo2qwX3RnTRjwXkwkS+4swse9otZ92VjAtQ==
