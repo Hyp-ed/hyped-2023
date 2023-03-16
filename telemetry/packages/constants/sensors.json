@@ -2,8 +2,8 @@
   "1": {
     "name": "Pod 1",
     "key": "pod.1",
-    "measurements": [
-      {
+    "measurements": {
+      "temperature.shell_front": {
         "name": "Temperature - Shell Front",
         "key": "temperature.shell_front",
         "format": "float",
@@ -14,7 +14,7 @@
           "max": 50
         }
       },
-      {
+      "temperature.shell_middle": {
         "name": "Temperature - Shell Middle",
         "key": "temperature.shell_middle",
         "format": "float",
@@ -25,7 +25,7 @@
           "max": 50
         }
       },
-      {
+      "temperature.shell_back": {
         "name": "Temperature - Shell Back",
         "key": "temperature.shell_back",
         "format": "float",
@@ -36,7 +36,7 @@
           "max": 50
         }
       },
-      {
+      "accelerometer": {
         "name": "Accelerometer",
         "key": "accelerometer",
         "format": "float",
@@ -47,18 +47,7 @@
           "max": 10
         }
       },
-      {
-        "name": "Keyence",
-        "key": "keyence",
-        "format": "integer",
-        "type": "keyence",
-        "units": "number of stripes",
-        "range": {
-          "min": 0,
-          "max": 100
-        }
-      },
-      {
+      "brake_feedback": {
         "name": "Brake Feedback",
         "key": "brake_feedback",
         "format": "enum",
@@ -75,6 +64,6 @@
           }
         ]
       }
-    ]
+    }
   }
 }
