@@ -1,16 +1,18 @@
 #include "brakes.hpp"
 
-brakes::Brakes(const std::uint8_t pin, const io::IGpio gpio) : pin_(pin)
+namespace hyped::brakes {
+Brakes::Brakes(const std::uint8_t pin, const io::IGpio gpio) : pin_(pin)
 {
-  writer = gpio.getWriter(pin);
+  writer_ = gpio.getWriter(pin);
 }
 
-void brakes::stop()
+void Brakes::stop()
 {
-  writer.write(core::DigitalSignal::kHigh);
+  writer_.write(core::DigitalSignal::kHigh);
 }
 
-void brakes::release()
+void Brakes::release()
 {
-  writer.write(core::DigitalSignal::kLow);
+  writer_.write(core::DigitalSignal::kLow);
 }
+}  // namespace hyped::brakes
