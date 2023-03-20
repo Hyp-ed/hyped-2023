@@ -6,6 +6,7 @@ Controller::Controller(core::ILogger &logger) : logger_(logger)
 {
 }
 
+
 void Controller::processErrorMessage(const std::uint16_t error_code)
 {
   switch (error_code) {
@@ -129,4 +130,50 @@ ControllerStatus Controller::processWarningMessage(const std::uint8_t warning_co
   }
   return priority_error;
 }
+
+
+ControllerState Controller::processNMTMessage(const std::uint8_t nmt_code)
+{
+  ControllerState controllerState = ControllerState::resetNodeState;
+  
+  switch (nmt_code) {
+    // Operational State
+    case 0x01:
+      logger_.log(core::LogLevel::kDebug,
+                  "Controller enter operational state");
+      controllerState = ControllerState::operationalState;
+      break;
+    // Stop State
+    case 0x02:
+      logger_.log(core::LogLevel::kDebug,
+                  "Controller enter stop state");
+      controllerState = ControllerState::stopState;
+      break;
+    // Pre-operational State
+    case 0x03:
+      logger_.log(core::LogLevel::kDebug,
+                  "Controller enter pre-operational state");
+      controllerState = ControllerState::preOperationalState;
+      break;
+    // Reset node state
+    case 0x81:
+      logger_.log(core::LogLevel::kDebug,
+                  "Controller enter reset node state");
+      controllerState = ControllerState::resetNodeState;
+      break;
+    //Stop state
+    case 0x82:
+      logger_.log(core::LogLevel::kDebug,
+                  "Controller enter stop state");
+      controllerState = ControllerState::resetCommunicationState;
+      break;
+    
+  }
+  state = controllerState;
+  return state;
+}
+
+
+
+
 }  // namespace hyped::motors

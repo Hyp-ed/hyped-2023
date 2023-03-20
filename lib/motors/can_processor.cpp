@@ -17,7 +17,6 @@ bool CanProcessor::sendMessage(const core::CanFrame frame)
   // TODOLater implement
   return false;
 }
-
 // Process little endian to big endian
 
 void CanProcessor::processMessage(const core::CanFrame frame)
@@ -32,7 +31,6 @@ void CanProcessor::processMessage(const core::CanFrame frame)
   } else if (frame.can_id == 0x580) {
     // process SDO frame
     // TODO: convert frame.data into index, subindex and data
-
     // Retrieve data and index from can frame
     std::uint16_t SDORef = (static_cast<std::uint64_t>(frame.data[1]) << 8)
                            | static_cast<std::uint64_t>(frame.data[0]);
@@ -48,11 +46,10 @@ void CanProcessor::processMessage(const core::CanFrame frame)
     } else if ((SDORef == 0x2027) && frame.data[2] == 0x00) {
       // Warning message received
       controller_->processWarningMessage(data);
+    } else if (frame.can_id == 0x700) {
+      // TODO: handle NMT frame
+      controller_->processNMTMessage(frame.data[3]);
     }
-  } else if (frame.can_id == 0x700) {
-    // TODO: handle NMT frame
-  } else {
-    // TODO: Implement
   }
 }
 
