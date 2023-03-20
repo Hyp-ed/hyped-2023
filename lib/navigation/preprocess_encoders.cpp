@@ -100,4 +100,6 @@ SensorChecks EncodersPreprocessor::checkReliable()
   return SensorChecks::kAcceptable;
 }
 
+// TODOLater: explicit instantiation of template functions
+
 }  // namespace hyped::navigation
