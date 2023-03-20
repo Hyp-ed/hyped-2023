@@ -39,13 +39,6 @@ target_link_libraries(
   Hyped::hyped_core
 )
 
-add_executable(publisherMain src/publisherMain.cpp)
-ament_target_dependencies(publisherMain rclcpp std_msgs)
-target_link_libraries(
-  publisherMain
-  Hyped::hyped_core
-)
-
 add_executable(publisher1 src/publisher1.cpp)
 ament_target_dependencies(publisher1 rclcpp std_msgs)
 target_link_libraries(
@@ -67,17 +60,17 @@ target_link_libraries(
   Hyped::hyped_core
 )
 
+add_executable(publisher4 src/publisher4.cpp)
+ament_target_dependencies(publisher4 rclcpp std_msgs)
+target_link_libraries(
+  publisher4
+  Hyped::hyped_core
+)
+
 add_executable(subscriberTest src/subscriberTest.cpp)
 ament_target_dependencies(subscriberTest rclcpp std_msgs)
 target_link_libraries(
   subscriberTest
-  Hyped::hyped_core
-)
-
-add_executable(subscriberMain src/subscriberMain.cpp)
-ament_target_dependencies(subscriberMain rclcpp std_msgs)
-target_link_libraries(
-  subscriberMain
   Hyped::hyped_core
 )
 
@@ -102,19 +95,26 @@ target_link_libraries(
   Hyped::hyped_core
 )
 
+add_executable(subscriber4 src/subscriber4.cpp)
+ament_target_dependencies(subscriber4 rclcpp std_msgs)
+target_link_libraries(
+  subscriber4
+  Hyped::hyped_core
+)
+
 
 
 install(TARGETS
   publisherTest
-  publisherMain
   publisher1
   publisher2
   publisher3
+  publisher4
   subscriberTest
-  subscriberMain
   subscriber1
   subscriber2
   subscriber3
+  subscriber4
   DESTINATION lib/${PROJECT_NAME})
 
 ament_package()
