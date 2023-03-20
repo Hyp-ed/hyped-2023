@@ -2,80 +2,115 @@
 import mqtt from 'mqtt';
 import random from 'random';
 import pods from '@hyped/telemetry-constants/sensors.json';
-import { Sensor } from 'types/sensor';
+import { Measurement } from 'types/Measurement';
 
 const client = mqtt.connect('ws://localhost:9001');
 
 const SENSOR_UPDATE_INTERVAL = 1000;
 
 /**
- * Generates a value for a sensor based on it's previous value.
- * Uses the sensor's type to generate more sensible test data.
- * @param previousValue The previous value of the sensor
- * @param sensor The sensor to generate the value for
- * @returns A value for the sensor
+ * Generates a value for a measurement based on it's previous value.
+ * Uses the measurement's type to generate more sensible test data.
+ * @param previousValue The previous value of the measurement
+ * @param measurement The measurement to generate the value for
+ * @returns A value for the measurement
  */
-const generateValueForSensor = (previousValue: string, sensor: Sensor) => {
-  // Use the sensor's type (e.g. acceleration) to generate a sensible value
-  switch (sensor.type) {
+const generateValueForMeasurement = (
+  previousValue: string,
+  measurement: Measurement,
+): string => {
+  // Use the measurement's type (e.g. acceleration) to generate a sensible value
+  switch (measurement.type) {
     case 'temperature':
-      if (sensor.range === undefined) {
-        throw new Error('Temperature sensor must have a min and max value');
+      if (measurement.range === undefined) {
+        throw new Error(
+          'Temperature measurement must have a min and max value',
+        );
       }
-      // Generate a value that is within the sensor's range, and is within 2 degrees of the previous value
-      const proposedValue = parseFloat(previousValue) + random.float(-2, 2);
-      if (proposedValue < sensor.range.min) {
-        return String(sensor.range.min);
+
+      // Generate a value that is within the measurement's range, and is within 2 degrees of the previous value
+      const temp = parseFloat(previousValue) + random.float(-2, 2);
+      if (temp < measurement.range.min) {
+        return String(measurement.range.min);
       }
-      if (proposedValue > sensor.range.max) {
-        return String(sensor.range.max);
+
+      if (temp > measurement.range.max) {
+        return String(measurement.range.max);
       }
-      return String(proposedValue);
+
+      return String(temp);
+
     case 'acceleration':
-      if (sensor.range === undefined) {
-        throw new Error('Acceleration sensor must have a min and max value');
+      if (measurement.range === undefined) {
+        throw new Error(
+          'Acceleration measurement must have a min and max value',
+        );
       }
-      return String(0);
-    // case 'keyence':
-    //   if (sensor.range === undefined) {
-    //     throw new Error('Keyence sensor must have a min and max value');
-    //   }
-    //   const proposedValue = parseFloat(previousValue) + random.;
-    //   return String();
+
+      if (parseFloat(previousValue) > measurement.range.max - 20) {
+        return String(0);
+      }
+
+      if (parseFloat(previousValue) === 0) {
+        return String(random.float(10, measurement.range.max));
+      }
+
+      return String(previousValue + random.float(-1, 1));
+
+    case 'keyence':
+      if (measurement.range === undefined) {
+        throw new Error('Keyence measurement must have a min and max value');
+      }
+
+      const keyence =
+        Math.random() > 0.8
+          ? parseFloat(previousValue) + 1
+          : parseFloat(previousValue);
+
+      return String(keyence);
+
     case 'brake_feedback':
-      if (sensor.enumerations === undefined) {
-        throw new Error('Brake feedback sensor must have enumerations');
+      if (measurement.enumerations === undefined) {
+        throw new Error('Brake feedback measurement must have enumerations');
       }
-      return String(sensor.enumerations[0].value);
+
+      return String(measurement.enumerations[0].value);
+
     default:
-      // Fall back to using the sensor's format (e.g. float) if the type is not specified above
-      return generateValueByFormat(sensor);
+      // Fall back to using the measurement's format (e.g. float) if the type is not specified above
+      return generateValueByFormat(measurement);
   }
 };
 
 /**
- * Generates the value for a sensor based on it's format (e.g. float), within the sensor's range.
- * @param sensor The sensor to generate the value for
- * @returns A value for the sensor
+ * Generates the value for a measurement based on it's format (e.g. float), within the measurement's range.
+ * @param measurement The measurement to generate the value for
+ * @returns A value for the measurement
  */
-const generateValueByFormat = (sensor: Sensor) => {
-  switch (sensor.format) {
+const generateValueByFormat = (measurement: Measurement): string => {
+  switch (measurement.format) {
     case 'float':
-      if (sensor.range === undefined) {
-        throw new Error('Sensor of type "float" must have a min and max value');
-      }
-      return String(
-        random.float(sensor.range.min, sensor.range.max).toFixed(2),
-      );
-    case 'integer':
-      if (sensor.range === undefined) {
+      if (measurement.range === undefined) {
         throw new Error(
-          'Sensor of type "integer" must have a min and max value',
+          'Measurement of type "float" must have a min and max value',
         );
       }
-      return String(random.int(sensor.range.min, sensor.range.max));
+
+      return String(
+        random.float(measurement.range.min, measurement.range.max).toFixed(2),
+      );
+
+    case 'integer':
+      if (measurement.range === undefined) {
+        throw new Error(
+          'Measurement of type "integer" must have a min and max value',
+        );
+      }
+
+      return String(random.int(measurement.range.min, measurement.range.max));
+
     default:
-      throw new Error('Sensor format not supported');
+      throw new Error('Measurement format not supported');
   }
 };
 
@@ -94,20 +129,32 @@ client.on('connect', () => {
   console.log('CLIENT CONNECTED');
 
   Object.entries(pods).forEach(([, pod]) => {
-    Object.entries(pod.measurements).forEach(([, sensor]) => {
+    Object.entries(pod.measurements).forEach(([, measurement]) => {
       const previousValues = initialValues;
       setInterval(() => {
+        // Get the previous value for the measurement, or generate a new one if it doesn't exist
         const previousValue =
-          initialValues[sensor.key] || generateValueByFormat(sensor);
-        const newValue = generateValueForSensor(previousValue, sensor);
-        previousValues[sensor.key] = newValue;
-        client.publish(`hyped/${pod.key}/${sensor.key}`, newValue, (err) => {
-          if (err) {
-            console.error('ERROR PUBLISHING', err);
-          } else {
-            console.log(`Published ${sensor.name} = ${newValue}`);
-          }
-        });
+          previousValues[measurement.key] || generateValueByFormat(measurement);
+
+        // Generate a new value for the measurement
+        const newValue = generateValueForMeasurement(
+          previousValue,
+          measurement,
+        );
+        previousValues[measurement.key] = newValue;
+
+        // Publish the new value to the MQTT broker
+        client.publish(
+          `hyped/${pod.key}/${measurement.key}`,
+          newValue,
+          (err) => {
+            if (err) {
+              console.error('ERROR PUBLISHING', err);
+            } else {
+              console.log(`Published ${measurement.name} = ${newValue}`);
+            }
+          },
+        );
       }, SENSOR_UPDATE_INTERVAL);
     });
   });
