@@ -42,10 +42,6 @@ class AccelerometerPreprocessor {
   // number of allowed consecutive outliers from single accelerometer
   static constexpr std::uint8_t kNumAllowedAccelerometerFailures_ = 20;
 
-  // TODO: implement and document these functions
-  Eigen::Matrix<core::Float, 3, 3> getStateTransitionMatrix(const core::Duration time_delta);
-  Eigen::Matrix<core::Float, 3, 3> getStateTransitionCovarianceMatrix();
-  Eigen::Matrix<core::Float, 1, 1> getMeasurementNoiseCovarianceMatrix();
   /**
    * @brief filter the accelerometer data by converting outliers to median value
    *

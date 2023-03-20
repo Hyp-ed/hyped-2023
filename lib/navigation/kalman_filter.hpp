@@ -45,21 +45,21 @@ class KalmanFilter {
               const MeasurementVector &measurement)
   {
     // TODO: figure out how to make transition matrix given time delta - in main nav section
-    const auto apriori_state_estimate = transition_matrix * state_estimate_;
-    const auto apriori_error_covariance
+    const auto prop_state_estimate = transition_matrix * state_estimate_;
+    const auto prop_error_covariance
       = (transition_matrix.transpose() * error_covariance_ * transition_matrix)
         + transition_covariance;
     // TODOLater: Some optimisation is to be found here:
     // 1. Try and get rid of the inverse.
-    // 2. Reuse calculations such as `apriori_error_covariance * measurement_matrix.transpose()`.
+    // 2. Reuse calculations such as `prop_error_covariance * measurement_matrix.transpose()`.
     // K_k = P_k^{-1} * H_k^T * (H_k * P_k^{-1} * H_k^T + R_k)^{-1}
     const auto kalman_gain
-      = apriori_error_covariance * measurement_matrix.transpose()
-        * (measurement_matrix * apriori_error_covariance * measurement_matrix.transpose()
+      = prop_error_covariance * measurement_matrix.transpose()
+        * (measurement_matrix * prop_error_covariance * measurement_matrix.transpose()
            + measurement_noise_covariance)
             .inverse();
-    state_estimate_ = apriori_state_estimate
-                      + kalman_gain * (measurement - measurement_matrix * apriori_state_estimate);
+    state_estimate_ = prop_state_estimate
+                      + kalman_gain * (measurement - measurement_matrix * prop_state_estimate);
   }
 
   const StateVector &getStateEstimate() const { return state_estimate_; }

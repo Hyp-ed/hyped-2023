@@ -84,24 +84,6 @@ core::AccelerometerData AccelerometerPreprocessor::handleOutliers(
   return accelerometer_data;
 }
 
-// TODO: implement this to return the matrix as a fuction of time_delta.
-Eigen::Matrix<core::Float, 3, 3> AccelerometerPreprocessor::getStateTransitionMatrix(
-  const core::Duration time_delta)
-{
-  // so it compiles
-  Eigen::Matrix<core::Float, 3, 3> x;
-  x(0, 0) = 1;
-  x(0, 1) = 1;
-  x(0, 2) = 1;
-  x(1, 0) = 1;
-  x(1, 1) = 1;
-  x(1, 2) = 1;
-  x(2, 0) = 1;
-  x(2, 1) = 1;
-  x(2, 2) = 1;
-  return x;
-}
-
 SensorChecks AccelerometerPreprocessor::checkReliable()
 {  // changes reliable sensor to false if max consecutive outliers are reached
   for (std::size_t i = 0; i < core::kNumAccelerometers; ++i) {
