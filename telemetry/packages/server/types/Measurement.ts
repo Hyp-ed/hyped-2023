@@ -1,4 +1,4 @@
-export type Sensor =
+export type Measurement =
   | {
       name: string;
       key: string;
@@ -9,7 +9,7 @@ export type Sensor =
         min: number;
         max: number;
       };
-      enumerations?: undefined;
+      enumerations?: never;
     }
   | {
       name: string;
@@ -21,5 +21,5 @@ export type Sensor =
         key: string;
         value: number;
       }[];
-      range?: undefined;
+      range?: never;
     };
