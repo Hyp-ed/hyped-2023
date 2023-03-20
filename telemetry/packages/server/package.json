@@ -27,8 +27,10 @@
     "env-var": "^7.3.0",
     "mqtt": "^4.3.7",
     "nest-mqtt": "^0.2.0",
+    "nest-winston": "^1.9.1",
     "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.8.0"
+    "rxjs": "^7.8.0",
+    "winston": "^3.8.2"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.1.8",
