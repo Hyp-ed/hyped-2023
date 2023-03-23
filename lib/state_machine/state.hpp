@@ -11,10 +11,12 @@ enum class State {
   kMotorBraking,
   kPreFrictionBraking,
   kFrictionBraking,
+  kPreFrictionBrakingFail,
+  kFrictionBrakingFail,
   kFailureBraking,
   kStopped,
   kFailureStopped,
-  kOff
+  kOff,
 };
 
 }  // namespace hyped::state_machine
