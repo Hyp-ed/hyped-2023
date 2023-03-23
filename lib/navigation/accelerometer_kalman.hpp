@@ -3,12 +3,7 @@
 #include "consts.hpp"
 #include "kalman_filter.hpp"
 
-#include <cmath>
-
-#include <algorithm>
-#include <array>
 #include <cstdint>
-#include <optional>
 
 #include <Eigen/Dense>
 #include <core/logger.hpp>
@@ -30,7 +25,7 @@ class AccelerometerKalman {
 
   core::Float filter();
 
-  static constexpr std::size_t state_dimension_       = 3;
+  static constexpr std::size_t state_dimension_       = 3;  // TODO: change this!
   static constexpr std::size_t measurement_dimension_ = 1;
 
  private:
