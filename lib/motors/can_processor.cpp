@@ -10,7 +10,7 @@ namespace hyped::motors {
 CanProcessor::CanProcessor(std::shared_ptr<Controller> controller)
 {
   controller_ = controller;
-  // TODO: Add attrs for temp, current, state as well as respective getters and setters
+  
 }
 
 bool CanProcessor::sendMessage(const core::CanFrame frame)

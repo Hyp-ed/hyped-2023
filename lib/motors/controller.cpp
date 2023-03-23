@@ -4,6 +4,10 @@ namespace hyped::motors {
 
 Controller::Controller(core::ILogger &logger) : logger_(logger)
 {
+  // TODO: respective getters and setters to be added
+  float temperature;
+  float current;
+  ControllerState state;
 }
 
 void Controller::processErrorMessage(const std::uint16_t error_code)
