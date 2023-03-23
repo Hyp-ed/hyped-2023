@@ -109,10 +109,12 @@ core::Result HardwareCan::receive()
     logger_.log(core::LogLevel::kFatal, "No CanProccessor associated with id %i", message.can_id);
     return core::Result::kFailure;
   }
+  core::Result process_successful = core::Result::kSuccess;
   for (auto &processor : subscribed_processors->second) {
-    processor->processMessage(message);
+    core::Result process_result = processor->processMessage(message);
+    if (process_result == core::Result::kFailure) { process_successful = core::Result::kFailure; }
   }
-  return core::Result::kSuccess;
+  return process_successful;
 }
 
 void HardwareCan::addProcessor(const std::uint16_t id, std::shared_ptr<ICanProcessor> processor)
