@@ -10,7 +10,7 @@ CanProcessor::CanProcessor()
 core::Result CanProcessor::processMessage(const io::CanFrame &frame)
 {
   // TODOLater implement
-  return;
+  return core::Result::kFailure;
 }
 
 }  // namespace hyped::motors
