@@ -25,4 +25,5 @@ std::size_t hash_value(SourceAndMessage const &key)
   boost::hash_combine(seed, key.source);
   return seed;
 }
+
 }  // namespace hyped::state_machine
