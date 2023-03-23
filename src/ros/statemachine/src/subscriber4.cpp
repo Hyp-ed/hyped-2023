@@ -4,14 +4,14 @@
 #include "std_msgs/msg/string.hpp"
 using std::placeholders::_1;
 
-class MinimalSubscriber : public rclcpp::Node
+class Stm4 : public rclcpp::Node
 {
   public:
-    MinimalSubscriber()
-    : Node("minimal_subscriber")
+    Stm4()
+    : Node("stm4")
     {
       subscription_ = this->create_subscription<std_msgs::msg::String>(
-      "topic", 10, std::bind(&MinimalSubscriber::topic_callback, this, _1));
+      "topic", 10, std::bind(&Stm4::topic_callback, this, _1));
     }
 
   private:
@@ -25,7 +25,7 @@ class MinimalSubscriber : public rclcpp::Node
 int main(int argc, char * argv[])
 {
   rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<MinimalSubscriber>());
+  rclcpp::spin(std::make_shared<Stm4>());
   rclcpp::shutdown();
   return 0;
 }
