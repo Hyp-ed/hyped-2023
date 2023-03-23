@@ -1,6 +1,7 @@
 #pragma once
 
 #include "consts.hpp"
+#include "kalman_filter.hpp"
 
 #include <cmath>
 
@@ -18,7 +19,7 @@
 namespace hyped::navigation {
 class AccelerometerKalman {
  public:
-  AccelerometerPreprocessor(core::ILogger &logger, const core::ITimeSource &time);
+  AccelerometerKalman(core::ILogger &logger, const core::ITimeSource &time);
 
   /**
    * @brief convert raw accelerometer data to cleaned and filtered data
@@ -27,22 +28,25 @@ class AccelerometerKalman {
    * @return clean accelerometer data or optionally fail
    */
 
-  static constexpr std::size_t num_states_ = 3;
+  core::Float filter();
+
+  static constexpr std::size_t state_dimension_       = 3;
+  static constexpr std::size_t measurement_dimension_ = 1;
 
  private:
   core::ILogger &logger_;
   const core::ITimeSource &time_;
-  // Kalman Filter variables
+  // TODO: figure out kalman instantiation
+  // KalmanFilter &kalman_filter_;
 
-  const Eigen::Matrix<core::Float, 1, num_states_> measurement_matrix_ = {1, 0, 0};
+  // TODO: change once we figure out jerk
+  const Eigen::Matrix<core::Float, 1, state_dimension_> measurement_matrix_ = {1, 0, 0};
 
   // TODO: implement and document these functions
-  Eigen::Matrix<core::Float, num_states_, num_states_> getMeasurementMatrix(
-    core::Float acceleration);
-  Eigen::Matrix<core::Float, num_states_, num_states_> getStateTransitionMatrix(
-    const core::Duration time_delta);
-  Eigen::Matrix<core::Float, num_states_, num_states_> getStateTransitionCovarianceMatrix();
-  Eigen::Matrix<core::Float, 1, 1> getMeasurementNoiseCovarianceMatrix();
+  void getMeasurementVector(core::Float acceleration);
+  void getStateTransitionMatrix(const core::Duration time_delta);
+  void getStateTransitionCovarianceMatrix();
+  void getMeasurementNoiseCovarianceMatrix();
 };
 
 }  // namespace hyped::navigation
