@@ -16,6 +16,7 @@
 #include <io/hardware_uart.hpp>
 #include <io/pwm.hpp>
 #include <sensors/accelerometer.hpp>
+#include <sensors/low_power_current.hpp>
 #include <sensors/temperature.hpp>
 
 namespace hyped::debug {
@@ -45,6 +46,7 @@ class Repl {
   void addSpiCommands(const std::uint8_t bus);
   void addAccelerometerCommands(const std::uint8_t bus, const std::uint8_t device_address);
   void addTemperatureCommands(const std::uint8_t bus, const std::uint8_t device_address);
+  void addLowPowerCurrentCommands(const std::uint8_t bus, const std::uint8_t device_address);
   void addUartCommands(const std::uint8_t bus);
 
   core::ILogger &logger_;

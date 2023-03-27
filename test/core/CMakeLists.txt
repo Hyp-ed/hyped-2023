@@ -11,6 +11,6 @@ target_link_libraries(${target}
     hyped_core
     hyped_utils
     Eigen3::Eigen
-    Boost::boost
+    # Boost::boost
 )
 gtest_discover_tests(${target})
