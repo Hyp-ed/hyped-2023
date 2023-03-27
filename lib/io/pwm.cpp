@@ -5,7 +5,7 @@
 
 namespace hyped::io {
 
-std::optional<Pwm> Pwm::create(core::ILogger &logger, const PwmModule pwm_module)
+std::optional<std::shared_ptr<Pwm>> Pwm::create(core::ILogger &logger, const PwmModule pwm_module)
 {
   const std::string pwm_address    = "/sys/class/pwm/" + getPwmFolderName(pwm_module) + "/";
   const std::string period_address = pwm_address + "period";
@@ -33,7 +33,7 @@ std::optional<Pwm> Pwm::create(core::ILogger &logger, const PwmModule pwm_module
     return std::nullopt;
   }
   logger.log(core::LogLevel::kDebug, "Successfully initialised PWM");
-  return Pwm(logger, period_file, duty_cycle_file, polarity_file, enable_file);
+  return std::make_shared<Pwm>(logger, period_file, duty_cycle_file, polarity_file, enable_file);
 }
 
 Pwm::Pwm(core::ILogger &logger,

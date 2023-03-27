@@ -7,13 +7,7 @@ CanProcessor::CanProcessor()
   // TODOLater implement
 }
 
-bool CanProcessor::sendMessage(const core::CanFrame frame)
-{
-  // TODOLater implement
-  return false;
-}
-
-void CanProcessor::processMessage(const core::CanFrame frame)
+void CanProcessor::processMessage(const io::CanFrame &frame)
 {
   // TODOLater implement
   return;
