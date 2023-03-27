@@ -42,7 +42,8 @@ struct sockaddr_can {
 class ICanProcessor {
  public:
   /**
-   * @brief Called by ICan::receive() when a message with the given ID is received
+   * @brief Called by ICan::receive() when a message with the given ID is received. What it then
+   * does with the frame is up to the implementation
    * @param frame The CAN message to be processed
    * @return core::Result::kSuccess if the message was processed successfully,
    * core::Result::kFailure otherwise
