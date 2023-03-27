@@ -2,12 +2,13 @@
 
 namespace hyped::motors {
 
-Controller::Controller(core::ILogger &logger) : logger_(logger)
+Controller::Controller(core::ILogger &logger)
+    : logger_(logger),
+      temperature(0),
+      current(0),
+      state(ControllerState::kpreOperationalState)
 {
   // TODO: respective getters and setters to be added
-  float temperature;
-  float current;
-  ControllerState state;
 }
 
 void Controller::processErrorMessage(const std::uint16_t error_code)
@@ -134,35 +135,36 @@ ControllerStatus Controller::processWarningMessage(const std::uint8_t warning_co
   return priority_error;
 }
 
+// NMT stands for network management
 ControllerState Controller::processNMTMessage(const std::uint8_t nmt_code)
 {
-  ControllerState controllerState = ControllerState::resetNodeState;
+  ControllerState controllerState = ControllerState::kresetNodeState;
 
   switch (nmt_code) {
     // Operational State
     case 0x01:
       logger_.log(core::LogLevel::kDebug, "Controller enter operational state");
-      controllerState = ControllerState::operationalState;
+      controllerState = ControllerState::koperationalState;
       break;
     // Stop State
     case 0x02:
       logger_.log(core::LogLevel::kDebug, "Controller enter stop state");
-      controllerState = ControllerState::stopState;
+      controllerState = ControllerState::kstopState;
       break;
     // Pre-operational State
     case 0x03:
       logger_.log(core::LogLevel::kDebug, "Controller enter pre-operational state");
-      controllerState = ControllerState::preOperationalState;
+      controllerState = ControllerState::kpreOperationalState;
       break;
     // Reset node state
     case 0x81:
       logger_.log(core::LogLevel::kDebug, "Controller enter reset node state");
-      controllerState = ControllerState::resetNodeState;
+      controllerState = ControllerState::kresetNodeState;
       break;
     // Stop state
     case 0x82:
       logger_.log(core::LogLevel::kDebug, "Controller enter stop state");
-      controllerState = ControllerState::resetCommunicationState;
+      controllerState = ControllerState::kresetCommunicationState;
       break;
   }
   state = controllerState;

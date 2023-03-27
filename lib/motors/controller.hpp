@@ -6,11 +6,11 @@
 namespace hyped::motors {
 enum class ControllerStatus { kControllerTemperatureExceeded, kUnrecoverableWarning, kNominal };
 enum class ControllerState {
-  operationalState,
-  preOperationalState,
-  stopState,
-  resetNodeState,
-  resetCommunicationState
+  koperationalState,
+  kpreOperationalState,
+  kstopState,
+  kresetNodeState,
+  kresetCommunicationState
 };
 
 class Controller {
@@ -22,8 +22,10 @@ class Controller {
   ControllerState getControllerState();
 
  private:
+  float temperature;
+  float current;
+  ControllerState state;
   core::ILogger &logger_;
-  ControllerState state = ControllerState::resetNodeState;
 };
 
 }  // namespace hyped::motors
