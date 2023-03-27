@@ -37,6 +37,7 @@ struct sockaddr_can {
 #define AF_CAN 29
 #define CAN_RAW 1
 #define CAN_MAX_DLEN 8
+#define CAN_EFF_FLAG 0x80000000U  // EFF/SFF is set in the MSB
 #endif
 
 class ICanProcessor {
