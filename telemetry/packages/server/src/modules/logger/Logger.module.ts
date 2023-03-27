@@ -8,7 +8,7 @@ import { ENV } from '../core/config';
 const LOGGING_DIRECTORY = path.join(__dirname, '..', '..', 'logs');
 
 const loggerOptions: WinstonModuleOptions = {
-  level: 'info',
+  level: ENV === 'development' ? 'debug' : 'info',
   format: format.combine(
     format.timestamp({
       format: 'YYYY-MM-DD HH:mm:ss',
