@@ -1,10 +1,10 @@
 /* eslint-disable no-console */
 import mqtt from 'mqtt';
 import random from 'random';
-import pods from '@hyped/telemetry-constants/sensors.json';
-import { Measurement } from 'types/Measurement';
+import { pods } from '@hyped/telemetry-constants';
+import { Measurement } from '@hyped/telemetry-constants/dist/pods/pods.types';
 
-const client = mqtt.connect('ws://localhost:9001');
+const client = mqtt.connect('mqtt://localhost:1883');
 
 const SENSOR_UPDATE_INTERVAL = 1000;
 
@@ -22,6 +22,8 @@ const generateValueForMeasurement = (
   // Use the measurement's type (e.g. acceleration) to generate a sensible value
   switch (measurement.type) {
     case 'temperature':
+      if (measurement.format !== 'float')
+        throw new Error('Measurement type must be "float"');
       if (measurement.range === undefined) {
         throw new Error(
           'Temperature measurement must have a min and max value',
@@ -41,6 +43,8 @@ const generateValueForMeasurement = (
       return String(temp);
 
     case 'acceleration':
+      if (measurement.format !== 'float')
+        throw new Error('Measurement type must be "float"');
       if (measurement.range === undefined) {
         throw new Error(
           'Acceleration measurement must have a min and max value',
@@ -58,6 +62,8 @@ const generateValueForMeasurement = (
       return String(previousValue + random.float(-1, 1));
 
     case 'keyence':
+      if (measurement.format !== 'integer')
+        throw new Error('Measurement type must be "integer"');
       if (measurement.range === undefined) {
         throw new Error('Keyence measurement must have a min and max value');
       }
@@ -70,6 +76,8 @@ const generateValueForMeasurement = (
       return String(keyence);
 
     case 'brake_feedback':
+      if (measurement.format !== 'enum')
+        throw new Error('Measurement type must be "enum"');
       if (measurement.enumerations === undefined) {
         throw new Error('Brake feedback measurement must have enumerations');
       }
@@ -128,7 +136,7 @@ const initialValues: {
 client.on('connect', () => {
   console.log('CLIENT CONNECTED');
 
-  Object.entries(pods).forEach(([, pod]) => {
+  Object.entries(pods).forEach(([podId, pod]) => {
     Object.entries(pod.measurements).forEach(([, measurement]) => {
       const previousValues = initialValues;
       setInterval(() => {
@@ -144,17 +152,14 @@ client.on('connect', () => {
         previousValues[measurement.key] = newValue;
 
         // Publish the new value to the MQTT broker
-        client.publish(
-          `hyped/${pod.key}/${measurement.key}`,
-          newValue,
-          (err) => {
-            if (err) {
-              console.error('ERROR PUBLISHING', err);
-            } else {
-              console.log(`Published ${measurement.name} = ${newValue}`);
-            }
-          },
-        );
+        client.publish(`hyped/${podId}/${measurement.key}`, newValue, (err) => {
+          if (err) {
+            console.error('ERROR PUBLISHING', err);
+          } else {
+            console.log(`Published ${measurement.name} = ${newValue}`);
+          }
+        });
+        console.log(`Published ${measurement.name} = ${newValue}`);
       }, SENSOR_UPDATE_INTERVAL);
     });
   });
