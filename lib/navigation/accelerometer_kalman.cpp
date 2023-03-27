@@ -1,13 +1,14 @@
 #include "accelerometer_kalman.hpp"
 
+#include <core/types.hpp>
+
 namespace hyped::navigation {
 
 AccelerometerKalman::AccelerometerKalman(core::ILogger &logger, const core::ITimeSource &time)
     : logger_(logger),
-      time_(time)
-{
-  // TODO: instantiate kalman
-}
+      time_(time){
+        // TODO: instantiate kalman
+      };
 
 // TODO: implement this to return the matrix as a fuction of time_delta.
 void AccelerometerKalman::getStateTransitionMatrix(core::Duration time_delta)
