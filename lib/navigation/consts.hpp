@@ -25,6 +25,12 @@ struct Quartiles {
 
 inline core::Trajectory zero_trajectory = {0, 0, 0};
 
+struct Quartile {
+  core::Float first_quartile;
+  core::Float median;
+  core::Float third_quartile;
+};
+
 class INavigator {
  public:
   virtual std::optional<core::Trajectory> currentTrajectory()                            = 0;

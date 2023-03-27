@@ -11,7 +11,8 @@
 			},
 			"pwm": {
 				"enabled": false,
-				"modules": []
+				"modules": [],
+				"period": []
 			},
 			"spi": {
 				"enabled": false,

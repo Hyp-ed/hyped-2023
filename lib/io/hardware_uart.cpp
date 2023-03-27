@@ -18,19 +18,19 @@ std::optional<std::shared_ptr<Uart>> Uart::create(core::ILogger &logger,
                "Failed to open UART file descriptor, could not create UART instance");
     return std::nullopt;
   }
-  const auto baud_mask = static_cast<std::uint32_t>(baud_rate);
+  const std::uint32_t baud_mask = static_cast<std::uint32_t>(baud_rate);
   if (!baud_mask) {
     logger.log(core::LogLevel::kFatal,
                "Failed to set invalid baudrate, could not create UART instance");
     return std::nullopt;
   }
-  const auto bits_per_byte_mask = static_cast<std::uint32_t>(bits_per_byte);
+  const std::uint32_t bits_per_byte_mask = static_cast<std::uint32_t>(bits_per_byte);
   if (!bits_per_byte_mask) {
     logger.log(core::LogLevel::kFatal,
                "Failed to set invalid number of bits per byte, could not create UART instance");
     return std::nullopt;
   }
-  const auto configuration_result
+  const core::Result configuration_result
     = configureFileForOperation(logger, file_descriptor, baud_mask, bits_per_byte_mask);
   if (configuration_result == core::Result::kFailure) {
     logger.log(core::LogLevel::kFatal,
@@ -84,7 +84,7 @@ Uart::~Uart()
 
 core::Result Uart::sendBytes(const char *tx, const std::uint8_t length)
 {
-  const auto write_result = write(file_descriptor_, tx, length);
+  const ssize_t write_result = write(file_descriptor_, tx, length);
   if (write_result != length) {
     logger_.log(core::LogLevel::kFatal, "Failed to write the desired number of bytes to UART");
     return core::Result::kFailure;
@@ -95,7 +95,7 @@ core::Result Uart::sendBytes(const char *tx, const std::uint8_t length)
 
 core::Result Uart::readBytes(unsigned char *rx, const std::uint8_t length)
 {
-  const auto read_result = read(file_descriptor_, rx, length);
+  const ssize_t read_result = read(file_descriptor_, rx, length);
   if (read_result != length) {
     logger_.log(core::LogLevel::kFatal, "Failed to read the desired number of bytes from UART");
     return core::Result::kFailure;

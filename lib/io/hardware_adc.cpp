@@ -48,7 +48,7 @@ std::optional<core::Float> HardwareAdc::readValue()
 
 std::optional<core::Float> HardwareAdc::resetAndRead4(const int file_descriptor)
 {
-  const auto offset = lseek(file_descriptor, 0, SEEK_SET);  // reset file pointer
+  const off_t offset = lseek(file_descriptor, 0, SEEK_SET);  // reset file pointer
   if (offset != 0) {
     logger_.log(core::LogLevel::kFatal, "Failed to reset file offset");
     return std::nullopt;
