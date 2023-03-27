@@ -8,6 +8,7 @@ AccelerometerKalman::AccelerometerKalman(core::ILogger &logger, const core::ITim
     : logger_(logger),
       time_(time){
         // TODO: instantiate kalman
+
       };
 
 // TODO: implement this to return the matrix as a fuction of time_delta.

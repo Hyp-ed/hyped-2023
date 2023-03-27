@@ -33,7 +33,8 @@ class AccelerometerKalman {
   const core::ITimeSource &time_;
   // TODO: figure out kalman instantiation
   Eigen::Matrix<core::Float, state_dimension_, 1> initial_state = {0, 0, 0};
-  Eigen::Matrix<core::Float, state_dimension_, state_dimension_> initial_error_covariance {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
+  Eigen::Matrix<core::Float, state_dimension_, state_dimension_> initial_error_covariance{
+    {0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
   KalmanFilter<state_dimension_, measurement_dimension_> kalman_filter_(
     const core::ITimeSource &time_,
     Eigen::Matrix<core::Float, state_dimension_, 1> initial_state,
