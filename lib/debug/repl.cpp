@@ -235,6 +235,33 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
     const auto bus            = temperature["bus"].GetUint();
     repl->addTemperatureCommands(bus, device_address);
   }
+  if (!sensors.HasMember("low-power-current")) {
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'sensors.low_power_current' in configuration file");
+    return std::nullopt;
+  }
+  const auto low_power_current = sensors["low-power-current"].GetObject();
+  if (!low_power_current.HasMember("enabled")) {
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'sensors.low_power_current.enabled' in configuration file");
+    return std::nullopt;
+  }
+  if (low_power_current["enabled"].GetBool()) {
+    if (!low_power_current.HasMember("bus")) {
+      logger_.log(core::LogLevel::kFatal,
+                  "Missing required field 'sensors.low_power_current.bus' in configuration file");
+      return std::nullopt;
+    }
+    if (!low_power_current.HasMember("device_address")) {
+      logger_.log(
+        core::LogLevel::kFatal,
+        "Missing required field 'sensors.low_power_current.device_address' in configuration file");
+      return std::nullopt;
+    }
+    const auto device_address = low_power_current["device_address"].GetUint();
+    const auto bus            = low_power_current["bus"].GetUint();
+    repl->addLowPowerCurrentCommands(bus, device_address);
+  }
   return repl;
 }
 
@@ -607,6 +634,40 @@ void Repl::addTemperatureCommands(const std::uint8_t bus, const std::uint8_t dev
     }
   };
   addCommand(temperature_read_command);
+}
+
+void Repl::addLowPowerCurrentCommands(const std::uint8_t bus, const std::uint8_t device_address)
+{
+  const auto optional_i2c = io::HardwareI2c::create(logger_, bus);
+  if (!optional_i2c) {
+    logger_.log(core::LogLevel::kFatal, "Failed to create I2C instance on bus %d", bus);
+    return;
+  }
+  const auto i2c = std::move(*optional_i2c);
+  const auto optional_low_power_current
+    = sensors::LowPowerCurrent::create(logger_, i2c, device_address);
+  const auto low_power_current
+    = std::make_shared<sensors::LowPowerCurrent>(*optional_low_power_current);
+  Command low_power_current_read_command;
+  std::stringstream identifier;
+  identifier << "low power current 0x" << std::hex << static_cast<int>(device_address) << " read";
+  low_power_current_read_command.name = identifier.str();
+  std::stringstream description;
+  description << "Read low power current sensor 0x" << std::hex << static_cast<int>(device_address)
+              << " on "
+              << "I2C bus " << static_cast<int>(bus);
+  low_power_current_read_command.description = description.str();
+  low_power_current_read_command.handler     = [this, low_power_current, bus]() {
+    const auto value = low_power_current->readCurrent();
+    if (!value) {
+      logger_.log(core::LogLevel::kFatal, "Failed to read the low power current from bus %d", bus);
+    } else {
+      const core::Float low_power_current_result = *value;
+      logger_.log(
+        core::LogLevel::kInfo, "Acceleration in mg: \n x %.4f A\n", low_power_current_result);
+    }
+  };
+  addCommand(low_power_current_read_command);
 }
 
 }  // namespace hyped::debug
