@@ -1,4 +1,4 @@
-import objectTypes from '@hyped/telemetry-constants/object-types.json';
+import { objectTypes } from '@hyped/telemetry-constants';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()

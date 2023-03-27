@@ -1,10 +1,10 @@
-import sensors from '@hyped/telemetry-constants/sensors.json';
+import { pods } from '@hyped/telemetry-constants';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class DictionaryService {
   getDictionary(podId = '1') {
-    const pod = sensors[podId as keyof typeof sensors];
+    const pod = pods[podId as keyof typeof pods];
 
     if (!pod) {
       throw new Error(`Pod ${podId} not found`);
@@ -19,7 +19,7 @@ export class DictionaryService {
             {
               key: 'value',
               name: 'Value',
-              units: measurement.units,
+              unit: measurement.unit,
               format: measurement.format,
               ...('range' in measurement && {
                 min: measurement.range?.min,
