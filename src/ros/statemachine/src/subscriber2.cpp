@@ -12,7 +12,7 @@ class Stm2 : public rclcpp::Node
     : Node("stm2")
     {
       subscription_ = this->create_subscription<std_msgs::msg::String>(
-      "topic", 10, std::bind(&stm2::topic_callback, this, _1));
+      "topic", 10, std::bind(&Stm2::topic_callback, this, _1));
     }
 
   private:
