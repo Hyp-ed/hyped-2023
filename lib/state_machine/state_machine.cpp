@@ -33,4 +33,9 @@ std::string StateMachine::messageToString(const Message &message)
   return message_to_string_.at(message);
 }
 
+State StateMachine::getCurrentState()
+{
+  return current_state_;
+}
+
 }  // namespace hyped::state_machine

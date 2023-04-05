@@ -1,4 +1,4 @@
-#pragma once
+//#pragma once
 
 #include "message.hpp"
 #include "state.hpp"
@@ -18,12 +18,14 @@ struct SourceAndMessage {
   }
 };
 
-std::size_t hash_value(SourceAndMessage const &key)
-{
-  std::size_t seed = 0;
-  boost::hash_combine(seed, key.message);
-  boost::hash_combine(seed, key.source);
-  return seed;
-}
+struct source_and_message_hash {
+  std::size_t operator()(SourceAndMessage const &key) const
+  {
+    std::size_t seed = 0;
+    boost::hash_combine(seed, key.source);
+    boost::hash_combine(seed, key.message);
+    return seed;
+  }
+};
 
 }  // namespace hyped::state_machine

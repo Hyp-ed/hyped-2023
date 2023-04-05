@@ -20,13 +20,14 @@ class StateMachine {
   void handleMessage(const Message &message);
   Message stringToMessage(const std::string &message_name);
   std::string messageToString(const Message &message);
+  State getCurrentState();
 
  private:
   const std::unordered_map<std::string, Message> string_to_message_
     = {{"kNextNominalState", Message::kNextNominalState}, {"kFailure", Message::kFailure}};
   const std::unordered_map<Message, std::string> message_to_string_
     = {{Message::kNextNominalState, "kNextNominalState"}, {Message::kFailure, "kFailure"}};
-  const boost::unordered_map<SourceAndMessage, State> transition_to_state_
+  const boost::unordered_map<SourceAndMessage, State, source_and_message_hash> transition_to_state_
     = {{{State::kIdle, Message::kCalibrating}, State::kCalibrating},
        {{State::kCalibrating, Message::kReady}, State::kReady},
        {{State::kReady, Message::kAccelerating}, State::kAccelerating},
