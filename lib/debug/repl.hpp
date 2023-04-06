@@ -15,6 +15,8 @@
 #include <io/pwm.hpp>
 #include <sensors/accelerometer.hpp>
 #include <sensors/gyroscope.hpp>
+#include <unistd.h>
+#include <chrono>
 
 namespace hyped::debug {
 

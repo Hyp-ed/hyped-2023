@@ -17,7 +17,7 @@ Gyroscope::~Gyroscope()
 {
 }
 
-const std::optional<std::int16_t> Gyroscope::read(core::Axis axis)
+std::optional<core::GyroscopeData> Gyroscope::read(core::Axis axis)
 {
   switch (axis) {
     case core::Axis::kX: {
@@ -36,7 +36,12 @@ const std::optional<std::int16_t> Gyroscope::read(core::Axis axis)
       const auto x_axis = ((*gyroscope_x_high_byte << 8) | *gyroscope_x_low_byte);
       logger_.log(
         core::LogLevel::kDebug, "Successfully read x-axis from gyroscope at channel %d", channel_);
-      return static_cast<std::uint16_t>(x_axis * 0.00875);
+
+      core::Float X_Value = (core::Float)x_axis;
+      X_Value *= 0.00875;
+      const std::optional<core::GyroscopeData> X_values(std::in_place,X_Value,std::chrono::system_clock::now());
+
+        return X_values;
     }
     case core::Axis::kY: {
       const auto gyroscope_y_high_byte = i2c_->readByte(device_address_, kDataYHigh);
@@ -54,7 +59,12 @@ const std::optional<std::int16_t> Gyroscope::read(core::Axis axis)
       const auto y_axis = ((*gyroscope_y_high_byte << 8) | *gyroscope_y_low_byte);
       logger_.log(
         core::LogLevel::kDebug, "Successfully read y-axis from gyroscope at channel %d", channel_);
-      return static_cast<std::uint16_t>(y_axis * 0.00875);
+
+      core::Float Y_Value = (core::Float)y_axis;
+      Y_Value *= 0.00875;
+      const std::optional<core::GyroscopeData> Y_values(std::in_place,Y_Value,std::chrono::system_clock::now());
+
+        return Y_values;
     }
     case core::Axis::kZ: {
       const auto gyroscope_z_high_byte = i2c_->readByte(device_address_, kDataZHigh);
@@ -72,7 +82,12 @@ const std::optional<std::int16_t> Gyroscope::read(core::Axis axis)
       const auto z_axis = ((*gyroscope_z_high_byte << 8) | *gyroscope_z_low_byte);
       logger_.log(
         core::LogLevel::kDebug, "Successfully read z-axis from gyroscope at channel %d", channel_);
-      return static_cast<std::uint16_t>(z_axis * 0.00875);
+
+      core::Float Z_Value = (core::Float)z_axis;
+      Z_Value *= 0.00875;
+      const std::optional<core::GyroscopeData> Z_values(std::in_place,Z_Value,std::chrono::system_clock::now());
+
+        return Z_values;
     }
     default: {
       logger_.log(core::LogLevel::kFatal, "Gave an invalid axis");

@@ -62,6 +62,18 @@ struct RawAccelerationData {
   const TimePoint measured_at;
 };
 
+struct GyroscopeData {
+  GyroscopeData(const core::Float x,
+                      const TimePoint measured_at)
+      : x(x),
+        measured_at(measured_at)
+  {
+  }
+
+  const core::Float x;
+  const TimePoint measured_at;
+};
+
 enum class Axis { kX = 0, kY, kZ };
 
 }  // namespace hyped::core

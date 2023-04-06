@@ -196,6 +196,28 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
     const auto bus            = accelerometer["bus"].GetUint();
     repl->addAccelerometerCommands(bus, device_address);
   }
+
+  if (!sensors.HasMember("gyroscope")) {
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'sensors.gyroscope' in configuration file");
+    return std::nullopt;
+  }
+  const auto gyroscope = sensors["gyroscope"].GetObject();
+  if (!gyroscope.HasMember("enabled")) {
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'sensors.gyroscope.enabled' in configuration file");
+    return std::nullopt;
+  }
+  if (gyroscope["enabled"].GetBool()) {
+    if (!gyroscope.HasMember("bus")) {
+      logger_.log(core::LogLevel::kFatal,
+                  "Missing required field 'sensors.gyroscope.bus' in configuration file");
+      return std::nullopt;
+    }
+    const auto device_address = gyroscope["device_address"].GetUint();
+    const auto bus            = gyroscope["bus"].GetUint();
+    repl->addGyroscopeCommands(bus, device_address);
+  }
   return repl;
 }
 
@@ -513,38 +535,32 @@ void Repl::addGyroscopeCommands(const std::uint8_t bus, const std::uint8_t devic
               << "I2C bus " << static_cast<int>(bus);
   gyroscope_read_command.description = description.str();
   gyroscope_read_command.handler     = [this, gyroscope, bus]() {
-    std::uint16_t axis;
-    std::cout << "axis (0 is x, 1 is y, 2 is z): ";
-    std::cin >> axis;
-    std::optional<std::int16_t> value;
-    switch (axis) {
-      case 0: {
-        value = gyroscope->read(core::Axis::kX);
-        break;
-      }
-      case 1: {
-        value = gyroscope->read(core::Axis::kY);
-        break;
-      }
-      case 2: {
-        value = gyroscope->read(core::Axis::kZ);
-        break;
-      }
-      default: {
-        logger_.log(
-          core::LogLevel::kFatal, "Failed to read gyroscope due to invalid axis from bus %d", bus);
-      }
-    }
-
-    if (!value) {
-      logger_.log(core::LogLevel::kFatal, "Failed to read gyroscope from bus %d", bus);
-    } else {
+    core::Float Angle = 0;
+    core::Float Old_data = 0;
+    auto Old_time = std::chrono::system_clock::now();
+    std::optional<core::GyroscopeData> value;
+    
+    while (true) {
+      std::optional<core::GyroscopeData> value = gyroscope->read(core::Axis::kX);
       const auto result = value.value();
-      logger_.log(core::LogLevel::kInfo, "Gyroscope is : %d", result);
-    }
+
+      std::chrono::duration<double> elapsed_seconds = result.measured_at - Old_time;
+      
+      auto time = (core::Float) elapsed_seconds.count();
+
+      Angle = 0.5*(Old_data+result.x)*time + Angle;
+      
+      Old_time = result.measured_at;
+      Old_data = result.x;
+
+      logger_.log(core::LogLevel::kInfo, "Gyroscope is : %f", Angle);
+      
+    };
+      
   };
   addCommand(gyroscope_read_command);
 }
+
 
 void Repl::addUartCommands(const std::uint8_t bus)
 {

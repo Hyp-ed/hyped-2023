@@ -2,12 +2,15 @@
 
 #include "i2c_sensors.hpp"
 
+#include <cmath>
+
 #include <cstdint>
 #include <memory>
 #include <optional>
 
 #include <core/logger.hpp>
 #include <core/types.hpp>
+#include <core/wall_clock.hpp>
 #include <io/i2c.hpp>
 
 namespace hyped::sensors {
@@ -38,7 +41,7 @@ class Gyroscope {
                                          = kDefaultGyroscopeAddress);
   ~Gyroscope();
 
-  const std::optional<std::int16_t> read(core::Axis axis);
+  std::optional<core::GyroscopeData> read(core::Axis axis);
   std::uint8_t getChannel() const;
 
  private:
