@@ -27,11 +27,12 @@ class AccelerometerKalman {
 
   static constexpr std::size_t state_dimension_       = 3;  // TODO: change this!
   static constexpr std::size_t measurement_dimension_ = 1;
+  static constexpr std::size_t extended_dimension_    = 2;  // TODO: check this!
 
  private:
   core::ILogger &logger_;
   const core::ITimeSource &time_;
-  // TODO: figure out kalman instantiation
+  // TODO: change for actual state vector
   Eigen::Matrix<core::Float, state_dimension_, 1> initial_state = {0, 0, 0};
   Eigen::Matrix<core::Float, state_dimension_, state_dimension_> initial_error_covariance{
     {0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
@@ -40,14 +41,22 @@ class AccelerometerKalman {
     Eigen::Matrix<core::Float, state_dimension_, 1> initial_state,
     Eigen::Matrix<core::Float, state_dimension_, state_dimension_> initial_error_covariance);
 
-  // TODO: change once we figure out jerk
-  const Eigen::Matrix<core::Float, 1, state_dimension_> measurement_matrix_ = {1, 0, 0};
+  const Eigen::Matrix<core::Float, state_dimension_, state_dimension_> measurement_matrix_{
+    {1, 0, 0}, {0, 0, 0}, {0, 0, 0}};
 
   // TODO: implement and document these functions
-  void getMeasurementVector(core::Float acceleration);
-  void getStateTransitionMatrix(const core::Duration time_delta);
-  void getStateTransitionCovarianceMatrix();
-  void getMeasurementNoiseCovarianceMatrix();
+  Eigen::Matrix<core::Float, state_dimension_, 1> getMeasurementVector(core::Float acceleration);
+  Eigen::Matrix<core::Float, state_dimension_, state_dimension_> getStateTransitionMatrix(
+    const core::Float time_delta);
+  Eigen::Matrix<core::Float, state_dimension_, state_dimension_>
+    getStateTransitionCovarianceMatrix();
+  Eigen::Matrix<core::Float,
+                AccelerometerKalman::measurement_dimension_,
+                AccelerometerKalman::measurement_dimension_>
+    getMeasurementNoiseCovarianceMatrix();
+  Eigen::Matrix<core::Float, extended_dimension_, state_dimension_> getJacobianMatrix(
+    const core::Float time_delta);
+  Eigen::Matrix<core::Float, extended_dimension_, 1> getExtendedStateVector();
 };
 
 }  // namespace hyped::navigation
