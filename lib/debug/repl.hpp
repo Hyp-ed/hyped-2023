@@ -44,11 +44,19 @@ class Repl {
   void addAccelerometerCommands(const std::uint8_t bus, const std::uint8_t device_address);
   void addUartCommands(const std::uint8_t bus);
 
-  std::optional<std::shared_ptr<io::II2c>> getI2C(const std::uint8_t bus);
+  std::optional<std::shared_ptr<io::IAdc>> getAdc(const std::uint8_t pin);
+  std::optional<std::shared_ptr<io::II2c>> getI2c(const std::uint8_t bus);
+  std::optional<std::shared_ptr<io::Pwm>> getPwm(const io::PwmModule);
+  std::optional<std::shared_ptr<io::ISpi>> getSpi(const std::uint8_t bus);
+  std::optional<std::shared_ptr<io::IUart>> getUart(const std::uint8_t bus);
 
   core::ILogger &logger_;
   std::map<std::string, Command> command_map_;
+  std::unordered_map<std::uint8_t, std::shared_ptr<io::IAdc>> adc_;
   std::unordered_map<std::uint8_t, std::shared_ptr<io::II2c>> i2c_;
+  std::unordered_map<io::PwmModule, std::shared_ptr<io::Pwm>> pwm_;
+  std::unordered_map<std::uint8_t, std::shared_ptr<io::ISpi>> spi_;
+  std::unordered_map<std::uint8_t, std::shared_ptr<io::Uart>> uart_;
 };
 
 }  // namespace hyped::debug

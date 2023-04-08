@@ -238,7 +238,7 @@ void Repl::addHelpCommand()
 
 void Repl::addAdcCommands(const std::uint8_t pin)
 {
-  const auto optional_adc = io::Adc::create(logger_, pin);
+  const auto optional_adc = getAdc(pin);
   if (!optional_adc) {
     logger_.log(core::LogLevel::kFatal, "Failed to create ADC instance on pin %d", pin);
     return;
@@ -264,7 +264,7 @@ void Repl::addAdcCommands(const std::uint8_t pin)
 
 void Repl::addI2cCommands(const std::uint8_t bus)
 {
-  const auto optional_i2c = getI2C(bus);
+  const auto optional_i2c = getI2c(bus);
   if (!optional_i2c) {
     logger_.log(core::LogLevel::kFatal, "Failed to create I2C instance on bus %d", bus);
     return;
@@ -326,7 +326,7 @@ void Repl::addI2cCommands(const std::uint8_t bus)
 void Repl::addPwmCommands(const std::uint8_t module)
 {
   const io::PwmModule pwm_module = static_cast<io::PwmModule>(module);
-  const auto optional_pwm        = io::Pwm::create(logger_, pwm_module);
+  const auto optional_pwm        = getPwm(pwm_module);
   if (!optional_pwm) {
     logger_.log(core::LogLevel::kFatal, "Failed to create PWM module");
     return;
@@ -548,7 +548,19 @@ void Repl::addUartCommands(const std::uint8_t bus)
   }
 }
 
-std::optional<std::shared_ptr<io::II2c>> Repl::getI2C(const std::uint8_t bus)
+std::optional<std::shared_ptr<io::IAdc>> Repl::getAdc(const std::uint8_t bus)
+{
+  const auto adc = adc_.find(bus);
+  if (adc == adc_.end()) {
+    const auto new_adc = io::Adc::create(logger_, bus);
+    if (!new_adc) { return std::nullopt; }
+    adc_.emplace(bus, *new_adc);
+    return *new_adc;
+  }
+  return adc->second;
+}
+
+std::optional<std::shared_ptr<io::II2c>> Repl::getI2c(const std::uint8_t bus)
 {
   const auto i2c = i2c_.find(bus);
   if (i2c == i2c_.end()) {
@@ -558,6 +570,42 @@ std::optional<std::shared_ptr<io::II2c>> Repl::getI2C(const std::uint8_t bus)
     return *new_i2c;
   }
   return i2c->second;
+}
+
+std::optional<std::shared_ptr<io::Pwm>> Repl::getPwm(const io::PwmModule pwm_module)
+{
+  const auto pwm = pwm_.find(pwm_module);
+  if (pwm == pwm_.end()) {
+    const auto new_pwm = io::Pwm::create(logger_, pwm_module);
+    if (!new_pwm) { return std::nullopt; }
+    pwm_.emplace(pwm_module, *new_pwm);
+    return *new_pwm;
+  }
+  return pwm->second;
+}
+
+std::optional<std::shared_ptr<io::ISpi>> Repl::getSpi(const std::uint8_t bus)
+{
+  const auto spi = spi_.find(bus);
+  if (spi == spi_.end()) {
+    const auto new_spi = io::HardwareSpi::create(logger_);
+    if (!new_spi) { return std::nullopt; }
+    spi_.emplace(bus, *new_spi);
+    return *new_spi;
+  }
+  return spi->second;
+}
+
+std::optional<std::shared_ptr<io::IUart>> Repl::getUart(const std::uint8_t bus)
+{
+  const auto uart = uart_.find(bus);
+  if (uart == uart_.end()) {
+    const auto new_uart = io::Uart::create(logger_, static_cast<UartBus>(bus), BaudRate::kB38400);
+    if (!new_uart) { return std::nullopt; }
+    uart_.emplace(bus, *new_uart);
+    return *new_uart;
+  }
+  return uart->second;
 }
 
 }  // namespace hyped::debug
