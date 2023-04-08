@@ -11,7 +11,7 @@ class IAdc {
    * @brief reads AIN value
    * @return two bytes in range [0,4095] because the BBB has 12-bit ADCs (2^12 = 4096)
    */
-  std::optional<std::uint16_t> readValue();
+  virtual std::optional<std::uint16_t> readValue() = 0;
 };
 
 }  // namespace hyped::io
