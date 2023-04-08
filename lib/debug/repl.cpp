@@ -602,10 +602,18 @@ std::optional<std::shared_ptr<io::IUart>> Repl::getUart(const UartBus bus, const
   if (uart == uart_.end()) {
     const auto new_uart = io::Uart::create(logger_, static_cast<UartBus>(bus), baud_rate);
     if (!new_uart) { return std::nullopt; }
-    uart_.emplace(bus, *new_uart);
+    const auto uart_bus_baud_rate
+      = std::pair<BaudRate, std::optional<std::shared_ptr<io::IUart>>>(baud_rate, *new_uart);
+    uart_.emplace(bus, uart_bus_baud_rate);
     return *new_uart;
   }
-  return uart->second;
+  if (uart->second.first != baud_rate) {
+    logger_.log(core::LogLevel::kFatal,
+                "UART bus %d already initialised with different baud rate",
+                static_cast<int>(bus));
+    return std::nullopt;
+  }
+  return uart->second.second;
 }
 
 }  // namespace hyped::debug
