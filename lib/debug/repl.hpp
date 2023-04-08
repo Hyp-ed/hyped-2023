@@ -56,7 +56,7 @@ class Repl {
   std::unordered_map<std::uint8_t, std::shared_ptr<io::II2c>> i2c_;
   std::unordered_map<io::PwmModule, std::shared_ptr<io::Pwm>> pwm_;
   std::unordered_map<std::uint8_t, std::shared_ptr<io::ISpi>> spi_;
-  std::unordered_map<UartBus, std::pair<BaudRate, std::shared_ptr<io::Uart>>> uart_;
+  std::unordered_map<UartBus, std::pair<BaudRate, std::shared_ptr<io::IUart>>> uart_;
 };
 
 }  // namespace hyped::debug

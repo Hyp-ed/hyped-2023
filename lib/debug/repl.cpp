@@ -10,7 +10,7 @@
 
 namespace hyped::debug {
 
-Repl::Repl(core::ILogger &logger) : logger_(logger), i2c_()
+Repl::Repl(core::ILogger &logger) : logger_(logger), i2c_(), spi_(), pwm_(), adc_(), uart_()
 {
 }
 
@@ -603,7 +603,7 @@ std::optional<std::shared_ptr<io::IUart>> Repl::getUart(const UartBus bus, const
     const auto new_uart = io::Uart::create(logger_, static_cast<UartBus>(bus), baud_rate);
     if (!new_uart) { return std::nullopt; }
     const auto uart_bus_baud_rate
-      = std::pair<BaudRate, std::optional<std::shared_ptr<io::IUart>>>(baud_rate, *new_uart);
+      = std::pair<BaudRate, std::shared_ptr<io::IUart>>(baud_rate, *new_uart);
     uart_.emplace(bus, uart_bus_baud_rate);
     return *new_uart;
   }
