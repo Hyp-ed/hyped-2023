@@ -48,7 +48,7 @@ class Repl {
   std::optional<std::shared_ptr<io::II2c>> getI2c(const std::uint8_t bus);
   std::optional<std::shared_ptr<io::Pwm>> getPwm(const io::PwmModule);
   std::optional<std::shared_ptr<io::ISpi>> getSpi(const std::uint8_t bus);
-  std::optional<std::shared_ptr<io::IUart>> getUart(const std::uint8_t bus);
+  std::optional<std::shared_ptr<io::IUart>> getUart(const UartBus bus, const BaudRate baud_rate);
 
   core::ILogger &logger_;
   std::map<std::string, Command> command_map_;
@@ -56,7 +56,7 @@ class Repl {
   std::unordered_map<std::uint8_t, std::shared_ptr<io::II2c>> i2c_;
   std::unordered_map<io::PwmModule, std::shared_ptr<io::Pwm>> pwm_;
   std::unordered_map<std::uint8_t, std::shared_ptr<io::ISpi>> spi_;
-  std::unordered_map<std::uint8_t, std::shared_ptr<io::Uart>> uart_;
+  std::unordered_map<UartBus, std::shared_ptr<io::Uart>> uart_;
 };
 
 }  // namespace hyped::debug

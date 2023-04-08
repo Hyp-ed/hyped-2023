@@ -496,7 +496,7 @@ void Repl::addAccelerometerCommands(const std::uint8_t bus, const std::uint8_t d
 void Repl::addUartCommands(const std::uint8_t bus)
 {
   const UartBus uart_bus   = static_cast<UartBus>(bus);
-  const auto optional_uart = io::Uart::create(logger_, uart_bus, BaudRate::kB38400);
+  const auto optional_uart = getUart(uart_bus, BaudRate::kB38400);
   if (!optional_uart) {
     logger_.log(core::LogLevel::kFatal, "Failed to create UART instance on bus %d", bus);
     return;
@@ -596,11 +596,11 @@ std::optional<std::shared_ptr<io::ISpi>> Repl::getSpi(const std::uint8_t bus)
   return spi->second;
 }
 
-std::optional<std::shared_ptr<io::IUart>> Repl::getUart(const std::uint8_t bus)
+std::optional<std::shared_ptr<io::IUart>> Repl::getUart(const UartBus bus, const BaudRate baud_rate)
 {
   const auto uart = uart_.find(bus);
   if (uart == uart_.end()) {
-    const auto new_uart = io::Uart::create(logger_, static_cast<UartBus>(bus), BaudRate::kB38400);
+    const auto new_uart = io::Uart::create(logger_, static_cast<UartBus>(bus), baud_rate);
     if (!new_uart) { return std::nullopt; }
     uart_.emplace(bus, *new_uart);
     return *new_uart;
