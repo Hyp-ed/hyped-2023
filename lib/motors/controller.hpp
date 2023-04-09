@@ -32,6 +32,13 @@ class Controller {
   ControllerStatus processWarningMessage(const std::uint8_t warning_code);
   static std::optional<io::CanFrame> parseJsonCanFrame(
     core::ILogger &logger, rapidjson::GenericObject<true, rapidjson::Value> message);
+  /**
+   * @brief Configures the motor controller with the configuration messages defined in the JSON file
+   * of messages
+   *
+   * @return core::Result kSuccess if the configuration was successful, kFailure if the
+   * configuration failed
+   */
   core::Result configureController();
 
  private:

@@ -707,7 +707,7 @@ void Repl::addMotorControllerCommands(const std::string &bus)
     logger_.log(core::LogLevel::kFatal, "Failed to create motor controller instance");
     return;
   }
-  const auto controller = std::move(*optional_controller);
+  auto controller = *optional_controller;
   Command controller_read_register_command;
   controller_read_register_command.name = "controller read index";
   controller_read_register_command.description
@@ -770,6 +770,18 @@ void Repl::addMotorControllerCommands(const std::string &bus)
     }
   };
   addCommand(controller_write_register_command);
+  Command controller_configure_command;
+  controller_configure_command.name = "controller configure";
+  controller_configure_command.description
+    = "Configure the motor controller with the configuration in the motor_controller_messages.json";
+  controller_configure_command.handler = [this, can, controller]() {
+    core::Result result = controller.configureController();
+    if (result == core::Result::kFailure) {
+      logger_.log(core::LogLevel::kFatal, "Failed to configure the motor controller");
+      return;
+    }
+  };
+  addCommand(controller_configure_command);
 }
 
 std::optional<std::shared_ptr<io::ICan>> Repl::getCan(const std::string &bus)
