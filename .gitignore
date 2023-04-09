@@ -36,3 +36,6 @@ build
 .cache
 tags
 .DS_Store
+
+# Telemetry
+.env

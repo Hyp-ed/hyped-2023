@@ -2,47 +2,46 @@
 
 #include "gpio.hpp"
 
+#include <cstdint>
+#include <optional>
 #include <string>
 
 #include <core/types.hpp>
+
+namespace hyped::io {
 
 // Edge is used to set the interrupt trigger for the pin.
 enum class Edge { kNone = 0, kRising, kFalling, kBoth };
 enum class Direction { kIn = 0, kOut };
 
-namespace hyped::io {
-
 class HardwareGpioReader : public IGpioReader {
  public:
+  HardwareGpioReader(core::ILogger &logger, const int read_file_descritor);
+  ~HardwareGpioReader();
   /**
    * @brief Read a high or low from the GPIO pin.
    */
-  std::optional<core::DigitalSignal> read();
-  ~HardwareGpioReader();
+  virtual std::optional<core::DigitalSignal> read();
 
  private:
-  HardwareGpioReader(core::ILogger &logger, const int read_file_descritor);
-
   core::ILogger &logger_;
   const int read_file_descriptor_;
-  friend class HardwareGpio;
 };
 
 class HardwareGpioWriter : public IGpioWriter {
  public:
+  HardwareGpioWriter(core::ILogger &logger, const int write_file_descriptor);
+  ~HardwareGpioWriter();
+
   /**
    * @brief Writes a high or low to the GPIO pin.
    * @param state The digital signal to write to the pin.
    */
-  core::Result write(const core::DigitalSignal state);
-  ~HardwareGpioWriter();
+  virtual core::Result write(const core::DigitalSignal state);
 
  private:
-  HardwareGpioWriter(core::ILogger &logger, const int write_file_descriptor);
-
   core::ILogger &logger_;
   const int write_file_descriptor_;
-  friend class HardwareGpio;
 };
 
 /**
@@ -54,10 +53,10 @@ class HardwareGpio {
  public:
   HardwareGpio(core::ILogger &logger);
 
-  std::optional<std::shared_ptr<IGpioReader>> getReader(const std::uint8_t pin,
-                                                        const Edge edge = Edge::kBoth);
-  std::optional<std::shared_ptr<IGpioWriter>> getWriter(const std::uint8_t pin,
-                                                        const Edge edge = Edge::kBoth);
+  virtual std::optional<std::shared_ptr<IGpioReader>> getReader(const std::uint8_t pin,
+                                                                const Edge edge);
+  virtual std::optional<std::shared_ptr<IGpioWriter>> getWriter(const std::uint8_t pin,
+                                                                const Edge edge);
 
  private:
   /**

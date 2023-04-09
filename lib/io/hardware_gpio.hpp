@@ -2,6 +2,10 @@
 
 #include "gpio.hpp"
 
+#include <cstdint>
+#include <optional>
+
+#include <core/logger.hpp>
 #include <core/types.hpp>
 
 namespace hyped::io {

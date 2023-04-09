@@ -1,8 +1,11 @@
 #pragma once
 
+#include <cstdint>
 #include <functional>
 #include <iostream>
 #include <map>
+#include <memory>
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -15,6 +18,7 @@
 #include <io/hardware_uart.hpp>
 #include <io/pwm.hpp>
 #include <sensors/accelerometer.hpp>
+#include <sensors/temperature.hpp>
 
 namespace hyped::debug {
 
@@ -39,9 +43,10 @@ class Repl {
   void addHelpCommand();
   void addAdcCommands(const std::uint8_t pin);
   void addI2cCommands(const std::uint8_t bus);
-  void addPwmCommands(const std::uint8_t module);
+  void addPwmCommands(const std::uint8_t module, const std::uint32_t period);
   void addSpiCommands(const std::uint8_t bus);
   void addAccelerometerCommands(const std::uint8_t bus, const std::uint8_t device_address);
+  void addTemperatureCommands(const std::uint8_t bus, const std::uint8_t device_address);
   void addUartCommands(const std::uint8_t bus);
 
   std::optional<std::shared_ptr<io::IAdc>> getAdc(const std::uint8_t pin);

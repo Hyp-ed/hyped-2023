@@ -1,3 +1,4 @@
 export { Button } from './button';
-export { Checkbox } from './checkbox';
+export { Toggle } from './toggle';
 export { StatusIndicator } from './status';
+export { Logo } from './logo';
