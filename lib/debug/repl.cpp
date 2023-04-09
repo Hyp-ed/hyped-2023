@@ -301,6 +301,49 @@ void Repl::addAdcCommands(const std::uint8_t pin)
   addCommand(adc_read_command);
 }
 
+void Repl::addCanCommands(const std::string &bus)
+{
+  const auto optional_can = io::HardwareCan::create(logger_, bus);
+  if (!optional_can) {
+    logger_.log(core::LogLevel::kFatal, "Failed to create CAN instance on bus %s", bus.c_str());
+    return;
+  }
+  const auto can = std::move(*optional_can);
+  Command can_write_command;
+  std::stringstream identifier;
+  identifier << "can " << bus << " write";
+  can_write_command.name = identifier.str();
+  std::stringstream description;
+  description << "Write to CAN bus " << bus;
+  can_write_command.description = description.str();
+  can_write_command.handler     = [this, can, bus]() {
+    std::cout << "Enter CAN ID: ";
+    std::uint32_t id;
+    std::cin >> std::hex >> id;
+    std::cout << "Enter CAN data: ";
+    std::string data;
+    std::cin >> std::hex >> data;
+    if (data.length() > 8) {
+      logger_.log(core::LogLevel::kFatal, "Cannot send can data longer than 8 bytes");
+      return;
+    }
+    const auto can_data = std::vector<std::uint8_t>(data.begin(), data.end());
+    io::CanFrame can_frame;
+    can_frame.can_id  = id;
+    can_frame.can_dlc = can_data.size();
+    for (int i = 0; i < can_data.size(); i++) {
+      can_frame.data[i] = can_data[i];
+    }
+    core::Result result = can->send(can_frame);
+    if (result == core::Result::kFailure) {
+      logger_.log(core::LogLevel::kFatal, "Failed to write to CAN bus %s", bus.c_str());
+      return;
+    }
+    logger_.log(core::LogLevel::kDebug, "Wrote to CAN bus %s", bus.c_str());
+  };
+  addCommand(can_write_command);
+}
+
 void Repl::addI2cCommands(const std::uint8_t bus)
 {
   const auto optional_i2c = io::HardwareI2c::create(logger_, bus);
@@ -607,6 +650,18 @@ void Repl::addTemperatureCommands(const std::uint8_t bus, const std::uint8_t dev
     }
   };
   addCommand(temperature_read_command);
+}
+
+std::optional<std::shared_ptr<io::ICan>> Repl::getCan(const std::string &bus)
+{
+  const auto can = can_.find(bus);
+  if (can == can_.end()) {
+    const auto new_can = io::HardwareCan::create(logger_, bus);
+    if (!new_can) { return std::nullopt; }
+    can_.emplace(bus, *new_can);
+    return *new_can;
+  }
+  return can->second;
 }
 
 }  // namespace hyped::debug
