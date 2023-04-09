@@ -707,7 +707,7 @@ void Repl::addMotorControllerCommands(const std::string &bus)
     logger_.log(core::LogLevel::kFatal, "Failed to create motor controller instance");
     return;
   }
-  auto controller = *optional_controller;
+  auto controller = std::move(*optional_controller);
   Command controller_read_register_command;
   controller_read_register_command.name = "controller read index";
   controller_read_register_command.description
@@ -775,7 +775,7 @@ void Repl::addMotorControllerCommands(const std::string &bus)
   controller_configure_command.description
     = "Configure the motor controller with the configuration in the motor_controller_messages.json";
   controller_configure_command.handler = [this, can, controller]() {
-    core::Result result = controller.configureController();
+    core::Result result = controller->configure();
     if (result == core::Result::kFailure) {
       logger_.log(core::LogLevel::kFatal, "Failed to configure the motor controller");
       return;

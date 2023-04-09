@@ -5,9 +5,9 @@
 
 namespace hyped::motors {
 
-std::optional<Controller> Controller::create(core::ILogger &logger,
-                                             const std::string &message_file_path,
-                                             const std::shared_ptr<io::ICan> can)
+std::optional<std::shared_ptr<Controller>> Controller::create(core::ILogger &logger,
+                                                              const std::string &message_file_path,
+                                                              const std::shared_ptr<io::ICan> can)
 {
   std::ifstream input_stream(message_file_path);
   if (!input_stream.is_open()) {
@@ -60,7 +60,8 @@ std::optional<Controller> Controller::create(core::ILogger &logger,
     }
     controller_messages.emplace(message.name.GetString(), *new_message);
   }
-  return Controller(logger, controller_messages, controller_configuration_messages);
+  return std::make_shared<Controller>(
+    logger, controller_messages, controller_configuration_messages);
 }
 
 Controller::Controller(core::ILogger &logger,
@@ -281,7 +282,7 @@ ControllerStatus Controller::processWarningMessage(const std::uint8_t warning_co
   return priority_error;
 }
 
-core::Result Controller::configureController()
+core::Result Controller::configure()
 {
   for (io::CanFrame message : configuration_messages_) {
     core::Result result = can_->send(message);

@@ -25,9 +25,9 @@ constexpr std::uint16_t kControllerSdoWriteCommand = 0x23;
 
 class Controller {
  public:
-  static std::optional<Controller> create(core::ILogger &logger,
-                                          const std::string &message_file_path,
-                                          const std::shared_ptr<io::ICan> can);
+  static std::optional<std::shared_ptr<Controller>> create(core::ILogger &logger,
+                                                           const std::string &message_file_path,
+                                                           const std::shared_ptr<io::ICan> can);
   void processErrorMessage(const std::uint16_t error_code);
   ControllerStatus processWarningMessage(const std::uint8_t warning_code);
   static std::optional<io::CanFrame> parseJsonCanFrame(
@@ -39,9 +39,8 @@ class Controller {
    * @return core::Result kSuccess if the configuration was successful, kFailure if the
    * configuration failed
    */
-  core::Result configureController();
+  core::Result configure();
 
- private:
   Controller(core::ILogger &logger,
              const std::unordered_map<std::string, io::CanFrame> &messages,
              const std::vector<io::CanFrame> &configuration_messages);
