@@ -5,9 +5,11 @@
 
 namespace hyped::motors {
 
-std::optional<std::shared_ptr<Controller>> Controller::create(core::ILogger &logger,
-                                                              const std::string &message_file_path,
-                                                              const std::shared_ptr<io::ICan> can)
+std::optional<std::shared_ptr<Controller>> Controller::create(
+  core::ILogger &logger,
+  const std::string &message_file_path,
+  const std::shared_ptr<io::ICan> can,
+  const std::shared_ptr<IFrequencyCalculator> frequency_calculator)
 {
   std::ifstream input_stream(message_file_path);
   if (!input_stream.is_open()) {
@@ -49,8 +51,50 @@ std::optional<std::shared_ptr<Controller>> Controller::create(core::ILogger &log
   }
   std::unordered_map<std::string, io::CanFrame> controller_messages;
   const auto messages = document["messages"].GetObject();
-  for (const rapidjson::GenericMember<rapidjson::UTF8<>, rapidjson::MemoryPoolAllocator<>>
-         &message : messages) {
+  if (!messages.HasMember("enter_stop_state")) {
+    logger.log(core::LogLevel::kFatal,
+               "Missing required field 'enter_stop_state' in can message file at %s",
+               message_file_path.c_str());
+    return std::nullopt;
+  }
+  if (!messages.HasMember("enter_preinitialise_state")) {
+    logger.log(core::LogLevel::kFatal,
+               "Missing required field 'enter_preinitialise_state' in can message file at %s",
+               message_file_path.c_str());
+    return std::nullopt;
+  }
+  if (!messages.HasMember("enter_operational_state")) {
+    logger.log(core::LogLevel::kFatal,
+               "Missing required field 'enter_operational_state' in can message file at %s",
+               message_file_path.c_str());
+    return std::nullopt;
+  }
+  if (!messages.HasMember("set_frequency")) {
+    logger.log(core::LogLevel::kFatal,
+               "Missing required field 'set_frequency' in can message "
+               "file at %s",
+               message_file_path.c_str());
+    return std::nullopt;
+  }
+  if (!messages.HasMember("shutdown")) {
+    logger.log(core::LogLevel::kFatal,
+               "Missing required field 'shutdown' in can message file at %s",
+               message_file_path.c_str());
+    return std::nullopt;
+  }
+  if (!messages.HasMember("switch_on")) {
+    logger.log(core::LogLevel::kFatal,
+               "Missing required field 'switch_on' in can message file at %s",
+               message_file_path.c_str());
+    return std::nullopt;
+  }
+  if (!messages.HasMember("start_drive")) {
+    logger.log(core::LogLevel::kFatal,
+               "Missing required field 'start_drive' in can message file at %s",
+               message_file_path.c_str());
+    return std::nullopt;
+  }
+  for (const auto &message : messages) {
     const auto new_message = Controller::parseJsonCanFrame(logger, message.value.GetObject());
     if (!new_message) {
       logger.log(core::LogLevel::kFatal,
@@ -61,15 +105,19 @@ std::optional<std::shared_ptr<Controller>> Controller::create(core::ILogger &log
     controller_messages.emplace(message.name.GetString(), *new_message);
   }
   return std::make_shared<Controller>(
-    logger, controller_messages, controller_configuration_messages);
+    logger, controller_messages, controller_configuration_messages, can, frequency_calculator);
 }
 
 Controller::Controller(core::ILogger &logger,
                        const std::unordered_map<std::string, io::CanFrame> &messages,
-                       const std::vector<io::CanFrame> &configuration_messages)
+                       const std::vector<io::CanFrame> &configuration_messages,
+                       const std::shared_ptr<io::ICan> can,
+                       const std::shared_ptr<IFrequencyCalculator> frequency_calculator)
     : logger_(logger),
       configuration_messages_(configuration_messages),
-      messages_(messages)
+      messages_(messages),
+      can_(can),
+      frequency_calculator_(frequency_calculator)
 {
 }
 
@@ -79,6 +127,11 @@ std::optional<io::CanFrame> Controller::parseJsonCanFrame(
   if (!message.HasMember("id")) {
     logger.log(core::LogLevel::kFatal,
                "Missing required field 'id' in message in CAN message file");
+    return std::nullopt;
+  }
+  if (!message.HasMember("command")) {
+    logger.log(core::LogLevel::kFatal,
+               "Missing required field 'command' in message in CAN message file");
     return std::nullopt;
   }
   if (!message.HasMember("index")) {
@@ -109,6 +162,17 @@ std::optional<io::CanFrame> Controller::parseJsonCanFrame(
   io::CanFrame new_message;
   can_id_hex >> new_message.can_id;
   new_message.can_dlc = motors::kControllerCanFrameLength;
+  std::stringstream command_hex;
+  command_hex << std::hex << message["command"].GetString();
+  if (!command_hex.good()) {
+    logger.log(core::LogLevel::kFatal, "Invalid message command in CAN message file");
+    return std::nullopt;
+  }
+  if (command_hex.eof()) {
+    logger.log(core::LogLevel::kFatal, "No message command in CAN message file");
+    return std::nullopt;
+  }
+  command_hex >> new_message.data[0];
   // convert index to little endian for controller
   std::stringstream index_hex;
   index_hex << std::hex << message["index"].GetString();
@@ -122,8 +186,8 @@ std::optional<io::CanFrame> Controller::parseJsonCanFrame(
   }
   std::uint16_t index;
   index_hex >> index;
-  new_message.data[0] = index & 0xFF;
-  new_message.data[1] = index & 0xFF00;
+  new_message.data[1] = index & 0xFF;
+  new_message.data[2] = (index & 0xFF00) >> 8;
   // subindex doesn't need converted
   std::stringstream subindex_hex;
   subindex_hex << std::hex << message["subindex"].GetString();
@@ -135,9 +199,7 @@ std::optional<io::CanFrame> Controller::parseJsonCanFrame(
     logger.log(core::LogLevel::kFatal, "No message subindex in CAN message file");
     return std::nullopt;
   }
-  subindex_hex >> new_message.data[2];
-  // padding
-  new_message.data[3] = 0;
+  subindex_hex >> new_message.data[3];
   // convert data to little endian
   std::stringstream data_hex;
   data_hex << std::hex << message["data"].GetString();
@@ -152,9 +214,9 @@ std::optional<io::CanFrame> Controller::parseJsonCanFrame(
   std::uint32_t data;
   data_hex >> data;
   new_message.data[4] = data & 0xFF;
-  new_message.data[5] = data & 0xFF00;
-  new_message.data[6] = data & 0xFF0000;
-  new_message.data[7] = data & 0xFF000000;
+  new_message.data[5] = (data & 0xFF00) >> 8;
+  new_message.data[6] = (data & 0xFF0000) >> 16;
+  new_message.data[7] = (data & 0xFF000000) >> 24;
   return new_message;
 }
 
@@ -282,6 +344,28 @@ ControllerStatus Controller::processWarningMessage(const std::uint8_t warning_co
   return priority_error;
 }
 
+core::Result Controller::run(FauxState state)
+{
+  // TODOLater this should be using state machine's states, not faux
+  switch (state) {
+    case FauxState::kInitial:
+      return core::Result::kSuccess;
+    case FauxState::kConfigure:
+      return configure();
+    case FauxState::kReady:
+      return core::Result::kSuccess;
+    case FauxState::kAccelerate:
+      return accelerate();
+    case FauxState::kStop:
+      return stop();
+    case FauxState::kReset:
+      return reset();
+    default:
+      logger_.log(core::LogLevel::kFatal, "Invalid state %d", static_cast<int>(state));
+      return core::Result::kFailure;
+  }
+}
+
 core::Result Controller::configure()
 {
   for (io::CanFrame message : configuration_messages_) {
@@ -293,4 +377,112 @@ core::Result Controller::configure()
   }
   return core::Result::kSuccess;
 }
+
+core::Result Controller::accelerate()
+{
+  std::uint16_t new_frequency      = frequency_calculator_->calculateFrequency(velocity_);
+  const auto set_frequency_message = messages_.find("set_frequency");
+  if (set_frequency_message == messages_.end()) {
+    logger_.log(core::LogLevel::kFatal, "Failed to find 'set_frequency' message");
+    return core::Result::kFailure;
+  }
+  io::CanFrame message = set_frequency_message->second;
+  message.data[4]      = new_frequency & 0xFF;
+  message.data[5]      = (new_frequency >> 8) & 0xFF;
+  message.data[6]      = (new_frequency >> 16) & 0xFF;
+  message.data[7]      = (new_frequency >> 24) & 0xFF;
+  core::Result result  = can_->send(message);
+  if (result != core::Result::kSuccess) {
+    logger_.log(core::LogLevel::kFatal, "Failed to send 'set_frequency' message");
+    return result;
+  }
+  return core::Result::kSuccess;
+}
+
+core::Result Controller::stop()
+{
+  const auto enter_stop_state_message = messages_.find("enter_stop_state");
+  if (enter_stop_state_message == messages_.end()) {
+    logger_.log(core::LogLevel::kFatal, "Failed to find 'enter_stop_state' message");
+    return core::Result::kFailure;
+  }
+  core::Result result = can_->send(enter_stop_state_message->second);
+  if (result != core::Result::kSuccess) {
+    logger_.log(core::LogLevel::kFatal, "Failed to send 'enter_stop_state' message");
+    return result;
+  }
+  return core::Result::kSuccess;
+}
+
+core::Result Controller::reset()
+{
+  velocity_ = 0;
+  {
+    const auto enter_stop_state_message = messages_.find("enter_stop_state");
+    if (enter_stop_state_message == messages_.end()) {
+      logger_.log(core::LogLevel::kFatal, "Failed to find 'enter_stop_state' message");
+      return core::Result::kFailure;
+    }
+    core::Result result = can_->send(enter_stop_state_message->second);
+    if (result != core::Result::kSuccess) {
+      logger_.log(core::LogLevel::kFatal, "Failed to send 'enter_stop_state' message");
+      return result;
+    }
+  }
+  {
+    const auto enter_preinitialise_state_message = messages_.find("enter_preinitialise_state");
+    if (enter_preinitialise_state_message == messages_.end()) {
+      logger_.log(core::LogLevel::kFatal, "Failed to find 'enter_preinitialise_state' message");
+      return core::Result::kFailure;
+    }
+    core::Result result = can_->send(enter_preinitialise_state_message->second);
+    if (result != core::Result::kSuccess) {
+      logger_.log(core::LogLevel::kFatal, "Failed to send 'enter_preinitialise_state' message");
+      return result;
+    }
+  }
+  {
+    const auto enter_operational_state_message = messages_.find("enter_operational_state");
+    if (enter_operational_state_message == messages_.end()) {
+      logger_.log(core::LogLevel::kFatal, "Failed to find 'enter_operational_state' message");
+      return core::Result::kFailure;
+    }
+    core::Result result = can_->send(enter_operational_state_message->second);
+    if (result != core::Result::kSuccess) {
+      logger_.log(core::LogLevel::kFatal, "Failed to send 'enter_operational_state' message");
+      return result;
+    }
+  }
+  {
+    const auto shut_down_message = messages_.find("shut_down");
+    if (shut_down_message == messages_.end()) {
+      logger_.log(core::LogLevel::kFatal, "Failed to find 'shut_down' message");
+      return core::Result::kFailure;
+    }
+    core::Result result = can_->send(shut_down_message->second);
+    if (result != core::Result::kSuccess) {
+      logger_.log(core::LogLevel::kFatal, "Failed to send 'shut_down' message");
+      return result;
+    }
+  }
+  {
+    const auto switch_on_message = messages_.find("switch_on");
+    if (switch_on_message == messages_.end()) {
+      logger_.log(core::LogLevel::kFatal, "Failed to find 'switch_on' message");
+      return core::Result::kFailure;
+    }
+    core::Result result = can_->send(switch_on_message->second);
+    if (result != core::Result::kSuccess) {
+      logger_.log(core::LogLevel::kFatal, "Failed to send 'switch_on' message");
+      return result;
+    }
+  }
+  return core::Result::kSuccess;
+}
+
+void Controller::setVelocity(core::Float velocity)
+{
+  velocity_ = velocity;
+}
+
 }  // namespace hyped::motors

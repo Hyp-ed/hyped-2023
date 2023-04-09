@@ -700,9 +700,10 @@ void Repl::addMotorControllerCommands(const std::string &bus)
     logger_.log(core::LogLevel::kFatal, "Failed to create CAN instance on bus %s", bus.c_str());
     return;
   }
-  const auto can = std::move(*optional_can);
-  const auto optional_controller
-    = motors::Controller::create(logger_, "motor_controller_messages.json", can);
+  const auto can                  = std::move(*optional_can);
+  const auto frequency_calculator = std::make_shared<motors::ConstantFrequencyCalculator>(logger_);
+  const auto optional_controller  = motors::Controller::create(
+    logger_, "motor_controller_messages.json", can, frequency_calculator);
   if (!optional_controller) {
     logger_.log(core::LogLevel::kFatal, "Failed to create motor controller instance");
     return;
@@ -712,7 +713,7 @@ void Repl::addMotorControllerCommands(const std::string &bus)
   controller_read_register_command.name = "controller read index";
   controller_read_register_command.description
     = "Read the value of the SDO object at the location specified by the index";
-  controller_read_register_command.handler = [this, can, controller]() {
+  controller_read_register_command.handler = [this, can]() {
     std::uint16_t index;
     std::cout << "Index: ";
     std::cin >> std::hex >> index;
@@ -739,7 +740,7 @@ void Repl::addMotorControllerCommands(const std::string &bus)
   controller_write_register_command.name = "controller write index";
   controller_write_register_command.description
     = "Set the value of the SDO object at the location specified by the index";
-  controller_write_register_command.handler = [this, can, controller]() {
+  controller_write_register_command.handler = [this, can]() {
     std::uint16_t index;
     std::cout << "Index: ";
     std::cin >> std::hex >> index;
@@ -774,14 +775,55 @@ void Repl::addMotorControllerCommands(const std::string &bus)
   controller_configure_command.name = "controller configure";
   controller_configure_command.description
     = "Configure the motor controller with the configuration in the motor_controller_messages.json";
-  controller_configure_command.handler = [this, can, controller]() {
-    core::Result result = controller->configure();
+  controller_configure_command.handler = [this, controller]() {
+    core::Result result = controller->run(motors::FauxState::kConfigure);
     if (result == core::Result::kFailure) {
       logger_.log(core::LogLevel::kFatal, "Failed to configure the motor controller");
       return;
     }
   };
   addCommand(controller_configure_command);
+  Command controller_set_frequency_command;
+  controller_set_frequency_command.name        = "controller set frequency";
+  controller_set_frequency_command.description = "Set the frequency of the motor controller in Hz";
+  controller_set_frequency_command.handler     = [this, controller]() {
+    core::Float fake_velocity;
+    std::cout << "Frequency: ";
+    std::cin >> fake_velocity;
+    controller->setVelocity(fake_velocity);
+  };
+  Command controller_run_command;
+  controller_run_command.name        = "controller run";
+  controller_run_command.description = "Enter running state and begin pwm";
+  controller_run_command.handler     = [this, controller]() {
+    core::Result result = controller->run(motors::FauxState::kAccelerate);
+    if (result == core::Result::kFailure) {
+      logger_.log(core::LogLevel::kFatal, "Failed to run the motor controller");
+      return;
+    }
+  };
+  addCommand(controller_run_command);
+  Command controller_stop_command;
+  controller_stop_command.name        = "controller stop";
+  controller_stop_command.description = "Enter stopped state and stop pwm";
+  controller_stop_command.handler     = [this, controller]() {
+    core::Result result = controller->run(motors::FauxState::kStop);
+    if (result == core::Result::kFailure) {
+      logger_.log(core::LogLevel::kFatal, "Failed to stop the motor controller");
+      return;
+    }
+  };
+  addCommand(controller_stop_command);
+  Command controller_reset_command;
+  controller_reset_command.name        = "controller reset";
+  controller_reset_command.description = "Reset the motor controller to ready state";
+  controller_reset_command.handler     = [this, controller]() {
+    core::Result result = controller->run(motors::FauxState::kReset);
+    if (result == core::Result::kFailure) {
+      logger_.log(core::LogLevel::kFatal, "Failed to reset the motor controller");
+      return;
+    }
+  };
 }
 
 std::optional<std::shared_ptr<io::ICan>> Repl::getCan(const std::string &bus)

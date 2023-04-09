@@ -1,22 +1,71 @@
 {
     "config_messages": [
         {
-            "example_config_message": {
-                "id": "0x123",
-                "index": "0x2345",
-                "subindex": "0x12",
-                "data": "0x1234ABCD"
+            "test_stepper_enable": {
+                "id": "0x601",
+                "command": "0x2B",
+                "index": "0x6040",
+                "subindex": "0x09",
+                "data": "0x00000001"
             }
         }
     ],
-    "messages": [
-        {
-            "example_message": {
-                "id": "0x123",
-                "index": "0x2345",
-                "subindex": "0x12",
-                "data": "0x1234ABCD"
-            }
+    "messages": {
+        "enter_stop_state": {
+            "id": "0x000",
+            "command": "0x02",
+            "index": "0x0000",
+            "subindex": "0x00",
+            "data": "0x00000000"
+        },
+        "enter_preinitialise_state": {
+            "id": "0x000",
+            "command": "0x03",
+            "index": "0x0000",
+            "subindex": "0x00",
+            "data": "0x00000000"
+        },
+        "enter_operational_state": {
+            "id": "0x000",
+            "command": "0x01",
+            "index": "0x0000",
+            "subindex": "0x00",
+            "data": "0x00000000"
+        },
+        "set_frequency": {
+            "id": "0x601",
+            "command": "0x2B",
+            "index": "0x2040",
+            "subindex": "0x00",
+            "data": "0x00000000"
+        },
+        "shut_down": {
+            "id": "0x601",
+            "command": "0x2B",
+            "index": "0x6040",
+            "subindex": "0x00",
+            "data": "0x00000006"
+        },
+        "switch_on": {
+            "id": "0x601",
+            "command": "0x2B",
+            "index": "0x6040",
+            "subindex": "0x00",
+            "data": "0x00000007"
+        },
+        "start_drive": {
+            "id": "0x601",
+            "command": "0x2B",
+            "index": "0x6040",
+            "subindex": "0x00",
+            "data": "0x0000000F"
+        },
+        "quick_stop": {
+            "id": "0x601",
+            "command": "0x2B",
+            "index": "0x6040",
+            "subindex": "0x00",
+            "data": "0x00000002"
         }
-    ]
+    }
 }
