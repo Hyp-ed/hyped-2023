@@ -121,7 +121,7 @@ std::optional<io::CanFrame> Controller::parseJsonCanFrame(
   std::uint16_t index;
   index_hex >> index;
   new_message.data[0] = index & 0xFF;
-  new_message.data[1] = index & 0xFF00;
+  new_message.data[1] = (index & 0xFF00) >> 8;
   // subindex doesn't need converted
   std::stringstream subindex_hex;
   subindex_hex << std::hex << message["subindex"].GetString();
@@ -150,9 +150,9 @@ std::optional<io::CanFrame> Controller::parseJsonCanFrame(
   std::uint32_t data;
   data_hex >> data;
   new_message.data[4] = data & 0xFF;
-  new_message.data[5] = data & 0xFF00;
-  new_message.data[6] = data & 0xFF0000;
-  new_message.data[7] = data & 0xFF000000;
+  new_message.data[5] = (data & 0xFF00) >> 8;
+  new_message.data[6] = (data & 0xFF0000) >> 16;
+  new_message.data[7] = (data & 0xFF000000) >> 24;
   return new_message;
 }
 
