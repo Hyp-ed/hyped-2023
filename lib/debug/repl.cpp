@@ -78,6 +78,27 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
       repl->addAdcCommands(pin.GetUint());
     }
   }
+  if (!io.HasMember("can")) {
+    logger_.log(core::LogLevel::kFatal, "Missing required field 'io.can' in configuration file");
+    return std::nullopt;
+  }
+  const auto can = io["can"].GetObject();
+  if (!can.HasMember("enabled")) {
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'io.can.enabled' in configuration file");
+    return std::nullopt;
+  }
+  if (can["enabled"].GetBool()) {
+    if (!can.HasMember("buses")) {
+      logger_.log(core::LogLevel::kFatal,
+                  "Missing required field 'io.can.buses' in configuration file");
+      return std::nullopt;
+    }
+    const auto buses = can["buses"].GetArray();
+    for (auto &bus : buses) {
+      repl->addCanCommands(bus.GetString());
+    }
+  }
   if (!io.HasMember("i2c")) {
     logger_.log(core::LogLevel::kFatal, "Missing required field 'io.i2c' in configuration file");
     return std::nullopt;
@@ -234,6 +255,26 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
     const auto device_address = temperature["device_address"].GetUint();
     const auto bus            = temperature["bus"].GetUint();
     repl->addTemperatureCommands(bus, device_address);
+  }
+  if (!debugger.HasMember("motor_controller")) {
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'debugger.motor_controller' in configuration file");
+    return std::nullopt;
+  }
+  const auto motor_controller = debugger["motor_controller"].GetObject();
+  if (!motor_controller.HasMember("enabled")) {
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'motor_controller.enabled' in configuration file");
+    return std::nullopt;
+  }
+  if (motor_controller["enabled"].GetBool()) {
+    if (!motor_controller.HasMember("bus")) {
+      logger_.log(core::LogLevel::kFatal,
+                  "Missing required field 'motor_controller.bus' in configuration file");
+      return std::nullopt;
+    }
+    const auto bus = motor_controller["bus"].GetString();
+    repl->addMotorControllerCommands(bus);
   }
   return repl;
 }
@@ -650,6 +691,85 @@ void Repl::addTemperatureCommands(const std::uint8_t bus, const std::uint8_t dev
     }
   };
   addCommand(temperature_read_command);
+}
+
+void Repl::addMotorControllerCommands(const std::string &bus)
+{
+  const auto optional_can = getCan(bus);
+  if (!optional_can) {
+    logger_.log(core::LogLevel::kFatal, "Failed to create CAN instance on bus %s", bus.c_str());
+    return;
+  }
+  const auto can = std::move(*optional_can);
+  const auto optional_controller
+    = motors::Controller::create(logger_, "motor_controller_messages.json", can);
+  if (!optional_controller) {
+    logger_.log(core::LogLevel::kFatal, "Failed to create motor controller instance");
+    return;
+  }
+  const auto controller = std::move(*optional_controller);
+  Command controller_read_register_command;
+  controller_read_register_command.name = "controller read index";
+  controller_read_register_command.description
+    = "Read the value of the SDO object at the location specified by the index";
+  controller_read_register_command.handler = [this, can, controller]() {
+    std::uint16_t index;
+    std::cout << "Index: ";
+    std::cin >> std::hex >> index;
+    std::uint8_t sub_index;
+    std::cout << "Sub-index: ";
+    std::cin >> std::hex >> sub_index;
+    io::CanFrame frame;
+    frame.can_id  = motors::kControllerSdoSend;
+    frame.can_dlc = 8;
+    frame.data[0] = motors::kControllerSdoReadCommand;
+    // set index
+    frame.data[1] = (index & 0xFF00) >> 8;
+    frame.data[2] = index & 0x00FF;
+    // set sub-index
+    frame.data[3]       = sub_index;
+    core::Result result = can->send(frame);
+    if (result == core::Result::kFailure) {
+      logger_.log(core::LogLevel::kFatal, "Failed to send SDO read request");
+      return;
+    }
+  };
+  addCommand(controller_read_register_command);
+  Command controller_write_register_command;
+  controller_write_register_command.name = "controller write index";
+  controller_write_register_command.description
+    = "Set the value of the SDO object at the location specified by the index";
+  controller_write_register_command.handler = [this, can, controller]() {
+    std::uint16_t index;
+    std::cout << "Index: ";
+    std::cin >> std::hex >> index;
+    std::uint8_t sub_index;
+    std::cout << "Sub-index: ";
+    std::cin >> std::hex >> sub_index;
+    std::uint32_t value;
+    std::cout << "Value: ";
+    std::cin >> std::hex >> value;
+    io::CanFrame frame;
+    frame.can_id  = motors::kControllerSdoSend;
+    frame.can_dlc = 8;
+    frame.data[0] = motors::kControllerSdoWriteCommand;
+    // set index
+    frame.data[1] = (index & 0xFF00) >> 8;
+    frame.data[2] = index & 0x00FF;
+    // set sub-index
+    frame.data[3] = sub_index;
+    // set value
+    frame.data[4]       = (value & 0xFF000000) >> 24;
+    frame.data[6]       = (value & 0x0000FF00) >> 16;
+    frame.data[5]       = (value & 0x00FF0000) >> 8;
+    frame.data[7]       = value & 0x000000FF;
+    core::Result result = can->send(frame);
+    if (result == core::Result::kFailure) {
+      logger_.log(core::LogLevel::kFatal, "Failed to send SDO write request");
+      return;
+    }
+  };
+  addCommand(controller_write_register_command);
 }
 
 std::optional<std::shared_ptr<io::ICan>> Repl::getCan(const std::string &bus)

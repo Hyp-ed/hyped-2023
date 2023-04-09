@@ -6,7 +6,8 @@
 namespace hyped::motors {
 
 std::optional<Controller> Controller::create(core::ILogger &logger,
-                                             const std::string &message_file_path)
+                                             const std::string &message_file_path,
+                                             const std::shared_ptr<io::ICan> can)
 {
   std::ifstream input_stream(message_file_path);
   if (!input_stream.is_open()) {
@@ -278,5 +279,17 @@ ControllerStatus Controller::processWarningMessage(const std::uint8_t warning_co
     priority_error = ControllerStatus::kUnrecoverableWarning;
   }
   return priority_error;
+}
+
+core::Result Controller::configureController()
+{
+  for (io::CanFrame message : configuration_messages_) {
+    core::Result result = can_->send(message);
+    if (result != core::Result::kSuccess) {
+      logger_.log(core::LogLevel::kFatal, "Failed to send configuration message");
+      return result;
+    }
+  }
+  return core::Result::kSuccess;
 }
 }  // namespace hyped::motors
