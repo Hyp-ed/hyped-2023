@@ -543,7 +543,7 @@ void Repl::addUartCommands(const std::uint8_t bus)
 
 void Repl::addAccelerometerCommands(const std::uint8_t bus, const std::uint8_t device_address)
 {
-  const auto optional_i2c = io::HardwareI2c::create(logger_, bus);
+  const auto optional_i2c = getI2c(bus);
   if (!optional_i2c) {
     logger_.log(core::LogLevel::kFatal, "Failed to create I2C instance on bus %d", bus);
     return;
@@ -579,7 +579,7 @@ void Repl::addAccelerometerCommands(const std::uint8_t bus, const std::uint8_t d
 
 void Repl::addTemperatureCommands(const std::uint8_t bus, const std::uint8_t device_address)
 {
-  const auto optional_i2c = io::HardwareI2c::create(logger_, bus);
+  const auto optional_i2c = getI2c(bus);
   if (!optional_i2c) {
     logger_.log(core::LogLevel::kFatal, "Failed to create I2C instance on bus %d", bus);
     return;
@@ -612,7 +612,7 @@ std::optional<std::shared_ptr<io::IAdc>> Repl::getAdc(const std::uint8_t bus)
 {
   const auto adc = adc_.find(bus);
   if (adc == adc_.end()) {
-    const auto new_adc = io::Adc::create(logger_, bus);
+    const auto new_adc = io::HardwareAdc::create(logger_, bus);
     if (!new_adc) { return std::nullopt; }
     adc_.emplace(bus, *new_adc);
     return *new_adc;
@@ -632,11 +632,13 @@ std::optional<std::shared_ptr<io::II2c>> Repl::getI2c(const std::uint8_t bus)
   return i2c->second;
 }
 
-std::optional<std::shared_ptr<io::Pwm>> Repl::getPwm(const io::PwmModule pwm_module)
+std::optional<std::shared_ptr<io::Pwm>> Repl::getPwm(const io::PwmModule pwm_module,
+                                                     const std::uint32_t period,
+                                                     const io::Polarity polarity)
 {
   const auto pwm = pwm_.find(pwm_module);
   if (pwm == pwm_.end()) {
-    const auto new_pwm = io::Pwm::create(logger_, pwm_module);
+    const auto new_pwm = io::Pwm::create(logger_, pwm_module, period, polarity);
     if (!new_pwm) { return std::nullopt; }
     pwm_.emplace(pwm_module, *new_pwm);
     return *new_pwm;
@@ -644,11 +646,15 @@ std::optional<std::shared_ptr<io::Pwm>> Repl::getPwm(const io::PwmModule pwm_mod
   return pwm->second;
 }
 
-std::optional<std::shared_ptr<io::ISpi>> Repl::getSpi(const std::uint8_t bus)
+std::optional<std::shared_ptr<io::ISpi>> Repl::getSpi(const io::SpiBus bus,
+                                                      const io::SpiMode mode,
+                                                      const io::SpiWordSize word_size,
+                                                      const io::SpiBitOrder bit_order,
+                                                      const io::SpiClock clock)
 {
   const auto spi = spi_.find(bus);
   if (spi == spi_.end()) {
-    const auto new_spi = io::HardwareSpi::create(logger_);
+    const auto new_spi = io::HardwareSpi::create(logger_, bus, mode, word_size, bit_order, clock);
     if (!new_spi) { return std::nullopt; }
     spi_.emplace(bus, *new_spi);
     return *new_spi;
@@ -656,24 +662,19 @@ std::optional<std::shared_ptr<io::ISpi>> Repl::getSpi(const std::uint8_t bus)
   return spi->second;
 }
 
-std::optional<std::shared_ptr<io::IUart>> Repl::getUart(const UartBus bus, const BaudRate baud_rate)
+std::optional<std::shared_ptr<io::IUart>> Repl::getUart(const io::UartBus bus,
+                                                        const io::UartBaudRate baud_rate,
+                                                        const io::UartBitsPerByte bits_per_byte)
 {
   const auto uart = uart_.find(bus);
   if (uart == uart_.end()) {
-    const auto new_uart = io::Uart::create(logger_, static_cast<UartBus>(bus), baud_rate);
+    const auto new_uart
+      = io::Uart::create(logger_, static_cast<io::UartBus>(bus), baud_rate, bits_per_byte);
     if (!new_uart) { return std::nullopt; }
-    const auto uart_bus_baud_rate
-      = std::pair<BaudRate, std::shared_ptr<io::IUart>>(baud_rate, *new_uart);
-    uart_.emplace(bus, uart_bus_baud_rate);
+    uart_.emplace(bus, *new_uart);
     return *new_uart;
   }
-  if (uart->second.first != baud_rate) {
-    logger_.log(core::LogLevel::kFatal,
-                "UART bus %d already initialised with different baud rate",
-                static_cast<int>(bus));
-    return std::nullopt;
-  }
-  return uart->second.second;
+  return uart->second;
 }
 
 }  // namespace hyped::debug
