@@ -23,8 +23,8 @@ Eigen::
   for (std::size_t i = 0; i < AccelerometerKalman::state_dimension_; i++) {
     for (std::size_t j = 0; j < AccelerometerKalman::state_dimension_; j++) {
       std::uint64_t factorial = 1;
-      for (std::size_t i = 1; i <= (i); i++) {
-        factorial *= i;
+      for (std::size_t k = 1; k <= (i); i++) {
+        factorial *= k;
       }
       if (j - i > 0) {
         state_transition_matrix(i, j) = 0;
@@ -90,8 +90,8 @@ Eigen::Matrix<core::Float,
   for (std::size_t i = 0; i < AccelerometerKalman::state_dimension_; i++) {
     for (std::size_t j = 0; j < AccelerometerKalman::state_dimension_; j++) {
       std::uint64_t factorial = 1;
-      for (std::size_t i = 1; i <= (i + state_dimension_); i++) {
-        factorial *= i;
+      for (std::size_t k = 1; i <= (i + state_dimension_); i++) {
+        factorial *= k;
       }
       jacobian_matrix(i, j)
         = std::pow(time_delta, (i + state_dimension_)) / static_cast<core::Float>(factorial);
