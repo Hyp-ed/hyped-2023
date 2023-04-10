@@ -1,5 +1,7 @@
 #include "state_machine.hpp"
 
+#include <iostream>
+
 namespace hyped::state_machine {
 
 StateMachine::StateMachine() : current_state_{State::kIdle}
@@ -20,7 +22,8 @@ std::optional<Message> StateMachine::checkTransition()
 // Transition to next state
 void StateMachine::handleMessage(const Message &message)
 {
-  current_state_ = transition_to_state_.at({current_state_, message});
+  const auto transition = transition_to_state_.find({current_state_, message});
+  if (transition != transition_to_state_.end()) { current_state_ = transition->second; }
 }
 
 Message StateMachine::stringToMessage(const std::string &message_name)
