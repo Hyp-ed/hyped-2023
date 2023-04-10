@@ -761,8 +761,8 @@ void Repl::addMotorControllerCommands(const std::string &bus)
     frame.data[3] = sub_index;
     // set value
     frame.data[4]       = (value & 0xFF000000) >> 24;
-    frame.data[6]       = (value & 0x0000FF00) >> 16;
-    frame.data[5]       = (value & 0x00FF0000) >> 8;
+    frame.data[6]       = (value & 0x00FF0000) >> 16;
+    frame.data[5]       = (value & 0x0000FF00) >> 8;
     frame.data[7]       = value & 0x000000FF;
     core::Result result = can->send(frame);
     if (result == core::Result::kFailure) {
@@ -792,6 +792,7 @@ void Repl::addMotorControllerCommands(const std::string &bus)
     std::cin >> fake_velocity;
     controller->setVelocity(fake_velocity);
   };
+  addCommand(controller_set_frequency_command);
   Command controller_run_command;
   controller_run_command.name        = "controller run";
   controller_run_command.description = "Enter running state and begin pwm";
@@ -824,6 +825,7 @@ void Repl::addMotorControllerCommands(const std::string &bus)
       return;
     }
   };
+  addCommand(controller_reset_command);
 }
 
 std::optional<std::shared_ptr<io::ICan>> Repl::getCan(const std::string &bus)
