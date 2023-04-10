@@ -11,24 +11,35 @@ AccelerometerKalman::AccelerometerKalman(core::ILogger &logger, const core::ITim
 
       };
 
-// TODO: implement this to return the matrix as a fuction of time_delta.
 Eigen::
   Matrix<core::Float, AccelerometerKalman::state_dimension_, AccelerometerKalman::state_dimension_>
   AccelerometerKalman::getStateTransitionMatrix(const core::Float time_delta)
 {
-  // TODO: implement this once figuring out dimensions and jerk
   Eigen::Matrix<core::Float,
                 AccelerometerKalman::state_dimension_,
                 AccelerometerKalman::state_dimension_>
-    state_transition_matrix{
-      {1.0, 0.0, 0.0}, {time_delta, 1.0, 0.0}, {0.5F * time_delta * time_delta, time_delta, 1.0}};
+    state_transition_matrix;
+
+  for (std::size_t i = 0; i < AccelerometerKalman::state_dimension_; i++) {
+    for (std::size_t j = 0; j < AccelerometerKalman::state_dimension_; j++) {
+      std::uint64_t factorial = 1;
+      for (std::size_t i = 1; i <= (i); i++) {
+        factorial *= i;
+      }
+      if (j - i > 0) {
+        state_transition_matrix(i, j) = 0;
+        continue;
+      }
+      state_transition_matrix(i, j)
+        = std::pow(time_delta, (i)) / static_cast<core::Float>(factorial);
+    }
+  }
   return state_transition_matrix;
 }
 
 Eigen::Matrix<core::Float, AccelerometerKalman::state_dimension_, 1>
   AccelerometerKalman::getMeasurementVector(core::Float acceleration)
 {
-  // TODO: properly implement this
   Eigen::Matrix<core::Float, AccelerometerKalman::state_dimension_, 1> measurement_vector
     = {acceleration, 0, 0};
   return measurement_vector;
@@ -42,7 +53,7 @@ Eigen::
   Eigen::Matrix<core::Float,
                 AccelerometerKalman::state_dimension_,
                 AccelerometerKalman::state_dimension_>
-    state_transition_covariance_matrix{{0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}};
+    state_transition_covariance_matrix;
   return state_transition_covariance_matrix;
 }
 
@@ -71,11 +82,21 @@ Eigen::Matrix<core::Float,
               AccelerometerKalman::state_dimension_>
   AccelerometerKalman::getJacobianMatrix(const core::Float time_delta)
 {
-  // TODO: implement properly
   Eigen::Matrix<core::Float,
                 AccelerometerKalman::extended_dimension_,
                 AccelerometerKalman::state_dimension_>
-    jacobian_matrix{{0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}};
+    jacobian_matrix;
+
+  for (std::size_t i = 0; i < AccelerometerKalman::state_dimension_; i++) {
+    for (std::size_t j = 0; j < AccelerometerKalman::state_dimension_; j++) {
+      std::uint64_t factorial = 1;
+      for (std::size_t i = 1; i <= (i + state_dimension_); i++) {
+        factorial *= i;
+      }
+      jacobian_matrix(i, j)
+        = std::pow(time_delta, (i + state_dimension_)) / static_cast<core::Float>(factorial);
+    }
+  }
 
   return jacobian_matrix;
 }
