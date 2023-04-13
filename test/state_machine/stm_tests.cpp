@@ -171,4 +171,27 @@ TEST(StateMachine, failureBrakeFromFrictionBraking)
   testTransition(stm, state_machine::Message::kFailureOff, state_machine::State::kOff);
 }
 
+TEST(StateMachine, duplicatedMessagesFailureStates)
+{
+  std::unique_ptr stm = std::make_unique<state_machine::StateMachine>();
+  testTransition(stm, state_machine::Message::kFrictionBrakeFail, state_machine::State::kIdle);
+  testTransition(stm, state_machine::Message::kFrictionBrakeFail, state_machine::State::kIdle);
+  testTransition(stm, state_machine::Message::kCalibrating, state_machine::State::kCalibrating);
+  testTransition(stm, state_machine::Message::kCalibrating, state_machine::State::kCalibrating);
+  testTransition(stm, state_machine::Message::kReady, state_machine::State::kReady);
+  testTransition(stm, state_machine::Message::kReady, state_machine::State::kReady);
+  testTransition(stm, state_machine::Message::kAccelerating, state_machine::State::kAccelerating);
+  testTransition(stm, state_machine::Message::kAccelerating, state_machine::State::kAccelerating);
+  testTransition(stm, state_machine::Message::kPreFrictionBrakeFail, state_machine::State::kPreFrictionBrakingFail);
+  testTransition(stm, state_machine::Message::kPreFrictionBrakeFail, state_machine::State::kPreFrictionBrakingFail);
+  testTransition(stm, state_machine::Message::kFrictionBrakeFail, state_machine::State::kFrictionBrakingFail);
+  testTransition(stm, state_machine::Message::kFrictionBrakeFail, state_machine::State::kFrictionBrakingFail);
+  testTransition(stm, state_machine::Message::kFailureBrake, state_machine::State::kFailureBraking);
+  testTransition(stm, state_machine::Message::kFailureBrake, state_machine::State::kFailureBraking);
+  testTransition(stm, state_machine::Message::kFailureStopped, state_machine::State::kFailureStopped);
+  testTransition(stm, state_machine::Message::kFailureStopped, state_machine::State::kFailureStopped);
+  testTransition(stm, state_machine::Message::kFailureOff, state_machine::State::kOff);
+  testTransition(stm, state_machine::Message::kFailureOff, state_machine::State::kOff);
+}
+
 }  // namespace hyped::test
