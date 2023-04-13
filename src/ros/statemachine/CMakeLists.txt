@@ -102,7 +102,12 @@ target_link_libraries(
   Hyped::hyped_core
 )
 
-
+add_executable(pubsubtest src/pubsubtest.cpp)
+ament_target_dependencies(pubsubtest rclcpp std_msgs)
+target_link_libraries(
+  pubsubtest
+  Hyped::hyped_core
+)
 
 install(TARGETS
   publisherTest
@@ -115,6 +120,7 @@ install(TARGETS
   subscriber2
   subscriber3
   subscriber4
+  pubsubtest
   DESTINATION lib/${PROJECT_NAME})
 
 ament_package()
