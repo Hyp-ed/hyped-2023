@@ -27,7 +27,7 @@ class AnalogueMux {
    * @brief   Creates an AnalogueMux object with specific selector pins and disable input pin
    * @details The disable input pin is just the active low enable input pin (from datasheet)
    * @param   selector_pin_writers  Array of 4 GPIO pin writers in the order s0, s1, s2 and s3
-   * @param   disable_input_writer     GPIO pin corresponding to E bar (active low enable input pin)
+   * @param   disable_input_writer  GPIO pin corresponding to E bar (active low enable input pin)
    */
   static std::optional<std::shared_ptr<AnalogueMux<T, N>>> create(
     core::ILogger &logger,
