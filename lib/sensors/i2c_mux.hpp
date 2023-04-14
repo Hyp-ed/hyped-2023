@@ -63,12 +63,8 @@ std::optional<std::shared_ptr<I2cMux<T, N>>> I2cMux<T, N>::create(
   std::array<std::unique_ptr<IMuxSensor<T>>, N> &sensors)
 {
   if (N > 8) {
-    logger.log(core::LogLevel::kFatal, "The I2c mux can only have up to 8 channels");
-    return std::nullopt;
-  }
-  if (sensors.size() != N) {
     logger.log(core::LogLevel::kFatal,
-               "The number of sensors does not match the number of channels");
+               "Failed to create I2c mux instance, maximum 8 channels only");
     return std::nullopt;
   }
   return std::make_shared<I2cMux<T, N>>(logger, i2c, mux_address, sensors);
