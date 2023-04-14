@@ -34,22 +34,22 @@ class AnalogueMux {
     std::array<std::shared_ptr<io::IGpioWriter>, kNumSelectorPins> selector_pin_writers,
     std::shared_ptr<io::IGpioWriter> disable_input_writer,
     std::array<std::unique_ptr<IMuxSensor<T>>, N> &sensors);
+  AnalogueMux(core::ILogger &logger,
+              std::array<std::shared_ptr<io::IGpioWriter>, kNumSelectorPins> selector_pins,
+              std::shared_ptr<io::IGpioWriter> disable_input_writer,
+              std::array<std::unique_ptr<IMuxSensor<T>>, N> &sensors);
   ~AnalogueMux();
 
   std::optional<std::array<T, N>> readAllChannels();
 
  private:
-  AnalogueMux(core::ILogger &logger,
-              std::array<std::shared_ptr<io::IGpioWriter>, kNumSelectorPins> selector_pins,
-              std::shared_ptr<io::IGpioWriter> disable_input_writer,
-              std::array<std::unique_ptr<IMuxSensor<T>>, N> &sensors);
   core::Result selectChannel(const std::uint8_t channel);
   core::Result closeAllChannels();
 
  private:
   core::ILogger &logger_;
   const std::array<std::shared_ptr<io::IGpioWriter>, kNumSelectorPins> selector_pin_writers_;
-  cosnt std::shared_ptr<io::IGpioWriter> disable_input_writer_;
+  const std::shared_ptr<io::IGpioWriter> disable_input_writer_;
   const std::array<std::unique_ptr<IMuxSensor<T>>, N> sensors_;
 };
 
@@ -65,7 +65,8 @@ std::optional<std::shared_ptr<AnalogueMux<T, N>>> AnalogueMux<T, N>::create(
                "Failed to create AnalogueMux instance, maximum 16 channels only");
     return std::nullopt;
   }
-  return std::make_shared<AnalogueMux<T, N>>(logger, selector_pin_writers, sensors);
+  return std::make_shared<AnalogueMux<T, N>>(
+    logger, selector_pin_writers, disable_input_writer, sensors);
 }
 
 template<typename T, std::uint8_t N>
@@ -88,20 +89,26 @@ AnalogueMux<T, N>::~AnalogueMux()
 template<typename T, std::uint8_t N>
 std::optional<std::array<T, N>> AnalogueMux<T, N>::readAllChannels()
 {
-  std::array<T, N> values;
+  // zero-initialize the array
+  std::array<T, N> values{};
   for (std::size_t i = 0; i < N; ++i) {
-    core::Result channel_select_result = selectChannel(i);
+    const auto &sensor   = sensors_.at(i).get();
+    std::uint8_t channel = sensor->getChannel();
+    // ensuring correct channel is selected
+    core::Result channel_select_result = selectChannel(channel);
     if (channel_select_result == core::Result::kFailure) {
-      logger_.log(core::LogLevel::kError, "Failed to select channel %d for analogue mux", i);
+      logger_.log(core::LogLevel::kFatal, "Failed to select channel %d for analogue mux", i);
       return std::nullopt;
     }
-    std::optional<T> sensor_value = sensors_[i]->read();
-    if (!sensor_value) {
+    // then read sensor data
+    const auto sensor_data = sensor->read();
+    if (!sensor_data) {
       logger_.log(
-        core::LogLevel::kError, "Failed to read from sensor on channel %d on analogue mux", i);
+        core::LogLevel::kFatal, "Failed to read from sensor on channel %d on analogue mux", i);
       return std::nullopt;
     }
-    values[i] = *sensor_value;
+    // finally store the data
+    values.at(i) = *sensor_data;
   }
   return values;
 }
@@ -115,7 +122,7 @@ core::Result AnalogueMux<T, N>::selectChannel(const std::uint8_t channel)
       binary_selector.test(i) ? core::DigitalSignal::kHigh : core::DigitalSignal::kLow);
     if (write_result == core::Result::kFailure) {
       logger_.log(
-        core::LogLevel::kError, "Failed to write to selector GPIO pin %d for analogue mux", i);
+        core::LogLevel::kFatal, "Failed to write to selector GPIO pin %d for analogue mux", i);
       return core::Result::kFailure;
     }
   }

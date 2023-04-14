@@ -95,7 +95,7 @@ std::optional<std::array<T, N>> I2cMux<T, N>::readAllChannels()
   std::array<T, N> mux_data{};
   std::uint8_t num_unusable_sensors = 0;
   for (std::uint8_t i = 0; i < N; ++i) {
-    const auto &sensor         = sensors_.at(i);
+    const auto &sensor         = sensors_.at(i).get();
     const std::uint8_t channel = sensor->getChannel();
     // First ensure correct channel is selected
     const auto channel_select_result = selectChannel(channel);

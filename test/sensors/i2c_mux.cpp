@@ -19,9 +19,9 @@ TEST(I2cMux, construction)
   }
   const auto i2c = std::make_shared<utils::DummyI2c>();
   utils::DummyLogger logger;
-  const auto maybe_mux = sensors::I2cMux<std::uint8_t, kSize>::create(logger, i2c, 0, sensors);
-  ASSERT_TRUE(maybe_mux);
-  const auto mux = *maybe_mux;
+  const auto maybe_i2c_mux = sensors::I2cMux<std::uint8_t, kSize>::create(logger, i2c, 0, sensors);
+  ASSERT_TRUE(maybe_i2c_mux);
+  const auto mux = *maybe_i2c_mux;
 }
 
 }  // namespace hyped::test
