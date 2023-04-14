@@ -20,6 +20,7 @@
 #include <motors/constant_frequency_calculator.hpp>
 #include <motors/controller.hpp>
 #include <motors/frequency_calculator.hpp>
+#include <motors/time_frequency_calculator.hpp>
 #include <sensors/accelerometer.hpp>
 #include <sensors/temperature.hpp>
 

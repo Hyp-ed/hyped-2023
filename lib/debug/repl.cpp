@@ -826,6 +826,31 @@ void Repl::addMotorControllerCommands(const std::string &bus)
     }
   };
   addCommand(controller_reset_command);
+  const auto frequency_calculator = std::make_shared<motors::TimeFrequencyCalculator>(logger_);
+  const auto optional_controller  = motors::Controller::create(
+    logger_, "motor_controller_messages.json", can, frequency_calculator);
+  if (!optional_controller) {
+    logger_.log(core::LogLevel::kFatal, "Failed to create motor controller instance");
+    return;
+  }
+  auto controller = std::move(*optional_controller);
+  Command frequency_time_command;
+  frequency_time_command.name = "controller frequency time run";
+  frequency_time_command.description
+    = "Run the motor controller for 50s, with frequency increasing 2Hz every second";
+  frequency_time_command.handler = [this, controller, frequency_calculator]() {
+    frequency_calculator.reset();
+    std::chrono::time_point<std::chrono::system_clock> start_time_
+      = std::chrono::system_clock::now();
+    while ((std::chrono::system_clock::now() - start_time_) / 1'000'000'000 < 50) {
+      core::Result result = controller->run(motors::FauxState::kAccelerate);
+      if (result == core::Result::kFailure) {
+        logger_.log(core::LogLevel::kFatal, "Failed to run the motor controller");
+        return;
+      }
+    }
+  };
+  addCommand(frequency_time_command);
 }
 
 std::optional<std::shared_ptr<io::ICan>> Repl::getCan(const std::string &bus)
