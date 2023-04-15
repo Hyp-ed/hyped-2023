@@ -15,18 +15,49 @@ class StateMachine {
   StateMachine();
 
   // TODOLater handle ros messages and transition accordingly
-  std::optional<Message> checkTransition();
+  void checkTransition(const Message &message);
 
-  void handleMessage(const Message &message);
+  bool handleMessage(const Message &message);
   Message stringToMessage(const std::string &message_name);
   std::string messageToString(const Message &message);
+  State getCurrentState();
+
+  Message getPreviousMessage();
 
  private:
   const std::unordered_map<std::string, Message> string_to_message_
-    = {{"kNextNominalState", Message::kNextNominalState}, {"kFailure", Message::kFailure}};
+    = {{"kCalibrating", Message::kCalibrating},
+       {"kReady", Message::kReady},
+       {"kAccelerating", Message::kAccelerating},
+       {"kCruising", Message::kCruising},
+       {"kMotorBrake", Message::kMotorBrake},
+       {"kPreFrictionBrake", Message::kPreFrictionBrake},
+       {"kFrictionBrake", Message::kFrictionBrake},
+       {"kStopped", Message::kStopped},
+       {"kFailureBrake", Message::kFailureBrake},
+       {"kPreFrictionBrakeFail", Message::kPreFrictionBrakeFail},
+       {"kFrictionBrakeFail", Message::kFrictionBrakeFail},
+       {"kOff", Message::kOff},
+       {"kFailureStopped", Message::kFailureStopped},
+       {"kFailureOff", Message::kFailureOff},
+       {"kNone", Message::kNone}};
   const std::unordered_map<Message, std::string> message_to_string_
-    = {{Message::kNextNominalState, "kNextNominalState"}, {Message::kFailure, "kFailure"}};
-  const boost::unordered_map<SourceAndMessage, State> transition_to_state_
+    = {{Message::kCalibrating, "kCalibrating"},
+       {Message::kReady, "kReady"},
+       {Message::kAccelerating, "kAccelerating"},
+       {Message::kCruising, "kCruising"},
+       {Message::kMotorBrake, "kMotorBrake"},
+       {Message::kPreFrictionBrake, "kPreFrictionBrake"},
+       {Message::kFrictionBrake, "kFrictionBrake"},
+       {Message::kStopped, "kStopped"},
+       {Message::kFailureBrake, "kFailureBrake"},
+       {Message::kPreFrictionBrakeFail, "kPreFrictionBrakeFail"},
+       {Message::kFrictionBrakeFail, "kFrictionBrakeFail"},
+       {Message::kOff, "kOff"},
+       {Message::kFailureStopped, "kFailureStopped"},
+       {Message::kFailureOff, "kFailureOff"},
+       {Message::kNone, "kNone"}};
+  const boost::unordered_map<SourceAndMessage, State, source_and_message_hash> transition_to_state_
     = {{{State::kIdle, Message::kCalibrating}, State::kCalibrating},
        {{State::kCalibrating, Message::kReady}, State::kReady},
        {{State::kReady, Message::kAccelerating}, State::kAccelerating},
@@ -49,6 +80,7 @@ class StateMachine {
        {{State::kFailureStopped, Message::kFailureOff}, State::kOff}};
 
   State current_state_;
+  Message previous_message_;
 };
 
 }  // namespace hyped::state_machine

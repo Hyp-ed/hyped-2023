@@ -4,7 +4,7 @@ namespace hyped::state_machine {
 
 // Message class containing messages that prompt transitions
 enum class Message {
-  kNextNominalState,
+  kNone,
   kCalibrating,
   kReady,
   kAccelerating,
@@ -13,7 +13,6 @@ enum class Message {
   kPreFrictionBrake,
   kFrictionBrake,
   kStopped,
-  kFailure,
   kFailureBrake,
   kPreFrictionBrakeFail,
   kFrictionBrakeFail,

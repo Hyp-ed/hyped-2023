@@ -13,11 +13,13 @@ find_package(rosidl_default_generators REQUIRED)
 
 set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} /home/hyped/build/export)
 find_package(Eigen3 REQUIRED)
+find_package(Boost REQUIRED)
 find_package(HypedCore REQUIRED)
 find_package(HypedIO REQUIRED)
 find_package(HypedMotorControllers REQUIRED)
 find_package(HypedNavigation REQUIRED)
 find_package(HypedSensors REQUIRED)
+find_package(HypedStateMachine REQUIRED)
 find_package(hyped_messages REQUIRED)
 
 if(BUILD_TESTING)
@@ -107,6 +109,15 @@ ament_target_dependencies(pubsubtest rclcpp std_msgs)
 target_link_libraries(
   pubsubtest
   Hyped::hyped_core
+  Hyped::hyped_statemachine
+)
+
+add_executable(transitionpublisher src/transitionpublisher.cpp)
+ament_target_dependencies(transitionpublisher rclcpp std_msgs)
+target_link_libraries(
+  transitionpublisher
+  Hyped::hyped_core
+  Hyped::hyped_statemachine
 )
 
 install(TARGETS
@@ -121,6 +132,7 @@ install(TARGETS
   subscriber3
   subscriber4
   pubsubtest
+  transitionpublisher
   DESTINATION lib/${PROJECT_NAME})
 
 ament_package()
