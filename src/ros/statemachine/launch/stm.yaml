@@ -1,0 +1,23 @@
+launch:
+
+- node:
+    pkg: "statemachine"
+    exec: "stm1"
+    name: "stm1"
+    namespace: "hyped"
+    output: "screen"
+- node:
+    pkg: "statemachine"
+    exec: "stm2"
+    name: "stm2"
+    namespace: "hyped"
+- node:
+    pkg: "statemachine"
+    exec: "stm3"
+    name: "stm3"
+    namespace: "hyped"
+- node:
+    pkg: "statemachine"
+    exec: "stm4"
+    name: "stm4"
+    namespace: "hyped"

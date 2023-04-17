@@ -1,0 +1,14 @@
+<launch>
+<node pkg='statemachine'
+      exec='stm1' 
+      name='stm1' 
+      namespace = 'statemachine'
+      output='screen'
+      />
+<node pkg='statemachine'
+      exec='transitionpublisher' 
+      name='tranpub' 
+      namespace = 'statemachine'
+      output='screen'
+      />
+</launch>
