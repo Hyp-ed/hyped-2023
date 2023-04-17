@@ -7,10 +7,12 @@ TimeFrequencyCalculator::TimeFrequencyCalculator(core::ILogger &logger) : logger
   start_time_ = std::chrono::system_clock::now();
 }
 
-std::uint16_t TimeFrequencyCalculator::calculateFrequency()
+std::uint16_t TimeFrequencyCalculator::calculateFrequency(core::Float velocity)
 {
-  return static_cast<std::uint16_t>((((std::chrono::system_clock::now() - start_time_) * 2) % 120)
-                                    / 1'000'000'000);
+  const std::uint64_t nanoseconds_elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(
+                                              std::chrono::system_clock::now() - start_time_)
+                                              .count();
+  return static_cast<core::Float>(nanoseconds_elapsed);
 }
 
 void TimeFrequencyCalculator::reset()
