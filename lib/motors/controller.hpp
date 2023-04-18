@@ -20,7 +20,7 @@ namespace hyped::motors {
 // every frame sent to the controller contains 8 bytes
 constexpr std::uint8_t kControllerCanFrameLength = 8;
 enum class ControllerStatus { kControllerTemperatureExceeded, kUnrecoverableWarning, kNominal };
-constexpr std::uint16_t kControllerSdoSend         = 0x600;
+constexpr std::uint16_t kControllerSdoSend         = 0x601;
 constexpr std::uint16_t kControllerSdoReceive      = 0x580;
 constexpr std::uint16_t kControllerSdoReadCommand  = 0x40;
 constexpr std::uint16_t kControllerSdoWriteCommand = 0x23;

@@ -723,18 +723,24 @@ void Repl::addMotorControllerCommands(const std::string &bus)
     std::uint16_t index;
     std::cout << "Index: ";
     std::cin >> std::hex >> index;
-    std::uint8_t sub_index;
+    std::uint16_t sub_index;
     std::cout << "Sub-index: ";
     std::cin >> std::hex >> sub_index;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     io::CanFrame frame;
     frame.can_id  = motors::kControllerSdoSend;
     frame.can_dlc = 8;
     frame.data[0] = motors::kControllerSdoReadCommand;
     // set index
-    frame.data[1] = (index & 0xFF00) >> 8;
-    frame.data[2] = index & 0x00FF;
+    frame.data[1] = index & 0x00FF;
+    frame.data[2] = (index & 0xFF00) >> 8;
     // set sub-index
-    frame.data[3]       = sub_index;
+    frame.data[3] = static_cast<std::uint8_t>(sub_index);
+    // set other values to 0
+    frame.data[4]       = 0;
+    frame.data[5]       = 0;
+    frame.data[6]       = 0;
+    frame.data[7]       = 0;
     core::Result result = can->send(frame);
     if (result == core::Result::kFailure) {
       logger_.log(core::LogLevel::kFatal, "Failed to send SDO read request");
@@ -750,26 +756,27 @@ void Repl::addMotorControllerCommands(const std::string &bus)
     std::uint16_t index;
     std::cout << "Index: ";
     std::cin >> std::hex >> index;
-    std::uint8_t sub_index;
+    std::uint16_t sub_index;
     std::cout << "Sub-index: ";
     std::cin >> std::hex >> sub_index;
     std::uint32_t value;
     std::cout << "Value: ";
     std::cin >> std::hex >> value;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     io::CanFrame frame;
     frame.can_id  = motors::kControllerSdoSend;
     frame.can_dlc = 8;
     frame.data[0] = motors::kControllerSdoWriteCommand;
     // set index
-    frame.data[1] = (index & 0xFF00) >> 8;
-    frame.data[2] = index & 0x00FF;
+    frame.data[1] = index & 0x00FF;
+    frame.data[2] = (index & 0xFF00) >> 8;
     // set sub-index
-    frame.data[3] = sub_index;
+    frame.data[3] = static_cast<std::uint8_t>(sub_index);
     // set value
-    frame.data[4]       = (value & 0xFF000000) >> 24;
-    frame.data[6]       = (value & 0x00FF0000) >> 16;
-    frame.data[5]       = (value & 0x0000FF00) >> 8;
-    frame.data[7]       = value & 0x000000FF;
+    frame.data[4]       = value & 0x000000FF;
+    frame.data[6]       = (value & 0x0000FF00) >> 8;
+    frame.data[5]       = (value & 0x00FF0000) >> 16;
+    frame.data[7]       = (value & 0xFF000000) >> 24;
     core::Result result = can->send(frame);
     if (result == core::Result::kFailure) {
       logger_.log(core::LogLevel::kFatal, "Failed to send SDO write request");

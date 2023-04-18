@@ -199,7 +199,9 @@ std::optional<io::CanFrame> Controller::parseJsonCanFrame(
     logger.log(core::LogLevel::kFatal, "No message subindex in CAN message file");
     return std::nullopt;
   }
-  subindex_hex >> new_message.data[3];
+  uint16_t sub_index;
+  subindex_hex >> sub_index;
+  new_message.data[3] = static_cast<std::uint8_t>(sub_index);
   // convert data to little endian
   std::stringstream data_hex;
   data_hex << std::hex << message["data"].GetString();
