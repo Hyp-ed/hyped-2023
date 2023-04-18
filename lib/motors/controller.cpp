@@ -37,10 +37,10 @@ std::optional<std::shared_ptr<Controller>> Controller::create(
                message_file_path.c_str());
     return std::nullopt;
   }
-  const auto configuration_messages = document["config_messages"].GetArray();
+  const auto configuration_messages = document["config_messages"].GetObject();
   std::vector<io::CanFrame> controller_configuration_messages;
-  for (const rapidjson::GenericValue<rapidjson::UTF8<>> &message : configuration_messages) {
-    const auto new_message = Controller::parseJsonCanFrame(logger, message.GetObject());
+  for (const auto &message : configuration_messages) {
+    const auto new_message = Controller::parseJsonCanFrame(logger, message.value.GetObject());
     if (!new_message) {
       logger.log(core::LogLevel::kFatal,
                  "Invalid CAN configuration frame in JSON message file at path %s",

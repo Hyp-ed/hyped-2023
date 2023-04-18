@@ -1,15 +1,13 @@
 {
-    "config_messages": [
-        {
-            "test_stepper_enable": {
-                "id": "0x601",
-                "command": "0x2B",
-                "index": "0x6040",
-                "subindex": "0x09",
-                "data": "0x00000001"
-            }
+    "config_messages": {
+        "test_stepper_enable": {
+            "id": "0x601",
+            "command": "0x2B",
+            "index": "0x6040",
+            "subindex": "0x09",
+            "data": "0x00000001"
         }
-    ],
+    },
     "messages": {
         "enter_stop_state": {
             "id": "0x000",
@@ -39,7 +37,7 @@
             "subindex": "0x00",
             "data": "0x00000000"
         },
-        "shut_down": {
+        "shutdown": {
             "id": "0x601",
             "command": "0x2B",
             "index": "0x6040",
