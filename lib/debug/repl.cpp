@@ -256,12 +256,18 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
     const auto bus            = temperature["bus"].GetUint();
     repl->addTemperatureCommands(bus, device_address);
   }
-  if (!debugger.HasMember("motor_controller")) {
+  if (!debugger.HasMember("motors")) {
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'debugger.motors' in configuration file");
+    return std::nullopt;
+  }
+  const auto motors = debugger["motors"].GetObject();
+  if (!motors.HasMember("motor_controller")) {
     logger_.log(core::LogLevel::kFatal,
                 "Missing required field 'debugger.motor_controller' in configuration file");
     return std::nullopt;
   }
-  const auto motor_controller = debugger["motor_controller"].GetObject();
+  const auto motor_controller = motors["motor_controller"].GetObject();
   if (!motor_controller.HasMember("enabled")) {
     logger_.log(core::LogLevel::kFatal,
                 "Missing required field 'motor_controller.enabled' in configuration file");
