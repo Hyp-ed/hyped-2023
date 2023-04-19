@@ -10,21 +10,21 @@
     },
     "messages": {
         "enter_stop_state": {
-            "id": "0x000",
+            "id": "0x001",
             "command": "0x02",
             "index": "0x0000",
             "subindex": "0x00",
             "data": "0x00000000"
         },
         "enter_preinitialise_state": {
-            "id": "0x000",
+            "id": "0x001",
             "command": "0x03",
             "index": "0x0000",
             "subindex": "0x00",
             "data": "0x00000000"
         },
         "enter_operational_state": {
-            "id": "0x000",
+            "id": "0x001",
             "command": "0x01",
             "index": "0x0000",
             "subindex": "0x00",

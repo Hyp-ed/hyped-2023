@@ -15,13 +15,21 @@ class ConstantFrequencyCalculator : public IFrequencyCalculator {
   /**
    * @brief Returns the passed in velocity as the frequency
    *
-   * @param frequency
-   * @return core::Float equal to the passed in frequency
+   * @param velocity not used, required by interface
+   * @return frequency_
    */
-  std::uint16_t calculateFrequency(core::Float frequency);
+  std::uint32_t calculateFrequency(core::Float velocity);
+
+  /**
+   * @brief Sets the frequency to be returned by calculateFrequency
+   *
+   * @param frequency the frequency to be returned by calculateFrequency
+   */
+  void setFrequency(std::uint16_t frequency);
 
  private:
   core::ILogger &logger_;
+  std::uint32_t frequency_;
 };
 
 }  // namespace hyped::motors

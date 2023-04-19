@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <thread>
 
 #include <rapidjson/document.h>
 #include <rapidjson/error/en.h>
@@ -370,6 +371,7 @@ void Repl::addCanCommands(const std::string &bus)
     std::cout << "Enter CAN data: ";
     std::string data;
     std::cin >> std::hex >> data;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     if (data.length() > 8) {
       logger_.log(core::LogLevel::kFatal, "Cannot send can data longer than 8 bytes");
       return;
@@ -799,11 +801,12 @@ void Repl::addMotorControllerCommands(const std::string &bus)
   Command controller_set_frequency_command;
   controller_set_frequency_command.name        = "controller set frequency";
   controller_set_frequency_command.description = "Set the frequency of the motor controller in Hz";
-  controller_set_frequency_command.handler     = [this, controller]() {
-    core::Float fake_velocity;
+  controller_set_frequency_command.handler     = [this, frequency_calculator]() {
+    core::Float frequency;
     std::cout << "Frequency: ";
-    std::cin >> fake_velocity;
-    controller->setVelocity(fake_velocity);
+    std::cin >> frequency;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    frequency_calculator->setFrequency(frequency);
   };
   addCommand(controller_set_frequency_command);
   Command controller_run_command;
@@ -850,21 +853,29 @@ void Repl::addMotorControllerCommands(const std::string &bus)
   Command frequency_time_command;
   frequency_time_command.name = "controller frequency time run";
   frequency_time_command.description
-    = "Run the motor controller for 50s, with frequency increasing 2Hz every second";
+    = "Run the motor controller for provided duration, with frequency increasing 2Hz every second";
   frequency_time_command.handler = [this, time_frequency_controller, time_frequency_calculator]() {
+    std::cout << "Enter run time in seconds" << std::endl;
+    std::uint32_t run_time;
+    std::cin >> run_time;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    time_frequency_controller->run(motors::FauxState::kConfigure);
+    time_frequency_controller->run(motors::FauxState::kReset);
     time_frequency_calculator->reset();
     std::chrono::time_point<std::chrono::system_clock> start_time_
       = std::chrono::system_clock::now();
     while (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now()
                                                             - start_time_)
              .count()
-           < 50) {
+           < run_time) {
       core::Result result = time_frequency_controller->run(motors::FauxState::kAccelerate);
       if (result == core::Result::kFailure) {
         logger_.log(core::LogLevel::kFatal, "Failed to run the motor controller");
         return;
       }
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
+    time_frequency_controller->run(motors::FauxState::kStop);
   };
   addCommand(frequency_time_command);
 }

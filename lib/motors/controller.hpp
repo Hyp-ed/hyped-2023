@@ -51,13 +51,6 @@ class Controller {
    */
   core::Result run(FauxState state);
 
-  /**
-   * @brief Sets the velocity of the motor controller, placeholder for now
-   *
-   * @param velocity the velocity to set the motor controller to
-   */
-  void setVelocity(core::Float velocity);
-
   Controller(core::ILogger &logger,
              const std::unordered_map<std::string, io::CanFrame> &messages,
              const std::vector<io::CanFrame> &configuration_messages,

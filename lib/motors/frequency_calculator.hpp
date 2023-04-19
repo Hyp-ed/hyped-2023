@@ -8,7 +8,7 @@ namespace hyped::motors {
 
 class IFrequencyCalculator {
  public:
-  virtual std::uint16_t calculateFrequency(core::Float velocity) = 0;
+  virtual std::uint32_t calculateFrequency(core::Float velocity) = 0;
 };
 
 }  // namespace hyped::motors

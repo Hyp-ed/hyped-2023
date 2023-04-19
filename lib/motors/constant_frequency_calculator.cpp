@@ -6,9 +6,14 @@ ConstantFrequencyCalculator::ConstantFrequencyCalculator(core::ILogger &logger) 
 {
 }
 
-std::uint16_t ConstantFrequencyCalculator::calculateFrequency(core::Float frequency)
+std::uint32_t ConstantFrequencyCalculator::calculateFrequency(core::Float velocity)
 {
-  return static_cast<std::uint16_t>(frequency);
+  return frequency_;
+}
+
+void ConstantFrequencyCalculator::setFrequency(std::uint16_t frequency)
+{
+  frequency_ = frequency;
 }
 
 }  // namespace hyped::motors

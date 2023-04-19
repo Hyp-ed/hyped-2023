@@ -18,7 +18,7 @@ class TimeFrequencyCalculator : public IFrequencyCalculator {
    *
    * @return core::Float equal to the passed in frequency
    */
-  std::uint16_t calculateFrequency(core::Float velocity);
+  std::uint32_t calculateFrequency(core::Float velocity);
 
   /**
    * @brief Resets the start time to the current time

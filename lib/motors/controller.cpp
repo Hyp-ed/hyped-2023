@@ -94,6 +94,12 @@ std::optional<std::shared_ptr<Controller>> Controller::create(
                message_file_path.c_str());
     return std::nullopt;
   }
+  if (!messages.HasMember("quick_stop")) {
+    logger.log(core::LogLevel::kFatal,
+               "Missing required field 'quick_stop' in can message file at %s",
+               message_file_path.c_str());
+    return std::nullopt;
+  }
   for (const auto &message : messages) {
     const auto new_message = Controller::parseJsonCanFrame(logger, message.value.GetObject());
     if (!new_message) {
@@ -172,7 +178,9 @@ std::optional<io::CanFrame> Controller::parseJsonCanFrame(
     logger.log(core::LogLevel::kFatal, "No message command in CAN message file");
     return std::nullopt;
   }
-  command_hex >> new_message.data[0];
+  std::uint16_t command;
+  command_hex >> command;
+  new_message.data[0] = static_cast<std::uint8_t>(command);
   // convert index to little endian for controller
   std::stringstream index_hex;
   index_hex << std::hex << message["index"].GetString();
@@ -456,14 +464,14 @@ core::Result Controller::reset()
     }
   }
   {
-    const auto shut_down_message = messages_.find("shut_down");
-    if (shut_down_message == messages_.end()) {
-      logger_.log(core::LogLevel::kFatal, "Failed to find 'shut_down' message");
+    const auto shutdown_message = messages_.find("shutdown");
+    if (shutdown_message == messages_.end()) {
+      logger_.log(core::LogLevel::kFatal, "Failed to find 'shutdown' message");
       return core::Result::kFailure;
     }
-    core::Result result = can_->send(shut_down_message->second);
+    core::Result result = can_->send(shutdown_message->second);
     if (result != core::Result::kSuccess) {
-      logger_.log(core::LogLevel::kFatal, "Failed to send 'shut_down' message");
+      logger_.log(core::LogLevel::kFatal, "Failed to send 'shutdown' message");
       return result;
     }
   }
@@ -480,11 +488,6 @@ core::Result Controller::reset()
     }
   }
   return core::Result::kSuccess;
-}
-
-void Controller::setVelocity(core::Float velocity)
-{
-  velocity_ = velocity;
 }
 
 }  // namespace hyped::motors
