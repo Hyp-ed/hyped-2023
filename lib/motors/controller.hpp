@@ -23,7 +23,7 @@ enum class ControllerStatus { kControllerTemperatureExceeded, kUnrecoverableWarn
 constexpr std::uint16_t kControllerSdoSend         = 0x601;
 constexpr std::uint16_t kControllerSdoReceive      = 0x580;
 constexpr std::uint16_t kControllerSdoReadCommand  = 0x40;
-constexpr std::uint16_t kControllerSdoWriteCommand = 0x23;
+constexpr std::uint16_t kControllerSdoWriteCommand = 0x2B;
 /**
  * @brief Temporary enum to represent the state of the state machine, will be replaced by the actual
  * state machine states

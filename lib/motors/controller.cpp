@@ -57,9 +57,9 @@ std::optional<std::shared_ptr<Controller>> Controller::create(
                message_file_path.c_str());
     return std::nullopt;
   }
-  if (!messages.HasMember("enter_preinitialise_state")) {
+  if (!messages.HasMember("enter_preoperational_state")) {
     logger.log(core::LogLevel::kFatal,
-               "Missing required field 'enter_preinitialise_state' in can message file at %s",
+               "Missing required field 'enter_preoperational_state' in can message file at %s",
                message_file_path.c_str());
     return std::nullopt;
   }
@@ -406,19 +406,29 @@ core::Result Controller::accelerate()
     logger_.log(core::LogLevel::kFatal, "Failed to send 'set_frequency' message");
     return result;
   }
+  const auto start_drive_message = messages_.find("start_drive");
+  if (start_drive_message == messages_.end()) {
+    logger_.log(core::LogLevel::kFatal, "Failed to find 'start_drive' message");
+    return core::Result::kFailure;
+  }
+  result = can_->send(start_drive_message->second);
+  if (result != core::Result::kSuccess) {
+    logger_.log(core::LogLevel::kFatal, "Failed to send 'start_drive' message");
+    return result;
+  }
   return core::Result::kSuccess;
 }
 
 core::Result Controller::stop()
 {
-  const auto enter_stop_state_message = messages_.find("enter_stop_state");
-  if (enter_stop_state_message == messages_.end()) {
-    logger_.log(core::LogLevel::kFatal, "Failed to find 'enter_stop_state' message");
+  const auto shutdown_message = messages_.find("shutdown");
+  if (shutdown_message == messages_.end()) {
+    logger_.log(core::LogLevel::kFatal, "Failed to find 'shutdown' message");
     return core::Result::kFailure;
   }
-  core::Result result = can_->send(enter_stop_state_message->second);
+  core::Result result = can_->send(shutdown_message->second);
   if (result != core::Result::kSuccess) {
-    logger_.log(core::LogLevel::kFatal, "Failed to send 'enter_stop_state' message");
+    logger_.log(core::LogLevel::kFatal, "Failed to send 'shutdown' message");
     return result;
   }
   return core::Result::kSuccess;
@@ -440,14 +450,14 @@ core::Result Controller::reset()
     }
   }
   {
-    const auto enter_preinitialise_state_message = messages_.find("enter_preinitialise_state");
-    if (enter_preinitialise_state_message == messages_.end()) {
-      logger_.log(core::LogLevel::kFatal, "Failed to find 'enter_preinitialise_state' message");
+    const auto enter_preoperational_state_message = messages_.find("enter_preoperational_state");
+    if (enter_preoperational_state_message == messages_.end()) {
+      logger_.log(core::LogLevel::kFatal, "Failed to find 'enter_preoperational_state' message");
       return core::Result::kFailure;
     }
-    core::Result result = can_->send(enter_preinitialise_state_message->second);
+    core::Result result = can_->send(enter_preoperational_state_message->second);
     if (result != core::Result::kSuccess) {
-      logger_.log(core::LogLevel::kFatal, "Failed to send 'enter_preinitialise_state' message");
+      logger_.log(core::LogLevel::kFatal, "Failed to send 'enter_preoperational_state' message");
       return result;
     }
   }

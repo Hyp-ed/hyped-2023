@@ -359,7 +359,7 @@ void Repl::addCanCommands(const std::string &bus)
   const auto can = std::move(*optional_can);
   Command can_write_command;
   std::stringstream identifier;
-  identifier << "can " << bus << " write";
+  identifier << bus << " write";
   can_write_command.name = identifier.str();
   std::stringstream description;
   description << "Write to CAN bus " << bus;
@@ -372,7 +372,7 @@ void Repl::addCanCommands(const std::string &bus)
     std::string data;
     std::cin >> std::hex >> data;
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    if (data.length() > 8) {
+    if (data.length() > 16) {
       logger_.log(core::LogLevel::kFatal, "Cannot send can data longer than 8 bytes");
       return;
     }
