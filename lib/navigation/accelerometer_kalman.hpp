@@ -34,15 +34,15 @@ class AccelerometerKalman {
   const core::ITimeSource &time_;
   // TODO: change for actual state vector
   Eigen::Matrix<core::Float, state_dimension_, 1> initial_state = {0, 0, 0};
-  Eigen::Matrix<core::Float, state_dimension_, state_dimension_> initial_error_covariance{
-    {0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
+  Eigen::Matrix<core::Float, state_dimension_, state_dimension_> initial_error_covariance;
+  //{{0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
   KalmanFilter<state_dimension_, measurement_dimension_> kalman_filter_(
     const core::ITimeSource &time_,
     Eigen::Matrix<core::Float, state_dimension_, 1> initial_state,
     Eigen::Matrix<core::Float, state_dimension_, state_dimension_> initial_error_covariance);
 
-  const Eigen::Matrix<core::Float, state_dimension_, state_dimension_> measurement_matrix_{
-    {1, 0, 0}, {0, 0, 0}, {0, 0, 0}};
+  const Eigen::Matrix<core::Float, state_dimension_, state_dimension_> measurement_matrix_;
+  //{{1, 0, 0}, {0, 0, 0}, {0, 0, 0}};
 
   // TODO: implement and document these functions
   Eigen::Matrix<core::Float, state_dimension_, 1> getMeasurementVector(core::Float acceleration);
