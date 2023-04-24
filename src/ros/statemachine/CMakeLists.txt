@@ -68,6 +68,13 @@ target_link_libraries(
   Hyped::hyped_statemachine
 )
 
+add_executable(transitionpublisher src/transitionpublisher.cpp)
+ament_target_dependencies(transitionpublisher rclcpp std_msgs)
+target_link_libraries(
+  transitionpublisher
+  Hyped::hyped_core
+)
+
 install(TARGETS
   stm1
   stm2

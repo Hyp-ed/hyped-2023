@@ -4,6 +4,7 @@
 #include "types.hpp"
 
 #include <optional>
+#include <queue>
 #include <unordered_map>
 
 #include <boost/unordered_map.hpp>
@@ -80,7 +81,7 @@ class StateMachine {
        {{State::kFailureStopped, Message::kFailureOff}, State::kOff}};
 
   State current_state_;
-  Message previous_message_;
+  std::queue<Message> previous_message_;
 };
 
 }  // namespace hyped::state_machine

@@ -56,8 +56,12 @@ class Stm4sub : public rclcpp::Node {
     hyped::state_machine::Message message = stm4_->stringToMessage(msg.data);
     bool transitioned                     = stm4_->handleMessage(message);
     // we only publish a message if a transition was made
-    if (transitioned) { rclcpp::spin_some(pub_); }
-    RCLCPP_INFO(this->get_logger(), "New Message: '%s'", msg.data.c_str());
+    if (transitioned) {
+      rclcpp::spin_some(pub_);
+    } else {
+      stm4_->getPreviousMessage();
+    }
+    // RCLCPP_INFO(this->get_logger(), "New Message: '%s'", msg.data.c_str());
   }
   rclcpp::Subscription<std_msgs::msg::String>::SharedPtr subscription_;
   std::unique_ptr<hyped::state_machine::StateMachine> &stm4_;

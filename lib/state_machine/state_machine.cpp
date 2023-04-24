@@ -2,7 +2,7 @@
 
 namespace hyped::state_machine {
 
-StateMachine::StateMachine() : current_state_{State::kIdle}, previous_message_{Message::kNone}
+StateMachine::StateMachine() : current_state_{State::kIdle}
 {
 }
 
@@ -14,7 +14,7 @@ void StateMachine::checkTransition(const Message &message)
   then run transition to move to next state
   return transition message or no transition
   */
-  previous_message_ = message;
+  // previous_message_ = message;
   if (message != Message::kNone) {
     /*
     return the boolean returned by handleMessage so that we can check if a transition was made
@@ -27,7 +27,7 @@ void StateMachine::checkTransition(const Message &message)
 // Transition to next state
 bool StateMachine::handleMessage(const Message &message)
 {
-  previous_message_     = message;
+  previous_message_.push(message);
   const auto transition = transition_to_state_.find({current_state_, message});
   // if there is a transition, make it and return true
   if (transition != transition_to_state_.end()) {
@@ -54,7 +54,13 @@ State StateMachine::getCurrentState()
 
 Message StateMachine::getPreviousMessage()
 {
-  return previous_message_;
+  if (previous_message_.empty()) {
+    return Message::kNone;
+  } else {
+    Message previous_message = previous_message_.front();
+    previous_message_.pop();
+    return previous_message;
+  }
 }
 
 }  // namespace hyped::state_machine
