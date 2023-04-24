@@ -4,6 +4,7 @@ namespace hyped::state_machine {
 
 // Message class containing messages that prompt transitions
 enum class Message {
+  kNone,
   kCalibrating,
   kReady,
   kAccelerating,

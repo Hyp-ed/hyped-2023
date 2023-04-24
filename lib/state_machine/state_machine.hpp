@@ -4,6 +4,7 @@
 #include "types.hpp"
 
 #include <optional>
+#include <queue>
 #include <unordered_map>
 
 #include <boost/unordered_map.hpp>
@@ -13,14 +14,11 @@ namespace hyped::state_machine {
 class StateMachine {
  public:
   StateMachine();
-
-  // TODOLater handle ros messages and transition accordingly
-  std::optional<Message> checkTransition();
-
-  void handleMessage(const Message &message);
+  bool handleMessage(const Message &message);
   Message stringToMessage(const std::string &message_name);
   std::string messageToString(const Message &message);
   State getCurrentState();
+  Message getPreviousMessage();
 
  private:
   const std::unordered_map<std::string, Message> string_to_message_
@@ -76,6 +74,7 @@ class StateMachine {
        {{State::kFailureStopped, Message::kFailureOff}, State::kOff}};
 
   State current_state_;
+  std::queue<Message> previous_message_;
 };
 
 }  // namespace hyped::state_machine
