@@ -44,8 +44,8 @@ class AccelerometerKalman {
     Eigen::Matrix<core::Float, state_dimension_, 1> initial_state,
     Eigen::Matrix<core::Float, state_dimension_, state_dimension_> initial_error_covariance);
 
-  const Eigen::Matrix<core::Float, state_dimension_, state_dimension_> measurement_matrix_{
-    {1, 0, 0}, {0, 0, 0}, {0, 0, 0}};
+  const Eigen::Matrix<core::Float, state_dimension_, state_dimension_> measurement_matrix_;
+  //{{1, 0, 0}, {0, 0, 0}, {0, 0, 0}};
 
   // TODO: implement and document these functions
   Eigen::Matrix<core::Float, state_dimension_, 1> getMeasurementVector(core::Float acceleration);

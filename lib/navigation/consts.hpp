@@ -45,6 +45,11 @@ struct Quartiles {
   core::Float q3;
 };
 
+struct JerkSnap {
+  core::Float jerk;
+  core::Float snap;
+};
+
 inline core::Trajectory zero_trajectory = {0, 0, 0};
 
 class INavigator {
