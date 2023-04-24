@@ -4,17 +4,20 @@
 
 #include <cstdint>
 
-#include <extended_kalman_filter.hpp>
-#include <Eigen/Dense>
 #include <core/logger.hpp>
 #include <core/time.hpp>
 #include <core/timer.hpp>
 #include <core/types.hpp>
+#include <eigen3/Eigen/Dense>
+#include <extended_kalman_filter.hpp>
 
 namespace hyped::navigation {
 class AccelerometerKalman {
  public:
-  AccelerometerKalman(core::ILogger &logger, const core::ITimeSource &time);
+  AccelerometerKalman(core::ILogger &logger,
+                      const core::ITimeSource &time,
+                      const StateVector initial_state,
+                      const ErrorCovarianceMatrix initial_error_covariance);
 
   /**
    * @brief convert raw accelerometer data to cleaned and filtered data
@@ -30,19 +33,20 @@ class AccelerometerKalman {
   static constexpr std::size_t extended_dimension_    = 2;  // TODO: check this!
 
  private:
-
   ExtendedKalmanFilter<3, 1, 2> kalman_filter_;
 
   core::ILogger &logger_;
   const core::ITimeSource &time_;
   // TODO: change for actual state vector
   Eigen::Matrix<core::Float, state_dimension_, 1> initial_state = {0, 0, 0};
-  Eigen::Matrix<core::Float, state_dimension_, state_dimension_> initial_error_covariance{
-    {0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
-  ExtendedKalmanFilter<state_dimension_, measurement_dimension_, extended_dimension_> kalman_filter_(
-    const core::ITimeSource &time_,
-    Eigen::Matrix<core::Float, state_dimension_, 1> initial_state,
-    Eigen::Matrix<core::Float, state_dimension_, state_dimension_> initial_error_covariance);
+  Eigen::Matrix<core::Float, state_dimension_, state_dimension_> initial_error_covariance;
+  // TODO: make this less bad
+  //{{0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
+  ExtendedKalmanFilter<state_dimension_, measurement_dimension_, extended_dimension_>
+    kalman_filter_(
+      const core::ITimeSource &time_,
+      Eigen::Matrix<core::Float, state_dimension_, 1> initial_state,
+      Eigen::Matrix<core::Float, state_dimension_, state_dimension_> initial_error_covariance);
 
   const Eigen::Matrix<core::Float, state_dimension_, state_dimension_> measurement_matrix_;
   //{{1, 0, 0}, {0, 0, 0}, {0, 0, 0}};

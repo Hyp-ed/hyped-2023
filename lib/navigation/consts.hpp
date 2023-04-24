@@ -4,14 +4,14 @@
 #include <cstdint>
 #include <optional>
 
-#include <Eigen/Dense>
 #include "core/types.hpp"
+#include <eigen3/Eigen/Dense>
 
 namespace hyped::navigation {
 
-constexpr std::size_t state_dimension = 3;
+constexpr std::size_t state_dimension       = 3;
 constexpr std::size_t measurement_dimension = 1;
-constexpr std::size_t extended_dimension = 2;
+constexpr std::size_t extended_dimension    = 2;
 // in order acc, velocity, displacement
 using StateVector           = Eigen::Matrix<core::Float, state_dimension, 1>;
 using StateTransitionMatrix = Eigen::Matrix<core::Float, state_dimension, state_dimension>;

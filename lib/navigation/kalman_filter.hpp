@@ -15,6 +15,8 @@ template<std::size_t state_dimension, std::size_t measurement_dimension>
 class KalmanFilter {
  public:
   // in order acc, velocity, displacement
+  /*
+  //Moving to consts
   using StateVector           = Eigen::Matrix<core::Float, state_dimension, 1>;
   using StateTransitionMatrix = Eigen::Matrix<core::Float, state_dimension, state_dimension>;
   using StateTransitionCovarianceMatrix
@@ -25,6 +27,7 @@ class KalmanFilter {
   using MeasurementVector = Eigen::Matrix<core::Float, measurement_dimension, 1>;  //[acc_val, 0, 0]
   using MeasurementNoiseCovarianceMatrix
     = Eigen::Matrix<core::Float, measurement_dimension, measurement_dimension>;
+  */
 
   KalmanFilter(std::shared_ptr<core::ITimeSource> time_source,
                const StateVector initial_state,
