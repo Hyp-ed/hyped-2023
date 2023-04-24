@@ -6,10 +6,10 @@ namespace hyped::navigation {
 
 AccelerometerKalman::AccelerometerKalman(core::ILogger &logger, const core::ITimeSource &time)
     : logger_(logger),
-      time_(time){
-        // TODO: instantiate kalman
-
-      };
+      time_(time)
+{
+  // TODO: instantiate kalman
+}
 
 Eigen::
   Matrix<core::Float, AccelerometerKalman::state_dimension_, AccelerometerKalman::state_dimension_>
