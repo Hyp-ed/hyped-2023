@@ -1,12 +1,14 @@
 #include "accelerometer_kalman.hpp"
 
-#include <core/types.hpp>
-
 namespace hyped::navigation {
 
-AccelerometerKalman::AccelerometerKalman(core::ILogger &logger, const core::ITimeSource &time)
+AccelerometerKalman::AccelerometerKalman(core::ILogger &logger,
+                                         const core::ITimeSource &time,
+                                         const StateVector initial_state,
+                                         const ErrorCovarianceMatrix initial_error_covariance)
     : logger_(logger),
-      time_(time){
+      time_(time),
+      kalman_filter_(time, initial_state, initial_error_covariance){
         // TODO: instantiate kalman
 
       };
@@ -19,10 +21,10 @@ Eigen::
                 AccelerometerKalman::state_dimension_,
                 AccelerometerKalman::state_dimension_>
     state_transition_matrix;
-
+  std::uint32_t factorial;
   for (std::size_t i = 0; i < AccelerometerKalman::state_dimension_; i++) {
     for (std::size_t j = 0; j < AccelerometerKalman::state_dimension_; j++) {
-      std::uint64_t factorial = 1;
+      factorial = 1;
       for (std::size_t k = 1; k <= (i); i++) {
         factorial *= k;
       }
@@ -47,7 +49,9 @@ Eigen::Matrix<core::Float, AccelerometerKalman::state_dimension_, 1>
 
 Eigen::
   Matrix<core::Float, AccelerometerKalman::state_dimension_, AccelerometerKalman::state_dimension_>
-  AccelerometerKalman::getStateTransitionCovarianceMatrix()
+  AccelerometerKalman::getStateTransitionCovarianceMatrix(
+    Eigen::Matrix<core::Float, state_dimension_, state_dimension_> prior_state,
+    Eigen::Matrix<core::Float, state_dimension_, state_dimension_> prior_propagation)
 {
   // TODO: implement
   Eigen::Matrix<core::Float,
@@ -62,7 +66,7 @@ Eigen::Matrix<core::Float,
               AccelerometerKalman::measurement_dimension_>
   AccelerometerKalman::getMeasurementNoiseCovarianceMatrix()
 {
-  // TODO: implement
+  // TODO: generate random noise then fix
   Eigen::Matrix<core::Float,
                 AccelerometerKalman::measurement_dimension_,
                 AccelerometerKalman::measurement_dimension_>
@@ -86,10 +90,10 @@ Eigen::Matrix<core::Float,
                 AccelerometerKalman::extended_dimension_,
                 AccelerometerKalman::state_dimension_>
     jacobian_matrix;
-
+  std::uint32_t factorial;
   for (std::size_t i = 0; i < AccelerometerKalman::state_dimension_; i++) {
     for (std::size_t j = 0; j < AccelerometerKalman::state_dimension_; j++) {
-      std::uint64_t factorial = 1;
+      factorial = 1;
       for (std::size_t k = 1; i <= (i + state_dimension_); i++) {
         factorial *= k;
       }
@@ -105,6 +109,8 @@ Eigen::Matrix<core::Float,
 Eigen::Matrix<core::Float, AccelerometerKalman::extended_dimension_, 1>
   AccelerometerKalman::getExtendedStateVector()
 {
+  // TODO: make call to separate function to calculate jerk and higher order derivatives of
+  // acceleration
   Eigen::Matrix<core::Float, AccelerometerKalman::extended_dimension_, 1> extended_state_vector{0,
                                                                                                 0};
 

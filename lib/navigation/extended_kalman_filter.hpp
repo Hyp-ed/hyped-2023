@@ -14,29 +14,11 @@ namespace hyped::navigation {
 template<std::size_t state_dimension,
          std::size_t measurement_dimension,
          std::size_t extended_dimension>
-class KalmanFilter {
+class ExtendedKalmanFilter {
  public:
-  // in order acc, velocity, displacement
-  using StateVector           = Eigen::Matrix<core::Float, state_dimension, 1>;
-  using StateTransitionMatrix = Eigen::Matrix<core::Float, state_dimension, state_dimension>;
-  using StateTransitionCovarianceMatrix
-    = Eigen::Matrix<core::Float, state_dimension, state_dimension>;
-  using ErrorCovarianceMatrix = Eigen::Matrix<core::Float, state_dimension, state_dimension>;
-  using MeasurementMatrix
-    = Eigen::Matrix<core::Float, measurement_dimension, state_dimension>;  //[[1, 0, 0], [0, 0, 0],
-                                                                           //[0, 0, 0]]
-  using MeasurementVector = Eigen::Matrix<core::Float, measurement_dimension, 1>;  //[acc_val, 0, 0]
-  using MeasurementNoiseCovarianceMatrix
-    = Eigen::Matrix<core::Float, measurement_dimension, measurement_dimension>;
-  using ExtendedStateVector
-    = Eigen::Matrix<core::Float, extended_dimension, 1>;  //[Jerk, Snap, Crackle, Pop, ...]
-  using JacobianMatrix
-    = Eigen::Matrix<core::Float, extended_dimension, state_dimension>;  // higher order derivatives
-                                                                        // for propogation
-
-  KalmanFilter(std::shared_ptr<core::ITimeSource> time_source,
-               const StateVector initial_state,
-               const ErrorCovarianceMatrix initial_error_covariance)
+  ExtendedKalmanFilter(std::shared_ptr<core::ITimeSource> time_source,
+                       const StateVector initial_state,
+                       const ErrorCovarianceMatrix initial_error_covariance)
       : time_source_(time_source),
         last_update_time_(time_source->now()),
         state_estimate_(initial_state),
@@ -55,7 +37,7 @@ class KalmanFilter {
               const JacobianMatrix &jacobian_matrix,
               const ExtendedStateVector &extended_state_vector)
   {
-    // TODO: figure out how to make transition matrix given time delta - in main nav section
+    // TODO: add noise to propogation step
     const auto prop_state_estimate
       = transition_matrix * state_estimate_ + jacobian_matrix * extended_state_vector;
     const auto prop_error_covariance

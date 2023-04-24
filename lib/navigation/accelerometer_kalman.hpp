@@ -1,10 +1,10 @@
 #pragma once
 
 #include "consts.hpp"
-#include "kalman_filter.hpp"
 
 #include <cstdint>
 
+#include <extended_kalman_filter.hpp>
 #include <Eigen/Dense>
 #include <core/logger.hpp>
 #include <core/time.hpp>
@@ -30,13 +30,16 @@ class AccelerometerKalman {
   static constexpr std::size_t extended_dimension_    = 2;  // TODO: check this!
 
  private:
+
+  ExtendedKalmanFilter<3, 1, 2> kalman_filter_;
+
   core::ILogger &logger_;
   const core::ITimeSource &time_;
   // TODO: change for actual state vector
   Eigen::Matrix<core::Float, state_dimension_, 1> initial_state = {0, 0, 0};
   Eigen::Matrix<core::Float, state_dimension_, state_dimension_> initial_error_covariance{
     {0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
-  KalmanFilter<state_dimension_, measurement_dimension_> kalman_filter_(
+  ExtendedKalmanFilter<state_dimension_, measurement_dimension_, extended_dimension_> kalman_filter_(
     const core::ITimeSource &time_,
     Eigen::Matrix<core::Float, state_dimension_, 1> initial_state,
     Eigen::Matrix<core::Float, state_dimension_, state_dimension_> initial_error_covariance);

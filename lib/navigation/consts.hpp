@@ -4,9 +4,31 @@
 #include <cstdint>
 #include <optional>
 
+#include <Eigen/Dense>
 #include "core/types.hpp"
 
 namespace hyped::navigation {
+
+constexpr std::size_t state_dimension = 3;
+constexpr std::size_t measurement_dimension = 1;
+constexpr std::size_t extended_dimension = 2;
+// in order acc, velocity, displacement
+using StateVector           = Eigen::Matrix<core::Float, state_dimension, 1>;
+using StateTransitionMatrix = Eigen::Matrix<core::Float, state_dimension, state_dimension>;
+using StateTransitionCovarianceMatrix
+  = Eigen::Matrix<core::Float, state_dimension, state_dimension>;
+using ErrorCovarianceMatrix = Eigen::Matrix<core::Float, state_dimension, state_dimension>;
+using MeasurementMatrix
+  = Eigen::Matrix<core::Float, measurement_dimension, state_dimension>;  //[[1, 0, 0], [0, 0, 0],
+                                                                         //[0, 0, 0]]
+using MeasurementVector = Eigen::Matrix<core::Float, measurement_dimension, 1>;  //[acc_val, 0, 0]
+using MeasurementNoiseCovarianceMatrix
+  = Eigen::Matrix<core::Float, measurement_dimension, measurement_dimension>;
+using ExtendedStateVector
+  = Eigen::Matrix<core::Float, extended_dimension, 1>;  //[Jerk, Snap, Crackle, Pop, ...]
+using JacobianMatrix
+  = Eigen::Matrix<core::Float, extended_dimension, state_dimension>;  // higher order derivatives
+                                                                      // for propogation
 
 static constexpr core::Float kTrackLength       = 100.0;  // m
 static constexpr core::Float kBrakingDistance   = 20.0;   // m TODOLater:check!
