@@ -15,7 +15,7 @@
 #include <core/logger.hpp>
 #include <core/types.hpp>
 #include <io/can.hpp>
-#include <io/hardware_can.hpp>
+
 namespace hyped::motors {
 // every frame sent to the controller contains 8 bytes
 constexpr std::uint8_t kControllerCanFrameLength = 8;
