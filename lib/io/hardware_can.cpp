@@ -110,7 +110,8 @@ core::Result HardwareCan::receive()
     return core::Result::kFailure;
   }
   for (auto &processor : subscribed_processors->second) {
-    processor->processMessage(message);
+    core::Result process_result = processor->processMessage(message);
+    if (process_result == core::Result::kFailure) { return core::Result::kFailure; }
   }
   return core::Result::kSuccess;
 }
