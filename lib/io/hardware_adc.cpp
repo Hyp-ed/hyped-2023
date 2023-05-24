@@ -42,7 +42,7 @@ std::optional<core::Float> HardwareAdc::readValue()
     logger_.log(core::LogLevel::kFatal, "Failed to read voltage from ADC");
     return std::nullopt;
   }
-  logger_.log(core::LogLevel::kDebug, "Raw voltage from ADC pin %d: %i", pin_, *raw_voltage);
+  logger_.log(core::LogLevel::kDebug, "Raw voltage from ADC pin %d: %f", pin_, *raw_voltage);
   return *raw_voltage;
 }
 
