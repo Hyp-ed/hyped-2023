@@ -7,7 +7,7 @@ export class DictionaryController {
 
   @Get()
   getDictionary() {
-    const pod = this.dictionaryService.getDictionary();
-    return pod;
+    const pods = this.dictionaryService.getDictionary();
+    return pods;
   }
 }

@@ -1,20 +1,30 @@
-import { pods } from '@hyped/telemetry-constants';
+import { POD_IDS, pods } from '@hyped/telemetry-constants';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class DictionaryService {
-  getDictionary(podId = '1') {
+  getDictionary() {
+    const dictionary: any = {};
+    POD_IDS.forEach((podId) => {
+      dictionary[podId] = this.getPod(podId);
+    });
+
+    return dictionary;
+  }
+
+  private getPod(podId: string) {
     const pod = pods[podId as keyof typeof pods];
 
     if (!pod) {
       throw new Error(`Pod ${podId} not found`);
     }
 
-    const dictionary = Object.entries(pod.measurements).map(
+    const measurements = Object.entries(pod.measurements).map(
       ([key, measurement]) => {
         return {
           name: measurement.name,
           key: key,
+          type: measurement.type,
           values: [
             {
               key: 'value',
@@ -48,8 +58,8 @@ export class DictionaryService {
 
     return {
       name: pod.name,
-      key: pod.key,
-      measurements: dictionary,
+      podId: pod.podId,
+      measurements,
     };
   }
 }
