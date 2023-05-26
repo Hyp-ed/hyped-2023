@@ -1,9 +1,10 @@
 import { POD_IDS, pods } from '@hyped/telemetry-constants';
+import { OpenMctDictionary, OpenMctPod } from '@hyped/telemetry-types';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class DictionaryService {
-  getDictionary() {
+  getDictionary(): OpenMctDictionary {
     const dictionary: any = {};
     POD_IDS.forEach((podId) => {
       dictionary[podId] = this.getPod(podId);
@@ -12,7 +13,7 @@ export class DictionaryService {
     return dictionary;
   }
 
-  private getPod(podId: string) {
+  private getPod(podId: string): OpenMctPod {
     const pod = pods[podId as keyof typeof pods];
 
     if (!pod) {

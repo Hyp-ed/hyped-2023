@@ -5,7 +5,7 @@ export type OpenMctMeasurement = {
   values: {
     key: string;
     name: string;
-    unit: string;
+    unit?: string;
     format: string;
     min?: number;
     max?: number;
