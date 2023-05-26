@@ -19,11 +19,11 @@ namespace hyped::motors {
 constexpr std::uint8_t kControllerCanFrameLength = 8;
 enum class ControllerStatus { kUnrecoverableWarning, kNominal };
 enum class ControllerState {
-  koperationalState,
-  kpreOperationalState,
-  kstopState,
-  kresetNodeState,
-  kresetCommunicationState,
+  kOperationalState,
+  kPreOperationalState,
+  kStopState,
+  kResetNodeState,
+  kResetCommunicationState,
   kUnknownState
 };
 

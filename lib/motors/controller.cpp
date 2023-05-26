@@ -71,7 +71,7 @@ Controller::Controller(core::ILogger &logger,
       messages_(messages),
       controller_temperature_(0),
       controller_current_(0),
-      controller_state_(ControllerState::kpreOperationalState)
+      controller_state_(ControllerState::kPreOperationalState)
 {
 }
 
@@ -279,27 +279,27 @@ core::Result Controller::processNmtMessage(const std::uint8_t nmt_code)
     // Operational State
     case 0x01:
       logger_.log(core::LogLevel::kDebug, "Controller enter operational state");
-      controller_state_ = ControllerState::koperationalState;
+      controller_state_ = ControllerState::kOperationalState;
       return core::Result::kSuccess;
     // Stop State
     case 0x02:
       logger_.log(core::LogLevel::kDebug, "Controller enter stop state");
-      controller_state_ = ControllerState::kstopState;
+      controller_state_ = ControllerState::kStopState;
       return core::Result::kSuccess;
     // Pre-operational State
     case 0x03:
       logger_.log(core::LogLevel::kDebug, "Controller enter pre-operational state");
-      controller_state_ = ControllerState::kpreOperationalState;
+      controller_state_ = ControllerState::kPreOperationalState;
       return core::Result::kSuccess;
     // Reset node state
     case 0x81:
       logger_.log(core::LogLevel::kDebug, "Controller enter reset node state");
-      controller_state_ = ControllerState::kresetNodeState;
+      controller_state_ = ControllerState::kResetNodeState;
       return core::Result::kSuccess;
     // Stop state
     case 0x82:
       logger_.log(core::LogLevel::kDebug, "Controller enter stop state");
-      controller_state_ = ControllerState::kresetCommunicationState;
+      controller_state_ = ControllerState::kResetCommunicationState;
       return core::Result::kSuccess;
     default:
       logger_.log(core::LogLevel::kDebug, "Controller enter unknown state");

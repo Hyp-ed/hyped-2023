@@ -1,10 +1,6 @@
 #include "can_processor.hpp"
 #include "controller.hpp"
 
-#include <climits>
-#include <cstdint>
-#include <iostream>
-
 namespace hyped::motors {
 
 CanProcessor::CanProcessor(core::Logger &logger, std::shared_ptr<Controller> controller)
