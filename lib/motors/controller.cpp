@@ -1,5 +1,6 @@
 #include "controller.hpp"
 
+#include <bit>
 #include <fstream>
 #include <sstream>
 
