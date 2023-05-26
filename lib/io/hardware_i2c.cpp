@@ -13,24 +13,28 @@
 
 namespace hyped::io {
 
-std::optional<HardwareI2c> HardwareI2c::create(core::ILogger &logger,
-                                               const std::uint8_t bus_address)
+std::optional<std::shared_ptr<HardwareI2c>> HardwareI2c::create(core::ILogger &logger,
+                                                                const std::uint8_t bus)
 {
+  // Three I2C buses on the BBB (0-indexed)
+  if (bus > 2) {
+    logger.log(core::LogLevel::kFatal, "Failed to create HardwareI2c object: invalid bus");
+    return std::nullopt;
+  }
   char path[13];  // up to "/dev/i2c-2"
-  snprintf(path, sizeof(path), "/dev/i2c-%d", bus_address);
+  snprintf(path, sizeof(path), "/dev/i2c-%d", bus);
   const int file_descriptor = open(path, O_RDWR, 0);
   if (file_descriptor < 0) {
     logger.log(core::LogLevel::kFatal, "Failed to find i2c device");
     return std::nullopt;
   };
-  return HardwareI2c(logger, file_descriptor);
+  return std::make_shared<HardwareI2c>(logger, file_descriptor);
 }
 
 HardwareI2c::HardwareI2c(core::ILogger &logger, const int file_descriptor)
     : logger_(logger),
       file_descriptor_(file_descriptor),
       sensor_address_(0)
-
 {
 }
 
@@ -68,7 +72,7 @@ core::Result HardwareI2c::writeByteToRegister(const std::uint8_t device_address,
 {
   if (sensor_address_ != device_address) { setSensorAddress(device_address); }
   const std::uint8_t write_buffer[2] = {register_address, data};
-  const auto num_bytes_written       = write(file_descriptor_, write_buffer, 2);
+  const ssize_t num_bytes_written    = write(file_descriptor_, write_buffer, 2);
   if (num_bytes_written != 2) {
     logger_.log(core::LogLevel::kFatal, "Failed to write to i2c device");
     return core::Result::kFailure;
@@ -81,7 +85,7 @@ core::Result HardwareI2c::writeByte(const std::uint8_t device_address, const std
 {
   if (sensor_address_ != device_address) { setSensorAddress(device_address); }
   const std::uint8_t write_buffer[1] = {data};
-  const auto num_bytes_written       = write(file_descriptor_, write_buffer, 1);
+  const ssize_t num_bytes_written    = write(file_descriptor_, write_buffer, 1);
   if (num_bytes_written != 1) {
     logger_.log(core::LogLevel::kFatal, "Failed to write to i2c device");
     return core::Result::kFailure;

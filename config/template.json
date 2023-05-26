@@ -11,7 +11,8 @@
 			},
 			"pwm": {
 				"enabled": false,
-				"modules": []
+				"modules": [],
+				"period": []
 			},
 			"spi": {
 				"enabled": false,
@@ -20,6 +21,18 @@
 			"uart": {
 				"enabled": false,
 				"buses": []
+			}
+		},
+		"sensors": {
+			"accelerometer": {
+				"enabled": false,
+				"bus": 2,
+				"device_address": 25
+			},
+			"temperature": {
+				"enabled": false,
+				"bus": 2,
+				"device_address": 56
 			}
 		}
 	}

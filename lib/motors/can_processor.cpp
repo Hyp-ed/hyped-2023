@@ -11,7 +11,7 @@ CanProcessor::CanProcessor(std::shared_ptr<Controller> controller) : controller_
 {
 }
 
-bool CanProcessor::sendMessage(const core::CanFrame frame)
+core::Result CanProcessor::processMessage(const io::CanFrame &frame)
 {
   // TODOLater implement
   return false;

@@ -57,7 +57,6 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
     return std::nullopt;
   }
   const auto io = debugger["io"].GetObject();
-
   if (!io.HasMember("adc")) {
     logger_.log(core::LogLevel::kFatal, "Missing required field 'io.adc' in configuration file");
     return std::nullopt;
@@ -79,7 +78,6 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
       repl->addAdcCommands(pin.GetUint());
     }
   }
-
   if (!io.HasMember("i2c")) {
     logger_.log(core::LogLevel::kFatal, "Missing required field 'io.i2c' in configuration file");
     return std::nullopt;
@@ -118,6 +116,12 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
       return std::nullopt;
     }
     const auto modules = pwm["modules"].GetArray();
+    if (!pwm.HasMember("period")) {
+      logger_.log(core::LogLevel::kFatal,
+                  "Missing required field 'io.pwm.period' in configuration file");
+      return std::nullopt;
+    }
+    const std::uint32_t period = pwm["period"].GetUint();
     for (auto &module : modules) {
       const std::uint8_t module_id = module.GetUint();
       if (module_id > 7 || module_id < 0) {
@@ -125,7 +129,7 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
           core::LogLevel::kFatal, "Invalid module id %d in configuration file", module_id);
         return std::nullopt;
       }
-      repl->addPwmCommands(module_id);
+      repl->addPwmCommands(module_id, period);
     }
   }
   if (!io.HasMember("spi")) {
@@ -170,6 +174,67 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
       repl->addUartCommands(bus.GetUint());
     }
   }
+  if (!debugger.HasMember("sensors")) {
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'debugger.sensors' in configuration file at %s",
+                path.c_str());
+    return std::nullopt;
+  }
+  const auto sensors = debugger["sensors"].GetObject();
+  if (!sensors.HasMember("accelerometer")) {
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'sensors.accelerometer' in configuration file");
+    return std::nullopt;
+  }
+  const auto accelerometer = sensors["accelerometer"].GetObject();
+  if (!accelerometer.HasMember("enabled")) {
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'sensors.accelerometer.enabled' in configuration file");
+    return std::nullopt;
+  }
+  if (accelerometer["enabled"].GetBool()) {
+    if (!accelerometer.HasMember("bus")) {
+      logger_.log(core::LogLevel::kFatal,
+                  "Missing required field 'sensors.accelerometer.bus' in configuration file");
+      return std::nullopt;
+    }
+    if (!accelerometer.HasMember("device_address")) {
+      logger_.log(
+        core::LogLevel::kFatal,
+        "Missing required field 'sensors.accelerometer.device_address' in configuration file");
+      return std::nullopt;
+    }
+    const auto device_address = accelerometer["device_address"].GetUint();
+    const auto bus            = accelerometer["bus"].GetUint();
+    repl->addAccelerometerCommands(bus, device_address);
+  }
+  if (!sensors.HasMember("temperature")) {
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'sensors.temperature' in configuration file");
+    return std::nullopt;
+  }
+  const auto temperature = sensors["temperature"].GetObject();
+  if (!temperature.HasMember("enabled")) {
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'sensors.temperature.enabled' in configuration file");
+    return std::nullopt;
+  }
+  if (temperature["enabled"].GetBool()) {
+    if (!temperature.HasMember("bus")) {
+      logger_.log(core::LogLevel::kFatal,
+                  "Missing required field 'sensors.temperature.bus' in configuration file");
+      return std::nullopt;
+    }
+    if (!temperature.HasMember("device_address")) {
+      logger_.log(
+        core::LogLevel::kFatal,
+        "Missing required field 'sensors.temperature.device_address' in configuration file");
+      return std::nullopt;
+    }
+    const auto device_address = temperature["device_address"].GetUint();
+    const auto bus            = temperature["bus"].GetUint();
+    repl->addTemperatureCommands(bus, device_address);
+  }
   return repl;
 }
 
@@ -212,12 +277,12 @@ void Repl::addHelpCommand()
 
 void Repl::addAdcCommands(const std::uint8_t pin)
 {
-  const auto optional_adc = io::Adc::create(logger_, pin);
+  const auto optional_adc = io::HardwareAdc::create(logger_, pin);
   if (!optional_adc) {
     logger_.log(core::LogLevel::kFatal, "Failed to create ADC instance on pin %d", pin);
     return;
   }
-  const auto adc = std::make_shared<io::Adc>(*optional_adc);
+  const auto adc = std::move(*optional_adc);
   Command adc_read_command;
   std::stringstream identifier;
   identifier << "adc " << static_cast<int>(pin) << " read";
@@ -227,11 +292,11 @@ void Repl::addAdcCommands(const std::uint8_t pin)
   adc_read_command.description = description.str();
   adc_read_command.handler     = [this, adc, pin]() {
     const auto value = adc->readValue();
-    if (value) {
-      logger_.log(core::LogLevel::kDebug, "ADC value from pin %d: %d", pin, *value);
-    } else {
+    if (!value) {
       logger_.log(core::LogLevel::kFatal, "Failed to read from ADC pin %d", pin);
+      return;
     }
+    logger_.log(core::LogLevel::kDebug, "ADC value from pin %d: %f", pin, *value);
   };
   addCommand(adc_read_command);
 }
@@ -243,7 +308,7 @@ void Repl::addI2cCommands(const std::uint8_t bus)
     logger_.log(core::LogLevel::kFatal, "Failed to create I2C instance on bus %d", bus);
     return;
   }
-  const auto i2c = std::make_shared<io::HardwareI2c>(*optional_i2c);
+  const auto i2c = std::move(*optional_i2c);
   {
     Command i2c_read_command;
     std::stringstream identifier;
@@ -253,7 +318,7 @@ void Repl::addI2cCommands(const std::uint8_t bus)
     description << "Read from I2C bus " << static_cast<int>(bus);
     i2c_read_command.description = description.str();
     i2c_read_command.handler     = [this, i2c, bus]() {
-      std::uint8_t device_address, register_address;
+      std::uint16_t device_address, register_address;
       std::cout << "Device address: ";
       std::cin >> device_address;
       std::cout << "Register address: ";
@@ -297,15 +362,15 @@ void Repl::addI2cCommands(const std::uint8_t bus)
   }
 }
 
-void Repl::addPwmCommands(const std::uint8_t module)
+void Repl::addPwmCommands(const std::uint8_t module, const std::uint32_t period)
 {
   const io::PwmModule pwm_module = static_cast<io::PwmModule>(module);
-  const auto optional_pwm        = io::Pwm::create(logger_, pwm_module);
+  const auto optional_pwm = io::Pwm::create(logger_, pwm_module, period, io::Polarity::kActiveHigh);
   if (!optional_pwm) {
     logger_.log(core::LogLevel::kFatal, "Failed to create PWM module");
     return;
   }
-  const auto pwm = std::make_shared<io::Pwm>(optional_pwm.value());
+  const auto pwm = std::move(*optional_pwm);
   {
     Command pwm_run_command;
     std::stringstream identifier;
@@ -325,20 +390,9 @@ void Repl::addPwmCommands(const std::uint8_t module)
       std::cout << "Polarity (0 for active high and 1 for active low): ";
       std::cin >> polarity;
       std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-      const core::Result period_set_result = pwm->setPeriod(period);
-      if (period_set_result == core::Result::kFailure) {
-        logger_.log(core::LogLevel::kFatal, "Failed to set PWM period");
-        return;
-      }
       const core::Result duty_cycle_set_result = pwm->setDutyCycleByPercentage(duty_cycle);
       if (duty_cycle_set_result == core::Result::kFailure) {
         logger_.log(core::LogLevel::kFatal, "Failed to set PWM duty cycle");
-        return;
-      }
-      const core::Result polarity_set_result
-        = pwm->setPolarity(static_cast<io::Polarity>(polarity));
-      if (polarity_set_result == core::Result::kFailure) {
-        logger_.log(core::LogLevel::kFatal, "Failed to set PWM polarity");
         return;
       }
       const core::Result enable_result = pwm->setMode(io::Mode::kRun);
@@ -370,12 +424,17 @@ void Repl::addPwmCommands(const std::uint8_t module)
 
 void Repl::addSpiCommands(const std::uint8_t bus)
 {
-  const auto optional_spi = io::HardwareSpi::create(logger_);
+  const auto optional_spi = io::HardwareSpi::create(logger_,
+                                                    io::SpiBus::kSpi1,
+                                                    io::SpiMode::kMode3,
+                                                    io::SpiWordSize::kWordSize8,
+                                                    io::SpiBitOrder::kMsbFirst,
+                                                    io::SpiClock::k500KHz);
   if (!optional_spi) {
     logger_.log(core::LogLevel::kFatal, "Failed to create I2C instance on bus %d", bus);
     return;
   }
-  const auto spi = std::make_shared<io::HardwareSpi>(*optional_spi);
+  const auto spi = std::move(*optional_spi);
   {
     Command spi_read_byte_command;
     std::stringstream identifier;
@@ -385,7 +444,7 @@ void Repl::addSpiCommands(const std::uint8_t bus)
     description << "Read from SPI bus " << static_cast<int>(bus);
     spi_read_byte_command.description = description.str();
     spi_read_byte_command.handler     = [this, spi, bus]() {
-      std::uint8_t register_address;
+      std::uint16_t register_address;
       std::cout << "Register address: ";
       std::cin >> register_address;
       std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -429,13 +488,14 @@ void Repl::addSpiCommands(const std::uint8_t bus)
 
 void Repl::addUartCommands(const std::uint8_t bus)
 {
-  const UartBus uart_bus   = static_cast<UartBus>(bus);
-  const auto optional_uart = io::Uart::create(logger_, uart_bus, BaudRate::kB38400);
+  const io::UartBus uart_bus = static_cast<io::UartBus>(bus);
+  const auto optional_uart
+    = io::Uart::create(logger_, uart_bus, io::UartBaudRate::kB38400, io::UartBitsPerByte::k8);
   if (!optional_uart) {
     logger_.log(core::LogLevel::kFatal, "Failed to create UART instance on bus %d", bus);
     return;
   }
-  const auto uart = std::make_shared<io::Uart>(*optional_uart);
+  const auto uart = std::move(*optional_uart);
   {
     Command uart_read_command;
     std::stringstream identifier;
@@ -480,6 +540,73 @@ void Repl::addUartCommands(const std::uint8_t bus)
     };
     addCommand(uart_write_command);
   }
+}
+
+void Repl::addAccelerometerCommands(const std::uint8_t bus, const std::uint8_t device_address)
+{
+  const auto optional_i2c = io::HardwareI2c::create(logger_, bus);
+  if (!optional_i2c) {
+    logger_.log(core::LogLevel::kFatal, "Failed to create I2C instance on bus %d", bus);
+    return;
+  }
+  const auto i2c = std::move(*optional_i2c);
+  const auto optional_accelerometer
+    = sensors::Accelerometer::create(logger_, i2c, bus, device_address);
+  const auto accelerometer = std::make_shared<sensors::Accelerometer>(*optional_accelerometer);
+  Command accelerometer_read_command;
+  std::stringstream identifier;
+  identifier << "accelerometer 0x" << std::hex << static_cast<int>(device_address) << " read";
+  accelerometer_read_command.name = identifier.str();
+  std::stringstream description;
+  description << "Read accelerometer sensor 0x" << std::hex << static_cast<int>(device_address)
+              << " on "
+              << "I2C bus " << static_cast<int>(bus);
+  accelerometer_read_command.description = description.str();
+  accelerometer_read_command.handler     = [this, accelerometer, bus]() {
+    const auto value = accelerometer->read();
+    if (!value) {
+      logger_.log(core::LogLevel::kFatal, "Failed to read the accelerometer from bus %d", bus);
+    } else {
+      const core::RawAccelerationData accelerometer_result = *value;
+      logger_.log(core::LogLevel::kInfo,
+                  "Acceleration in mg: \n x %d \n y %d \n z %d",
+                  accelerometer_result.x,
+                  accelerometer_result.y,
+                  accelerometer_result.z);
+    }
+  };
+  addCommand(accelerometer_read_command);
+}
+
+void Repl::addTemperatureCommands(const std::uint8_t bus, const std::uint8_t device_address)
+{
+  const auto optional_i2c = io::HardwareI2c::create(logger_, bus);
+  if (!optional_i2c) {
+    logger_.log(core::LogLevel::kFatal, "Failed to create I2C instance on bus %d", bus);
+    return;
+  }
+  const auto i2c                  = std::move(*optional_i2c);
+  const auto optional_temperature = sensors::Temperature::create(logger_, i2c, bus, device_address);
+  const auto temperature          = std::make_shared<sensors::Temperature>(*optional_temperature);
+  Command temperature_read_command;
+  std::stringstream identifier;
+  identifier << "temperature 0x" << std::hex << static_cast<int>(device_address) << " read";
+  temperature_read_command.name = identifier.str();
+  std::stringstream description;
+  description << "Read temperature sensor 0x" << std::hex << static_cast<int>(device_address)
+              << " on "
+              << "I2C bus " << static_cast<int>(bus);
+  temperature_read_command.description = description.str();
+  temperature_read_command.handler     = [this, temperature, bus]() {
+    const auto value = temperature->read();
+    if (!value) {
+      logger_.log(core::LogLevel::kFatal, "Failed to read the temperature sensor from bus %d", bus);
+    } else {
+      const std::int16_t temperature_result = *value;
+      logger_.log(core::LogLevel::kInfo, "Temperature in degrees Celsius: %d", temperature_result);
+    }
+  };
+  addCommand(temperature_read_command);
 }
 
 }  // namespace hyped::debug

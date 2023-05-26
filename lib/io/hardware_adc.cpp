@@ -5,8 +5,14 @@
 
 namespace hyped::io {
 
-std::optional<Adc> Adc::create(core::ILogger &logger, const std::uint8_t pin)
+std::optional<std::shared_ptr<HardwareAdc>> HardwareAdc::create(core::ILogger &logger,
+                                                                const std::uint8_t pin)
 {
+  // Seven analogue input pins on the BBB (0-indexed)
+  if (pin > 6) {
+    logger.log(core::LogLevel::kFatal, "Failed to create HardwareAdc object: invalid pin %d", pin);
+    return std::nullopt;
+  }
   char buf[100];
   snprintf(buf, sizeof(buf), "/sys/bus/iio/devices/iio:device0/in_voltage%i_raw", pin);
   const int file_descriptor = open(buf, O_RDONLY);
@@ -15,34 +21,34 @@ std::optional<Adc> Adc::create(core::ILogger &logger, const std::uint8_t pin)
     return std::nullopt;
   }
   logger.log(core::LogLevel::kDebug, "Successfully created Adc instance");
-  return Adc(logger, file_descriptor);
+  return std::make_shared<HardwareAdc>(logger, file_descriptor);
 }
 
-Adc::Adc(core::ILogger &logger, const int file_descriptor)
+HardwareAdc::HardwareAdc(core::ILogger &logger, const int file_descriptor)
     : logger_(logger),
       file_descriptor_(file_descriptor)
 {
 }
 
-Adc::~Adc()
+HardwareAdc::~HardwareAdc()
 {
   close(file_descriptor_);
 }
 
-std::optional<std::uint16_t> Adc::readValue()
+std::optional<core::Float> HardwareAdc::readValue()
 {
-  const std::optional<std::uint16_t> raw_voltage = resetAndRead4(file_descriptor_);
-  if (raw_voltage) {
-    logger_.log(
-      core::LogLevel::kDebug, "Raw voltage from ADC pin %d: %i", pin_, raw_voltage.value());
-    return *raw_voltage;
+  const auto raw_voltage = resetAndRead4(file_descriptor_);
+  if (!raw_voltage) {
+    logger_.log(core::LogLevel::kFatal, "Failed to read voltage from ADC");
+    return std::nullopt;
   }
-  return std::nullopt;
+  logger_.log(core::LogLevel::kDebug, "Raw voltage from ADC pin %d: %f", pin_, *raw_voltage);
+  return *raw_voltage;
 }
 
-std::optional<std::uint16_t> Adc::resetAndRead4(const int file_descriptor)
+std::optional<core::Float> HardwareAdc::resetAndRead4(const int file_descriptor)
 {
-  const auto offset = lseek(file_descriptor, 0, SEEK_SET);  // reset file pointer
+  const off_t offset = lseek(file_descriptor, 0, SEEK_SET);  // reset file pointer
   if (offset != 0) {
     logger_.log(core::LogLevel::kFatal, "Failed to reset file offset");
     return std::nullopt;
@@ -54,7 +60,8 @@ std::optional<std::uint16_t> Adc::resetAndRead4(const int file_descriptor)
     return std::nullopt;
   }
   const int raw_voltage = std::atoi(read_buffer);
-  return static_cast<std::uint16_t>(raw_voltage);  // max value is 2^12-1 = 4095
+  // convert raw voltage to voltage between [0, 1.8] in V
+  return (static_cast<core::Float>(raw_voltage) / kMaxAdcRawValue) * kMaxAdcVoltage;
 }
 
 }  // namespace hyped::io

@@ -6,7 +6,7 @@ namespace hyped::navigation {
 
 Navigator::Navigator()
 {
-  // TODOLater: impement
+  // TODOLater: implement
 }
 
 std::optional<core::Trajectory> Navigator::currentTrajectory()
@@ -40,12 +40,15 @@ void Navigator::encoderUpdate(const core::EncoderData &encoder_data)
   */
 }
 
-void Navigator::imuUpdate(const core::RawImuData &imu_data)
+void Navigator::accelerometerUpdate(const core::RawAccelerometerData &accelerometer_data)
 {
   /*
   TODOLater:
   - run preprocessing
   - update trajectory_.acceleration with kalman estimate
+  - update trajectory_.velocity with calculated value
+  - update imu estimate for displacment with calculated value
+  (so crosschecker can use most up to date data).
   */
 }
 

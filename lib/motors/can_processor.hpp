@@ -6,14 +6,14 @@
 #include <memory>
 
 #include <core/types.hpp>
+#include <io/hardware_can.hpp>
 
 namespace hyped::motors {
 
-class CanProcessor {
+class CanProcessor : public io::ICanProcessor {
  public:
   CanProcessor(std::shared_ptr<Controller> controller);
-  bool sendMessage(const core::CanFrame frame);
-  void processMessage(const core::CanFrame frame);
+  core::Result processMessage(const io::CanFrame &frame);
 
  private:
   std::shared_ptr<Controller> controller_;

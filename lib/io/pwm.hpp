@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <memory>
 #include <optional>
 #include <string>
 
@@ -21,18 +22,33 @@ enum class PwmModule {
 };
 enum class Polarity { kActiveHigh = 0, kActiveLow };
 enum class Mode { kStop = 0, kRun };
+
 // use this class if a high‐frequency periodic switching signal is required
 // PWM can achieve frequencies of 1 MHz or higher, without a significant CPU load
+// PWM can have a variable duty cycle but the period and polarity is fixed
 class Pwm {
  public:
   /**
-   * @brief Create a PWM object and get all relevant file descriptors to do I/O operations
-   * @param logger the logger to use
-   * @param pwm_module the PWM module to use
-   * @return a std::optional containing the PWM object if it was created successfully
+   * @brief Creates a PWM object and gets all the relevant file descriptors to do I/O operations
    */
-  static std::optional<Pwm> create(core::ILogger &logger, const PwmModule pwm_module);
+  static std::optional<std::shared_ptr<Pwm>> create(core::ILogger &logger,
+                                                    const PwmModule pwm_module,
+                                                    const std::uint32_t period,
+                                                    const Polarity polarity);
+  Pwm(core::ILogger &logger,
+      const std::uint32_t period,
+      const int period_file,
+      const int duty_cycle_file,
+      const int enable_file);
   ~Pwm();
+
+  /**
+   * @brief Set the mode of the PWM signal
+   * @param mode the mode of the PWM signal
+   * Mode is either stop or run
+   * @return kSuccess if the mode was set successfully
+   */
+  core::Result setMode(const Mode mode);
 
   /**
    * @brief Set the duty cycle of the PWM signal using a percentage
@@ -42,6 +58,7 @@ class Pwm {
    */
   core::Result setDutyCycleByPercentage(const core::Float duty_cycle);
 
+ private:
   /**
    * @brief Set the duty cycle of the PWM signal using a value for active time
    * @param time_active the length of time the PWM signal is "active" in ns
@@ -55,7 +72,7 @@ class Pwm {
    * @param period the period of the PWM signal in ns
    * @return kSuccess if the period was set successfully
    */
-  core::Result setPeriod(const std::uint32_t period);
+  static core::Result setPeriod(const std::uint32_t period, const int period_file);
 
   /**
    * @brief Set the polarity of the PWM signal
@@ -63,22 +80,7 @@ class Pwm {
    * Polarity is either active high or active low
    * @return kSuccess if the polarity was set successfully
    */
-  core::Result setPolarity(const Polarity polarity);
-
-  /**
-   * @brief Set the mode of the PWM signal
-   * @param mode the mode of the PWM signal
-   * Mode is either stop or run
-   * @return kSuccess if the mode was set successfully
-   */
-  core::Result setMode(const Mode mode);
-
- private:
-  Pwm(core::ILogger &logger,
-      const int period_file,
-      const int duty_cycle_file,
-      const int polarity_file,
-      const int enable_file);
+  static core::Result setPolarity(const Polarity polarity, const int polarity_file);
 
   /**
    * @brief Get the corect folder name for the chosen PWM module
@@ -87,14 +89,14 @@ class Pwm {
    */
   static std::string getPwmFolderName(const PwmModule pwm_module);
 
+ private:
   core::ILogger &logger_;
+  core::Float current_duty_cycle_;
   std::uint32_t current_time_active_;  // ns
   std::uint32_t current_period_;       // ns
   Mode current_mode_;
   Polarity current_polarity_;
-  int period_file_;
   int duty_cycle_file_;
-  int polarity_file_;
   int enable_file_;
 };
 
