@@ -162,7 +162,6 @@ std::optional<io::CanFrame> Controller::parseJsonCanFrame(
 
 void Controller::processErrorMessage(const std::uint16_t error_code)
 {
-  // TODO: enter error state on global FSM
   switch (error_code) {
     case 0xFF01:
       logger_.log(core::LogLevel::kFatal,
@@ -315,7 +314,7 @@ core::Result Controller::processSdoMessage(const std::uint16_t index,
   // Handle error messages
   if (index == Controller::kSdoErrorIndex && subindex == 0x00) {
     processErrorMessage(data);
-    return core::Result::kSuccess;
+    return core::Result::kFailure;
   }
   // Handle warning messages
   if (index == Controller::kSdoWarningIndex && subindex == 0x00) {

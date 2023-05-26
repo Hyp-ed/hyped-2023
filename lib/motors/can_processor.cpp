@@ -22,7 +22,7 @@ core::Result CanProcessor::processMessage(const io::CanFrame &frame)
   // Handle error messages
   if (id == motors::kEmgyId) {
     controller_->processErrorMessage(data);
-    return core::Result::kSuccess;
+    return core::Result::kFailure;
   }
   // Handle NMT messages
   if (id == motors::kNmtId) { return controller_->processNmtMessage(frame.data[3]); }
