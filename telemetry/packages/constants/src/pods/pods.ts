@@ -1,10 +1,11 @@
-import { POD_IDS, Pods } from '@hyped/telemetry-types';
+import type { Pods } from '@hyped/telemetry-types';
 
-export { POD_IDS };
+export const POD_IDS = ['1', '2'] as const;
+
 export const pods: Pods = {
   '1': {
     name: 'Pod 1',
-    podId: 1,
+    id: 1,
     measurements: {
       'temperature.shell_front': {
         name: 'Temperature - Shell Front',
@@ -82,7 +83,7 @@ export const pods: Pods = {
   },
   '2': {
     name: 'Pod 2',
-    podId: 2,
+    id: 2,
     measurements: {
       'temperature.shell_front': {
         name: 'Temperature - Shell Front',

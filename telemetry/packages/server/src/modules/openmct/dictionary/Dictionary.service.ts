@@ -59,7 +59,7 @@ export class DictionaryService {
 
     return {
       name: pod.name,
-      podId: pod.podId,
+      id: pod.id,
       measurements,
     };
   }

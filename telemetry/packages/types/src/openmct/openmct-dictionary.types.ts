@@ -25,7 +25,7 @@ export type OpenMctMeasurement = {
 
 export type OpenMctPod = {
   name: string;
-  podId: number;
+  id: number;
   measurements: OpenMctMeasurement[];
 };
 
