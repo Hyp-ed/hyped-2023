@@ -38,7 +38,7 @@ class Controller {
   core::Result processNmtMessage(const std::uint8_t nmt_code);
   core::Result processSdoMessage(const std::uint16_t index,
                                  const std::uint8_t subindex,
-                                 const std::uint32_t data);
+                                 std::uint32_t data);
 
  private:
   Controller(core::ILogger &logger,

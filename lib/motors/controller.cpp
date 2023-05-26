@@ -1,6 +1,5 @@
 #include "controller.hpp"
 
-#include <bit>
 #include <fstream>
 #include <sstream>
 
@@ -311,7 +310,7 @@ core::Result Controller::processNmtMessage(const std::uint8_t nmt_code)
 
 core::Result Controller::processSdoMessage(const std::uint16_t index,
                                            const std::uint8_t subindex,
-                                           const std::uint32_t data)
+                                           std::uint32_t data)
 {
   // Handle error messages
   if (index == Controller::kSdoErrorIndex && subindex == 0x00) {
@@ -333,7 +332,7 @@ core::Result Controller::processSdoMessage(const std::uint16_t index,
   }
   // Current
   if (index == Controller::kSdoCurrentIndex && subindex == 0x00) {
-    controller_current_ = std::bit_cast<core::Float>(data);
+    controller_current_ = reinterpret_cast<std::int32_t &>(data);
     return core::Result::kSuccess;
   }
   logger_.log(core::LogLevel::kFatal,
