@@ -13,7 +13,11 @@ export class DictionaryService {
     return dictionary;
   }
 
-  private getPod(podId: string): OpenMctPod {
+  getPodIds() {
+    return POD_IDS;
+  }
+
+  getPod(podId: string): OpenMctPod {
     const pod = pods[podId as keyof typeof pods];
 
     if (!pod) {
