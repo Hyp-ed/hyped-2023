@@ -1,6 +1,6 @@
-import { ObjectTypes } from './object-types.types';
+import { OpenMctObjectTypes } from "@hyped/telemetry-types";
 
-export const objectTypes: ObjectTypes = [
+export const openMctObjectTypes: OpenMctObjectTypes = [
   {
     id: 'temperature',
     name: 'Temperature',

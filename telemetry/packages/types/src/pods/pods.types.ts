@@ -1,3 +1,5 @@
+import { type } from "os";
+
 export const POD_IDS = ['1', '2'] as const;
 
 export type BaseMeasurement = {

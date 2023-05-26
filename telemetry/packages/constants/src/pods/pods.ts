@@ -1,4 +1,4 @@
-import { Pods, POD_IDS } from "./pods.types";
+import { POD_IDS, Pods } from '@hyped/telemetry-types';
 
 export { POD_IDS };
 export const pods: Pods = {
@@ -70,11 +70,11 @@ export const pods: Pods = {
         enumerations: [
           {
             key: 'ON',
-            value: "1",
+            value: '1',
           },
           {
             key: 'OFF',
-            value: "0",
+            value: '0',
           },
         ],
       },
@@ -148,11 +148,11 @@ export const pods: Pods = {
         enumerations: [
           {
             key: 'ON',
-            value: "1",
+            value: '1',
           },
           {
             key: 'OFF',
-            value: "0",
+            value: '0',
           },
         ],
       },
