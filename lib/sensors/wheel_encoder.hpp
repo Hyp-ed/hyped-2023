@@ -7,12 +7,9 @@
 namespace hyped::sensors {
 class WheelEncoder {
  public:
-  std::uint64_t getCount();
-
-  core::Result updateCount();
-
- private:
   WheelEncoder(core::ILogger &logger, std::shared_ptr<io::IAdc> adc);
+  std::uint64_t getCount();
+  core::Result updateCount();
 
  private:
   static constexpr core::Float kVoltageThreshold = 1.7;
