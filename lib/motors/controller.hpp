@@ -46,8 +46,6 @@ class Controller {
     const std::string &message_file_path,
     const std::shared_ptr<io::ICan> can,
     const std::shared_ptr<IFrequencyCalculator> frequency_calculator);
-  void processErrorMessage(const std::uint16_t error_code);
-  ControllerStatus processWarningMessage(const std::uint8_t warning_code);
   static std::optional<io::CanFrame> parseJsonCanFrame(
     core::ILogger &logger, rapidjson::GenericObject<true, rapidjson::Value> message);
   void processErrorMessage(const std::uint16_t error_code);
