@@ -8,7 +8,7 @@ std::optional<Temperature> Temperature::create(core::ILogger &logger,
                                                const std::uint8_t device_address)
 {
   if (device_address != kDefaultTemperatureAddress
-      || device_address != kAlternativeTemperatureAddress) {
+      && device_address != kAlternativeTemperatureAddress) {
     logger.log(core::LogLevel::kFatal, "Invalid device address for temperature sensor");
     return std::nullopt;
   }
