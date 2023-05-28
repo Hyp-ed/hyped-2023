@@ -67,6 +67,15 @@ void CanTest::send()
 
 void CanTest::receive()
 {
-  while (1) {}
+  std::string bus         = "can0";
+  const auto optional_can = io::HardwareCan::create(logger_, bus);
+  if (!optional_can) {
+    logger_.log(core::LogLevel::kFatal, "Failed to create CAN instance");
+    return;
+  }
+  const auto can = std::move(*optional_can);
+  while (1) {
+    can->receive();
+  }
 }
 }  // namespace hyped::debug
