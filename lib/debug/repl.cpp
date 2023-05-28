@@ -235,6 +235,26 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
     const auto bus            = temperature["bus"].GetUint();
     repl->addTemperatureCommands(bus, device_address);
   }
+  if (!sensors.HasMember("wheel_encoders")) {
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'sensors.wheel_encoders' in configuration file");
+    return std::nullopt;
+  }
+  const auto wheel_encoders = sensors["wheel_encoders"].GetObject();
+  if (!wheel_encoders.HasMember("enabled")) {
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'sensors.wheel_encoders.enabled' in configuration file");
+    return std::nullopt;
+  }
+  if (wheel_encoders["enabled"].GetBool()) {
+    if (!wheel_encoders.HasMember("pin")) {
+      logger_.log(core::LogLevel::kFatal,
+                  "Missing required field 'sensors.wheel_encoders.pin' in configuration file");
+      return std::nullopt;
+    }
+    const auto pin = wheel_encoders["pin"].GetUint();
+    repl->addWheelEncoderCommands(pin);
+  }
   return repl;
 }
 
@@ -607,6 +627,65 @@ void Repl::addTemperatureCommands(const std::uint8_t bus, const std::uint8_t dev
     }
   };
   addCommand(temperature_read_command);
+}
+
+void Repl::addWheelEncoderCommands(const std::uint8_t pin)
+{
+  const auto optional_adc = io::HardwareAdc::create(logger_, pin);
+  if (!optional_adc) {
+    logger_.log(core::LogLevel::kFatal, "Failed to create ADC instance on pin %d", pin);
+    return;
+  }
+  const auto adc           = std::move(*optional_adc);
+  const auto wheel_encoder = std::make_shared<sensors::WheelEncoder>(logger_, adc);
+  {
+    Command wheel_encoder_read_count_command;
+    std::stringstream identifier;
+    identifier << "wheel encoder count";
+    wheel_encoder_read_count_command.name = identifier.str();
+    std::stringstream description;
+    description << "Read count wheel encoder";
+    wheel_encoder_read_count_command.description = description.str();
+    wheel_encoder_read_count_command.handler     = [this, wheel_encoder]() {
+      const auto count = wheel_encoder->getCount();
+      logger_.log(core::LogLevel::kInfo, "Wheel encoder value: %d", count);
+    };
+    addCommand(wheel_encoder_read_count_command);
+  }
+  {
+    Command wheel_encoder_reset_count_command;
+    std::stringstream identifier;
+    identifier << "wheel encoder reset";
+    wheel_encoder_reset_count_command.name = identifier.str();
+    std::stringstream description;
+    description << "Reset wheel encoder count";
+    wheel_encoder_reset_count_command.description = description.str();
+    wheel_encoder_reset_count_command.handler     = [this, wheel_encoder]() {
+      wheel_encoder->resetCount();
+      logger_.log(core::LogLevel::kInfo, "Wheel encoder count reset");
+    };
+    addCommand(wheel_encoder_reset_count_command);
+  }
+  {
+    Command wheel_encoder_run_command;
+    std::stringstream identifier;
+    identifier << "wheel encoder run";
+    wheel_encoder_run_command.name = identifier.str();
+    std::stringstream description;
+    description << "Run wheel encoder";
+    wheel_encoder_run_command.description = description.str();
+    wheel_encoder_run_command.handler     = [this, wheel_encoder]() {
+      std::uint64_t previous_wheel_encoder_count_ = 0;
+      while (1) {
+        wheel_encoder->updateCount();
+        const auto count = wheel_encoder->getCount();
+        if (count != previous_wheel_encoder_count_) {
+          logger_.log(core::LogLevel::kInfo, "Wheel encoder value: %d", count);
+          previous_wheel_encoder_count_ = count;
+        }
+      }
+    };
+  }
 }
 
 }  // namespace hyped::debug

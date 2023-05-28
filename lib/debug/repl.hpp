@@ -17,6 +17,7 @@
 #include <io/pwm.hpp>
 #include <sensors/accelerometer.hpp>
 #include <sensors/temperature.hpp>
+#include <sensors/wheel_encoder.hpp>
 
 namespace hyped::debug {
 
@@ -46,6 +47,7 @@ class Repl {
   void addAccelerometerCommands(const std::uint8_t bus, const std::uint8_t device_address);
   void addTemperatureCommands(const std::uint8_t bus, const std::uint8_t device_address);
   void addUartCommands(const std::uint8_t bus);
+  void addWheelEncoderCommands(const std::uint8_t pin);
 
   core::ILogger &logger_;
   std::map<std::string, Command> command_map_;
