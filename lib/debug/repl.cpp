@@ -452,7 +452,7 @@ void Repl::addGpioReadCommands(const std::uint8_t pin)
       return;
     }
     logger_.log(
-      core::LogLevel::kDebug, "GPIO value from pin %d: %d", pin, static_cast<uint8_t>(*value));
+      core::LogLevel::kDebug, "GPIO value from pin %d: %d", pin, static_cast<std::uint8_t>(*value));
   };
 }
 
