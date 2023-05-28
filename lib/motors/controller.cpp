@@ -123,7 +123,10 @@ Controller::Controller(core::ILogger &logger,
       configuration_messages_(configuration_messages),
       messages_(messages),
       can_(can),
-      frequency_calculator_(frequency_calculator)
+      frequency_calculator_(frequency_calculator),
+      controller_temperature_(0),
+      controller_current_(0),
+      controller_state_(ControllerState::kPreOperationalState)
 {
 }
 
@@ -300,58 +303,126 @@ void Controller::processErrorMessage(const std::uint16_t error_code)
 
 ControllerStatus Controller::processWarningMessage(const std::uint8_t warning_code)
 {
-  ControllerStatus priority_error = ControllerStatus::kNominal;
-
-  // In the event norminal warning found, return.
-  if (warning_code == 0) { return priority_error; }
+  // If there is no error, return nominal.
+  if (warning_code == 0) { return ControllerStatus::kNominal; }
   logger_.log(core::LogLevel::kInfo, "Controller Warning found, (code: %x)", warning_code);
 
   // In the event some warning(s) have occured, print each and return highest priority.
   if (warning_code & 0x1) {
     logger_.log(core::LogLevel::kInfo, "Controller Warning: Controller Temperature Exceeded");
-    priority_error = ControllerStatus::kControllerTemperatureExceeded;
   }
   if (warning_code & 0x2) {
     logger_.log(core::LogLevel::kFatal, "Controller Warning: Motor Temperature Exceeded");
-    priority_error = ControllerStatus::kUnrecoverableWarning;
   }
   if (warning_code & 0x4) {
     logger_.log(core::LogLevel::kFatal, "Controller Warning: DC link under voltage");
-    priority_error = ControllerStatus::kUnrecoverableWarning;
   }
   if (warning_code & 0x8) {
     logger_.log(core::LogLevel::kFatal, "Controller Warning: DC link over voltage");
-    priority_error = ControllerStatus::kUnrecoverableWarning;
   }
   if (warning_code & 0x10) {
     logger_.log(core::LogLevel::kFatal, "Controller Warning: DC link over current");
-    priority_error = ControllerStatus::kUnrecoverableWarning;
   }
   if (warning_code & 0x20) {
     logger_.log(core::LogLevel::kFatal, "Controller Warning: Stall protection active");
-    priority_error = ControllerStatus::kUnrecoverableWarning;
   }
   if (warning_code & 0x40) {
     logger_.log(core::LogLevel::kFatal, "Controller Warning: Max velocity exceeded");
-    priority_error = ControllerStatus::kUnrecoverableWarning;
   }
   if (warning_code & 0x80) {
     logger_.log(core::LogLevel::kFatal, "Controller Warning: BMS Proposed Power");
-    priority_error = ControllerStatus::kUnrecoverableWarning;
   }
   if (warning_code & 0x100) {
     logger_.log(core::LogLevel::kFatal, "Controller Warning: Capacitor temperature exceeded");
-    priority_error = ControllerStatus::kUnrecoverableWarning;
   }
   if (warning_code & 0x200) {
     logger_.log(core::LogLevel::kFatal, "Controller Warning: I2T protection");
-    priority_error = ControllerStatus::kUnrecoverableWarning;
   }
   if (warning_code & 0x400) {
     logger_.log(core::LogLevel::kFatal, "Controller Warning: Field weakening active");
-    priority_error = ControllerStatus::kUnrecoverableWarning;
   }
-  return priority_error;
+  return ControllerStatus::kUnrecoverableWarning;
+}
+
+// NMT stands for network management
+core::Result Controller::processNmtMessage(const std::uint8_t nmt_code)
+{
+  switch (nmt_code) {
+    // Operational State
+    case 0x01:
+      logger_.log(core::LogLevel::kDebug, "Controller enter operational state");
+      controller_state_ = ControllerState::kOperationalState;
+      return core::Result::kSuccess;
+    // Stop State
+    case 0x02:
+      logger_.log(core::LogLevel::kDebug, "Controller enter stop state");
+      controller_state_ = ControllerState::kStopState;
+      return core::Result::kSuccess;
+    // Pre-operational State
+    case 0x03:
+      logger_.log(core::LogLevel::kDebug, "Controller enter pre-operational state");
+      controller_state_ = ControllerState::kPreOperationalState;
+      return core::Result::kSuccess;
+    // Reset node state
+    case 0x81:
+      logger_.log(core::LogLevel::kDebug, "Controller enter reset node state");
+      controller_state_ = ControllerState::kResetNodeState;
+      return core::Result::kSuccess;
+    // Stop state
+    case 0x82:
+      logger_.log(core::LogLevel::kDebug, "Controller enter stop state");
+      controller_state_ = ControllerState::kResetCommunicationState;
+      return core::Result::kSuccess;
+    default:
+      logger_.log(core::LogLevel::kDebug, "Controller enter unknown state");
+      controller_state_ = ControllerState::kUnknownState;
+      return core::Result::kFailure;
+  }
+}
+
+core::Result Controller::processSdoMessage(const std::uint16_t index,
+                                           const std::uint8_t subindex,
+                                           std::uint32_t data)
+{
+  // Handle error messages
+  if (index == Controller::kSdoErrorIndex && subindex == 0x00) {
+    processErrorMessage(data);
+    return core::Result::kFailure;
+  }
+  // Handle warning messages
+  if (index == Controller::kSdoWarningIndex && subindex == 0x00) {
+    const motors::ControllerStatus result = processWarningMessage(data);
+    if (result == motors::ControllerStatus::kUnrecoverableWarning) {
+      return core::Result::kFailure;
+    }
+    return core::Result::kSuccess;
+  }
+  // Temperature
+  if (index == Controller::kSdoTemperatureIndex && subindex == 0x00) {
+    controller_temperature_ = static_cast<std::uint16_t>(data & 0xFFFF);
+    return core::Result::kSuccess;
+  }
+  // Current
+  if (index == Controller::kSdoCurrentIndex && subindex == 0x00) {
+    controller_current_ = reinterpret_cast<std::int32_t &>(data);
+    return core::Result::kSuccess;
+  }
+  logger_.log(core::LogLevel::kFatal,
+              "Unknown CAN SDO message received. Index: %d, Subindex: %d, Data: %d",
+              index,
+              subindex,
+              data);
+  return core::Result::kFailure;
+}
+
+std::uint8_t Controller::getControllerTemperature() const
+{
+  return controller_temperature_;
+}
+
+core::Float Controller::getControllerCurrent() const
+{
+  return controller_current_;
 }
 
 core::Result Controller::run(FauxState state)
