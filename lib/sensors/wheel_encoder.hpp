@@ -1,3 +1,4 @@
+#pragma once
 #include <optional>
 
 #include <core/logger.hpp>
