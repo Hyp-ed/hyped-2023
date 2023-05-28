@@ -1,4 +1,4 @@
-set(target hyped_debugger)
+set(target hyped_can_test)
 file(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
 file(GLOB code "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
 add_executable(${target} ${headers} ${code})
@@ -11,6 +11,4 @@ target_link_libraries(${target}
     hyped_core
     hyped_io
     hyped_utils
-    hyped_debug
 )
-add_subdirectory(can_test)
