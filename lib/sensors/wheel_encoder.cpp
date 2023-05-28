@@ -24,6 +24,7 @@ core::Result WheelEncoder::updateCount()
   }
   const core::Float voltage = *optional_voltage;
   if (voltage > kVoltageThreshold && previous_voltage_ < kVoltageThreshold) { count_++; }
+  previous_voltage_ = voltage;
   return core::Result::kSuccess;
 }
 
