@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@hyped/telemetry-types": "*",
     "@fontsource/raleway": "^4.5.12",
     "@headlessui/react": "^1.7.10",
     "@types/node": "^18.11.18",
