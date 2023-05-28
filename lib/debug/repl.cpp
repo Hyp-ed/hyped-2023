@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <thread>
 
 #include <rapidjson/document.h>
 #include <rapidjson/error/en.h>
@@ -76,6 +77,27 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
     const auto pins = adc["pins"].GetArray();
     for (auto &pin : pins) {
       repl->addAdcCommands(pin.GetUint());
+    }
+  }
+  if (!io.HasMember("can")) {
+    logger_.log(core::LogLevel::kFatal, "Missing required field 'io.can' in configuration file");
+    return std::nullopt;
+  }
+  const auto can = io["can"].GetObject();
+  if (!can.HasMember("enabled")) {
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'io.can.enabled' in configuration file");
+    return std::nullopt;
+  }
+  if (can["enabled"].GetBool()) {
+    if (!can.HasMember("buses")) {
+      logger_.log(core::LogLevel::kFatal,
+                  "Missing required field 'io.can.buses' in configuration file");
+      return std::nullopt;
+    }
+    const auto buses = can["buses"].GetArray();
+    for (auto &bus : buses) {
+      repl->addCanCommands(bus.GetString());
     }
   }
   if (!io.HasMember("i2c")) {
@@ -235,6 +257,32 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
     const auto bus            = temperature["bus"].GetUint();
     repl->addTemperatureCommands(bus, device_address);
   }
+  if (!debugger.HasMember("motors")) {
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'debugger.motors' in configuration file");
+    return std::nullopt;
+  }
+  const auto motors = debugger["motors"].GetObject();
+  if (!motors.HasMember("motor_controller")) {
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'debugger.motor_controller' in configuration file");
+    return std::nullopt;
+  }
+  const auto motor_controller = motors["motor_controller"].GetObject();
+  if (!motor_controller.HasMember("enabled")) {
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'motor_controller.enabled' in configuration file");
+    return std::nullopt;
+  }
+  if (motor_controller["enabled"].GetBool()) {
+    if (!motor_controller.HasMember("bus")) {
+      logger_.log(core::LogLevel::kFatal,
+                  "Missing required field 'motor_controller.bus' in configuration file");
+      return std::nullopt;
+    }
+    const auto bus = motor_controller["bus"].GetString();
+    repl->addMotorControllerCommands(bus);
+  }
   return repl;
 }
 
@@ -299,6 +347,50 @@ void Repl::addAdcCommands(const std::uint8_t pin)
     logger_.log(core::LogLevel::kDebug, "ADC value from pin %d: %f", pin, *value);
   };
   addCommand(adc_read_command);
+}
+
+void Repl::addCanCommands(const std::string &bus)
+{
+  const auto optional_can = io::HardwareCan::create(logger_, bus);
+  if (!optional_can) {
+    logger_.log(core::LogLevel::kFatal, "Failed to create CAN instance on bus %s", bus.c_str());
+    return;
+  }
+  const auto can = std::move(*optional_can);
+  Command can_write_command;
+  std::stringstream identifier;
+  identifier << bus << " write";
+  can_write_command.name = identifier.str();
+  std::stringstream description;
+  description << "Write to CAN bus " << bus;
+  can_write_command.description = description.str();
+  can_write_command.handler     = [this, can, bus]() {
+    std::cout << "Enter CAN ID: ";
+    std::uint32_t id;
+    std::cin >> std::hex >> id;
+    std::cout << "Enter CAN data: ";
+    std::string data;
+    std::cin >> std::hex >> data;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    if (data.length() > 16) {
+      logger_.log(core::LogLevel::kFatal, "Cannot send can data longer than 8 bytes");
+      return;
+    }
+    const auto can_data = std::vector<std::uint8_t>(data.begin(), data.end());
+    io::CanFrame can_frame;
+    can_frame.can_id  = id;
+    can_frame.can_dlc = can_data.size();
+    for (int i = 0; i < can_data.size(); i++) {
+      can_frame.data[i] = can_data[i];
+    }
+    core::Result result = can->send(can_frame);
+    if (result == core::Result::kFailure) {
+      logger_.log(core::LogLevel::kFatal, "Failed to write to CAN bus %s", bus.c_str());
+      return;
+    }
+    logger_.log(core::LogLevel::kDebug, "Wrote to CAN bus %s", bus.c_str());
+  };
+  addCommand(can_write_command);
 }
 
 void Repl::addI2cCommands(const std::uint8_t bus)
@@ -608,6 +700,185 @@ void Repl::addTemperatureCommands(const std::uint8_t bus, const std::uint8_t dev
   addCommand(temperature_read_command);
 }
 
+void Repl::addMotorControllerCommands(const std::string &bus)
+{
+  const auto optional_can = getCan(bus);
+  if (!optional_can) {
+    logger_.log(core::LogLevel::kFatal, "Failed to create CAN instance on bus %s", bus.c_str());
+    return;
+  }
+  const auto can                  = std::move(*optional_can);
+  const auto frequency_calculator = std::make_shared<motors::ConstantFrequencyCalculator>(logger_);
+  const auto optional_controller  = motors::Controller::create(
+    logger_, "motor_controller_messages.json", can, frequency_calculator);
+  if (!optional_controller) {
+    logger_.log(core::LogLevel::kFatal, "Failed to create motor controller instance");
+    return;
+  }
+  auto controller = std::move(*optional_controller);
+  Command controller_read_register_command;
+  controller_read_register_command.name = "controller read index";
+  controller_read_register_command.description
+    = "Read the value of the SDO object at the location specified by the index";
+  controller_read_register_command.handler = [this, can]() {
+    std::uint16_t index;
+    std::cout << "Index: ";
+    std::cin >> std::hex >> index;
+    std::uint16_t sub_index;
+    std::cout << "Sub-index: ";
+    std::cin >> std::hex >> sub_index;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    io::CanFrame frame;
+    frame.can_id  = motors::kControllerSdoSend;
+    frame.can_dlc = 8;
+    frame.data[0] = motors::kControllerSdoReadCommand;
+    // set index
+    frame.data[1] = index & 0x00FF;
+    frame.data[2] = (index & 0xFF00) >> 8;
+    // set sub-index
+    frame.data[3] = static_cast<std::uint8_t>(sub_index);
+    // set other values to 0
+    frame.data[4]       = 0;
+    frame.data[5]       = 0;
+    frame.data[6]       = 0;
+    frame.data[7]       = 0;
+    core::Result result = can->send(frame);
+    if (result == core::Result::kFailure) {
+      logger_.log(core::LogLevel::kFatal, "Failed to send SDO read request");
+      return;
+    }
+  };
+  addCommand(controller_read_register_command);
+  Command controller_write_register_command;
+  controller_write_register_command.name = "controller write index";
+  controller_write_register_command.description
+    = "Set the value of the SDO object at the location specified by the index";
+  controller_write_register_command.handler = [this, can]() {
+    std::uint16_t index;
+    std::cout << "Index: ";
+    std::cin >> std::hex >> index;
+    std::uint16_t sub_index;
+    std::cout << "Sub-index: ";
+    std::cin >> std::hex >> sub_index;
+    std::uint32_t value;
+    std::cout << "Value: ";
+    std::cin >> std::hex >> value;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    io::CanFrame frame;
+    frame.can_id  = motors::kControllerSdoSend;
+    frame.can_dlc = 8;
+    frame.data[0] = motors::kControllerSdoWriteCommand;
+    // set index
+    frame.data[1] = index & 0x00FF;
+    frame.data[2] = (index & 0xFF00) >> 8;
+    // set sub-index
+    frame.data[3] = static_cast<std::uint8_t>(sub_index);
+    // set value
+    frame.data[4]       = value & 0x000000FF;
+    frame.data[6]       = (value & 0x0000FF00) >> 8;
+    frame.data[5]       = (value & 0x00FF0000) >> 16;
+    frame.data[7]       = (value & 0xFF000000) >> 24;
+    core::Result result = can->send(frame);
+    if (result == core::Result::kFailure) {
+      logger_.log(core::LogLevel::kFatal, "Failed to send SDO write request");
+      return;
+    }
+  };
+  addCommand(controller_write_register_command);
+  Command controller_configure_command;
+  controller_configure_command.name = "controller configure";
+  controller_configure_command.description
+    = "Configure the motor controller with the configuration in the motor_controller_messages.json";
+  controller_configure_command.handler = [this, controller]() {
+    core::Result result = controller->run(motors::FauxState::kConfigure);
+    if (result == core::Result::kFailure) {
+      logger_.log(core::LogLevel::kFatal, "Failed to configure the motor controller");
+      return;
+    }
+  };
+  addCommand(controller_configure_command);
+  Command controller_set_frequency_command;
+  controller_set_frequency_command.name        = "controller set frequency";
+  controller_set_frequency_command.description = "Set the frequency of the motor controller in Hz";
+  controller_set_frequency_command.handler     = [this, frequency_calculator]() {
+    core::Float frequency;
+    std::cout << "Frequency: ";
+    std::cin >> frequency;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    frequency_calculator->setFrequency(frequency);
+  };
+  addCommand(controller_set_frequency_command);
+  Command controller_run_command;
+  controller_run_command.name        = "controller run";
+  controller_run_command.description = "Enter running state and begin pwm";
+  controller_run_command.handler     = [this, controller]() {
+    core::Result result = controller->run(motors::FauxState::kAccelerate);
+    if (result == core::Result::kFailure) {
+      logger_.log(core::LogLevel::kFatal, "Failed to run the motor controller");
+      return;
+    }
+  };
+  addCommand(controller_run_command);
+  Command controller_stop_command;
+  controller_stop_command.name        = "controller stop";
+  controller_stop_command.description = "Enter stopped state and stop pwm";
+  controller_stop_command.handler     = [this, controller]() {
+    core::Result result = controller->run(motors::FauxState::kStop);
+    if (result == core::Result::kFailure) {
+      logger_.log(core::LogLevel::kFatal, "Failed to stop the motor controller");
+      return;
+    }
+  };
+  addCommand(controller_stop_command);
+  Command controller_reset_command;
+  controller_reset_command.name        = "controller reset";
+  controller_reset_command.description = "Reset the motor controller to ready state";
+  controller_reset_command.handler     = [this, controller]() {
+    core::Result result = controller->run(motors::FauxState::kReset);
+    if (result == core::Result::kFailure) {
+      logger_.log(core::LogLevel::kFatal, "Failed to reset the motor controller");
+      return;
+    }
+  };
+  addCommand(controller_reset_command);
+  const auto time_frequency_calculator = std::make_shared<motors::TimeFrequencyCalculator>(logger_);
+  const auto time_frequency_optional_controller = motors::Controller::create(
+    logger_, "motor_controller_messages.json", can, time_frequency_calculator);
+  if (!time_frequency_optional_controller) {
+    logger_.log(core::LogLevel::kFatal, "Failed to create motor controller instance");
+    return;
+  }
+  auto time_frequency_controller = std::move(*time_frequency_optional_controller);
+  Command frequency_time_command;
+  frequency_time_command.name = "controller frequency time run";
+  frequency_time_command.description
+    = "Run the motor controller for provided duration, with frequency increasing 2Hz every second";
+  frequency_time_command.handler = [this, time_frequency_controller, time_frequency_calculator]() {
+    std::cout << "Enter run time in seconds" << std::endl;
+    std::uint32_t run_time;
+    std::cin >> run_time;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    time_frequency_controller->run(motors::FauxState::kConfigure);
+    time_frequency_controller->run(motors::FauxState::kReset);
+    time_frequency_calculator->reset();
+    std::chrono::time_point<std::chrono::system_clock> start_time_
+      = std::chrono::system_clock::now();
+    while (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now()
+                                                            - start_time_)
+             .count()
+           < run_time) {
+      core::Result result = time_frequency_controller->run(motors::FauxState::kAccelerate);
+      if (result == core::Result::kFailure) {
+        logger_.log(core::LogLevel::kFatal, "Failed to run the motor controller");
+        return;
+      }
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+    time_frequency_controller->run(motors::FauxState::kStop);
+  };
+  addCommand(frequency_time_command);
+}
+
 std::optional<std::shared_ptr<io::IAdc>> Repl::getAdc(const std::uint8_t bus)
 {
   const auto adc = adc_.find(bus);
@@ -618,6 +889,18 @@ std::optional<std::shared_ptr<io::IAdc>> Repl::getAdc(const std::uint8_t bus)
     return *new_adc;
   }
   return adc->second;
+}
+
+std::optional<std::shared_ptr<io::ICan>> Repl::getCan(const std::string &bus)
+{
+  const auto can = can_.find(bus);
+  if (can == can_.end()) {
+    const auto new_can = io::HardwareCan::create(logger_, bus);
+    if (!new_can) { return std::nullopt; }
+    can_.emplace(bus, *new_can);
+    return *new_can;
+  }
+  return can->second;
 }
 
 std::optional<std::shared_ptr<io::II2c>> Repl::getI2c(const std::uint8_t bus)
@@ -676,5 +959,4 @@ std::optional<std::shared_ptr<io::IUart>> Repl::getUart(const io::UartBus bus,
   }
   return uart->second;
 }
-
 }  // namespace hyped::debug
