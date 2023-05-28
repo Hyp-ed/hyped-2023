@@ -6,5 +6,5 @@ include_directories(${target}
   INTERFACE
   "${CMAKE_SOURCE_DIR}/lib"
   "${CMAKE_CURRENT_SOURCE_DIR}"
-  ${rapidjson_SOURCE_DIR}/include
   )
+target_include_directories(${target} PUBLIC ${rapidjson_SOURCE_DIR}/include)

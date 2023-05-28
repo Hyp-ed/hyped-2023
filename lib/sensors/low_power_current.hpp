@@ -20,9 +20,9 @@ constexpr std::uint8_t kLowPowerCurrentAddress4       = 0x45;
 // TODOLater: Test this code with hardware
 class LowPowerCurrent {
  public:
-  std::optional<LowPowerCurrent> create(core::ILogger &logger,
-                                        std::shared_ptr<io::II2c> i2c,
-                                        const std::uint8_t device_address);
+  static std::optional<LowPowerCurrent> create(core::ILogger &logger,
+                                               std::shared_ptr<io::II2c> i2c,
+                                               const std::uint8_t device_address);
   ~LowPowerCurrent();
 
   std::optional<core::Float> readCurrent();
