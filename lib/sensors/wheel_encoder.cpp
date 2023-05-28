@@ -5,7 +5,8 @@ namespace hyped::sensors {
 WheelEncoder::WheelEncoder(core::ILogger &logger, std::shared_ptr<io::IAdc> adc)
     : logger_(logger),
       adc_(adc),
-      count_(0)
+      count_(0),
+      previous_voltage_(0)
 {
 }
 
@@ -22,8 +23,13 @@ core::Result WheelEncoder::updateCount()
     return core::Result::kFailure;
   }
   const core::Float voltage = *optional_voltage;
-  if (voltage > kVoltageThreshold) { count_++; }
+  if (voltage > kVoltageThreshold && previous_voltage_ < kVoltageThreshold) { count_++; }
   return core::Result::kSuccess;
+}
+
+void WheelEncoder::resetCount()
+{
+  count_ = 0;
 }
 
 }  // namespace hyped::sensors
