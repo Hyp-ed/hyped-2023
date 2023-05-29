@@ -947,14 +947,19 @@ void Repl::addWheelEncoderCommands(const std::uint8_t pin)
     wheel_encoder_run_command.handler     = [this, wheel_encoder]() {
       std::uint64_t previous_wheel_encoder_count_ = 0;
       while (1) {
-        wheel_encoder->updateCount();
-        const auto count = wheel_encoder->getCount();
+        const auto result = wheel_encoder->updateCount();
+        if (result == core::Result::kFailure) {
+          logger_.log(core::LogLevel::kFatal, "Failed to update wheel encoder count");
+          break;
+        }
+        const std::uint64_t count = wheel_encoder->getCount();
         if (count != previous_wheel_encoder_count_) {
-          logger_.log(core::LogLevel::kInfo, "Wheel encoder value: %d", count);
+          logger_.log(core::LogLevel::kInfo, "Wheel encoder value: %jd", count);
           previous_wheel_encoder_count_ = count;
         }
       }
     };
+    addCommand(wheel_encoder_run_command);
   }
 }
 
