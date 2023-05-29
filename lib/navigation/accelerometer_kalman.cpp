@@ -1,3 +1,4 @@
+/*
 #include "accelerometer_kalman.hpp"
 
 namespace hyped::navigation {
@@ -98,3 +99,5 @@ Eigen::Matrix<core::Float, extended_dimension, 1> AccelerometerKalman::getExtend
 }
 
 }  // namespace hyped::navigation
+
+*/
