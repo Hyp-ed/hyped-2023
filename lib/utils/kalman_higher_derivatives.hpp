@@ -14,24 +14,22 @@ class KalmanHigherDerivatives {
  public:
   KalmanHigherDerivatives(core::ILogger &logger, const core::ITimeSource &time);
 
-  navigation::JerkSnap getHigherDerivatives(const std::uint64_t timestamp,
-                                            const core::Float acceleration);
-
-  navigation::JerkSnap getJerkAndSnap();
+  navigation::HigherDerivatives getHigherDerivatives(const std::uint64_t timestamp,
+                                                     const core::Float acceleration);
 
  private:
   core::ILogger &logger_;
   const core::ITimeSource &time_;
 
   // TODO: decide 50 or 100 - numerical tests?
-  static constexpr std::uint8_t kNumFirstDerivativeValues  = 50;
-  static constexpr std::uint8_t kNumSecondDerivativeValues = 10;
-  std::vector<core::Float> acceleration_values_;
+  static constexpr std::uint8_t kNumDataPoints = 50;
+
   std::vector<std::uint64_t> timestamps_;
-  // To cut down on number of necessary calculations
-  std::vector<core::Float> acceleration_differences_;
-  std::vector<core::Float> jerk_differences_;
-  core::Float sum_acceleration_differences_;
-  core::Float sum_jerk_differences_;
+  std::vector<core::Float> acceleration_values_;
+  std::vector<core::Float> jerk_values_;
+  std::vector<core::Float> snap_values_;
+
+  core::Float sum_jerk_;
+  core::Float sum_snap_;
 };
 }  // namespace hyped::utils

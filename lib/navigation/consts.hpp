@@ -45,7 +45,7 @@ struct Quartiles {
   core::Float q3;
 };
 
-struct JerkSnap {
+struct HigherDerivatives {
   core::Float jerk;
   core::Float snap;
 };
