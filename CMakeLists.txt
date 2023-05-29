@@ -13,7 +13,7 @@ project(${project} CXX)
 enable_testing()
 
 find_package (Eigen3 REQUIRED NO_MODULE)
-# find_package(Boost REQUIRED)
+find_package(Boost REQUIRED)
 include(FetchContent)
 FetchContent_Declare(
   rapidjson

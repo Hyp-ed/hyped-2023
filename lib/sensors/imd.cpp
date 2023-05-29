@@ -43,22 +43,22 @@ core::Result Imd::processMessage(const io::CanFrame &frame)
 {
   // Isolation status is stored across 2 bits, while rp and rn are each stored across 2 bytes
   iso_state_ = (frame.data[1] & 1) | ((frame.data[1] & 2) << 1);
-  rp_        = ((uint16_t)frame.data[3] << 8) | frame.data[2];
-  rn_        = ((uint16_t)frame.data[6] << 8) | frame.data[5];
+  rp_        = ((std::uint16_t)frame.data[3] << 8) | frame.data[2];
+  rn_        = ((std::uint16_t)frame.data[6] << 8) | frame.data[5];
   return core::Result::kSuccess;
 }
 
-uint16_t Imd::getRp()
+std::uint16_t Imd::getRp()
 {
   return rp_;
 }
 
-uint16_t Imd::getRn()
+std::uint16_t Imd::getRn()
 {
   return rn_;
 }
 
-uint8_t Imd::getIsolationState()
+std::uint8_t Imd::getIsolationState()
 {
   return iso_state_;
 }

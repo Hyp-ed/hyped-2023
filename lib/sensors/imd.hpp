@@ -27,15 +27,15 @@ class Imd : public io::ICanProcessor {
    */
   core::Result processMessage(const io::CanFrame &frame);
 
-  uint16_t getRp();
-  uint16_t getRn();
-  uint8_t getIsolationState();
+  std::uint16_t getRp();
+  std::uint16_t getRn();
+  std::uint8_t getIsolationState();
 
  private:
   core::ILogger &logger_;
   std::shared_ptr<io::ICan> can_;
-  uint16_t rp_;
-  uint16_t rn_;
-  uint8_t iso_state_;
+  std::uint16_t rp_;
+  std::uint16_t rn_;
+  std::uint8_t iso_state_;
 };
 }  // namespace hyped::sensors
