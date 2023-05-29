@@ -4,7 +4,7 @@ interface StatusIndicatorProps {
 
 export const StatusIndicator = ({ status }: StatusIndicatorProps) => {
   return (
-    <div className="flex gap-2 items-center mb-4">
+    <div className="flex gap-2 items-center">
       <div
         className={`w-2 h-2 rounded-full
               ${

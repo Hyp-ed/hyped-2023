@@ -5,6 +5,12 @@
 				"enabled": false,
 				"pins": []
 			},
+			"can": {
+				"enabled": true,
+				"buses": [
+					"can1"
+				]
+			},
 			"i2c": {
 				"enabled": false,
 				"buses": []
@@ -38,6 +44,12 @@
 				"enabled": false,
 				"bus": 2,
 				"device_address": 64
+			}
+		},
+		"motors": {
+			"motor_controller": {
+				"enabled": true,
+				"bus": "can1"
 			}
 		}
 	}

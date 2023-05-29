@@ -66,7 +66,7 @@ core::Result HardwareCan::send(const io::CanFrame &data)
   }
   // TODOLater make logger_ more elegant
   logger_.log(core::LogLevel::kDebug,
-              "CAN message sent, ID: %i, DATA: %i %i %i %i %i %i %i %i",
+              "CAN message sent, ID: %X, DATA: %X %X %X %X %X %X %X %X",
               static_cast<int>(data.can_id),
               static_cast<int>(data.data[0]),
               static_cast<int>(data.data[1]),
@@ -94,7 +94,7 @@ core::Result HardwareCan::receive()
   }
   // TODOLater make logger more elegant
   logger_.log(core::LogLevel::kDebug,
-              "CAN message received, ID:%i, DATA: %i %i %i %i %i %i %i %i",
+              "CAN message received, ID:%X, DATA: %X %X %X %X %X %X %X %X",
               static_cast<int>(message.can_id),
               static_cast<int>(message.data[0]),
               static_cast<int>(message.data[1]),
@@ -106,11 +106,12 @@ core::Result HardwareCan::receive()
               static_cast<int>(message.data[7]));
   const auto subscribed_processors = processors_.find(message.can_id);
   if (subscribed_processors == processors_.end()) {
-    logger_.log(core::LogLevel::kFatal, "No CanProccessor associated with id %i", message.can_id);
+    logger_.log(core::LogLevel::kFatal, "No CanProccessor associated with id %X", message.can_id);
     return core::Result::kFailure;
   }
   for (auto &processor : subscribed_processors->second) {
-    processor->processMessage(message);
+    core::Result process_result = processor->processMessage(message);
+    if (process_result == core::Result::kFailure) { return core::Result::kFailure; }
   }
   return core::Result::kSuccess;
 }
@@ -124,7 +125,7 @@ void HardwareCan::addProcessor(const std::uint16_t id, std::shared_ptr<ICanProce
   } else {
     id_and_processors->second.push_back(processor);
   }
-  logger_.log(core::LogLevel::kDebug, "Added processor for id %i", id);
+  logger_.log(core::LogLevel::kDebug, "Added processor for id %X", id);
 }
 
 }  // namespace hyped::io

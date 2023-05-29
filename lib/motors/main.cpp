@@ -9,7 +9,8 @@ Main::Main()
 
 void Main::run()
 {
-  // TODOLater implement
+  // TODOLater Input type will need changing later
+  // TODOLater Implement switch cases here for states
 }
 
 }  // namespace hyped::motors

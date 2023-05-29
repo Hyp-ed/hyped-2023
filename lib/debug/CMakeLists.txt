@@ -11,4 +11,5 @@ include_directories(${target}
 target_link_libraries(${target} 
   hyped_io
   hyped_sensors
+  hyped_motors
 )
