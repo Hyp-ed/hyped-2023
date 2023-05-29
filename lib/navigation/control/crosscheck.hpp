@@ -4,7 +4,7 @@
 
 #include <array>
 
-#include "core/types.hpp"
+#include <core/types.hpp>
 
 namespace hyped::navigation {
 

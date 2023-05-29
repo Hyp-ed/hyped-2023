@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <optional>
 
-#include "core/types.hpp"
+#include <core/types.hpp>
 #include <eigen3/Eigen/Dense>
 
 namespace hyped::navigation {

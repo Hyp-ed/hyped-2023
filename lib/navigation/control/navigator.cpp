@@ -12,7 +12,7 @@ Navigator::Navigator()
 std::optional<core::Trajectory> Navigator::currentTrajectory()
 {
   /*
-  TODO:
+  TODOLater:
   - instantiate kalman
   - make all the arguents (store some as class data members?)
   - kalman.filter(*all the arguments*)

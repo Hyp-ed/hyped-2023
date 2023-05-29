@@ -4,9 +4,9 @@
 #include <functional>
 #include <memory>
 
-#include <Eigen/Dense>
 #include <core/time.hpp>
 #include <core/types.hpp>
+#include <eigen3/Eigen/Dense>
 
 namespace hyped::navigation {
 
@@ -47,7 +47,7 @@ class KalmanFilter {
               const MeasurementNoiseCovarianceMatrix &measurement_noise_covariance,
               const MeasurementVector &measurement)
   {
-    // TODO: figure out how to make transition matrix given time delta - in main nav section
+    // TODOLater: figure out how to make transition matrix given time delta - in main nav section
     const auto prop_state_estimate = transition_matrix * state_estimate_;
     const auto prop_error_covariance
       = (transition_matrix.transpose() * error_covariance_ * transition_matrix)

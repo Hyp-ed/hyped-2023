@@ -37,16 +37,12 @@ class ExtendedKalmanFilter {
               const JacobianMatrix &jacobian_matrix,
               const ExtendedStateVector &extended_state_vector)
   {
-    // TODO: add noise to propogation step
+    // TODOLater: add noise to propogation step
     const auto prop_state_estimate
       = transition_matrix * state_estimate_ + jacobian_matrix * extended_state_vector;
     const auto prop_error_covariance
       = (transition_matrix.transpose() * error_covariance_ * transition_matrix)
         + transition_covariance;
-    // TODOLater: Some optimisation is to be found here:
-    // 1. Try and get rid of the inverse.
-    // 2. Reuse calculations such as `prop_error_covariance * measurement_matrix.transpose()`.
-    // K_k = P_k^{-1} * H_k^T * (H_k * P_k^{-1} * H_k^T + R_k)^{-1}
     const auto kalman_gain
       = prop_error_covariance * measurement_matrix.transpose()
         * (measurement_matrix * prop_error_covariance * measurement_matrix.transpose()

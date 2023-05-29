@@ -7,7 +7,7 @@
 #include <core/time.hpp>
 #include <core/timer.hpp>
 #include <core/types.hpp>
-#include <navigation/consts.hpp>
+#include <navigation/control/consts.hpp>
 
 namespace hyped::utils {
 class KalmanHigherDerivatives {
@@ -21,7 +21,7 @@ class KalmanHigherDerivatives {
   core::ILogger &logger_;
   const core::ITimeSource &time_;
 
-  // TODO: decide 50 or 100 - numerical tests?
+  // TODOLater: decide 50 or 100 - numerical tests?
   static constexpr std::uint8_t kNumDataPoints = 50;
 
   std::vector<std::uint64_t> timestamps_;

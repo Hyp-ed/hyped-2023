@@ -30,19 +30,19 @@ class AccelerometerKalman {
 /*
 core::Float filter();
 
-// static constexpr std::size_t state_dimension_      = 3;  // TODO: change this!
+// static constexpr std::size_t state_dimension_      = 3;  // TODOLater: change this!
 // static constexpr std::size_t measurement_dimension_ = 1;
-// static constexpr std::size_t extended_dimension_    = 2;  // TODO: check this!
+// static constexpr std::size_t extended_dimension_    = 2;  // TODOLater: check this!
 
 private:
 ExtendedKalmanFilter<3, 1, 2> kalman_filter_;
 
 core::ILogger &logger_;
 const core::ITimeSource &time_;
-// TODO: change for actual state vector
+// TODOLater: change for actual state vector
 Eigen::Matrix<core::Float, state_dimension, 1> initial_state = {0, 0, 0};
 Eigen::Matrix<core::Float, state_dimension, state_dimension> initial_error_covariance;
-// TODO: make this less bad
+// TODOLater: make this less bad
 //{{0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
 ExtendedKalmanFilter<state_dimension, measurement_dimension, extended_dimension> kalman_filter_(
   const core::ITimeSource &time_,
@@ -52,7 +52,7 @@ ExtendedKalmanFilter<state_dimension, measurement_dimension, extended_dimension>
 const Eigen::Matrix<core::Float, state_dimension, state_dimension> measurement_matrix_;
 //{{1, 0, 0}, {0, 0, 0}, {0, 0, 0}};
 
-// TODO: implement and document these functions
+// TODOLater: implement and document these functions
 Eigen::Matrix<core::Float, state_dimension, 1> getMeasurementVector(core::Float acceleration);
 Eigen::Matrix<core::Float, state_dimension, state_dimension> getStateTransitionMatrix(
   const core::Float time_delta);

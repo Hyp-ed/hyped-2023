@@ -1,7 +1,5 @@
 #pragma once
 
-#include "consts.hpp"
-
 #include <cmath>
 
 #include <algorithm>
@@ -9,11 +7,12 @@
 #include <cstdint>
 #include <optional>
 
-#include <Eigen/Dense>
 #include <core/logger.hpp>
 #include <core/time.hpp>
 #include <core/timer.hpp>
 #include <core/types.hpp>
+#include <eigen3/Eigen/Dense>
+#include <navigation/control/consts.hpp>
 
 namespace hyped::navigation {
 class AccelerometerPreprocessor {
@@ -36,7 +35,7 @@ class AccelerometerPreprocessor {
   std::array<std::uint16_t, core::kNumAccelerometers> num_outliers_per_accelerometer_;
   std::array<bool, core::kNumAccelerometers> are_accelerometers_reliable_;
   std::size_t num_reliable_accelerometers_;
-  // TODO: implement this (maybe const and on construction?)
+  // TODOLater: implement this (maybe const and on construction?)
   Eigen::Matrix<core::Float, 1, 3> measurement_matrix_;
 
   // number of allowed consecutive outliers from single accelerometer

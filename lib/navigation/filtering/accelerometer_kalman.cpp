@@ -10,7 +10,7 @@ AccelerometerKalman::AccelerometerKalman(core::ILogger &logger,
     : logger_(logger),
       time_(time),
       kalman_filter_(time, initial_state, initial_error_covariance){
-        // TODO: fix kalman instantiation.
+        // TODOLater: fix kalman instantiation.
       };
 
 Eigen::Matrix<core::Float, state_dimension, state_dimension>
@@ -42,13 +42,13 @@ Eigen::Matrix<core::Float, state_dimension, 1> AccelerometerKalman::getMeasureme
   return measurement_vector;
 }
 
-// TODO: fix this!
+// TODOLater: fix this!
 Eigen::Matrix<core::Float, state_dimension, state_dimension>
   AccelerometerKalman::getStateTransitionCovarianceMatrix(
     Eigen::Matrix<core::Float, state_dimension, state_dimension> prior_state,
     Eigen::Matrix<core::Float, state_dimension, state_dimension> prior_propagation)
 {
-  // TODO: implement
+  // TODOLater: implement
   Eigen::Matrix<core::Float, state_dimension, state_dimension> state_transition_covariance_matrix;
   return state_transition_covariance_matrix;
 }
@@ -56,7 +56,7 @@ Eigen::Matrix<core::Float, state_dimension, state_dimension>
 Eigen::Matrix<core::Float, measurement_dimension, measurement_dimension>
   AccelerometerKalman::getMeasurementNoiseCovarianceMatrix()
 {
-  // TODO: generate random noise then fix
+  // TODOLater: generate random noise then fix
   Eigen::Matrix<core::Float, measurement_dimension, measurement_dimension>
     measurement_noise_covariance_matrix{0};
   return measurement_noise_covariance_matrix;
@@ -64,7 +64,7 @@ Eigen::Matrix<core::Float, measurement_dimension, measurement_dimension>
 
 core::Float AccelerometerKalman::filter()
 {
-  // TODO: run getter functions to get matrices, run kalman filter and
+  // TODOLater: run getter functions to get matrices, run kalman filter and
   // return kalman_filter.getStateEstimate()
   return 0.0F;
 }
@@ -88,10 +88,11 @@ Eigen::Matrix<core::Float, extended_dimension, state_dimension>
   return jacobian_matrix;
 }
 
-// TODO: find out how to calculate jerk and higher order derivatives of acceleration for this vector
-Eigen::Matrix<core::Float, extended_dimension, 1> AccelerometerKalman::getExtendedStateVector()
+// TODOLater: find out how to calculate jerk and higher order derivatives of acceleration for this
+vector Eigen::Matrix<core::Float, extended_dimension, 1>
+AccelerometerKalman::getExtendedStateVector()
 {
-  // TODO: make call to separate function to calculate jerk and higher order derivatives of
+  // TODOLater: make call to separate function to calculate jerk and higher order derivatives of
   // acceleration
   Eigen::Matrix<core::Float, extended_dimension, 1> extended_state_vector{0, 0};
 

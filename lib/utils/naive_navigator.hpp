@@ -1,7 +1,7 @@
 #pragma once
 
 #include "core/types.hpp"
-#include <navigation/navigator.hpp>
+#include <navigation/control/navigator.hpp>
 
 namespace hyped::utils {
 

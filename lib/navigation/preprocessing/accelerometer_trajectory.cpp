@@ -16,7 +16,7 @@ AccelerometerTrajectoryEstimator::AccelerometerTrajectoryEstimator(
 }
 
 // TODOLater: change arguments to instead take some sort of "datapoint" struct with acc_val and
-// timestamp instead
+// timestamp instead, also switch to doubles?
 void AccelerometerTrajectoryEstimator::update(const core::Float acceleration,
                                               const core::TimePoint timestamp)
 {
