@@ -54,7 +54,9 @@ class AccelerometerKalman {
   Eigen::Matrix<core::Float, state_dimension, 1> getMeasurementVector(core::Float acceleration);
   Eigen::Matrix<core::Float, state_dimension, state_dimension> getStateTransitionMatrix(
     const core::Float time_delta);
-  Eigen::Matrix<core::Float, state_dimension, state_dimension> getStateTransitionCovarianceMatrix();
+  Eigen::Matrix<core::Float, state_dimension, state_dimension> getStateTransitionCovarianceMatrix(
+    Eigen::Matrix<core::Float, state_dimension, state_dimension> prior_state,
+    Eigen::Matrix<core::Float, state_dimension, state_dimension> prior_propagation);
   Eigen::Matrix<core::Float, measurement_dimension, measurement_dimension>
     getMeasurementNoiseCovarianceMatrix();
   Eigen::Matrix<core::Float, extended_dimension, state_dimension> getJacobianMatrix(

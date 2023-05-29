@@ -9,8 +9,7 @@ AccelerometerKalman::AccelerometerKalman(core::ILogger &logger,
     : logger_(logger),
       time_(time),
       kalman_filter_(time, initial_state, initial_error_covariance){
-        // TODO: instantiate kalman
-
+        // TODO: fix kalman instantiation.
       };
 
 Eigen::Matrix<core::Float, state_dimension, state_dimension>
