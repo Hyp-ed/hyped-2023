@@ -679,6 +679,12 @@ void Repl::addTemperatureCommands(const std::uint8_t bus, const std::uint8_t dev
   const auto i2c                  = std::move(*optional_i2c);
   const auto optional_temperature = sensors::Temperature::create(logger_, i2c, bus, device_address);
   const auto temperature          = std::make_shared<sensors::Temperature>(*optional_temperature);
+  // Calibrate the temperature sensor
+  const core::Result calibration_result = *temperature->calibrate();
+  if (calibration_result == core::Result::kFailure) {
+    logger_.log(core::LogLevel::kFatal, "Failed to calibrate the temperature sensor");
+    return;
+  }
   Command temperature_read_command;
   std::stringstream identifier;
   identifier << "temperature 0x" << std::hex << static_cast<int>(device_address) << " read";

@@ -12,14 +12,6 @@ std::optional<Temperature> Temperature::create(core::ILogger &logger,
     logger.log(core::LogLevel::kFatal, "Invalid device address for temperature sensor");
     return std::nullopt;
   }
-  const auto write_result = i2c->writeByteToRegister(device_address, kCtrl, kConfigurationSetting);
-  if (write_result == core::Result::kFailure) {
-    logger.log(
-      core::LogLevel::kFatal, "Failed to configure temperature sensor at channel %d", channel);
-    return std::nullopt;
-  }
-  logger.log(
-    core::LogLevel::kDebug, "Successful to configure temperature sensor at channel %d", channel);
   return Temperature(logger, i2c, channel, device_address);
 }
 
@@ -36,6 +28,19 @@ Temperature::Temperature(core::ILogger &logger,
 
 Temperature::~Temperature()
 {
+}
+
+std::optional<core::Result> Temperature::calibrate()
+{
+  const auto write_result = i2c_->writeByteToRegister(device_address_, kCtrl, kConfigurationSetting);
+  if (write_result == core::Result::kFailure) {
+    logger_.log(
+      core::LogLevel::kFatal, "Failed to configure temperature sensor at channel %d", channel_);
+    return std::nullopt;
+  }
+  logger_.log(
+    core::LogLevel::kDebug, "Successful to configure temperature sensor at channel %d", channel_);
+  return core::Result::kSuccess;
 }
 
 std::optional<core::Result> Temperature::checkStatus()

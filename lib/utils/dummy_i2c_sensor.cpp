@@ -11,6 +11,11 @@ core::Result DummyI2cSensor::configure()
   return core::Result::kSuccess;
 }
 
+std::optional<core::Result> DummyI2cSensor::calibrate()
+{
+  return std::nullopt;
+}
+
 std::optional<std::uint8_t> DummyI2cSensor::read()
 {
   return 0;
