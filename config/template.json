@@ -39,11 +39,15 @@
 				"enabled": false,
 				"bus": 2,
 				"device_address": 56
+			},
+			"bms": {
+				"enabled": true,
+				"bus": "can1"
 			}
 		},
 		"motors": {
 			"motor_controller": {
-				"enabled": true,
+				"enabled": false,
 				"bus": "can1"
 			}
 		}

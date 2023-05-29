@@ -24,6 +24,7 @@
 #include <motors/frequency_calculator.hpp>
 #include <motors/time_frequency_calculator.hpp>
 #include <sensors/accelerometer.hpp>
+#include <sensors/bms.hpp>
 #include <sensors/temperature.hpp>
 
 namespace hyped::debug {
@@ -56,6 +57,7 @@ class Repl {
   void addTemperatureCommands(const std::uint8_t bus, const std::uint8_t device_address);
   void addUartCommands(const std::uint8_t bus);
   void addMotorControllerCommands(const std::string &bus);
+  void addBmsCommands(const std::string &bus);
 
   /**
    * @brief Get the Adc object associated with the given pin or create a new one if it doesn't exist

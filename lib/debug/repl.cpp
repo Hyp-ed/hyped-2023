@@ -257,6 +257,26 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
     const auto bus            = temperature["bus"].GetUint();
     repl->addTemperatureCommands(bus, device_address);
   }
+  if (!sensors.HasMember("bms")) {
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'sensors.bms' in configuration file");
+    return std::nullopt;
+  }
+  const auto bms = sensors["bms"].GetObject();
+  if (!bms.HasMember("enabled")) {
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'sensors.bms.enabled' in configuration file");
+    return std::nullopt;
+  }
+  if (bms["enabled"].GetBool()) {
+    if (!bms.HasMember("bus")) {
+      logger_.log(core::LogLevel::kFatal,
+                  "Missing required field 'sensors.bms.bus' in configuration file");
+      return std::nullopt;
+    }
+    const auto bus = bms["bus"].GetString();
+    repl->addBmsCommands(bus);
+  }
   if (!debugger.HasMember("motors")) {
     logger_.log(core::LogLevel::kFatal,
                 "Missing required field 'debugger.motors' in configuration file");
@@ -877,6 +897,26 @@ void Repl::addMotorControllerCommands(const std::string &bus)
     time_frequency_controller->run(motors::FauxState::kStop);
   };
   addCommand(frequency_time_command);
+}
+
+void Repl::addBmsCommands(const std::string &bus)
+{
+  const auto optional_can = getCan(bus);
+  if (!optional_can) {
+    logger_.log(core::LogLevel::kFatal, "Failed to create can instance");
+    return;
+  }
+  const auto can = std::move(*optional_can);
+  const auto bms = sensors::Bms::create(logger_, can);
+  Command bms_log_command;
+  bms_log_command.name        = "bms log";
+  bms_log_command.description = "Log the bms data";
+  bms_log_command.handler     = [this, can]() {
+    while (1) {
+      can->receive();
+    }
+  };
+  addCommand(bms_log_command);
 }
 
 std::optional<std::shared_ptr<io::IAdc>> Repl::getAdc(const std::uint8_t bus)
