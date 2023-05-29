@@ -53,7 +53,7 @@ class HardwareCan : public ICan {
    * @param id The ID of the message to be processed
    * @param processor The processor to be called when a message with the given ID is received
    */
-  void addProcessor(const std::uint16_t id, std::shared_ptr<ICanProcessor> processor);
+  void addProcessor(const std::uint32_t id, std::shared_ptr<ICanProcessor> processor);
 
  private:
   core::ILogger &logger_;

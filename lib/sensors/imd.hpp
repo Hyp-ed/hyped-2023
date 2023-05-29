@@ -1,16 +1,19 @@
 #pragma once
 
+#include <optional>
+
 #include <core/logger.hpp>
 #include <core/types.hpp>
 #include <io/can.hpp>
 
 namespace hyped::sensors {
 // Constants defined in IMD CAN reference manual
-constexpr std::uint8_t kRequestDataCanId            = 0xA100101;
-constexpr std::uint8_t kReturnDataCanId             = 0xA100100;
+constexpr std::uint32_t kRequestDataCanId           = 0xA100101;
+constexpr std::uint32_t kReturnDataCanId            = 0xA100100;
 constexpr std::uint8_t kRequestIsolationResistances = 0xE1;
 constexpr std::uint8_t kRequestIsolationState       = 0xE0;
 
+// TODOLater: Test this code with hardware
 class Imd : public io::ICanProcessor {
  public:
   static std::optional<std::shared_ptr<Imd>> create(core::ILogger &logger,
@@ -29,13 +32,13 @@ class Imd : public io::ICanProcessor {
 
   std::uint16_t getRp();
   std::uint16_t getRn();
-  std::uint8_t getIsolationState();
+  std::uint8_t getIsolationStatus();
 
  private:
   core::ILogger &logger_;
   std::shared_ptr<io::ICan> can_;
-  std::uint16_t rp_;
-  std::uint16_t rn_;
-  std::uint8_t iso_state_;
+  std::uint16_t resistance_positive_;
+  std::uint16_t resistance_negative_;
+  std::uint8_t isolation_status_;
 };
 }  // namespace hyped::sensors

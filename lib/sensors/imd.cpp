@@ -10,7 +10,7 @@ std::optional<std::shared_ptr<Imd>> Imd::create(core::ILogger &logger,
     return std::nullopt;
   }
   std::shared_ptr<Imd> imd = *optional_imd;
-  can.addProcessor(kReturnDataCanId, imd);
+  can->addProcessor(kReturnDataCanId, imd);
   return imd;
 }
 
@@ -32,7 +32,7 @@ core::Result Imd::updateValues()
   frame.data[5]       = 0;
   frame.data[6]       = 0;
   frame.data[7]       = 0;
-  core::Result result = can_.send(frame);
+  core::Result result = can_->send(frame);
   if (result == core::Result::kFailure) {
     logger_.log(core::LogLevel::kFatal, "Failed to send update request over CAN");
   }
@@ -42,25 +42,25 @@ core::Result Imd::updateValues()
 core::Result Imd::processMessage(const io::CanFrame &frame)
 {
   // Isolation status is stored across 2 bits, while rp and rn are each stored across 2 bytes
-  iso_state_ = (frame.data[1] & 1) | ((frame.data[1] & 2) << 1);
-  rp_        = ((std::uint16_t)frame.data[3] << 8) | frame.data[2];
-  rn_        = ((std::uint16_t)frame.data[6] << 8) | frame.data[5];
+  isolation_status_    = (frame.data[1] & 1) | ((frame.data[1] & 2) << 1);
+  resistance_positive_ = ((std::uint16_t)frame.data[3] << 8) | frame.data[2];
+  resistance_negative_ = ((std::uint16_t)frame.data[6] << 8) | frame.data[5];
   return core::Result::kSuccess;
 }
 
 std::uint16_t Imd::getRp()
 {
-  return rp_;
+  return resistance_positive_;
 }
 
 std::uint16_t Imd::getRn()
 {
-  return rn_;
+  return resistance_negative_;
 }
 
-std::uint8_t Imd::getIsolationState()
+std::uint8_t Imd::getIsolationStatus()
 {
-  return iso_state_;
+  return isolation_status_;
 }
 
 }  // namespace hyped::sensors
