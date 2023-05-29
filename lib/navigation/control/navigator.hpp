@@ -2,15 +2,20 @@
 
 #include "consts.hpp"
 
+#include <memory>
 #include <optional>
 
+#include "core/logger.hpp"
 #include "core/types.hpp"
+#include "navigation/control/consts.hpp"
+#include "navigation/preprocessing/preprocess_accelerometer.hpp"
+#include "navigation/preprocessing/preprocess_keyence.hpp"
 
 namespace hyped::navigation {
 
 class Navigator : public INavigator {
  public:
-  Navigator();
+  Navigator(core::ILogger &logger, const core::ITimeSource &time);
 
   /**
    *@brief runs cross checking and returns trajectory
@@ -37,6 +42,13 @@ class Navigator : public INavigator {
   void accelerometerUpdate(const core::RawAccelerometerData &accelerometer_data);
 
  private:
+  core::ILogger &logger_;
+  const core::ITimeSource &time_;
+
+  // navigation functionality
+  KeyencePreprocessor keyence_preprocessor_;
+  AccelerometerPreprocessor accelerometer_preprocessor_;
+
   // previous readings
   core::EncoderData previous_encoder_reading_;
   core::KeyenceData previous_keyence_reading_;
