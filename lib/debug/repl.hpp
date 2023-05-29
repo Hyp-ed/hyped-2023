@@ -24,7 +24,7 @@
 #include <motors/frequency_calculator.hpp>
 #include <motors/time_frequency_calculator.hpp>
 #include <sensors/accelerometer.hpp>
-#include <sensors/low_power_current.hpp>
+#include <sensors/imd.hpp>
 #include <sensors/temperature.hpp>
 
 namespace hyped::debug {
@@ -55,7 +55,7 @@ class Repl {
   void addSpiCommands(const std::uint8_t bus);
   void addAccelerometerCommands(const std::uint8_t bus, const std::uint8_t device_address);
   void addTemperatureCommands(const std::uint8_t bus, const std::uint8_t device_address);
-  void addLowPowerCurrentCommands(const std::uint8_t bus, const std::uint8_t device_address);
+  void addImdCommands(const std::string &bus);
   void addUartCommands(const std::uint8_t bus);
   void addMotorControllerCommands(const std::string &bus);
 

@@ -30,13 +30,14 @@ class Imd : public io::ICanProcessor {
    */
   core::Result processMessage(const io::CanFrame &frame);
 
-  std::uint16_t getRp();
-  std::uint16_t getRn();
+  std::uint16_t getResistancePositive();
+  std::uint16_t getResistanceNegative();
   std::uint8_t getIsolationStatus();
 
  private:
   core::ILogger &logger_;
   std::shared_ptr<io::ICan> can_;
+  // Referred to as Rp and Rn in the IMD CAN reference manual
   std::uint16_t resistance_positive_;
   std::uint16_t resistance_negative_;
   std::uint8_t isolation_status_;
