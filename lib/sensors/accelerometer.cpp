@@ -32,7 +32,7 @@ Accelerometer::~Accelerometer()
 
 std::optional<core::Result> Accelerometer::configure()
 {
-    // check we are communicating with the correct sensor
+  // check we are communicating with the correct sensor
   const auto device_id = i2c_->readByte(device_address_, kDeviceIdAddress);
   if (!device_id) {
     logger_.log(core::LogLevel::kFatal, "Failed to read the accelerometer device ID");

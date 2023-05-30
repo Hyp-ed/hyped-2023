@@ -37,9 +37,9 @@ using KeyenceData          = std::array<std::uint32_t, kNumKeyence>;
 // data produced by the accelerometer sensor
 // values are in milli-g (standard gravity)
 struct RawAccelerationData {
-  RawAccelerationData(std::int32_t x = 0,
-                      std::int32_t y = 0,
-                      std::int32_t z = 0,
+  RawAccelerationData(std::int32_t x        = 0,
+                      std::int32_t y        = 0,
+                      std::int32_t z        = 0,
                       TimePoint measured_at = std::chrono::system_clock::now())
       : x(x),
         y(y),

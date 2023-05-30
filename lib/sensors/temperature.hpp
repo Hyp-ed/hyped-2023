@@ -39,7 +39,7 @@ class Temperature : public II2cMuxSensor<std::int16_t> {
    */
   std::optional<std::int16_t> read() override;
 
-  std::uint8_t getChannel() const override ;
+  std::uint8_t getChannel() const override;
 
  private:
   Temperature(core::ILogger &logger,
