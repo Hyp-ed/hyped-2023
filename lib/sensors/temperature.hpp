@@ -24,7 +24,7 @@ class Temperature : public II2cMuxSensor<std::int16_t> {
 
   ~Temperature();
 
-  std::optional<core::Result> calibrate() override;
+  std::optional<core::Result> configure() override;
 
   /*
    * @brief Checks if the temperature sensor is ready to be read

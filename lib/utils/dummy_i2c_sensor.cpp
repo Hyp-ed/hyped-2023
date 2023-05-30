@@ -6,12 +6,7 @@ DummyI2cSensor::DummyI2cSensor()
 {
 }
 
-core::Result DummyI2cSensor::configure()
-{
-  return core::Result::kSuccess;
-}
-
-std::optional<core::Result> DummyI2cSensor::calibrate()
+std::optional<core::Result> DummyI2cSensor::configure()
 {
   return std::nullopt;
 }

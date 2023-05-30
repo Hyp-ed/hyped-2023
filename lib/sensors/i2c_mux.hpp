@@ -63,9 +63,9 @@ I2cMux<T, N>::I2cMux(core::ILogger &logger,
     if (channel_select_result == core::Result::kFailure) {
       logger_.log(core::LogLevel::kFatal, "Failed to select channel %d from the i2c mux", i);
     }
-    const auto result  = sensor->calibrate();
+    const auto result  = sensor->configure();
     if (!result) {
-      logger_.log(core::LogLevel::kFatal, "Failed to calibrate sensor on channel %d", i);
+      logger_.log(core::LogLevel::kFatal, "Failed to configure sensor on channel %d", i);
     }
   }
 }

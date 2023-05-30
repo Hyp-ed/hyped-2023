@@ -11,6 +11,7 @@
 #include <vector>
 
 #include <core/logger.hpp>
+#include <core/types.hpp>
 #include <io/can.hpp>
 #include <io/hardware_adc.hpp>
 #include <io/hardware_can.hpp>
@@ -24,6 +25,8 @@
 #include <motors/frequency_calculator.hpp>
 #include <motors/time_frequency_calculator.hpp>
 #include <sensors/accelerometer.hpp>
+#include <sensors/i2c_mux.hpp>
+#include <sensors/i2c_sensors.hpp>
 #include <sensors/temperature.hpp>
 
 namespace hyped::debug {
@@ -54,6 +57,10 @@ class Repl {
   void addSpiCommands(const std::uint8_t bus);
   void addAccelerometerCommands(const std::uint8_t bus, const std::uint8_t device_address);
   void addTemperatureCommands(const std::uint8_t bus, const std::uint8_t device_address);
+  void addI2cMuxCommands(const std::uint8_t bus,
+                         const std::uint8_t mux_address,
+                         const std::string &sensor_type,
+                         const std::vector<std::uint8_t> &channels);
   void addUartCommands(const std::uint8_t bus);
   void addMotorControllerCommands(const std::string &bus);
 

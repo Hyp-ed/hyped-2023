@@ -30,7 +30,7 @@ Temperature::~Temperature()
 {
 }
 
-std::optional<core::Result> Temperature::calibrate()
+std::optional<core::Result> Temperature::configure()
 {
   const auto write_result = i2c_->writeByteToRegister(device_address_, kCtrl, kConfigurationSetting);
   if (write_result == core::Result::kFailure) {

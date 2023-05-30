@@ -29,7 +29,7 @@ class Accelerometer : public II2cMuxSensor<core::RawAccelerationData> {
                                              const std::uint8_t device_address);
   ~Accelerometer();
 
-  std::optional<core::Result> calibrate() override;
+  std::optional<core::Result> configure() override;
 
   /*
    * @brief Checks if the accelerometer is ready to be read
