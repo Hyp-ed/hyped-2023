@@ -782,7 +782,8 @@ void Repl::addI2cMuxCommands(const std::uint8_t bus,
       const auto optional_accelerometer = sensors::Accelerometer::create(logger_, i2c, channels[i], sensor_address);
       accelerometers[i] = std::make_unique<sensors::Accelerometer>(std::move(*optional_accelerometer));
     }
-    sensors::I2cMux<core::RawAccelerationData, 4> mux(logger_, i2c, mux_address, accelerometers);
+    // sensors::I2cMux<core::RawAccelerationData, 4> mux(logger_, i2c, mux_address, accelerometers);
+    std::shared_ptr<sensors::I2cMux<core::RawAccelerationData, 4>> mux_ptr = std::make_shared<sensors::I2cMux<core::RawAccelerationData, 4>>(logger_, i2c, mux_address, accelerometers);
     Command mux_read_command;
     std::stringstream identifier;
     identifier << "mux 0x" << std::hex << static_cast<int>(mux_address) << " read";
@@ -792,8 +793,8 @@ void Repl::addI2cMuxCommands(const std::uint8_t bus,
                 << " on "
                 << "I2C bus " << static_cast<int>(bus);
     mux_read_command.description = description.str();
-    mux_read_command.handler     = [this, &mux, bus]() {
-      const auto value = mux.readAllChannels();
+    mux_read_command.handler     = [this, mux_ptr, bus]() {
+      const auto value = mux_ptr->readAllChannels();
       if (!value) {
         logger_.log(core::LogLevel::kFatal, "Failed to read the mux from bus %d", bus);
       } else {
@@ -810,6 +811,7 @@ void Repl::addI2cMuxCommands(const std::uint8_t bus,
     };
     addCommand(mux_read_command);
   }
+  
 }
 
 void Repl::addMotorControllerCommands(const std::string &bus)
