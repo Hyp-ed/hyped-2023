@@ -289,6 +289,12 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
       return std::nullopt;
     }
     const auto sensor_type = mux["sensor_type"].GetString();
+    if (!mux.HasMember("sensor_address")) {
+      logger_.log(core::LogLevel::kFatal,
+                  "Missing required field 'sensors.mux.sensor_address' in configuration file");
+      return std::nullopt;
+    }
+    const auto sensor_address = mux["sensor_address"].GetUint();
     if (!mux.HasMember("channels")) {
       logger_.log(core::LogLevel::kFatal,
                   "Missing required field 'sensors.mux.channels' in configuration file");
@@ -300,7 +306,7 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
     for (auto &channel : channels) {
       channels_vector.push_back(channel.GetUint());
     }
-    repl->addI2cMuxCommands(bus, mux_address, sensor_type, channels_vector);
+    repl->addI2cMuxCommands(bus, mux_address, sensor_type, sensor_address, channels_vector);
   }
 
   if (!debugger.HasMember("motors")) {
@@ -760,6 +766,7 @@ void Repl::addTemperatureCommands(const std::uint8_t bus, const std::uint8_t dev
 void Repl::addI2cMuxCommands(const std::uint8_t bus,
                              const std::uint8_t mux_address,
                              const std::string &sensor_type,
+                             const std::uint8_t sensor_address,
                              const std::vector<std::uint8_t> &channels)
 {
   const auto optional_i2c = getI2c(bus);
@@ -772,7 +779,7 @@ void Repl::addI2cMuxCommands(const std::uint8_t bus,
     // TODOLater: Figure out how to not hardcode this
     std::array<std::unique_ptr<sensors::II2cMuxSensor<core::RawAccelerationData>>, 4> accelerometers;
     for(int i = 0; i < channels.size(); i++){
-      const auto optional_accelerometer = sensors::Accelerometer::create(logger_, i2c, bus, channels[i]);
+      const auto optional_accelerometer = sensors::Accelerometer::create(logger_, i2c, channels[i], sensor_address);
       accelerometers[i] = std::make_unique<sensors::Accelerometer>(std::move(*optional_accelerometer));
     }
     sensors::I2cMux<core::RawAccelerationData, 4> mux(logger_, i2c, mux_address, accelerometers);

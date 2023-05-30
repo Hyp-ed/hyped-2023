@@ -60,6 +60,7 @@ class Repl {
   void addI2cMuxCommands(const std::uint8_t bus,
                          const std::uint8_t mux_address,
                          const std::string &sensor_type,
+                         const std::uint8_t sensor_address,
                          const std::vector<std::uint8_t> &channels);
   void addUartCommands(const std::uint8_t bus);
   void addMotorControllerCommands(const std::string &bus);
