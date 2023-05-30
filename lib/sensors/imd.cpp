@@ -23,15 +23,12 @@ core::Result Imd::updateValues()
   io::CanFrame frame;
   frame.can_id = CAN_EFF_FLAG | kRequestDataCanId;
   // Always one byte for Request_mux
-  frame.can_dlc       = 1;
-  frame.data[0]       = kRequestIsolationResistances;
-  frame.data[1]       = 0;
-  frame.data[2]       = 0;
-  frame.data[3]       = 0;
-  frame.data[4]       = 0;
-  frame.data[5]       = 0;
-  frame.data[6]       = 0;
-  frame.data[7]       = 0;
+  frame.can_dlc = 1;
+  frame.data[0] = kRequestIsolationResistances;
+  // Fill remaining data bits with 0
+  for (int i = 1; i < 8; i++) {
+    frame.data[i] = 0;
+  }
   core::Result result = can_->send(frame);
   if (result == core::Result::kFailure) {
     logger_.log(core::LogLevel::kFatal, "Failed to send update request over CAN");
@@ -41,10 +38,11 @@ core::Result Imd::updateValues()
 
 core::Result Imd::processMessage(const io::CanFrame &frame)
 {
-  // Isolation status is stored across 2 bits, while rp and rn are each stored across 2 bytes
-  isolation_status_    = (frame.data[1] & 1) | ((frame.data[1] & 2) << 1);
-  resistance_positive_ = ((std::uint16_t)frame.data[2] << 8) | frame.data[3];
-  resistance_negative_ = ((std::uint16_t)frame.data[5] << 8) | frame.data[6];
+  // Isolation status is stored across lowest two bits of byte 1
+  // rp and rn are each stored across two bytes
+  isolation_status_    = frame.data[1] & 3;
+  resistance_positive_ = (static_cast<std::uint16_t>(frame.data[2]) << 8) | frame.data[3];
+  resistance_negative_ = (static_cast<std::uint16_t>(frame.data[5]) << 8) | frame.data[6];
   return core::Result::kSuccess;
 }
 
