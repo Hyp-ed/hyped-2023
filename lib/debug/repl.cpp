@@ -808,6 +808,7 @@ void Repl::addI2cMuxCommands(const std::uint8_t bus,
         }
       }
     };
+    addCommand(mux_read_command);
   }
 }
 
