@@ -1,13 +1,16 @@
 #pragma once
 
 #include "consts.hpp"
+#include "crosscheck.hpp"
 
+#include <array>
 #include <memory>
 #include <optional>
 
 #include "core/logger.hpp"
 #include "core/types.hpp"
 #include "navigation/control/consts.hpp"
+#include "navigation/preprocessing/accelerometer_trajectory.hpp"
 #include "navigation/preprocessing/preprocess_accelerometer.hpp"
 #include "navigation/preprocessing/preprocess_keyence.hpp"
 
@@ -39,7 +42,8 @@ class Navigator : public INavigator {
    *
    * @param accelerometer_data
    */
-  void accelerometerUpdate(const core::RawAccelerometerData &accelerometer_data);
+  void accelerometerUpdate(
+    const std::array<core::RawAccelerationData, core::kNumAccelerometers> &accelerometer_data);
 
  private:
   core::ILogger &logger_;
@@ -48,8 +52,11 @@ class Navigator : public INavigator {
   // navigation functionality
   KeyencePreprocessor keyence_preprocessor_;
   AccelerometerPreprocessor accelerometer_preprocessor_;
+  AccelerometerTrajectoryEstimator accelerometer_trajectory_estimator_;
+  Crosscheck crosschecker_;
 
   // previous readings
+  // TODO: remove?
   core::EncoderData previous_encoder_reading_;
   core::KeyenceData previous_keyence_reading_;
 

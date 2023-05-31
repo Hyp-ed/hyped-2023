@@ -6,10 +6,9 @@
 
 namespace hyped::navigation {
 
-AccelerometerTrajectoryEstimator::AccelerometerTrajectoryEstimator(
-  const core::ITimeSource &time, const core::TimePoint initial_time)
+AccelerometerTrajectoryEstimator::AccelerometerTrajectoryEstimator(const core::ITimeSource &time)
     : time_(time),
-      previous_timestamp_(initial_time),
+      previous_timestamp_(time.now()),
       displacement_estimate_(0),
       velocity_estimate_(0)
 {

@@ -1,53 +1,63 @@
 #include "crosscheck.hpp"
 
+#include <cmath>
+
 namespace hyped::navigation {
 
-Crosscheck::Crosscheck()
+Crosscheck::Crosscheck(core::ILogger &logger, const core::ITimeSource &time)
+    : time_(time),
+      logger_(logger)
 {
   // TODOLater: implement
 }
 
-SensorChecks Crosscheck::checkTrajectoryAgreement(const core::AccelerometerData accelerometer_data,
-                                                  const core::EncoderData encoders_data,
-                                                  const core::KeyenceData keyence_data)
+SensorChecks Crosscheck::checkTrajectoryAgreement(const core::Float acceleration_displacement,
+                                                  const core::Float encoder_displacement,
+                                                  const core::Float keyence_displacement)
 {
-  /*
-  TODOLater: implement
-  basically:
-    - checkEncoderAccelerometer
-    - checkEncooderKeyence
-    - if all good, return true. else false and fail state
+  // check encoders vs accelerometers
+  SensorChecks encoder_accelerometer_check
+    = checkEncoderAccelerometer(acceleration_displacement, encoder_displacement);
+  if (encoder_accelerometer_check == SensorChecks::kUnacceptable) {
+    logger_.log(core::LogLevel::kFatal,
+                "Large disagreement between encoders and accelerometers. Trajectory cannot be "
+                "accurately calculated.");
+    return SensorChecks::kUnacceptable;
+  }
 
-    Also need to figure out how data flow is going to work with the historic data and what we use.
-    The basic infrastrucutre is there for now so will be a problem for another day.
-  */
+  // check encoders vs keyence
+  SensorChecks encoder_keyence_check
+    = checkEncoderKeyence(encoder_displacement, keyence_displacement);
+  if (encoder_keyence_check == SensorChecks::kUnacceptable) {
+    logger_.log(core::LogLevel::kFatal,
+                "Large disagreement between encoders and keyence. Trajectory cannot be accurately "
+                "calculated.");
+    return SensorChecks::kUnacceptable;
+  }
+
+  logger_.log(core::LogLevel::kInfo, "Trajectory values sucessfully verified");
+
   return SensorChecks::kAcceptable;
 }
 
-SensorChecks checkEncoderAccelerometer(const core::AccelerometerData accelerometer_data,
-                                       const core::EncoderData encoders_data)
+SensorChecks Crosscheck::checkEncoderAccelerometer(const core::Float acceleration_displacement,
+                                                   const core::Float encoder_displacement)
 {
-  /*
-  TODOLater: implement.
-  plan:
-  - double integrate z accelerometer values (also TODOLater)
-  - if absolute diff between encoder displacement and
-  accelerometer displacement too high, fail state and return false
-  - otherwise all good, return true
-  */
+  // check values are within tolerance
+  const core::Float difference = acceleration_displacement - encoder_displacement;
+  if (std::abs(difference) > kMaxAllowedAccelerometerEncoderDifference) {
+    return SensorChecks::kUnacceptable;
+  }
   return SensorChecks::kAcceptable;
 }
 
-SensorChecks checkEncoderKeyence(const core::EncoderData encoder_data,
-                                 const core::KeyenceData keyence_data)
+SensorChecks Crosscheck::checkEncoderKeyence(const core::Float encoder_displacement,
+                                             const core::Float keyence_displacement)
 {
-  /*
-  TODOLater: implement.
-  plan:
-  - if absolute diff between encoder displacement and
-  keyence displacement too high, fail state and return false
-  - otherwise all good, return true
-  */
+  const core::Float difference = encoder_displacement - keyence_displacement;
+  if (std::abs(difference) > kMaxAllowedKeyenceEncoderDifference) {
+    return SensorChecks::kUnacceptable;
+  }
   return SensorChecks::kAcceptable;
 }
 }  // namespace hyped::navigation

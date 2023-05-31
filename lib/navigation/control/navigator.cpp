@@ -8,7 +8,9 @@ Navigator::Navigator(core::ILogger &logger, const core::ITimeSource &time)
     : logger_(logger),
       time_(time),
       keyence_preprocessor_(logger),
-      accelerometer_preprocessor_(logger, time)
+      accelerometer_preprocessor_(logger, time),
+      accelerometer_trajectory_estimator_(time),
+      crosschecker_(logger, time)
 {
   // TODOLater: implement, add log and timesource so far
   // TODOLater: instantiate everything?
@@ -16,21 +18,29 @@ Navigator::Navigator(core::ILogger &logger, const core::ITimeSource &time)
 
 std::optional<core::Trajectory> Navigator::currentTrajectory()
 {
-  /*
-  TODOLater:
-  - instantiate kalman
-  - make all the arguents (store some as class data members?)
-  - kalman.filter(*all the arguments*)
-  - state_est = Kalman.getStateEstimate()
-  - run cross checkers
-  - if no oopsies, return trajectory
+  // TODO: get mean encoder and keyence readings
+  core::Float mean_encoder_value = 0;
+  for (std::size_t i = 0; i < core::kNumEncoders; ++i) {
+    mean_encoder_value += static_cast<core::Float>(previous_encoder_reading_.at(i));
+  }
+  mean_encoder_value /= core::kNumEncoders;
 
-  TODOLater: call cross-checker now to ensure return
-  trajectory is accurate and delicious.
+  core::Float mean_keyence_value = 0;
+  for (std::size_t i = 0; i < core::kNumKeyence; ++i) {
+    mean_keyence_value += static_cast<core::Float>(previous_keyence_reading_.at(i));
+  }
+  mean_keyence_value /= core::kNumKeyence;
 
-  Cross checker will (until camera is up and running) have
-  to add integrated/differentiated value for velocity for now
-  */
+  const SensorChecks check_trajectory = crosschecker_.checkTrajectoryAgreement(
+    trajectory_.displacement, mean_encoder_value, mean_keyence_value);
+
+  if (check_trajectory == SensorChecks::kUnacceptable) {
+    logger_.log(core::LogLevel::kFatal,
+                "Navigation sensors are in disagreement. Unable to accurately determine "
+                "trajectory.");
+    return std::nullopt;
+  }
+
   return trajectory_;
 }
 
@@ -65,19 +75,43 @@ void Navigator::encoderUpdate(const core::EncoderData &encoder_data)
       logger_.log(core::LogLevel::kFatal, "Encoder data is decreasing");
     }
   }
-  // Still TODOLater: instnatiate and use encoders preprocessing
+  // Still TODOLater: instnatiate and use encoders preprocessing. Then update
+  // previous_encoder_reading_
 }
 
-void Navigator::accelerometerUpdate(const core::RawAccelerometerData &accelerometer_data)
+void Navigator::accelerometerUpdate(
+  const std::array<core::RawAccelerationData, core::kNumAccelerometers> &accelerometer_data)
 {
-  // TODO: check accelerometer data structs consistent with what we're working with here
-  auto processed_accelerometer_data = accelerometer_preprocessor_.processData(accelerometer_data);
-  if (!processed_accelerometer_data) {
+  // reformat raw data
+  core::RawAccelerometerData reformatted_data;
+  std::array<core::Float, core::kNumAxis> temp_array;
+  for (std::size_t i = 0; i < core::kNumAccelerometers; ++i) {
+    temp_array.at(0)       = accelerometer_data.at(i).x;
+    temp_array.at(1)       = accelerometer_data.at(i).y;
+    temp_array.at(2)       = accelerometer_data.at(i).z;
+    reformatted_data.at(i) = temp_array;
+  }
+
+  // run preprocessing, get filtered acceleration data
+  auto clean_accelerometer_data = accelerometer_preprocessor_.processData(reformatted_data);
+  if (!clean_accelerometer_data) {
     logger_.log(core::LogLevel::kFatal, "Reliability error in accelerometer data");
   }
-  // TODOLater filtering here!
-  // TODO: update trajectory values with integrated acceelrometer data (so we have reliable
-  // crosschecker)
+
+  // get mean value
+  core::Float acceleration = 0;
+  for (std::size_t i = 0; i < core::kNumAccelerometers; ++i) {
+    acceleration += clean_accelerometer_data.value().at(i);
+  }
+  acceleration /= core::kNumAccelerometers;
+
+  // TODO: implement filter
+
+  // Numerically integrate data estimates, update internal class values
+  accelerometer_trajectory_estimator_.update(acceleration, accelerometer_data.at(0).measured_at);
+  trajectory_.acceleration = acceleration;
+  trajectory_.velocity     = accelerometer_trajectory_estimator_.getVelocityEstimate();
+  trajectory_.displacement = accelerometer_trajectory_estimator_.getDisplacementEstimate();
 }
 
 }  // namespace hyped::navigation
