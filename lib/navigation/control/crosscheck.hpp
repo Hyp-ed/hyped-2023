@@ -4,7 +4,6 @@
 
 #include <array>
 
-#include <consts.hpp>
 #include <core/logger.hpp>
 #include <core/time.hpp>
 #include <core/timer.hpp>
