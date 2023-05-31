@@ -26,7 +26,7 @@ core::Result Imd::updateValues()
   frame.can_dlc = 1;
   frame.data[0] = kRequestIsolationResistances;
   // Fill remaining data bits with 0
-  for (int i = 1; i < 8; i++) {
+  for (std::size_t i = 1; i < 8; ++i) {
     frame.data[i] = 0;
   }
   core::Result result = can_->send(frame);
