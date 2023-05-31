@@ -719,14 +719,14 @@ void Repl::addImdCommands(const std::string &bus)
   imd_request_values.description
     = "Request values from the IMD for positive and negative resistances, and isolation state";
   imd_request_values.handler = [this, imd, bus, can]() {
-    core::Result result = imd->updateValues();
-    if (result == core::Result::kFailure) {
+    core::Result update_values_result = imd->updateValues();
+    if (update_values_result == core::Result::kFailure) {
       logger_.log(core::LogLevel::kFatal, "Failed to run IMD::updateValues()");
       return;
     }
     sleep(1);
-    result = can->receive();
-    if (result == core::Result::kFailure) {
+    core::Result can_receive_result = can->receive();
+    if (can_receive_result == core::Result::kFailure) {
       logger_.log(core::LogLevel::kFatal, "Failed to run can.receive()");
       return;
     } else {
