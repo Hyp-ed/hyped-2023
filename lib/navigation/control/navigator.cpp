@@ -3,6 +3,7 @@
 #include <cstdint>
 
 namespace hyped::navigation {
+// TODOLater: check we stop once near calculated safe stopping distance
 
 Navigator::Navigator(core::ILogger &logger, const core::ITimeSource &time)
     : logger_(logger),

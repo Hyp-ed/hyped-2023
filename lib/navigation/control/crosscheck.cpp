@@ -24,17 +24,20 @@ SensorChecks Crosscheck::checkTrajectoryAgreement(const core::Float acceleration
     return SensorChecks::kUnacceptable;
   }
 
-  // check encoders vs keyence
-  SensorChecks encoder_keyence_check
-    = checkEncoderKeyence(encoder_displacement, keyence_displacement);
-  if (encoder_keyence_check == SensorChecks::kUnacceptable) {
-    logger_.log(core::LogLevel::kFatal,
-                "Large disagreement between encoders and keyence. Trajectory cannot be accurately "
-                "calculated.");
-    return SensorChecks::kUnacceptable;
+  // check encoders vs keyence (if we're using keyence)
+  if (is_keyence_active) {
+    SensorChecks encoder_keyence_check
+      = checkEncoderKeyence(encoder_displacement, keyence_displacement);
+    if (encoder_keyence_check == SensorChecks::kUnacceptable) {
+      logger_.log(
+        core::LogLevel::kFatal,
+        "Large disagreement between encoders and keyence. Trajectory cannot be accurately "
+        "calculated.");
+      return SensorChecks::kUnacceptable;
+    }
   }
 
-  logger_.log(core::LogLevel::kInfo, "Trajectory values sucessfully verified");
+  logger_.log(core::LogLevel::kInfo, "Trajectory values successfully verified");
 
   return SensorChecks::kAcceptable;
 }
@@ -45,6 +48,8 @@ SensorChecks Crosscheck::checkEncoderAccelerometer(const core::Float acceleratio
   // check values are within tolerance
   const core::Float difference = acceleration_displacement - encoder_displacement;
   if (std::abs(difference) > kMaxAllowedAccelerometerEncoderDifference) {
+    logger_.log(core::LogLevel::kFatal,
+                "Disagreement between accelerometer and wheel encoders too large");
     return SensorChecks::kUnacceptable;
   }
   return SensorChecks::kAcceptable;
@@ -55,6 +60,8 @@ SensorChecks Crosscheck::checkEncoderKeyence(const core::Float encoder_displacem
 {
   const core::Float difference = encoder_displacement - keyence_displacement;
   if (std::abs(difference) > kMaxAllowedKeyenceEncoderDifference) {
+    logger_.log(core::LogLevel::kFatal,
+                "Disagreement between keyence and wheel encoders too large");
     return SensorChecks::kUnacceptable;
   }
   return SensorChecks::kAcceptable;
