@@ -1,8 +1,8 @@
 import openmct from 'openmct/dist/openmct';
 // import './plugins/lib/http';
 import { DictionaryPlugin } from './plugins/dictionary-plugin';
-import { HistoricalTelemetryPlugin } from './plugins/historical-telemetry-plugin';
-import { RealtimeTelemetryPlugin } from './plugins/realtime-telemetry-plugin';
+// import { HistoricalTelemetryPlugin } from './plugins/historical-telemetry-plugin';
+// import { RealtimeTelemetryPlugin } from './plugins/realtime-telemetry-plugin';
 
 const timeWindow = 24 * 60 * 60 * 1000;
 
@@ -31,24 +31,26 @@ openmct.install(
   }),
 );
 
+openmct.install(DictionaryPlugin())
+
 // Local plugins
-var types = [];
-var dictionaries = [];
+// var types = [];
+// var dictionaries = [];
 
-for (var i = 0; i < dictionaries.length; i++) {
-  openmct.install(
-    DictionaryPlugin({
-      name: dictionaries[i].name,
-      description: dictionaries[i].options.description,
-      key: dictionaries[i].key,
-      type: dictionaries[i].key.telemetry,
-      namespace: dictionaries[i].key.taxonomy,
-    }),
-  );
-  types.push(dictionaries[i].key + '.telemetry');
-}
+// for (var i = 0; i < dictionaries.length; i++) {
+//   openmct.install(
+//     DictionaryPlugin({
+//       name: dictionaries[i].name,
+//       description: dictionaries[i].options.description,
+//       key: dictionaries[i].key,
+//       type: dictionaries[i].key.telemetry,
+//       namespace: dictionaries[i].key.taxonomy,
+//     }),
+//   );
+//   types.push(dictionaries[i].key + '.telemetry');
+// }
 
-openmct.install(HistoricalTelemetryPlugin(types));
-openmct.install(RealtimeTelemetryPlugin(types));
+// openmct.install(HistoricalTelemetryPlugin(types));
+// openmct.install(RealtimeTelemetryPlugin(types));
 
 openmct.start();
