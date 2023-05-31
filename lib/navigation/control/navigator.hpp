@@ -13,6 +13,7 @@
 #include "navigation/filtering/running_means_filter.hpp"
 #include "navigation/preprocessing/accelerometer_trajectory.hpp"
 #include "navigation/preprocessing/preprocess_accelerometer.hpp"
+#include "navigation/preprocessing/preprocess_encoders.hpp"
 #include "navigation/preprocessing/preprocess_keyence.hpp"
 
 namespace hyped::navigation {
@@ -53,6 +54,7 @@ class Navigator : public INavigator {
   // navigation functionality
   KeyencePreprocessor keyence_preprocessor_;
   AccelerometerPreprocessor accelerometer_preprocessor_;
+  EncodersPreprocessor encoders_preprocessor_;
   AccelerometerTrajectoryEstimator accelerometer_trajectory_estimator_;
   Crosscheck crosschecker_;
   RunningMeansFilter running_means_filter_;

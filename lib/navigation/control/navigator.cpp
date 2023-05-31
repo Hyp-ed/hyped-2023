@@ -11,14 +11,14 @@ Navigator::Navigator(core::ILogger &logger, const core::ITimeSource &time)
       accelerometer_preprocessor_(logger, time),
       accelerometer_trajectory_estimator_(time),
       crosschecker_(logger, time),
-      running_means_filter_(logger, time)
+      running_means_filter_(logger, time),
+      encoders_preprocessor_(logger)
 {
-  // TODOLater: implement, add log and timesource so far
-  // TODOLater: instantiate everything?
 }
 
 std::optional<core::Trajectory> Navigator::currentTrajectory()
 {
+  // get mean values from arrays to use in crosschecking
   core::Float mean_encoder_value = 0;
   for (std::size_t i = 0; i < core::kNumEncoders; ++i) {
     mean_encoder_value += static_cast<core::Float>(previous_encoder_reading_.at(i));
@@ -31,9 +31,11 @@ std::optional<core::Trajectory> Navigator::currentTrajectory()
   }
   mean_keyence_value /= core::kNumKeyence;
 
+  // cross check all estimates to ensure any returned trajectory is accurate
   const SensorChecks check_trajectory = crosschecker_.checkTrajectoryAgreement(
     trajectory_.displacement, mean_encoder_value, mean_keyence_value);
 
+  // check fail state
   if (check_trajectory == SensorChecks::kUnacceptable) {
     logger_.log(core::LogLevel::kFatal,
                 "Navigation sensors are in disagreement. Unable to accurately determine "
@@ -64,19 +66,24 @@ void Navigator::keyenceUpdate(const core::KeyenceData &keyence_data)
 
 void Navigator::encoderUpdate(const core::EncoderData &encoder_data)
 {
-  /*
-  TODOLater:
-  - ensure encoder data is strictly increasing
-  - run preprocessing
-  - update trajectory_.displacement with mean of processed data
-  */
+  // check encoder data strictly increasing
   for (std::size_t i = 0; i < core::kNumEncoders; ++i) {
     if (previous_encoder_reading_.at(i) < encoder_data.at(i)) {
       logger_.log(core::LogLevel::kFatal, "Encoder data is decreasing");
     }
   }
-  // Still TODOLater: instnatiate and use encoders preprocessing. Then update
-  // previous_encoder_reading_
+
+  // run preprocessing on encoder data
+  auto clean_encoder_data = encoders_preprocessor_.processData(encoder_data);
+
+  // check fail state
+  if (!clean_encoder_data) {
+    logger_.log(core::LogLevel::kFatal, "Encoder data has failed preprocessing");
+  }
+
+  // update internal value
+  previous_encoder_reading_ = clean_encoder_data.value();
+  logger_.log(core::LogLevel::kInfo, "Encoder data successfully updated in navigation");
 }
 
 void Navigator::accelerometerUpdate(
@@ -105,6 +112,8 @@ void Navigator::accelerometerUpdate(
   }
   unfiltered_acceleration /= core::kNumAccelerometers;
 
+  // run filtering on estimate
+  // TODOLater: change from rolling means to kalamn
   const core::Float filtered_acceleration
     = running_means_filter_.updateEstimate(unfiltered_acceleration);
 
