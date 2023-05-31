@@ -10,6 +10,7 @@
 #include "core/logger.hpp"
 #include "core/types.hpp"
 #include "navigation/control/consts.hpp"
+#include "navigation/filtering/running_means_filter.hpp"
 #include "navigation/preprocessing/accelerometer_trajectory.hpp"
 #include "navigation/preprocessing/preprocess_accelerometer.hpp"
 #include "navigation/preprocessing/preprocess_keyence.hpp"
@@ -54,6 +55,7 @@ class Navigator : public INavigator {
   AccelerometerPreprocessor accelerometer_preprocessor_;
   AccelerometerTrajectoryEstimator accelerometer_trajectory_estimator_;
   Crosscheck crosschecker_;
+  RunningMeansFilter running_means_filter_;
 
   // previous readings
   // TODO: remove?

@@ -10,7 +10,8 @@ Navigator::Navigator(core::ILogger &logger, const core::ITimeSource &time)
       keyence_preprocessor_(logger),
       accelerometer_preprocessor_(logger, time),
       accelerometer_trajectory_estimator_(time),
-      crosschecker_(logger, time)
+      crosschecker_(logger, time),
+      running_means_filter_(logger, time)
 {
   // TODOLater: implement, add log and timesource so far
   // TODOLater: instantiate everything?
@@ -99,17 +100,20 @@ void Navigator::accelerometerUpdate(
   }
 
   // get mean value
-  core::Float acceleration = 0;
+  core::Float unfiltered_acceleration = 0;
   for (std::size_t i = 0; i < core::kNumAccelerometers; ++i) {
-    acceleration += clean_accelerometer_data.value().at(i);
+    unfiltered_acceleration += clean_accelerometer_data.value().at(i);
   }
-  acceleration /= core::kNumAccelerometers;
+  unfiltered_acceleration /= core::kNumAccelerometers;
 
   // TODO: implement filter
+  const core::Float filtered_acceleration
+    = running_means_filter_.updateEstimate(unfiltered_acceleration);
 
   // Numerically integrate data estimates, update internal class values
-  accelerometer_trajectory_estimator_.update(acceleration, accelerometer_data.at(0).measured_at);
-  trajectory_.acceleration = acceleration;
+  accelerometer_trajectory_estimator_.update(filtered_acceleration,
+                                             accelerometer_data.at(0).measured_at);
+  trajectory_.acceleration = filtered_acceleration;
   trajectory_.velocity     = accelerometer_trajectory_estimator_.getVelocityEstimate();
   trajectory_.displacement = accelerometer_trajectory_estimator_.getDisplacementEstimate();
 }
