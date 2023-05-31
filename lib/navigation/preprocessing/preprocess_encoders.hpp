@@ -1,6 +1,4 @@
 #pragma once
-#include "consts.hpp"
-
 #include <cmath>
 
 #include <algorithm>
@@ -10,6 +8,7 @@
 
 #include <core/logger.hpp>
 #include <core/types.hpp>
+#include <navigation/control/consts.hpp>
 
 namespace hyped::navigation {
 
