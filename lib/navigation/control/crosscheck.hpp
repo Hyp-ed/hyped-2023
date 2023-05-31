@@ -53,7 +53,7 @@ class Crosscheck {
 
   core::ILogger &logger_;
   const core::ITimeSource &time_;
-  static constexpr uint8_t kMaxAllowedAccelerometerEncoderDifference = 5;
-  static constexpr uint8_t kMaxAllowedKeyenceEncoderDifference       = 12;
+  static constexpr std::uint8_t kMaxAllowedAccelerometerEncoderDifference = 5;
+  static constexpr std::uint8_t kMaxAllowedKeyenceEncoderDifference       = 12;
 };
 }  // namespace hyped::navigation

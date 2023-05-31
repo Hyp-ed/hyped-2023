@@ -58,7 +58,6 @@ class Navigator : public INavigator {
   RunningMeansFilter running_means_filter_;
 
   // previous readings
-  // TODO: remove?
   core::EncoderData previous_encoder_reading_;
   core::KeyenceData previous_keyence_reading_;
 

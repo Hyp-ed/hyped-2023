@@ -19,7 +19,6 @@ Navigator::Navigator(core::ILogger &logger, const core::ITimeSource &time)
 
 std::optional<core::Trajectory> Navigator::currentTrajectory()
 {
-  // TODO: get mean encoder and keyence readings
   core::Float mean_encoder_value = 0;
   for (std::size_t i = 0; i < core::kNumEncoders; ++i) {
     mean_encoder_value += static_cast<core::Float>(previous_encoder_reading_.at(i));
@@ -106,7 +105,6 @@ void Navigator::accelerometerUpdate(
   }
   unfiltered_acceleration /= core::kNumAccelerometers;
 
-  // TODO: implement filter
   const core::Float filtered_acceleration
     = running_means_filter_.updateEstimate(unfiltered_acceleration);
 

@@ -8,7 +8,6 @@ Crosscheck::Crosscheck(core::ILogger &logger, const core::ITimeSource &time)
     : time_(time),
       logger_(logger)
 {
-  // TODOLater: implement
 }
 
 SensorChecks Crosscheck::checkTrajectoryAgreement(const core::Float acceleration_displacement,
