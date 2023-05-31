@@ -724,6 +724,7 @@ void Repl::addImdCommands(const std::string &bus)
       logger_.log(core::LogLevel::kFatal, "Failed to run IMD::updateValues()");
       return;
     }
+    // Allow time for IMD to respond over CAN
     sleep(1);
     core::Result can_receive_result = can->receive();
     if (can_receive_result == core::Result::kFailure) {
