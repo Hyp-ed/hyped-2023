@@ -4,6 +4,7 @@
 
 #include <array>
 
+#include <consts.hpp>
 #include <core/logger.hpp>
 #include <core/time.hpp>
 #include <core/timer.hpp>
@@ -54,6 +55,7 @@ class Crosscheck {
   core::ILogger &logger_;
   const core::ITimeSource &time_;
   static constexpr std::uint8_t kMaxAllowedAccelerometerEncoderDifference = 5;
-  static constexpr std::uint8_t kMaxAllowedKeyenceEncoderDifference       = 12;
+  // Allow for 1 stripe error plus some error in encoder data
+  static constexpr std::uint8_t kMaxAllowedKeyenceEncoderDifference = kStripeDistance + 2;
 };
 }  // namespace hyped::navigation
