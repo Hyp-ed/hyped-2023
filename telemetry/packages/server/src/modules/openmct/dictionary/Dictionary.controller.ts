@@ -14,7 +14,7 @@ export class DictionaryController {
     };
   }
 
-  @Get('pod/:podId')
+  @Get('pods/:podId')
   getPod(@Param('podId') podId: string): OpenMctPod {
     return this.dictionaryService.getPod(podId);
   }

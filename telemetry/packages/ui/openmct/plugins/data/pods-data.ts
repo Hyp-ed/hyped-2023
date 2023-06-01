@@ -12,7 +12,7 @@ export function fetchPodIds() {
 
 export function fetchPod(id: string) {
   return http
-    .get(`openmct/dictionary/pod/${id}`)
+    .get(`openmct/dictionary/pods/${id}`)
     .json<OpenMctPod>()
     .then((data) => {
       return data;
