@@ -16,8 +16,8 @@ export type RangeMeasurement = BaseMeasurement & {
 export type EnumMeasurement = BaseMeasurement & {
   format: 'enum';
   enumerations: {
-    key: string;
-    value: string;
+    value: number;
+    string: string;
   }[];
 }
 

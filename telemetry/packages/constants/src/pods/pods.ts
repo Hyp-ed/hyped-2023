@@ -70,12 +70,12 @@ export const pods: Pods = {
         unit: 'brakes engaged',
         enumerations: [
           {
-            key: 'ON',
-            value: '1',
+            value: 1,
+            string: 'ON',
           },
           {
-            key: 'OFF',
-            value: '0',
+            value: 0,
+            string: 'OFF',
           },
         ],
       },
@@ -148,12 +148,12 @@ export const pods: Pods = {
         unit: 'brakes engaged',
         enumerations: [
           {
-            key: 'ON',
-            value: '1',
+            value: 1,
+            string: 'ON',
           },
           {
-            key: 'OFF',
-            value: '0',
+            value: 0,
+            string: 'OFF',
           },
         ],
       },

@@ -10,8 +10,8 @@ export type OpenMctMeasurement = {
     min?: number;
     max?: number;
     enumerations?: {
-      key: string;
-      value: string;
+      value: number;
+      string: string;
     }[];
     hints?: {
       range: number;
