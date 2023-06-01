@@ -32,19 +32,19 @@ class Navigator : public INavigator {
    *
    * @param keyence_data
    */
-  void keyenceUpdate(const core::KeyenceData &keyence_data);
+  core::Result keyenceUpdate(const core::KeyenceData &keyence_data);
   /**
    * @brief preprocesses encoder data and updates trajectory
    *
    * @param encoder_data
    */
-  void encoderUpdate(const core::EncoderData &encoder_data);
+  core::Result encoderUpdate(const core::EncoderData &encoder_data);
   /**
    * @brief preprocesses accelerometer data and updates trajectory
    *
    * @param accelerometer_data
    */
-  void accelerometerUpdate(
+  core::Result accelerometerUpdate(
     const std::array<core::RawAccelerationData, core::kNumAccelerometers> &accelerometer_data);
 
  private:

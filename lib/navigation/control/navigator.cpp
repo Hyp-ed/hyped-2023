@@ -44,33 +44,44 @@ std::optional<core::Trajectory> Navigator::currentTrajectory()
     return std::nullopt;
   }
 
+  // TODOLater: check braking here!
+  if (trajectory_.displacement
+      > static_cast<core::Float>(kTrackLength - (1.5 * kBrakingDistance))) {
+    logger_.log(core::LogLevel::kFatal, "Time to break!");
+    return std::nullopt;
+  }
+
   return trajectory_;
 }
 
-void Navigator::keyenceUpdate(const core::KeyenceData &keyence_data)
+core::Result Navigator::keyenceUpdate(const core::KeyenceData &keyence_data)
 {
   // Check keyence strictly increasing
   if (keyence_data.at(0) < previous_keyence_reading_.at(0)) {
     logger_.log(core::LogLevel::kFatal, "Keyence data is decreasing");
+    return core::Result::kFailure;
   }
 
   // Run preprocessing on keyence and check result
   const SensorChecks keyence_check = keyence_preprocessor_.checkKeyenceAgrees(keyence_data);
   if (keyence_check == SensorChecks::kUnacceptable) {
     logger_.log(core::LogLevel::kFatal, "Keyence data has failed preprocessing");
+    return core::Result::kFailure;
   }
 
   // Update old keyence reading
   previous_keyence_reading_ = keyence_data;
   logger_.log(core::LogLevel::kInfo, "Keyence data successfully updated in Navigation");
+  return core::Result::kSuccess;
 }
 
-void Navigator::encoderUpdate(const core::EncoderData &encoder_data)
+core::Result Navigator::encoderUpdate(const core::EncoderData &encoder_data)
 {
   // check encoder data strictly increasing
   for (std::size_t i = 0; i < core::kNumEncoders; ++i) {
     if (previous_encoder_reading_.at(i) < encoder_data.at(i)) {
       logger_.log(core::LogLevel::kFatal, "Encoder data is decreasing");
+      return core::Result::kFailure;
     }
   }
 
@@ -80,14 +91,16 @@ void Navigator::encoderUpdate(const core::EncoderData &encoder_data)
   // check fail state
   if (!clean_encoder_data) {
     logger_.log(core::LogLevel::kFatal, "Encoder data has failed preprocessing");
+    return core::Result::kFailure;
   }
 
   // update internal value
   previous_encoder_reading_ = clean_encoder_data.value();
   logger_.log(core::LogLevel::kInfo, "Encoder data successfully updated in navigation");
+  return core::Result::kSuccess;
 }
 
-void Navigator::accelerometerUpdate(
+core::Result Navigator::accelerometerUpdate(
   const std::array<core::RawAccelerationData, core::kNumAccelerometers> &accelerometer_data)
 {
   // reformat raw data
@@ -104,6 +117,7 @@ void Navigator::accelerometerUpdate(
   auto clean_accelerometer_data = accelerometer_preprocessor_.processData(reformatted_data);
   if (!clean_accelerometer_data) {
     logger_.log(core::LogLevel::kFatal, "Reliability error in accelerometer data");
+    return core::Result::kFailure;
   }
 
   // get mean value
@@ -124,6 +138,8 @@ void Navigator::accelerometerUpdate(
   trajectory_.acceleration = filtered_acceleration;
   trajectory_.velocity     = accelerometer_trajectory_estimator_.getVelocityEstimate();
   trajectory_.displacement = accelerometer_trajectory_estimator_.getDisplacementEstimate();
+  logger_.log(core::LogLevel::kInfo, "Navigation trjectory successfully updated.");
+  return core::Result::kSuccess;
 }
 
 }  // namespace hyped::navigation

@@ -30,12 +30,13 @@ using JacobianMatrix
   = Eigen::Matrix<core::Float, extended_dimension, state_dimension>;  // higher order derivatives
                                                                       // for propogation
 
+// TODOLater: move most of these to a config file
 static constexpr core::Float kTrackLength       = 100.0;  // m
 static constexpr core::Float kBrakingDistance   = 20.0;   // m TODOLater:check!
 static constexpr core::Float kPi                = 3.14159265359;
 static constexpr core::Float kWheelCicumference = kPi * 0.1;  // m TODOLater: check!
 static constexpr core::Float kStripeDistance    = 6.0;
-static constexpr bool is_keyence_active         = true;
+static constexpr bool kIsKeyenceActive          = true;
 
 // define sensor checks return type
 enum class SensorChecks { kUnacceptable = 0, kAcceptable };
@@ -61,9 +62,10 @@ struct Quartile {
 
 class INavigator {
  public:
-  virtual std::optional<core::Trajectory> currentTrajectory()                            = 0;
-  virtual void keyenceUpdate(const core::KeyenceData &keyence_data)                      = 0;
-  virtual void encoderUpdate(const core::EncoderData &encoder_data)                      = 0;
-  virtual void accelerometerUpdate(const core::RawAccelerometerData &accelerometer_data) = 0;
+  virtual std::optional<core::Trajectory> currentTrajectory()               = 0;
+  virtual core::Result keyenceUpdate(const core::KeyenceData &keyence_data) = 0;
+  virtual core::Result encoderUpdate(const core::EncoderData &encoder_data) = 0;
+  virtual core::Result accelerometerUpdate(const core::RawAccelerometerData &accelerometer_data)
+    = 0;
 };
 }  // namespace hyped::navigation

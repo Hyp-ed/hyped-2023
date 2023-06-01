@@ -25,7 +25,7 @@ SensorChecks Crosscheck::checkTrajectoryAgreement(const core::Float acceleration
   }
 
   // check encoders vs keyence (if we're using keyence)
-  if (is_keyence_active) {
+  if (kIsKeyenceActive) {
     SensorChecks encoder_keyence_check
       = checkEncoderKeyence(encoder_displacement, keyence_displacement);
     if (encoder_keyence_check == SensorChecks::kUnacceptable) {
