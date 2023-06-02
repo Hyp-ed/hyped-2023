@@ -5,7 +5,12 @@
 #include <optional>
 
 #include <core/types.hpp>
+
+#if defined(__linux__)
 #include <eigen3/Eigen/Dense>
+#elif defined(!__linux__)
+#include <Eigen/Dense>
+#endif
 
 namespace hyped::navigation {
 
