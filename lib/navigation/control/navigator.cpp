@@ -143,6 +143,14 @@ core::Result Navigator::accelerometerUpdate(
   trajectory_.acceleration = filtered_acceleration;
   trajectory_.velocity     = accelerometer_trajectory_estimator_.getVelocityEstimate();
   trajectory_.displacement = accelerometer_trajectory_estimator_.getDisplacementEstimate();
+
+  // check if we need to break
+  if (trajectory_.displacement
+      > static_cast<core::Float>(kTrackLength - (1.5 * kBrakingDistance))) {
+    logger_.log(core::LogLevel::kFatal, "Time to break!");
+    return core::Result::kFailure;
+  }
+
   logger_.log(core::LogLevel::kInfo, "Navigation trjectory successfully updated.");
   return core::Result::kSuccess;
 }
