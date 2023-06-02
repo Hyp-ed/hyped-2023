@@ -8,7 +8,7 @@
 
 #if defined(__linux__)
 #include <eigen3/Eigen/Dense>
-#elif defined(!__linux__)
+#else
 #include <Eigen/Dense>
 #endif
 
