@@ -8,8 +8,8 @@
 
 #if defined(__linux__)
 #include <eigen3/Eigen/Dense>
-#else
-#include <Eigen>
+//#else
+// TODO: add appropriate eigen include for mac here
 #endif
 
 namespace hyped::navigation {
