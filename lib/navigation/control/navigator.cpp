@@ -17,6 +17,8 @@ Navigator::Navigator(core::ILogger &logger, const core::ITimeSource &time)
 {
 }
 
+// TODOLater: make sure that whoever calls this calls a full fail state if return fo this function
+// is std::nullopt
 std::optional<core::Trajectory> Navigator::currentTrajectory()
 {
   // get mean values from arrays to use in crosschecking
@@ -44,7 +46,7 @@ std::optional<core::Trajectory> Navigator::currentTrajectory()
     return std::nullopt;
   }
 
-  // TODOLater: check braking here!
+  // TODOLater: check braking implementation here!
   if (trajectory_.displacement
       > static_cast<core::Float>(kTrackLength - (1.5 * kBrakingDistance))) {
     logger_.log(core::LogLevel::kFatal, "Time to break!");
@@ -54,6 +56,7 @@ std::optional<core::Trajectory> Navigator::currentTrajectory()
   return trajectory_;
 }
 
+// TODOLater: check input from sensors matches this
 core::Result Navigator::keyenceUpdate(const core::KeyenceData &keyence_data)
 {
   // Check keyence strictly increasing
@@ -75,6 +78,7 @@ core::Result Navigator::keyenceUpdate(const core::KeyenceData &keyence_data)
   return core::Result::kSuccess;
 }
 
+// TODOLater: check input from sensors matches this
 core::Result Navigator::encoderUpdate(const core::EncoderData &encoder_data)
 {
   // check encoder data strictly increasing
@@ -100,6 +104,7 @@ core::Result Navigator::encoderUpdate(const core::EncoderData &encoder_data)
   return core::Result::kSuccess;
 }
 
+// TODOLater: check input from sensors matches this
 core::Result Navigator::accelerometerUpdate(
   const std::array<core::RawAccelerationData, core::kNumAccelerometers> &accelerometer_data)
 {
