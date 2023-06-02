@@ -4,9 +4,14 @@
 #include <functional>
 #include <memory>
 
-#include <Eigen/Dense>
 #include <core/time.hpp>
 #include <core/types.hpp>
+
+#if defined(__linux__)
+#include <eigen3/Eigen/Dense>
+#else
+#include <Eigen/Dense>
+#endif
 
 namespace hyped::navigation {
 

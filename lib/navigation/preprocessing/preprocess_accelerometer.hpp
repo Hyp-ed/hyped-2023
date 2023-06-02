@@ -11,8 +11,13 @@
 #include <core/time.hpp>
 #include <core/timer.hpp>
 #include <core/types.hpp>
-#include <eigen3/Eigen/Dense>
 #include <navigation/control/consts.hpp>
+
+#if defined(__linux__)
+#include <eigen3/Eigen/Dense>
+#else
+#include <Eigen/Dense>
+#endif
 
 namespace hyped::navigation {
 class AccelerometerPreprocessor {
