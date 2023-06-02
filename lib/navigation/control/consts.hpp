@@ -8,6 +8,8 @@
 
 #if defined(__linux__)
 #include <eigen3/Eigen/Dense>
+#else
+#include <Eigen>
 #endif
 
 namespace hyped::navigation {
