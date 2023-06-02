@@ -432,7 +432,7 @@ void Repl::addCanCommands(const std::string &bus)
 
 void Repl::addGpioReadCommands(const std::uint8_t pin)
 {
-  const auto optional_gpio_reader = gpio_.getReader(pin);
+  const auto optional_gpio_reader = gpio_.getReader(pin, io::Edge::kNone);
   if (!optional_gpio_reader) {
     logger_.log(core::LogLevel::kFatal, "Failed to create GPIO reader on pin %d", pin);
     return;
@@ -458,7 +458,7 @@ void Repl::addGpioReadCommands(const std::uint8_t pin)
 
 void Repl::addGpioWriteCommands(const std::uint8_t pin)
 {
-  const auto optional_gpio_writer = gpio_.getWriter(pin);
+  const auto optional_gpio_writer = gpio_.getWriter(pin, io::Edge::kNone);
   if (!optional_gpio_writer) {
     logger_.log(core::LogLevel::kFatal, "Failed to create GPIO writer on pin %d", pin);
     return;
@@ -473,7 +473,7 @@ void Repl::addGpioWriteCommands(const std::uint8_t pin)
   gpio_write_command.description = description.str();
   gpio_write_command.handler     = [this, gpio_writer, pin]() {
     std::cout << "Enter GPIO value: ";
-    std::uint8_t value;
+    std::uint16_t value;
     std::cin >> std::hex >> value;
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     core::DigitalSignal signal;
