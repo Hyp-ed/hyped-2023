@@ -52,8 +52,8 @@ export class DictionaryService {
               source: 'timestamp',
               name: 'Timestamp',
               format: 'utc',
-              units: {
-                domain: 'time',
+              hints: {
+                domain: 1,
               },
             },
           ],

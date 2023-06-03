@@ -14,7 +14,8 @@ export type OpenMctMeasurement = {
       string: string;
     }[];
     hints?: {
-      range: number;
+      range?: number;
+      domain?: number;
     };
     source?: string;
     units?: {
