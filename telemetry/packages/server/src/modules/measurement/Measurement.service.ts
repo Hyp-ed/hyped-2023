@@ -43,12 +43,20 @@ export class MeasurementService {
       .tag('format', measurement.format)
       .floatField('value', value);
 
-    this.influxService.write.writePoint(point);
+    try {
+      this.influxService.write.writePoint(point);
 
-    this.logger.verbose(
-      `Added measurement {${props.podId}/${props.measurementKey}}: ${props.value}`,
-      MeasurementService.name,
-    );
+      this.logger.verbose(
+        `Added measurement {${props.podId}/${props.measurementKey}}: ${props.value}`,
+        MeasurementService.name,
+      );
+    } catch (e) {
+      this.logger.error(
+        `Failed to add measurement {${props.podId}/${props.measurementKey}}: ${props.value}`,
+        e,
+        MeasurementService.name,
+      );
+    }
   }
 
   private logValidationError(message: string, props: MeasurementReading) {
