@@ -3,11 +3,10 @@ import openmct from 'openmct/dist/openmct';
 import { DictionaryPlugin } from './plugins/dictionary-plugin';
 import { HistoricalTelemetryPlugin } from './plugins/historical-telemetry-plugin';
 
-const timeWindow = 24 * 60 * 60 * 1000;
+const timeWindow = 15 * 60 * 1000;
 
 openmct.setAssetPath('/openmct-lib');
 
-// Bundled plugins
 openmct.install(openmct.plugins.LocalStorage());
 openmct.install(openmct.plugins.MyItems());
 openmct.install(openmct.plugins.UTCTimeSystem());
