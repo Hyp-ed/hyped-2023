@@ -2,7 +2,7 @@ import { OpenMCT } from 'openmct/dist/openmct';
 import { ObjectIdentitifer } from '../types/ObjectIdentifier';
 import { fetchPod, fetchPodIds } from './data/pods-data';
 import { fetchObjectTypes } from './data/object-types-data';
-import { getPodIdFromKey } from './utils/getPodIdFromKey';
+import { parsePodId } from './utils/parsePodId';
 
 const podObjectProvider = {
   get: (identifier: ObjectIdentitifer) => {
@@ -10,7 +10,7 @@ const podObjectProvider = {
       throw new Error('Invalid identifier');
     }
 
-    const podId = getPodIdFromKey(identifier.key);
+    const podId = parsePodId(identifier.key);
     return fetchPod(podId).then((pod) => {
       return {
         identifier,
@@ -22,13 +22,13 @@ const podObjectProvider = {
   },
 };
 
-const measurementObjectProvider = {
+const measurementsObjectProvider = {
   get: (identifier: ObjectIdentitifer) => {
     if (!identifier.namespace.startsWith('hyped.pod_')) {
       throw new Error('Invalid identifier');
     }
 
-    const podId = getPodIdFromKey(identifier.namespace);
+    const podId = parsePodId(identifier.namespace);
     return fetchPod(podId).then((pod) => {
       const measurement = pod.measurements.find(
         (measurement) => measurement.key === identifier.key,
@@ -59,7 +59,7 @@ const compositionProvider = {
     );
   },
   load: (domainObject: any) => {
-    const podId = getPodIdFromKey(domainObject.identifier.key);
+    const podId = parsePodId(domainObject.identifier.key);
     return fetchPod(podId).then((pod) =>
       pod.measurements.map((measurement: any) => {
         return {
@@ -85,7 +85,7 @@ export function DictionaryPlugin() {
           );
           openmct.objects.addProvider(
             `hyped.pod_${id}`,
-            measurementObjectProvider,
+            measurementsObjectProvider,
           );
         });
 
