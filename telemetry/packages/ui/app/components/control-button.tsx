@@ -1,11 +1,17 @@
-export interface ButtonProps {
+import { Button } from './ui/button';
+
+export interface ControlButtonProps {
   text: string;
   colour: 'green' | 'red';
   onClick: () => void;
 }
 
-export const Button = ({ text, colour, onClick }: ButtonProps) => (
-  <button
+export const ControlButton = ({
+  text,
+  colour,
+  onClick,
+}: ControlButtonProps) => (
+  <Button
     className={`px-4 py-12 rounded-lg shadow-lg ${
       colour == 'red'
         ? 'bg-red-600 hover:bg-red-700'
@@ -16,5 +22,5 @@ export const Button = ({ text, colour, onClick }: ButtonProps) => (
     onClick={onClick}
   >
     {text.toUpperCase()}
-  </button>
+  </Button>
 );

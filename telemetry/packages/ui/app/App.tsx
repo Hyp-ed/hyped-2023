@@ -1,8 +1,14 @@
-import { Button, Toggle, Logo, StatusIndicator } from './components';
+import {
+  Logo,
+  StatusIndicator,
+  ControlButton,
+  ControlSwitch,
+} from '@/components';
+import { StatusType } from '@/types/StatusType';
 
 const App = () => {
   const LATENCY = 11; // temp
-  const STATUS: 'connected' | 'disconnected' | 'connecting' = 'connected';
+  const STATUS: StatusType = 'connected';
 
   /**
    * Starts pod
@@ -56,16 +62,25 @@ const App = () => {
         <div>
           <div className="flex flex-col gap-4 mb-16">
             <p className="text-3xl font-title font-bold underline">Options</p>
-            <Toggle onChange={toggleMotorCooling} text="Motor Cooling" />
-            <Toggle
-              onChange={toggleActiveSuspension}
-              text="Active Suspension"
+            <ControlSwitch
+              id="motor-cooling"
+              label="Motor Cooling"
+              onCheckedChange={toggleMotorCooling}
             />
-            <Toggle onChange={toggleActiveBraking} text="Active Braking" />
+            <ControlSwitch
+              id="active-suspension"
+              label="Active Suspension"
+              onCheckedChange={toggleActiveSuspension}
+            />
+            <ControlSwitch
+              id="active-braking"
+              label="Active Braking"
+              onCheckedChange={toggleActiveBraking}
+            />
           </div>
           <div className="flex flex-col gap-4">
-            <Button onClick={go} colour="green" text="GO" />
-            <Button onClick={stop} colour="red" text="STOP" />
+            <ControlButton onClick={go} colour="green" text="GO" />
+            <ControlButton onClick={stop} colour="red" text="STOP" />
           </div>
         </div>
         <Logo />
