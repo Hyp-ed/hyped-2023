@@ -5,7 +5,7 @@ import { Injectable } from '@nestjs/common';
 @Injectable()
 export class DictionaryService {
   getDictionary(): OpenMctDictionary {
-    const dictionary: any = {};
+    const dictionary: OpenMctDictionary = {};
     POD_IDS.forEach((podId) => {
       dictionary[podId] = this.getPod(podId);
     });
