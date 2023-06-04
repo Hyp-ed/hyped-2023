@@ -11,6 +11,7 @@ export const ControlButton = ({
   colour,
   onClick,
 }: ControlButtonProps) => (
+  // @ts-ignore
   <Button
     className={`px-4 py-12 rounded-lg shadow-lg ${
       colour == 'red'

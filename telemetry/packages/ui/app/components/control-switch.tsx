@@ -13,7 +13,9 @@ export const ControlSwitch = ({
   id,
 }: ControlSwitchProps) => (
   <div className="flex justify-between items-center">
+    {/* @ts-ignore */}
     <Label htmlFor={id}>{label}</Label>
+    {/* @ts-ignore */}
     <Switch id={id} onCheckedChange={onCheckedChange} />
   </div>
 );
