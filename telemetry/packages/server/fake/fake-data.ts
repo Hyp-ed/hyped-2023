@@ -2,7 +2,7 @@
 import mqtt from 'mqtt';
 import random from 'random';
 import { pods } from '@hyped/telemetry-constants';
-import { Measurement } from '@hyped/telemetry-constants/dist/pods/pods.types';
+import { Measurement } from '@hyped/telemetry-types';
 
 const client = mqtt.connect('mqtt://localhost:1883');
 

@@ -1,5 +1,3 @@
-export const POD_IDS = ['1'] as const;
-
 export type BaseMeasurement = {
   name: string;
   key: string;
@@ -18,8 +16,8 @@ export type RangeMeasurement = BaseMeasurement & {
 export type EnumMeasurement = BaseMeasurement & {
   format: 'enum';
   enumerations: {
-    key: string;
-    value: string;
+    value: number;
+    string: string;
   }[];
 }
 
@@ -27,8 +25,8 @@ export type Measurement = RangeMeasurement | EnumMeasurement;
 
 export type Pod = {
   name: string;
-  key: string;
+  id: number;
   measurements: Record<string, Measurement>;
 }
 
-export type Pods = Record<typeof POD_IDS[number], Pod>;
+export type Pods = Record<string, Pod>;
