@@ -15,7 +15,7 @@ setup(
     zip_safe=True,
     maintainer='David Beechey',
     maintainer_email='s2206112@ed.ac.uk',
-    description='TODO: Package description',
+    description='Converts ROS messages to MQTT for telemetry system.',
     license='TODO: License declaration',
     tests_require=['pytest'],
     entry_points={

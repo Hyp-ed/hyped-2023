@@ -24,18 +24,18 @@ class MinimalPublisher(Node):
         super().__init__('minimal_publisher')
         self.publisher1_ = self.create_publisher(String, 'topic1', 10)
         self.publisher2_ = self.create_publisher(String, 'topic2', 10)
-        timer_period = 0.5  # seconds
+        timer_period = 1  # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
         self.i = 0
 
     def timer_callback(self):
         msg1 = String()
-        msg1.data = 'Hello World (1): %d' % self.i
+        msg1.data = 'Topic 1: %d' % self.i
         self.publisher1_.publish(msg1)
         self.get_logger().info('Publishing: "%s"' % msg1.data)
 
         msg2 = String()
-        msg2.data = 'Hello World (2): %d' % self.i
+        msg2.data = 'Topic 2: %d' % self.i
         self.publisher2_.publish(msg2)
         self.get_logger().info('Publishing: "%s"' % msg2.data)
 
