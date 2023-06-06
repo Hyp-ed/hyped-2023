@@ -15,15 +15,15 @@
 import rclpy
 from rclpy.node import Node
 
-from std_msgs.msg import String
+from std_msgs.msg import String, Float32
 
 
-class MinimalPublisher(Node):
+class ROSTestPublisher(Node):
 
     def __init__(self):
-        super().__init__('minimal_publisher')
+        super().__init__('ros_test_publisher')
         self.publisher1_ = self.create_publisher(String, 'ros1', 10)
-        self.publisher2_ = self.create_publisher(String, 'ros2', 10)
+        self.publisher2_ = self.create_publisher(Float32, 'ros2', 10)
         timer_period = 1  # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
         self.i = 0
@@ -32,12 +32,12 @@ class MinimalPublisher(Node):
         msg1 = String()
         msg1.data = 'ros1: %d' % self.i
         self.publisher1_.publish(msg1)
-        self.get_logger().info('ROS Publishing: "%s"' % msg1.data)
+        self.get_logger().info(f'ROS Publishing: {msg1.data}')
 
-        msg2 = String()
-        msg2.data = 'ro2: %d' % self.i
+        msg2 = Float32()
+        msg2.data = float(self.i)
         self.publisher2_.publish(msg2)
-        self.get_logger().info('ROS Publishing: "%s"' % msg2.data)
+        self.get_logger().info(f'ROS Publishing: {str(msg2.data)}')
 
         self.i += 1
 
@@ -45,7 +45,7 @@ class MinimalPublisher(Node):
 def main(args=None):
     rclpy.init(args=args)
 
-    minimal_publisher = MinimalPublisher()
+    minimal_publisher = ROSTestPublisher()
 
     rclpy.spin(minimal_publisher)
 

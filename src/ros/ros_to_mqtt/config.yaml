@@ -4,21 +4,22 @@ mqtt:
     host: localhost
     port: 1883
     keepalive: 60
+  qos: 0
 ros-to-mqtt:
   - ros_topic_name: "ros1"
-    message_type: "std_msgs/String"
-    function: "callback1"
+    message_type: "string"
+    function: "string_callback"
     mqtt_topic_name: "ros1"
   - ros_topic_name: "ros2"
-    message_type: "std_msgs/String"
-    function: "callback2"
+    message_type: "float"
+    function: "float_callback"
     mqtt_topic_name: "ros2"
 mqtt-to-ros:
   - mqtt_topic_name: "mqtt1"
-    message_type: "std_msgs/String"
+    message_type: "string"
     function: "callback3"
     ros_topic_name: "mqtt1"
   - mqtt_topic_name: "mqtt2"
-    message_type: "std_msgs/String"
+    message_type: "float"
     function: "callback4"
     ros_topic_name: "mqtt2"

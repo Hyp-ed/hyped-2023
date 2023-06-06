@@ -1,9 +1,9 @@
 import paho.mqtt.client as mqtt
-
-# The callback for when the client receives a CONNACK response from the server.
+import yaml
 
 
 def on_connect(client, userdata, flags, rc):
+    """ The callback for when the client receives a CONNACK response from the server. """
     print("Connected with result code "+str(rc))
 
     # Subscribing in on_connect() means that if we lose the connection and
@@ -12,18 +12,23 @@ def on_connect(client, userdata, flags, rc):
     # subscribe to all topics
     client.subscribe("#")
 
-# The callback for when a PUBLISH message is received from the server.
-
 
 def on_message(client, userdata, msg):
-    print(f"MQTT LISTEN: {msg.topic} {str(msg.payload)}")
+    """ The callback for when a PUBLISH message is received from the server."""
+    print(f"MQTT Listener: {msg.topic} {str(msg.payload)}")
 
 
+# Create an MQTT client
 client = mqtt.Client()
+
 client.on_connect = on_connect
 client.on_message = on_message
 
-client.connect("localhost", 1883, 60)
+# Connect to the MQTT broker
+with open("config.yaml", "r") as config_file:
+    config = yaml.safe_load(config_file)
+    client.connect(config["mqtt"]["connection"]["host"],
+                   config["mqtt"]["connection"]["port"], config["mqtt"]["connection"]["keepalive"])
 
 # Blocking call that processes network traffic, dispatches callbacks and
 # handles reconnecting.

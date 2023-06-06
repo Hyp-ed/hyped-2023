@@ -3,9 +3,9 @@ from rclpy.node import Node
 from std_msgs.msg import String
 
 
-class SimpleListener(Node):
+class ROSListener(Node):
     def __init__(self):
-        super().__init__('simple_listener')
+        super().__init__('ros_listener')
 
         # Subscribe to the desired topic
         self.subscription1 = self.create_subscription(
@@ -26,13 +26,13 @@ class SimpleListener(Node):
 
     def callback(self, msg):
         # Callback function to process received messages
-        self.get_logger().info(f'ROS LISTENER: Received message: {msg.data}')
+        self.get_logger().info(f'ROS Listener: Received message: {msg.data}')
 
 
 def main(args=None):
     rclpy.init(args=args)
 
-    simple_listener = SimpleListener()
+    simple_listener = ROSListener()
     rclpy.spin(simple_listener)
 
     simple_listener.destroy_node()
