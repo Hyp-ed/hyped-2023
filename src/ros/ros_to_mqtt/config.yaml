@@ -1,0 +1,14 @@
+mqtt:
+  connection:
+    host: localhost
+    port: 1883
+    keepalive: 60
+topics:
+  - topic_name: "topic1"
+    message_type: "std_msgs/String"
+    function: "callback1"
+    mqtt_topic: "topic1"
+  - topic_name: "topic2"
+    message_type: "std_msgs/String"
+    function: "callback2"
+    mqtt_topic: "topic2"

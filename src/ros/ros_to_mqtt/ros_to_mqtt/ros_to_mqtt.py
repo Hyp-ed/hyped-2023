@@ -1,44 +1,81 @@
 import rclpy
 from rclpy.node import Node
-from rcl_interfaces.msg import Log
+from std_msgs.msg import String
 import paho.mqtt.client as mqtt
 
 
-class RosoutSubscriber(Node):
-    def __init__(self):
-        super().__init__('rosout_subscriber')
+class RosToMqttBridge(Node):
+    def __init__(self, config):
+        super().__init__('ros_to_mqtt_bridge')
+        self.mqtt_client = None
+        self.subscription_list = []
 
-        self.create_subscription(
-            Log,
-            'rosout',
-            self.rosout_callback,
-            10
-        )
+        # MQTT connection configuration
+        mqtt_config = config['mqtt']['connection']
+        self.mqtt_host = mqtt_config['host']
+        self.mqtt_port = mqtt_config['port']
+        self.mqtt_keepalive = mqtt_config['keepalive']
 
-        self.client = mqtt.Client()
-        self.client.on_connect = self.on_connect
-        self.client.connect("localhost", 1883, 60)
+        # ROS topics configuration
+        topics_config = config['topics']
 
-    def rosout_callback(self, msg):
-        # Process the received rosout message here
-        # We don't want to log the rosout_subscriber's own messages (or we'll get an infinite loop)
-        if (msg.name == "rosout_subscriber"):
-            return
-        self.log(msg)
-        self.client.publish(
-            "from_rosout", f"{msg.level}: {msg.name}: {msg.msg}")
+        # Connect to the MQTT broker
+        self.connect_mqtt()
 
-    def log(self, msg):
-        self.get_logger().info(f"ROSOUT: {msg}")
+        # Subscribe to ROS topics and publish to MQTT
+        for topic_config in topics_config:
+            topic_name = topic_config['topic_name']
+            message_type = topic_config['message_type']
+            mqtt_topic = topic_config['mqtt_topic']
+            callback_function = getattr(
+                self, topic_config['function'])
 
-    def on_connect(client, userdata, flags, rc):
-        print("Connected with result code "+str(rc))
+            self.subscription_list.append(self.create_subscription(
+                msg_type=String,  # Replace with the appropriate message type
+                topic=topic_name,
+                callback=self.create_callback(callback_function, mqtt_topic),
+                qos_profile=rclpy.qos.qos_profile_sensor_data
+            ))
+
+    def connect_mqtt(self):
+        # Connect to the MQTT broker
+        self.mqtt_client = mqtt.Client()
+        self.mqtt_client.connect(
+            self.mqtt_host, self.mqtt_port, self.mqtt_keepalive)
+        self.mqtt_client.loop_start()
+
+    def create_callback(self, callback_function, topic_name):
+        def callback_wrapper(msg):
+            # This wrapper function allows passing the topic name to the callback
+            msg = callback_function(msg, topic_name)
+            self.mqtt_client.publish(topic_name, msg.data)
+
+        return callback_wrapper
+
+    def callback1(self, msg, topic_name):
+        # Callback function for topic1
+        self.get_logger().info(f'Received message on topic1: {msg.data}')
+        # Do some processing on msg here
+        msg.data = msg.data + ' processed'
+        return msg
+
+    def callback2(self, msg, topic_name):
+        # Callback function for topic2
+        self.get_logger().info(f'Received message on topic2: {msg.data}')
+        # Do some processing on msg here
+        return msg
 
 
 def main(args=None):
     rclpy.init(args=args)
-    node = RosoutSubscriber()
-    rclpy.spin(node)
+
+    # Read the configuration from the file
+    import yaml
+    with open('config.yaml', 'r') as file:
+        config = yaml.safe_load(file)
+
+    ros_to_mqtt_bridge = RosToMqttBridge(config)
+    rclpy.spin(ros_to_mqtt_bridge)
     rclpy.shutdown()
 
 
