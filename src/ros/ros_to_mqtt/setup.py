@@ -21,7 +21,8 @@ setup(
     entry_points={
         'console_scripts': [
             'ros_to_mqtt = ros_to_mqtt.ros_to_mqtt:main',
-            'publisher = ros_to_mqtt.test_publisher:main',
+            'ros_publisher = ros_to_mqtt.ros_test_publisher:main',
+            'ros_listener = ros_to_mqtt.ros_listener:main'
         ],
     },
 )

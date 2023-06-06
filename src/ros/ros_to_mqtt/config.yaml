@@ -1,14 +1,24 @@
+# WARNING: could cause infinite loop if you have same topic names going both ways?
 mqtt:
   connection:
     host: localhost
     port: 1883
     keepalive: 60
-topics:
-  - topic_name: "topic1"
+ros-to-mqtt:
+  - ros_topic_name: "ros1"
     message_type: "std_msgs/String"
     function: "callback1"
-    mqtt_topic: "topic1"
-  - topic_name: "topic2"
+    mqtt_topic_name: "ros1"
+  - ros_topic_name: "ros2"
     message_type: "std_msgs/String"
     function: "callback2"
-    mqtt_topic: "topic2"
+    mqtt_topic_name: "ros2"
+mqtt-to-ros:
+  - mqtt_topic_name: "mqtt1"
+    message_type: "std_msgs/String"
+    function: "callback3"
+    ros_topic_name: "mqtt1"
+  - mqtt_topic_name: "mqtt2"
+    message_type: "std_msgs/String"
+    function: "callback4"
+    ros_topic_name: "mqtt2"
