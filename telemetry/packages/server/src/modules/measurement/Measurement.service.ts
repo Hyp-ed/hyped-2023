@@ -4,6 +4,7 @@ import { Injectable, LoggerService } from '@nestjs/common';
 import { z } from 'zod';
 import { InfluxService } from '../influx/Influx.service';
 import { Logger } from '../logger/Logger.decorator';
+import { RealtimeDataGateway } from '../openmct/data/realtime/RealtimeData.gateway';
 
 const BaseMeasurementReading = z.object({
   podId: z.string(),
@@ -19,6 +20,7 @@ export class MeasurementService {
     @Logger()
     private readonly logger: LoggerService,
     private influxService: InfluxService,
+    private realtimeDataGateway: RealtimeDataGateway,
   ) {}
 
   public addMeasurement(props: MeasurementReading) {
@@ -35,6 +37,8 @@ export class MeasurementService {
       measurement,
       reading: { podId, measurementKey, value },
     } = validatedMeasurement;
+
+    this.realtimeDataGateway.sendMeasurement(podId, measurementKey, value);
 
     const point = new Point('measurement')
       .timestamp(currentTime)
