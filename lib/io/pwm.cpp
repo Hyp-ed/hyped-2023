@@ -153,8 +153,11 @@ core::Result Pwm::setPolarity(const Polarity polarity, const int polarity_file)
 {
   const std::uint8_t polarity_value = static_cast<std::uint8_t>(polarity);
   char write_buffer[7];
-  // TODOLater remove hardcoded polarity value
-  snprintf(write_buffer, sizeof(write_buffer), "normal");
+  if (polarity_value == 0) {
+    snprintf(write_buffer, sizeof(write_buffer), "normal");
+  } else {
+    snprintf(write_buffer, sizeof(write_buffer), "inversed");
+  }
   const ssize_t num_bytes_written = write(polarity_file, write_buffer, sizeof(write_buffer));
   if (num_bytes_written != sizeof(write_buffer)) { return core::Result::kFailure; }
   close(polarity_file);
