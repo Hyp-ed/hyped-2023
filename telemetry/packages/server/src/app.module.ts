@@ -6,6 +6,7 @@ import { LoggerModule } from './modules/logger/Logger.module';
 import { MqttClientModule } from './modules/mqtt/client/MqttClientModule';
 import { MqttIngestionModule } from './modules/mqtt/ingestion/MqttIngestion.module';
 import { OpenMCTModule } from './modules/openmct/OpenMCT.module';
+import { MeasurementModule } from './modules/measurement/Measurement.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { OpenMCTModule } from './modules/openmct/OpenMCT.module';
     InfluxModule,
     MqttIngestionModule,
     OpenMCTModule,
+    MeasurementModule,
   ],
   controllers: [AppController],
   providers: [AppService],

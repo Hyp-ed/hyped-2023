@@ -29,4 +29,12 @@ export class InfluxService implements OnModuleInit {
       throw new Error('InfluxDB query API not initialized');
     }
   }
+
+  async onModuleDestroy() {
+    try {
+      await this.write.close();
+    } catch (e) {
+      console.error(e);
+    }
+  }
 }

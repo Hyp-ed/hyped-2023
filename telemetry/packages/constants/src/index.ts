@@ -1,2 +1,2 @@
 export { pods, POD_IDS } from './pods/pods';
-export { objectTypes } from './object-types/object-types';
+export { openMctObjectTypes } from './openmct/object-types/object-types';
