@@ -1,6 +1,7 @@
 import { POD_IDS, pods } from '@hyped/telemetry-constants';
 import { OpenMctDictionary, OpenMctPod } from '@hyped/telemetry-types';
 import { Injectable } from '@nestjs/common';
+import { mapMeasurementToOpenMct } from './utils/mapMeasurementToOpenMct';
 
 @Injectable()
 export class DictionaryService {
@@ -19,46 +20,12 @@ export class DictionaryService {
 
   getPod(podId: string): OpenMctPod {
     const pod = pods[podId as keyof typeof pods];
-
     if (!pod) {
       throw new Error(`Pod ${podId} not found`);
     }
 
-    const measurements = Object.entries(pod.measurements).map(
-      ([key, measurement]) => {
-        return {
-          name: measurement.name,
-          key: key,
-          type: measurement.type,
-          values: [
-            {
-              key: 'value',
-              name: 'Value',
-              unit: measurement.unit,
-              format: measurement.format,
-              ...('range' in measurement && {
-                min: measurement.range?.min,
-                max: measurement.range?.max,
-              }),
-              ...('enumerations' in measurement && {
-                enumerations: measurement.enumerations,
-              }),
-              hints: {
-                range: 1,
-              },
-            },
-            {
-              key: 'utc',
-              source: 'timestamp',
-              name: 'Timestamp',
-              format: 'utc',
-              hints: {
-                domain: 1,
-              },
-            },
-          ],
-        };
-      },
+    const measurements = Object.values(pod.measurements).map((measurement) =>
+      mapMeasurementToOpenMct(measurement),
     );
 
     return {
@@ -66,5 +33,19 @@ export class DictionaryService {
       id: pod.id,
       measurements,
     };
+  }
+
+  getMeasurement(podId: string, measurementKey: string) {
+    const pod = pods[podId as keyof typeof pods];
+    if (!pod) {
+      throw new Error(`Pod ${podId} not found`);
+    }
+
+    const measurement = pod.measurements[measurementKey];
+    if (!measurement) {
+      throw new Error(`Measurement ${measurementKey} not found`);
+    }
+
+    return mapMeasurementToOpenMct(measurement);
   }
 }

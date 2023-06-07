@@ -1,11 +1,11 @@
 import type { Pods } from '@hyped/telemetry-types';
 
-export const POD_IDS = [1, 2] as const;
+export const POD_IDS = ['pod_1', 'pod_2'] as const;
 
 export const pods: Pods = {
-  1: {
+  'pod_1': {
+    id: 'pod_1',
     name: 'Pod Ness',
-    id: 1,
     measurements: {
       'temperature.shell_front': {
         name: 'Temperature - Shell Front',
@@ -81,9 +81,9 @@ export const pods: Pods = {
       },
     },
   },
-  2: {
+  'pod_2': {
+    id: 'pod_2',
     name: 'Pod 2',
-    id: 2,
     measurements: {
       'temperature.shell_front': {
         name: 'Temperature - Shell Front',

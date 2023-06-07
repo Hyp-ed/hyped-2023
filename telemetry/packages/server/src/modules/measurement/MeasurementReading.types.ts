@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const MeasurementReadingSchema = z.object({
-  podId: z.number(),
+  podId: z.string(),
   measurementKey: z.string(),
   value: z.number(),
 });
