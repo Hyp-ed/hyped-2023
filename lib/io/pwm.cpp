@@ -1,6 +1,5 @@
 #include "pwm.hpp"
 
-#include <errno.h>
 #include <fcntl.h>
 #include <unistd.h>
 
