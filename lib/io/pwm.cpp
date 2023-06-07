@@ -1,5 +1,6 @@
 #include "pwm.hpp"
 
+#include <errno.h>
 #include <fcntl.h>
 #include <unistd.h>
 
@@ -23,17 +24,7 @@ std::optional<std::shared_ptr<Pwm>> Pwm::create(core::ILogger &logger,
     return std::nullopt;
   }
   logger.log(core::LogLevel::kDebug, "Successfully set PWM period to %d", period);
-  const std::string polarity_address = pwm_address + "polarity";
-  const int polarity_file            = open(polarity_address.c_str(), O_WRONLY);
-  if (polarity_file < 0) {
-    logger.log(core::LogLevel::kFatal, "Failed to open PWM polarity file");
-    return std::nullopt;
-  }
-  const core::Result polarity_result = setPolarity(polarity, polarity_file);
-  if (polarity_result == core::Result::kFailure) {
-    logger.log(core::LogLevel::kFatal, "Failed to set PWM polarity");
-    return std::nullopt;
-  }
+  // TODOLater polarity control
   logger.log(core::LogLevel::kDebug, "Successfully set PWM polarity to %d", polarity);
   const std::string enable_address = pwm_address + "enable";
   const int enable_file            = open(enable_address.c_str(), O_WRONLY);
@@ -115,6 +106,7 @@ core::Result Pwm::setDutyCycleByPercentage(const core::Float duty_cycle)
     return core::Result::kFailure;
   }
   const std::uint32_t time_active = static_cast<std::uint32_t>(duty_cycle * current_period_);
+  current_duty_cycle_             = duty_cycle;
   return setDutyCycleByTime(time_active);
 }
 
@@ -127,7 +119,7 @@ core::Result Pwm::setDutyCycleByTime(const std::uint32_t time_active)
     return core::Result::kSuccess;
   }
   char write_buffer[10];
-  snprintf(write_buffer, sizeof(write_buffer), "%d", current_time_active_);
+  snprintf(write_buffer, sizeof(write_buffer), "%d", time_active);
   const ssize_t num_bytes_written = write(duty_cycle_file_, write_buffer, sizeof(write_buffer));
   if (num_bytes_written != sizeof(write_buffer)) {
     logger_.log(core::LogLevel::kFatal, "Failed to write to PWM duty cycle file");

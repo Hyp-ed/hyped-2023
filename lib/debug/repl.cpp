@@ -472,15 +472,9 @@ void Repl::addPwmCommands(const std::uint8_t module, const std::uint32_t period)
     description << "Run PWM module: " << static_cast<int>(pwm_module);
     pwm_run_command.description = description.str();
     pwm_run_command.handler     = [this, pwm, pwm_module]() {
-      std::uint32_t period;
-      std::cout << "Period: ";
-      std::cin >> period;
       core::Float duty_cycle;
       std::cout << "Duty cycle: ";
       std::cin >> duty_cycle;
-      std::uint8_t polarity;
-      std::cout << "Polarity (0 for active high and 1 for active low): ";
-      std::cin >> polarity;
       std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
       const core::Result duty_cycle_set_result = pwm->setDutyCycleByPercentage(duty_cycle);
       if (duty_cycle_set_result == core::Result::kFailure) {
