@@ -5,6 +5,9 @@ import { viteStaticCopy } from 'vite-plugin-static-copy';
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => {
   return {
+    optimizeDeps: {
+      include: ['@hyped/telemetry-constants'],
+    },
     build: {
       rollupOptions: {
         input: {
@@ -12,6 +15,9 @@ export default defineConfig(({ command, mode }) => {
           app: resolve(__dirname, 'app/index.html'),
           openmct: resolve(__dirname, 'openmct/index.html'),
         },
+      },
+      commonjsOptions: {
+        include: [/node_modules/, '@hyped/telemetry-constants'],
       },
     },
     plugins: [

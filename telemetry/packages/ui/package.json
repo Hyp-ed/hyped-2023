@@ -9,9 +9,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@hyped/telemetry-types": "*",
     "@fontsource/raleway": "^4.5.12",
     "@headlessui/react": "^1.7.10",
+    "@hyped/telemetry-constants": "*",
     "@types/node": "^18.11.18",
     "@typescript-eslint/eslint-plugin": "^5.48.2",
     "@typescript-eslint/parser": "^5.48.2",
@@ -20,10 +20,12 @@
     "openmct": "git+https://github.com/nasa/openmct.git#v2.1.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "socket.io-client": "^4.6.2",
     "turbo": "^1.7.0",
     "victormono": "^1.5.4"
   },
   "devDependencies": {
+    "@hyped/telemetry-types": "*",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
     "@vitejs/plugin-react": "^3.0.0",

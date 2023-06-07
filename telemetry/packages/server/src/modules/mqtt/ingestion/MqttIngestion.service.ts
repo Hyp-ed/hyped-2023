@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Params, Payload, Subscribe } from 'nest-mqtt';
-import { MeasurementService } from 'src/modules/measurement/Measurement.service';
+import { MeasurementService } from '@/modules/measurement/Measurement.service';
 
 @Injectable()
 export class MqttIngestionService {

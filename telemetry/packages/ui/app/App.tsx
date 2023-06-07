@@ -23,7 +23,7 @@ const App = () => {
    * @param active Whether motor cooling is active
    */
   const toggleMotorCooling = (active: boolean) => {
-    console.log(`Toggle motor cooling: ${active ? 'active' : 'inactive'}`);
+    // console.log(`Toggle motor cooling: ${active ? 'active' : 'inactive'}`);
   };
 
   /**
@@ -31,7 +31,7 @@ const App = () => {
    * @param active Whether active suspension is active
    */
   const toggleActiveSuspension = (active: boolean) => {
-    console.log(`Toggle active suspension: ${active ? 'active' : 'inactive'}`);
+    // console.log(`Toggle active suspension: ${active ? 'active' : 'inactive'}`);
   };
 
   /**
@@ -39,7 +39,7 @@ const App = () => {
    * @param active Whether active suspension is active
    */
   const toggleActiveBraking = (active: boolean) => {
-    console.log(`Toggle active braking: ${active ? 'active' : 'inactive'}`);
+    // console.log(`Toggle active braking: ${active ? 'active' : 'inactive'}`);
   };
 
   return (
