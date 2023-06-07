@@ -19,7 +19,6 @@ from std_msgs.msg import String, Float32
 
 
 class ROSTestPublisher(Node):
-
     def __init__(self):
         super().__init__('ros_test_publisher')
         self.publisher1_ = self.create_publisher(String, 'ros1', 10)
@@ -46,7 +45,6 @@ def main(args=None):
     rclpy.init(args=args)
 
     minimal_publisher = ROSTestPublisher()
-
     rclpy.spin(minimal_publisher)
 
     # Destroy the node explicitly

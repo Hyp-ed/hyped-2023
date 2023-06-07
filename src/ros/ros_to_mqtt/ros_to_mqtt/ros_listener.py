@@ -1,28 +1,25 @@
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import String
+from std_msgs.msg import String, Float32
 
 
 class ROSListener(Node):
     def __init__(self):
         super().__init__('ros_listener')
 
-        # Subscribe to the desired topic
-        self.subscription1 = self.create_subscription(
-            String,  # Replace with the appropriate message type
-            'mqtt1',  # Replace with the desired topic name
+        self.subscription_1 = self.create_subscription(
+            String,
+            'mqtt1',
             self.callback,
             10
         )
-        self.subscription1
 
-        self.subscription2 = self.create_subscription(
-            String,  # Replace with the appropriate message type
-            'mqtt2',  # Replace with the desired topic name
+        self.subscription_2 = self.create_subscription(
+            Float32,
+            'mqtt2',
             self.callback,
             10
         )
-        self.subscription2
 
     def callback(self, msg):
         # Callback function to process received messages

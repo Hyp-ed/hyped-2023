@@ -17,9 +17,9 @@ ros-to-mqtt:
 mqtt-to-ros:
   - mqtt_topic_name: "mqtt1"
     message_type: "string"
-    function: "callback3"
+    function: "string_callback"
     ros_topic_name: "mqtt1"
   - mqtt_topic_name: "mqtt2"
     message_type: "float"
-    function: "callback4"
+    function: "float_callback"
     ros_topic_name: "mqtt2"
