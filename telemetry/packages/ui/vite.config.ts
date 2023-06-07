@@ -1,6 +1,7 @@
 import { resolve } from 'path';
 import { defineConfig } from 'vite';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
+import tsconfigPaths from 'vite-tsconfig-paths';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => {
@@ -23,6 +24,7 @@ export default defineConfig(({ command, mode }) => {
           },
         ],
       }),
+      tsconfigPaths(),
     ],
   };
 });
