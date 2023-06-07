@@ -1,18 +1,13 @@
 import { pods } from '@hyped/telemetry-constants';
 import { Point } from '@influxdata/influxdb-client';
 import { Injectable, LoggerService } from '@nestjs/common';
-import { z } from 'zod';
 import { InfluxService } from '../influx/Influx.service';
 import { Logger } from '../logger/Logger.decorator';
 import { RealtimeDataGateway } from '../openmct/data/realtime/RealtimeData.gateway';
-
-const BaseMeasurementReading = z.object({
-  podId: z.string(),
-  measurementKey: z.string(),
-  value: z.number(),
-});
-
-type MeasurementReading = z.infer<typeof BaseMeasurementReading>;
+import {
+  MeasurementReading,
+  MeasurementReadingSchema,
+} from './MeasurementReading.types';
 
 @Injectable()
 export class MeasurementService {
@@ -23,7 +18,7 @@ export class MeasurementService {
     private realtimeDataGateway: RealtimeDataGateway,
   ) {}
 
-  public addMeasurement(props: MeasurementReading) {
+  public addMeasurementReading(props: MeasurementReading) {
     const currentTime = new Date();
 
     const validatedMeasurement = this.validateMeasurementReading(props);
@@ -38,11 +33,15 @@ export class MeasurementService {
       reading: { podId, measurementKey, value },
     } = validatedMeasurement;
 
-    this.realtimeDataGateway.sendMeasurement(podId, measurementKey, value);
+    this.realtimeDataGateway.sendMeasurementReading({
+      podId,
+      measurementKey,
+      value,
+    });
 
     const point = new Point('measurement')
       .timestamp(currentTime)
-      .tag('podId', podId)
+      .tag('podId', podId.toString())
       .tag('measurementKey', measurementKey)
       .tag('format', measurement.format)
       .floatField('value', value);
@@ -50,7 +49,7 @@ export class MeasurementService {
     try {
       this.influxService.write.writePoint(point);
 
-      this.logger.verbose(
+      this.logger.debug(
         `Added measurement {${props.podId}/${props.measurementKey}}: ${props.value}`,
         MeasurementService.name,
       );
@@ -74,7 +73,7 @@ export class MeasurementService {
   }
 
   private validateMeasurementReading(props: MeasurementReading) {
-    const result = BaseMeasurementReading.safeParse(props);
+    const result = MeasurementReadingSchema.safeParse(props);
     if (!result.success) {
       this.logValidationError('Invalid measurement reading', props);
       return;
