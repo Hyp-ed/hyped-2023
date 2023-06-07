@@ -5,16 +5,38 @@ import {
   ControlSwitch,
 } from '@/components';
 import { StatusType } from '@/types/StatusType';
+import { ErrorStateAlert } from './components/error-state-alert';
+import { Button } from './components/ui/button';
+import { cn } from './lib/utils';
+import { useState } from 'react';
 
 const App = () => {
   const LATENCY = 11; // temp
   const STATUS: StatusType = 'connected';
+  const STATIONARY = false; // temp
+
+  const [motorCooling, setMotorCooling] = useState(false);
+  const [activeSuspension, setActiveSuspension] = useState(false);
+  const [launched, setLaunched] = useState(false);
 
   /**
    * Starts pod
    */
   const go = () => {
-    console.log('GO!');
+    if (motorCooling && activeSuspension) {
+      console.log('GO! (with motor cooling and active suspension)');
+    } else if (motorCooling) {
+      console.log('GO! (with motor cooling)');
+    } else {
+      console.log('GO! (with active suspension)');
+    }
+    setTimeout(() => {
+      setLaunched(true);
+    }, 1000);
+
+    setTimeout(() => {
+      setLaunched(false);
+    }, 10000);
   };
 
   /**
@@ -29,7 +51,7 @@ const App = () => {
    * @param active Whether motor cooling is active
    */
   const toggleMotorCooling = (active: boolean) => {
-    console.log(`Toggle motor cooling: ${active ? 'active' : 'inactive'}`);
+    setMotorCooling(active);
   };
 
   /**
@@ -37,15 +59,7 @@ const App = () => {
    * @param active Whether active suspension is active
    */
   const toggleActiveSuspension = (active: boolean) => {
-    console.log(`Toggle active suspension: ${active ? 'active' : 'inactive'}`);
-  };
-
-  /**
-   * Toggles active suspension
-   * @param active Whether active suspension is active
-   */
-  const toggleActiveBraking = (active: boolean) => {
-    console.log(`Toggle active braking: ${active ? 'active' : 'inactive'}`);
+    setActiveSuspension(active);
   };
 
   return (
@@ -66,22 +80,42 @@ const App = () => {
               id="motor-cooling"
               label="Motor Cooling"
               onCheckedChange={toggleMotorCooling}
+              disabled={launched}
             />
             <ControlSwitch
               id="active-suspension"
               label="Active Suspension"
               onCheckedChange={toggleActiveSuspension}
-            />
-            <ControlSwitch
-              id="active-braking"
-              label="Active Braking"
-              onCheckedChange={toggleActiveBraking}
+              disabled={launched}
             />
           </div>
           <div className="flex flex-col gap-4">
-            <ControlButton onClick={go} colour="green" text="GO" />
-            <ControlButton onClick={stop} colour="red" text="STOP" />
+            <ControlButton
+              onClick={go}
+              colour="green"
+              text="GO"
+              disabled={launched}
+            />
+            <ControlButton
+              onClick={stop}
+              colour="red"
+              text="STOP"
+              disabled={false}
+            />
+            {/* @ts-ignore */}
+            <Button
+              className={cn(
+                'px-4 py-12 rounded-lg shadow-lg transition text-white text-3xl font-bold',
+                STATIONARY
+                  ? 'bg-blue-600 hover:bg-blue-700'
+                  : 'opacity-50 cursor-not-allowed bg-gray-400',
+              )}
+              onClick={go}
+            >
+              Retract Brakes
+            </Button>
           </div>
+          <ErrorStateAlert title="Error!" description="Test error message" />
         </div>
         <Logo />
       </div>
