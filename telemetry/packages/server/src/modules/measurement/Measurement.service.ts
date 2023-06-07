@@ -8,6 +8,7 @@ import {
   MeasurementReading,
   MeasurementReadingSchema,
 } from './MeasurementReading.types';
+import { MeasurementReadingValidationError } from './errors/MeasurementReadingValidationError';
 
 @Injectable()
 export class MeasurementService {
@@ -24,8 +25,7 @@ export class MeasurementService {
     const validatedMeasurement = this.validateMeasurementReading(props);
 
     if (!validatedMeasurement) {
-      // do something more here...maybe
-      return;
+      throw new MeasurementReadingValidationError('Invalid measurement');
     }
 
     const {
@@ -62,43 +62,29 @@ export class MeasurementService {
     }
   }
 
-  private logValidationError(message: string, props: MeasurementReading) {
-    this.logger.error(
-      `${message} {${props.podId ?? 'unknownPod'}/${
-        props.measurementKey ?? 'unknownMeasurement'
-      }}: ${props.value ?? 'no value'}`,
-      null,
-      MeasurementService.name,
-    );
-  }
-
   private validateMeasurementReading(props: MeasurementReading) {
     const result = MeasurementReadingSchema.safeParse(props);
     if (!result.success) {
-      this.logValidationError('Invalid measurement reading', props);
-      return;
+      throw new MeasurementReadingValidationError(result.error.message);
     }
 
     const { podId, measurementKey, value } = result.data;
 
     const pod = pods[podId];
     if (!pod) {
-      this.logValidationError('Pod not found', props);
-      return;
+      throw new MeasurementReadingValidationError('Pod not found');
     }
 
     const measurement = pods[podId]['measurements'][measurementKey];
     if (!measurement) {
-      this.logValidationError('Measurement not found', props);
-      return;
+      throw new MeasurementReadingValidationError('Measurement not found');
     }
 
     if (measurement.format === 'enum') {
       const enumValue = measurement.enumerations.find((e) => e.value === value);
 
       if (!enumValue) {
-        this.logValidationError('Invalid enum value', props);
-        return;
+        throw new MeasurementReadingValidationError('Invalid enum value');
       }
     }
 
