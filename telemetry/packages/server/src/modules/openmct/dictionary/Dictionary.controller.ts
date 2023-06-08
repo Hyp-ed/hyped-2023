@@ -1,13 +1,21 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { DictionaryService } from './Dictionary.service';
+import { OpenMctPod } from '@hyped/telemetry-types';
 
 @Controller('openmct/dictionary')
 export class DictionaryController {
   constructor(private dictionaryService: DictionaryService) {}
 
-  @Get()
-  getDictionary() {
-    const pod = this.dictionaryService.getDictionary();
-    return pod;
+  @Get('pods')
+  getPodIds() {
+    const ids = this.dictionaryService.getPodIds();
+    return {
+      ids,
+    };
+  }
+
+  @Get('pods/:podId')
+  getPod(@Param('podId') podId: string): OpenMctPod {
+    return this.dictionaryService.getPod(podId);
   }
 }

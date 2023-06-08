@@ -19,7 +19,15 @@
 namespace hyped::motors {
 // every frame sent to the controller contains 8 bytes
 constexpr std::uint8_t kControllerCanFrameLength = 8;
-enum class ControllerStatus { kControllerTemperatureExceeded, kUnrecoverableWarning, kNominal };
+enum class ControllerStatus { kUnrecoverableWarning, kNominal };
+enum class ControllerState {
+  kOperationalState,
+  kPreOperationalState,
+  kStopState,
+  kResetNodeState,
+  kResetCommunicationState,
+  kUnknownState
+};
 constexpr std::uint16_t kControllerSdoSend         = 0x601;
 constexpr std::uint16_t kControllerSdoReceive      = 0x580;
 constexpr std::uint16_t kControllerSdoReadCommand  = 0x40;
@@ -38,10 +46,14 @@ class Controller {
     const std::string &message_file_path,
     const std::shared_ptr<io::ICan> can,
     const std::shared_ptr<IFrequencyCalculator> frequency_calculator);
-  void processErrorMessage(const std::uint16_t error_code);
-  ControllerStatus processWarningMessage(const std::uint8_t warning_code);
   static std::optional<io::CanFrame> parseJsonCanFrame(
     core::ILogger &logger, rapidjson::GenericObject<true, rapidjson::Value> message);
+  void processErrorMessage(const std::uint16_t error_code);
+  ControllerStatus processWarningMessage(const std::uint8_t warning_code);
+  core::Result processNmtMessage(const std::uint8_t nmt_code);
+  core::Result processSdoMessage(const std::uint16_t index,
+                                 const std::uint8_t subindex,
+                                 std::uint32_t data);
 
   /**
    * @brief Runs the motor controller in the provided state from state machine
@@ -56,6 +68,8 @@ class Controller {
              const std::vector<io::CanFrame> &configuration_messages,
              const std::shared_ptr<io::ICan> can,
              const std::shared_ptr<IFrequencyCalculator> frequency_calculator);
+  std::uint8_t getControllerTemperature() const;
+  core::Float getControllerCurrent() const;
 
  private:
   /**
@@ -91,6 +105,13 @@ class Controller {
   core::Result reset();
 
  private:
+  static constexpr std::uint16_t kSdoErrorIndex       = 0x603f;
+  static constexpr std::uint16_t kSdoWarningIndex     = 0x2027;
+  static constexpr std::uint16_t kSdoTemperatureIndex = 0x2026;
+  static constexpr std::uint16_t kSdoCurrentIndex     = 0x2023;
+  std::uint8_t controller_temperature_;
+  core::Float controller_current_;
+  ControllerState controller_state_;
   core::ILogger &logger_;
   const std::unordered_map<std::string, io::CanFrame> messages_;
   const std::vector<io::CanFrame> configuration_messages_;
