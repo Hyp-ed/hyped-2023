@@ -58,6 +58,9 @@ class Repl {
   void addTemperatureCommands(const std::uint8_t bus, const std::uint8_t device_address);
   void addUartCommands(const std::uint8_t bus);
   void addMotorControllerCommands(const std::string &bus);
+  void addMotorTestrigCommands(const std::uint8_t precharge_relay_gpio_pin,
+                               const std::uint8_t gpio_pin_2,
+                               const std::uint8_t gpio_pin_3);
 
   /**
    * @brief Get the Adc object associated with the given pin or create a new one if it doesn't exist

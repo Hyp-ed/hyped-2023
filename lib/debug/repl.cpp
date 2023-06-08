@@ -320,6 +320,41 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
     const auto bus = motor_controller["bus"].GetString();
     repl->addMotorControllerCommands(bus);
   }
+  if (!motors.HasMember("testrig")) {
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'debugger.testrig' in configuration file");
+    return std::nullopt;
+  }
+  const auto testrig = motors["testrig"].GetObject();
+  if (!testrig.HasMember("enabled")) {
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'testrig.enabled' in configuration file");
+    return std::nullopt;
+  }
+  if (testrig["enabled"].GetBool()) {
+    if (!testrig.HasMember("precharge_relay_gpio_pin")) {
+      logger_.log(core::LogLevel::kFatal,
+                  "Missing required field 'testrig.precharge_relay_gpio_pin' in configuration "
+                  "file");
+      return std::nullopt;
+    }
+    const auto precharge_relay_gpio_pin = testrig["precharge_relay_gpio_pin"].GetUint();
+    if (!testrig.HasMember("controller_relay_gpio_pin")) {
+      logger_.log(
+        core::LogLevel::kFatal,
+        "Missing required field 'testrig.controller_relay_gpio_pin' in configuration file");
+      return std::nullopt;
+    }
+    const auto controller_relay_gpio_pin = testrig["controller_relay_gpio_pin"].GetUint();
+    if (!testrig.HasMember("main_relay_gpio_pin")) {
+      logger_.log(core::LogLevel::kFatal,
+                  "Missing required field 'testrig.main_relay_gpio_pin' in configuration file");
+      return std::nullopt;
+    }
+    const auto main_relay_gpio_pin = testrig["main_relay_gpio_pin"].GetUint();
+    repl->addMotorTestrigCommands(
+      precharge_relay_gpio_pin, controller_relay_gpio_pin, main_relay_gpio_pin);
+  }
   return repl;
 }
 
@@ -982,6 +1017,138 @@ void Repl::addMotorControllerCommands(const std::string &bus)
     time_frequency_controller->run(motors::FauxState::kStop);
   };
   addCommand(frequency_time_command);
+}
+
+void Repl::addMotorTestrigCommands(const std::uint8_t precharge_relay_gpio_pin,
+                                   const std::uint8_t controller_relay_gpio_pin,
+                                   const std::uint8_t main_relay_gpio_pin)
+{
+  const auto optional_precharge_relay_gpio
+    = gpio_.getWriter(precharge_relay_gpio_pin, io::Edge::kNone);
+  if (!optional_precharge_relay_gpio) {
+    logger_.log(
+      core::LogLevel::kFatal, "Failed to get GPIO instance on pin %d", precharge_relay_gpio_pin);
+    return;
+  }
+  const auto precharge_relay_gpio = std::move(*optional_precharge_relay_gpio);
+  const auto optional_controller_relay_gpio
+    = gpio_.getWriter(controller_relay_gpio_pin, io::Edge::kNone);
+  if (!optional_controller_relay_gpio) {
+    logger_.log(
+      core::LogLevel::kFatal, "Failed to get GPIO instance on pin %d", controller_relay_gpio_pin);
+    return;
+  }
+  const auto controller_relay_gpio    = std::move(*optional_controller_relay_gpio);
+  const auto optional_main_relay_gpio = gpio_.getWriter(main_relay_gpio_pin, io::Edge::kNone);
+  if (!optional_main_relay_gpio) {
+    logger_.log(
+      core::LogLevel::kFatal, "Failed to get GPIO instance on pin %d", main_relay_gpio_pin);
+    return;
+  }
+  const auto main_relay_gpio = std::move(*optional_main_relay_gpio);
+  Command testrig_precharge_relay_gpio_command;
+  testrig_precharge_relay_gpio_command.name        = "set precharge relay gpio";
+  testrig_precharge_relay_gpio_command.description = "Set precharge gpio to value";
+  testrig_precharge_relay_gpio_command.handler     = [this, precharge_relay_gpio] {
+    std::uint16_t value;
+    std::cout << "Value: ";
+    std::cin >> value;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    core::DigitalSignal signal;
+    switch (value) {
+      case 0:
+        signal = core::DigitalSignal::kLow;
+        break;
+      case 1:
+        signal = core::DigitalSignal::kHigh;
+        break;
+      default:
+        logger_.log(core::LogLevel::kFatal, "Invalid GPIO value: %d, must be 0 or 1", value);
+        break;
+    }
+    const core::Result result = precharge_relay_gpio->write(signal);
+    if (result == core::Result::kFailure) {
+      logger_.log(core::LogLevel::kFatal, "Failed to set GPIO 1");
+      return;
+    }
+  };
+  addCommand(testrig_precharge_relay_gpio_command);
+  Command testrig_controller_relay_gpio_command;
+  testrig_controller_relay_gpio_command.name        = "set controller relay gpio";
+  testrig_controller_relay_gpio_command.description = "Set controller relay gpio to value";
+  testrig_controller_relay_gpio_command.handler     = [this, controller_relay_gpio] {
+    std::uint16_t value;
+    std::cout << "Value: ";
+    std::cin >> value;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    core::DigitalSignal signal;
+    switch (value) {
+      case 0:
+        signal = core::DigitalSignal::kLow;
+        break;
+      case 1:
+        signal = core::DigitalSignal::kHigh;
+        break;
+      default:
+        logger_.log(core::LogLevel::kFatal, "Invalid GPIO value: %d, must be 0 or 1", value);
+        break;
+    }
+    const core::Result result = controller_relay_gpio->write(signal);
+    if (result == core::Result::kFailure) {
+      logger_.log(core::LogLevel::kFatal, "Failed to set GPIO 2");
+      return;
+    }
+  };
+  addCommand(testrig_controller_relay_gpio_command);
+  Command testrig_main_relay_gpio_command;
+  testrig_main_relay_gpio_command.name        = "set main relay gpio";
+  testrig_main_relay_gpio_command.description = "Set main relay gpio to value";
+  testrig_main_relay_gpio_command.handler     = [this, main_relay_gpio] {
+    std::uint16_t value;
+    std::cout << "Value: ";
+    std::cin >> value;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    core::DigitalSignal signal;
+    switch (value) {
+      case 0:
+        signal = core::DigitalSignal::kLow;
+        break;
+      case 1:
+        signal = core::DigitalSignal::kHigh;
+        break;
+      default:
+        logger_.log(core::LogLevel::kFatal, "Invalid GPIO value: %d, must be 0 or 1", value);
+        break;
+    }
+    const core::Result result = main_relay_gpio->write(signal);
+    if (result == core::Result::kFailure) {
+      logger_.log(core::LogLevel::kFatal, "Failed to set GPIO 3");
+      return;
+    }
+  };
+  addCommand(testrig_main_relay_gpio_command);
+  Command testrig_stop_all_command;
+  testrig_stop_all_command.name        = "stop";
+  testrig_stop_all_command.description = "Stop all relays";
+  testrig_stop_all_command.handler =
+    [this, precharge_relay_gpio, controller_relay_gpio, main_relay_gpio] {
+      const core::Result precharge_result = precharge_relay_gpio->write(core::DigitalSignal::kLow);
+      if (precharge_result == core::Result::kFailure) {
+        logger_.log(core::LogLevel::kFatal, "Failed to set GPIO 1");
+        return;
+      }
+      const core::Result controller_result
+        = controller_relay_gpio->write(core::DigitalSignal::kLow);
+      if (controller_result == core::Result::kFailure) {
+        logger_.log(core::LogLevel::kFatal, "Failed to set GPIO 2");
+        return;
+      }
+      const core::Result main_result = main_relay_gpio->write(core::DigitalSignal::kLow);
+      if (main_result == core::Result::kFailure) {
+        logger_.log(core::LogLevel::kFatal, "Failed to set GPIO 3");
+        return;
+      }
+    };
 }
 
 std::optional<std::shared_ptr<io::IAdc>> Repl::getAdc(const std::uint8_t bus)

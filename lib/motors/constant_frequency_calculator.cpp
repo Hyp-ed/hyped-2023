@@ -11,7 +11,7 @@ std::uint32_t ConstantFrequencyCalculator::calculateFrequency(core::Float veloci
   return frequency_;
 }
 
-void ConstantFrequencyCalculator::setFrequency(std::uint16_t frequency)
+void ConstantFrequencyCalculator::setFrequency(std::uint32_t frequency)
 {
   frequency_ = frequency;
 }

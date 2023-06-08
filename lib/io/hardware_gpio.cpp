@@ -50,6 +50,7 @@ HardwareGpioWriter::HardwareGpioWriter(core::ILogger &log, const int write_file_
 
 HardwareGpioWriter::~HardwareGpioWriter()
 {
+  write(core::DigitalSignal::kLow);
   close(write_file_descriptor_);
 }
 
