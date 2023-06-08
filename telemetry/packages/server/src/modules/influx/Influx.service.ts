@@ -15,7 +15,9 @@ export class InfluxService implements OnModuleInit {
 
   async $connect() {
     this.connection = new InfluxDB({ url: INFLUX_URL, token: INFLUX_TOKEN });
-    this.write = this.connection.getWriteApi(INFLUX_ORG, INFLUX_BUCKET);
+    this.write = this.connection.getWriteApi(INFLUX_ORG, INFLUX_BUCKET, 'ns', {
+      batchSize: 1,
+    });
     this.query = this.connection.getQueryApi(INFLUX_ORG);
   }
 
