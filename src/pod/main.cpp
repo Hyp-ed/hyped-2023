@@ -13,7 +13,7 @@ int main(int argc, char **argv)
   const auto execution_time = timer.measureExecutionTime([time]() {
     hyped::core::Logger logger("GPIO", hyped::core::LogLevel::kDebug, time);
     hyped::io::HardwareGpio gpio(logger);
-    auto gpio_reader_opt = gpio.getReader(0);
+    auto gpio_reader_opt = gpio.getReader(0, hyped::io::Edge::kNone);
     if (!gpio_reader_opt) {
       logger.log(hyped::core::LogLevel::kFatal, "Error");
       return;

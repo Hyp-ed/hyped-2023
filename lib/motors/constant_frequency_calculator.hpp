@@ -25,7 +25,7 @@ class ConstantFrequencyCalculator : public IFrequencyCalculator {
    *
    * @param frequency the frequency to be returned by calculateFrequency
    */
-  void setFrequency(std::uint16_t frequency);
+  void setFrequency(std::uint32_t frequency);
 
  private:
   core::ILogger &logger_;
