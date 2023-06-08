@@ -841,7 +841,13 @@ void Repl::addMotorControllerCommands(const std::string &bus)
     }
   };
   addCommand(controller_reset_command);
-  const auto time_frequency_calculator = std::make_shared<motors::TimeFrequencyCalculator>(logger_);
+  const auto optional_time_frequency_calculator
+    = motors::TimeFrequencyCalculator::create(logger_, "time_frequency.json");
+  if (!optional_time_frequency_calculator) {
+    logger_.log(core::LogLevel::kFatal, "Failed to create time frequency calculator instance");
+    return;
+  }
+  auto time_frequency_calculator                = std::move(*optional_time_frequency_calculator);
   const auto time_frequency_optional_controller = motors::Controller::create(
     logger_, "motor_controller_messages.json", can, time_frequency_calculator);
   if (!time_frequency_optional_controller) {
@@ -852,7 +858,8 @@ void Repl::addMotorControllerCommands(const std::string &bus)
   Command frequency_time_command;
   frequency_time_command.name = "controller frequency time run";
   frequency_time_command.description
-    = "Run the motor controller for provided duration, with frequency increasing 2Hz every second";
+    = "Run the motor controller for provided duration, with frequency pattern described in "
+      "time_frequency.json";
   frequency_time_command.handler = [this, time_frequency_controller, time_frequency_calculator]() {
     std::cout << "Enter run time in seconds" << std::endl;
     std::uint32_t run_time;
