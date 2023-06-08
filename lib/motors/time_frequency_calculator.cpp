@@ -10,7 +10,7 @@
 namespace hyped::motors {
 
 std::optional<std::shared_ptr<TimeFrequencyCalculator>> TimeFrequencyCalculator::create(
-  core::ILogger &logger, std::string &path)
+  core::ILogger &logger, const std::string &path)
 {
   std::ifstream input_stream(path);
   if (!input_stream.is_open()) {

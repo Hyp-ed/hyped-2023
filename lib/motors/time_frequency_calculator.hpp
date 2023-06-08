@@ -16,7 +16,7 @@ namespace hyped::motors {
 class TimeFrequencyCalculator : public IFrequencyCalculator {
  public:
   static std::optional<std::shared_ptr<TimeFrequencyCalculator>> create(core::ILogger &logger,
-                                                                        std::string &path);
+                                                                        const std::string &path);
   TimeFrequencyCalculator(core::ILogger &logger,
                           std::vector<std::pair<std::uint64_t, std::uint32_t>> &frequency_table);
   /**
