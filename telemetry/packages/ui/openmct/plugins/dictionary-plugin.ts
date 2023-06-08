@@ -65,16 +65,16 @@ export function DictionaryPlugin() {
   return function install(openmct: OpenMCT) {
     fetchPodIds()
       .then(({ ids }) => {
-        ids.forEach((id) => {
+        ids.forEach((podId) => {
           openmct.objects.addRoot(
             {
               namespace: `hyped.taxonomy`,
-              key: id,
+              key: podId,
             },
             openmct.priority.HIGH,
           );
           openmct.objects.addProvider(
-            `hyped.${id}`,
+            `hyped.${podId}`,
             measurementsObjectProvider,
           );
         });
