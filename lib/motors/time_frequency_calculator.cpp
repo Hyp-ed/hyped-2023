@@ -10,7 +10,7 @@
 namespace hyped::motors {
 
 std::optional<std::shared_ptr<TimeFrequencyCalculator>> TimeFrequencyCalculator::create(
-  core::ILogger &logger, std::string path)
+  core::ILogger &logger, std::string &path)
 {
   std::ifstream input_stream(path);
   if (!input_stream.is_open()) {
@@ -61,8 +61,8 @@ std::uint32_t TimeFrequencyCalculator::calculateFrequency(core::Float velocity)
   const std::uint32_t nanoseconds_elapsed
     = std::chrono::duration_cast<std::chrono::nanoseconds>(current_time - start_time_).count();
   const auto frequency
-    = std::find_if(frequency_table_.begin(),
-                   frequency_table_.end(),
+    = std::find_if(frequency_table_.rbegin(),
+                   frequency_table_.rend(),
                    [nanoseconds_elapsed](const std::pair<std::uint64_t, std::uint32_t> &pair) {
                      return nanoseconds_elapsed > pair.first;
                    })
