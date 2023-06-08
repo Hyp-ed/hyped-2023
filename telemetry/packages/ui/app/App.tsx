@@ -5,10 +5,10 @@ import {
   ControlSwitch,
 } from '@/components';
 import { StatusType } from '@/types/StatusType';
-import { ErrorStateAlert } from './components/error-state-alert';
 import { Button } from './components/ui/button';
 import { cn } from './lib/utils';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 
 const App = () => {
   const LATENCY = 11; // temp
@@ -32,10 +32,12 @@ const App = () => {
     }
     setTimeout(() => {
       setLaunched(true);
+      toast.success('Pod launched!');
     }, 1000);
 
     setTimeout(() => {
       setLaunched(false);
+      toast('Pod stopped!', { icon: '🛑' });
     }, 10000);
   };
 
@@ -44,6 +46,7 @@ const App = () => {
    */
   const stop = () => {
     console.log('STOP!');
+    toast('Pod stopped!', { icon: '🛑' });
   };
 
   /**
@@ -52,6 +55,7 @@ const App = () => {
    */
   const toggleMotorCooling = (active: boolean) => {
     setMotorCooling(active);
+    toast(active ? 'Motor cooling enabled' : 'Motor cooling disabled');
   };
 
   /**
@@ -60,6 +64,7 @@ const App = () => {
    */
   const toggleActiveSuspension = (active: boolean) => {
     setActiveSuspension(active);
+    toast(active ? 'Active suspension enabled' : 'Active suspension disabled');
   };
 
   return (
@@ -115,7 +120,6 @@ const App = () => {
               Retract Brakes
             </Button>
           </div>
-          <ErrorStateAlert title="Error!" description="Test error message" />
         </div>
         <Logo />
       </div>

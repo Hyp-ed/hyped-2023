@@ -4,10 +4,13 @@ import App from './App';
 import './globals.css';
 import 'victormono';
 import '@fontsource/raleway';
+import { Toaster } from 'react-hot-toast';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   // @ts-ignore
   <React.StrictMode>
     <App />
+    {/* @ts-ignore */}
+    <Toaster position="bottom-right" reverseOrder={false} />
   </React.StrictMode>,
 );
