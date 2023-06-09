@@ -11,6 +11,12 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <App />
     {/* @ts-ignore */}
-    <Toaster position="bottom-center" reverseOrder={false} />
+    <Toaster
+      position="bottom-center"
+      reverseOrder={false}
+      toastOptions={{
+        className: 'bg-gray-100 text-gray-900 shadow-xl',
+      }}
+    />
   </React.StrictMode>,
 );

@@ -6,10 +6,20 @@ import toast from 'react-hot-toast';
 import { Button } from '@/components/ui/button';
 import { Label } from './components/ui/label';
 import { Switch } from './components/ui/switch';
+import {
+  PodState,
+  failureStates,
+  idleStates,
+  nullStates,
+  okayStates,
+  podStates,
+} from './types/PodState';
+import { PodStateIndicator } from './components/pod-state';
 
 const App = () => {
   const LATENCY = 11; // temp
   const CONN_STATUS: StatusType = 'connected';
+  const POD_STATE: PodState = failureStates.failureBraking;
 
   const [motorCooling, setMotorCooling] = useState(false);
   const [activeSuspension, setActiveSuspension] = useState(false);
@@ -72,19 +82,20 @@ const App = () => {
   };
 
   return (
-    <main className="px-4 py-8 flex flex-col justify-between h-full bg-[#393939] select-none text-gray-100">
+    <main className="px-4 py-8 flex flex-col gap-2 justify-between h-full bg-[#393939] select-none text-gray-100">
       <div className="flex flex-col justify-between h-full">
-        <div className="space-y-2">
+        <div>
           <StatusIndicator status={CONN_STATUS} />
           <p>
-            <span className="italic">Latency: </span>
+            <span className="">Latency: </span>
             <span className="text-sm">{LATENCY} ms</span>
           </p>
-          <h1 className="text-5xl font-title font-black">Controls</h1>
         </div>
+        <PodStateIndicator state={POD_STATE} />
+        <h1 className="text-5xl font-title font-black my-2">Controls</h1>
         <div>
-          <div className="flex flex-col gap-4 mb-16">
-            <p className="text-3xl font-title font-bold underline">Options</p>
+          <div className="flex flex-col gap-4 mb-8">
+            {/* <p className="text-3xl font-title font-bold underline">Options</p> */}
             <div className="flex justify-between items-center">
               {/* @ts-ignore */}
               <Label htmlFor="motor-cooling">Motor Cooling</Label>
@@ -110,7 +121,7 @@ const App = () => {
             {/* @ts-ignore */}
             <Button
               className={cn(
-                'px-4 py-12 rounded-lg shadow-lg transition text-white text-3xl font-bold',
+                'px-4 py-12 rounded-md shadow-lg transition text-white text-3xl font-bold',
                 'bg-yellow-600 hover:bg-yellow-700',
               )}
               onClick={calibrate}
@@ -120,7 +131,7 @@ const App = () => {
             {/* @ts-ignore */}
             <Button
               className={cn(
-                'px-4 py-12 rounded-lg shadow-lg transition text-white text-3xl font-bold',
+                'px-4 py-12 rounded-md shadow-lg transition text-white text-3xl font-bold',
                 'bg-green-600 hover:bg-green-700',
               )}
               onClick={go}
@@ -130,8 +141,8 @@ const App = () => {
             {/* @ts-ignore */}
             <Button
               className={cn(
-                'px-4 py-12 rounded-lg shadow-lg transition text-white text-3xl font-bold',
-                'bg-red-600 hover:bg-red-700',
+                'px-4 py-12 rounded-md shadow-lg transition text-white text-3xl font-bold',
+                'bg-red-700 hover:bg-red-800',
               )}
               onClick={stop}
             >
@@ -140,16 +151,16 @@ const App = () => {
             {/* @ts-ignore */}
             <Button
               className={cn(
-                'px-4 py-12 rounded-lg shadow-lg transition text-white text-3xl font-bold',
-                'bg-blue-600 hover:bg-blue-700',
+                'px-4 py-12 rounded-md shadow-lg transition text-white text-3xl font-bold',
+                'bg-gray-600 hover:bg-gray-700',
               )}
               onClick={retractBrakes}
             >
               Retract Brakes
             </Button>
           </div>
+          <Logo />
         </div>
-        <Logo />
       </div>
     </main>
   );
