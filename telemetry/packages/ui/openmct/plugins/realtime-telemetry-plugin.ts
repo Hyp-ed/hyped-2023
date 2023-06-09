@@ -1,8 +1,8 @@
-import { EVENTS } from '../../../constants/src';
 import { OpenMCT } from 'openmct/dist/openmct';
 import { io } from 'socket.io-client';
 import { SERVER_ENDPOINT } from '../core/config';
 import { AugmentedDomainObject } from '../types/AugmentedDomainObject';
+import { socket as socketConstants } from '@hyped/telemetry-constants'
 
 const getMeasurementRoomName = (podId: string, measurementKey: string) => {
   return `${podId}/measurement/${measurementKey}`;
@@ -15,7 +15,7 @@ export function RealtimeTelemetryPlugin() {
 
     const listenerCallbacks: any = {};
 
-    socket.on('measurement', (data) => {
+    socket.on(socketConstants.MEASUREMENT_EVENT, (data) => {
       const { podId, measurementKey, value, timestamp } = data;
       const roomName = getMeasurementRoomName(podId, measurementKey);
 
@@ -33,11 +33,11 @@ export function RealtimeTelemetryPlugin() {
         const roomName = getMeasurementRoomName(podId, identifier.key);
 
         listenerCallbacks[roomName] = callback;
-        socket.emit(EVENTS.SUBSCRIBE_TO_MEASUREMENT, roomName);
+        socket.emit(socketConstants.EVENTS.SUBSCRIBE_TO_MEASUREMENT, roomName);
 
         return function unsubscribe() {
           delete listenerCallbacks[roomName];
-          socket.emit(EVENTS.UNSUBSCRIBE_FROM_MEASUREMENT, roomName);
+          socket.emit(socketConstants.EVENTS.UNSUBSCRIBE_FROM_MEASUREMENT, roomName);
         };
       },
     };

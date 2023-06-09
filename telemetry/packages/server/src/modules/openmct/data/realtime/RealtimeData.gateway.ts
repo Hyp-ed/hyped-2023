@@ -1,6 +1,6 @@
 import { Logger } from '@/modules/logger/Logger.decorator';
 import { MeasurementReading } from '@/modules/measurement/MeasurementReading.types';
-import { EVENTS } from '@hyped/telemetry-constants';
+import { socket } from '@hyped/telemetry-constants';
 import { LoggerService } from '@nestjs/common';
 import {
   ConnectedSocket,
@@ -26,7 +26,7 @@ export class RealtimeDataGateway {
     private readonly logger: LoggerService,
   ) {}
 
-  @SubscribeMessage(EVENTS.SUBSCRIBE_TO_MEASUREMENT)
+  @SubscribeMessage(socket.EVENTS.SUBSCRIBE_TO_MEASUREMENT)
   subscribeToMeasurement(
     @MessageBody() measurementRoom: string,
     @ConnectedSocket() client: Socket,
@@ -34,7 +34,7 @@ export class RealtimeDataGateway {
     client.join(measurementRoom);
   }
 
-  @SubscribeMessage(EVENTS.UNSUBSCRIBE_FROM_MEASUREMENT)
+  @SubscribeMessage(socket.EVENTS.UNSUBSCRIBE_FROM_MEASUREMENT)
   unsubscribeFromMeasurement(
     @MessageBody() measurementRoom: string,
     @ConnectedSocket() client: Socket,
@@ -46,7 +46,7 @@ export class RealtimeDataGateway {
     const { podId, measurementKey, value } = props;
 
     const measurementRoom = `${podId}/measurement/${measurementKey}`;
-    this.socket.to(measurementRoom).emit('measurement', {
+    this.socket.to(measurementRoom).emit(socket.MEASUREMENT_EVENT, {
       podId,
       measurementKey,
       value,

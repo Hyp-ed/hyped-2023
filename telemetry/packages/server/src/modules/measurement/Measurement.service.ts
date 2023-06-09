@@ -41,7 +41,7 @@ export class MeasurementService {
 
     const point = new Point('measurement')
       .timestamp(currentTime)
-      .tag('podId', podId.toString())
+      .tag('podId', podId)
       .tag('measurementKey', measurementKey)
       .tag('format', measurement.format)
       .floatField('value', value);
