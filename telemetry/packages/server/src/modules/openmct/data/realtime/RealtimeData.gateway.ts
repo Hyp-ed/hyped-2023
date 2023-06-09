@@ -1,6 +1,6 @@
 import { Logger } from '@/modules/logger/Logger.decorator';
 import { MeasurementReading } from '@/modules/measurement/MeasurementReading.types';
-import { socket } from '@hyped/telemetry-constants';
+import { socket as socketConstants } from '@hyped/telemetry-constants';
 import { LoggerService } from '@nestjs/common';
 import {
   ConnectedSocket,
@@ -26,27 +26,27 @@ export class RealtimeDataGateway {
     private readonly logger: LoggerService,
   ) {}
 
-  @SubscribeMessage(socket.EVENTS.SUBSCRIBE_TO_MEASUREMENT)
-  subscribeToMeasurement(
+  @SubscribeMessage(socketConstants.EVENTS.SUBSCRIBE_TO_MEASUREMENT)
+  async subscribeToMeasurement(
     @MessageBody() measurementRoom: string,
     @ConnectedSocket() client: Socket,
   ) {
-    client.join(measurementRoom);
+    await client.join(measurementRoom);
   }
 
-  @SubscribeMessage(socket.EVENTS.UNSUBSCRIBE_FROM_MEASUREMENT)
-  unsubscribeFromMeasurement(
+  @SubscribeMessage(socketConstants.EVENTS.UNSUBSCRIBE_FROM_MEASUREMENT)
+  async unsubscribeFromMeasurement(
     @MessageBody() measurementRoom: string,
     @ConnectedSocket() client: Socket,
   ) {
-    client.leave(measurementRoom);
+    await client.leave(measurementRoom);
   }
 
   sendMeasurementReading(props: MeasurementReading) {
     const { podId, measurementKey, value } = props;
 
-    const measurementRoom = `${podId}/measurement/${measurementKey}`;
-    this.socket.to(measurementRoom).emit(socket.MEASUREMENT_EVENT, {
+    const measurementRoom = socketConstants.getMeasurementRoomName(podId, measurementKey);
+    this.socket.to(measurementRoom).emit(socketConstants.MEASUREMENT_EVENT, {
       podId,
       measurementKey,
       value,
