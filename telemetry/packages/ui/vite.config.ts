@@ -14,7 +14,7 @@ export default defineConfig(({ command, mode }) => {
           openmct: resolve(__dirname, 'openmct/index.html'),
         },
       },
-     },
+    },
     plugins: [
       viteStaticCopy({
         targets: [
