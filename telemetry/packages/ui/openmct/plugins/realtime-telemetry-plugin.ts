@@ -1,4 +1,4 @@
-import { EVENTS } from '@hyped/telemetry-constants';
+import { EVENTS } from '../../../constants/src';
 import { OpenMCT } from 'openmct/dist/openmct';
 import { io } from 'socket.io-client';
 import { SERVER_ENDPOINT } from '../core/config';
@@ -38,10 +38,10 @@ export function RealtimeTelemetryPlugin() {
         return function unsubscribe() {
           delete listenerCallbacks[roomName];
           socket.emit(EVENTS.UNSUBSCRIBE_FROM_MEASUREMENT, roomName);
-        }
+        };
       },
     };
 
     openmct.telemetry.addProvider(provider);
-  }
+  };
 }
