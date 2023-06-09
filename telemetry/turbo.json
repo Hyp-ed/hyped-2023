@@ -22,8 +22,11 @@
     "build:constants": {
       "dependsOn": ["^build"]
     },
-    "build:telemetry-ui": {
+    "build:types": {
       "dependsOn": ["^build:constants"]
+    },
+    "build:telemetry-ui": {
+      "dependsOn": ["^build:types"]
     },
     "build": {
       "dependsOn": ["^build:telemetry-ui"]
