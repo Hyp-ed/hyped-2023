@@ -1,52 +1,56 @@
-import {
-  Logo,
-  StatusIndicator,
-  ControlButton,
-  ControlSwitch,
-} from '@/components';
+import { Logo, StatusIndicator } from './components';
 import { StatusType } from '@/types/StatusType';
-import { Button } from './components/ui/button';
 import { cn } from './lib/utils';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
+import { Button } from '@/components/ui/button';
+import { Label } from './components/ui/label';
+import { Switch } from './components/ui/switch';
 
 const App = () => {
   const LATENCY = 11; // temp
-  const STATUS: StatusType = 'connected';
-  const STATIONARY = false; // temp
+  const CONN_STATUS: StatusType = 'connected';
 
   const [motorCooling, setMotorCooling] = useState(false);
   const [activeSuspension, setActiveSuspension] = useState(false);
-  const [launched, setLaunched] = useState(false);
 
-  /**
-   * Starts pod
-   */
+  const calibrate = () => {
+    console.log('Calibrating');
+    toast('Calibrating!');
+  };
+
   const go = () => {
     if (motorCooling && activeSuspension) {
       console.log('GO! (with motor cooling and active suspension)');
+      toast.success(
+        'Pod launched (with motor cooling and active suspension)!',
+        { icon: '🚀' },
+      );
     } else if (motorCooling) {
       console.log('GO! (with motor cooling)');
-    } else {
+      toast.success('Pod launched (with motor cooling)!', { icon: '🚀' });
+    } else if (activeSuspension) {
       console.log('GO! (with active suspension)');
+      toast.success('Pod launched with (active suspension)!', { icon: '🚀' });
+    } else {
+      console.log('GO!');
+      toast.success('Pod launched!', { icon: '🚀' });
     }
-    setTimeout(() => {
-      setLaunched(true);
-      toast.success('Pod launched!');
-    }, 1000);
-
-    setTimeout(() => {
-      setLaunched(false);
-      toast('Pod stopped!', { icon: '🛑' });
-    }, 10000);
   };
 
-  /**
-   * Stops pod
-   */
   const stop = () => {
     console.log('STOP!');
     toast('Pod stopped!', { icon: '🛑' });
+  };
+
+  const retractBrakes = () => {
+    console.log('Retracting brakes');
+    toast('Brakes retracted!');
+  };
+
+  const clampBrakes = () => {
+    console.log('Clamping brakes');
+    toast('Brakes clamped!');
   };
 
   /**
@@ -71,7 +75,7 @@ const App = () => {
     <main className="px-4 py-8 flex flex-col justify-between h-full bg-[#393939] select-none text-gray-100">
       <div className="flex flex-col justify-between h-full">
         <div className="space-y-2">
-          <StatusIndicator status={STATUS} />
+          <StatusIndicator status={CONN_STATUS} />
           <p>
             <span className="italic">Latency: </span>
             <span className="text-sm">{LATENCY} ms</span>
@@ -81,41 +85,65 @@ const App = () => {
         <div>
           <div className="flex flex-col gap-4 mb-16">
             <p className="text-3xl font-title font-bold underline">Options</p>
-            <ControlSwitch
-              id="motor-cooling"
-              label="Motor Cooling"
-              onCheckedChange={toggleMotorCooling}
-              disabled={launched}
-            />
-            <ControlSwitch
-              id="active-suspension"
-              label="Active Suspension"
-              onCheckedChange={toggleActiveSuspension}
-              disabled={launched}
-            />
+            <div className="flex justify-between items-center">
+              {/* @ts-ignore */}
+              <Label htmlFor="motor-cooling">Motor Cooling</Label>
+              {/* @ts-ignore */}
+              <Switch
+                id="motor-cooling"
+                onCheckedChange={toggleMotorCooling}
+                disabled={false}
+              />
+            </div>
+            <div className="flex justify-between items-center">
+              {/* @ts-ignore */}
+              <Label htmlFor="active-suspension">Active Suspension</Label>
+              {/* @ts-ignore */}
+              <Switch
+                id="active-suspension"
+                onCheckedChange={toggleActiveSuspension}
+                disabled={false}
+              />
+            </div>
           </div>
           <div className="flex flex-col gap-4">
-            <ControlButton
-              onClick={go}
-              colour="green"
-              text="GO"
-              disabled={launched}
-            />
-            <ControlButton
-              onClick={stop}
-              colour="red"
-              text="STOP"
-              disabled={false}
-            />
             {/* @ts-ignore */}
             <Button
               className={cn(
                 'px-4 py-12 rounded-lg shadow-lg transition text-white text-3xl font-bold',
-                STATIONARY
-                  ? 'bg-blue-600 hover:bg-blue-700'
-                  : 'opacity-50 cursor-not-allowed bg-gray-400',
+                'bg-yellow-600 hover:bg-yellow-700',
+              )}
+              onClick={calibrate}
+            >
+              CALIBRATE
+            </Button>
+            {/* @ts-ignore */}
+            <Button
+              className={cn(
+                'px-4 py-12 rounded-lg shadow-lg transition text-white text-3xl font-bold',
+                'bg-green-600 hover:bg-green-700',
               )}
               onClick={go}
+            >
+              START RUN
+            </Button>
+            {/* @ts-ignore */}
+            <Button
+              className={cn(
+                'px-4 py-12 rounded-lg shadow-lg transition text-white text-3xl font-bold',
+                'bg-red-600 hover:bg-red-700',
+              )}
+              onClick={stop}
+            >
+              STOP RUN
+            </Button>
+            {/* @ts-ignore */}
+            <Button
+              className={cn(
+                'px-4 py-12 rounded-lg shadow-lg transition text-white text-3xl font-bold',
+                'bg-blue-600 hover:bg-blue-700',
+              )}
+              onClick={retractBrakes}
             >
               Retract Brakes
             </Button>

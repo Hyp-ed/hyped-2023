@@ -11,6 +11,6 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <App />
     {/* @ts-ignore */}
-    <Toaster position="bottom-right" reverseOrder={false} />
+    <Toaster position="bottom-center" reverseOrder={false} />
   </React.StrictMode>,
 );
