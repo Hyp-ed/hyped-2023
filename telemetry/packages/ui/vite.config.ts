@@ -6,9 +6,6 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => {
   return {
-    optimizeDeps: {
-      include: ['@hyped/telemetry-constants'],
-    },
     build: {
       rollupOptions: {
         input: {
@@ -17,10 +14,7 @@ export default defineConfig(({ command, mode }) => {
           openmct: resolve(__dirname, 'openmct/index.html'),
         },
       },
-      commonjsOptions: {
-        include: [/node_modules/, '@hyped/telemetry-constants'],
-      },
-    },
+     },
     plugins: [
       viteStaticCopy({
         targets: [

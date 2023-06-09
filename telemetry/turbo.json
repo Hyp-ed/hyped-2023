@@ -19,20 +19,9 @@
     "flightcheck": {
       "outputs": []
     },
-    "build:types": {
-      "dependsOn": ["^build"]
-    },
-    "build:constants": {
-      "dependsOn": ["^build:types"]
-    },
-    "build:telemetry-ui": {
-      "dependsOn": ["^build:constants"]
-    },
     "build": {
-      "dependsOn": ["^build:telemetry-ui"]
-    },
-    "build:prod": {
-      "dependsOn": ["^build:prod"]
+      "outputs": ["dist/**"],
+      "dependsOn": ["^build"]
     }
   }
 }
