@@ -17,12 +17,14 @@ import {
 import { PodStateIndicator } from './components/pod-state';
 
 const App = () => {
-  const LATENCY = 11; // temp
-  const CONN_STATUS: StatusType = 'connected';
-  const POD_STATE: PodState = failureStates.failureBraking;
+  const LATENCY = 11; // TODOLater: replace with real value once latency is implemented
+  const CONN_STATUS: StatusType = 'connected'; // TODOLater: replace with real value representing whether we are connected to ROS
+  const POD_STATE: PodState = failureStates.failureBraking; // TODOLater: replace with real value once we can read pod state from ROS
 
   const [motorCooling, setMotorCooling] = useState(false);
   const [activeSuspension, setActiveSuspension] = useState(false);
+
+  const SWITCHES_DISABLED = false; //TODOLater: replace with logic to determine whether switches should be disabled
 
   const calibrate = () => {
     console.log('Calibrating');
@@ -84,17 +86,21 @@ const App = () => {
   return (
     <main className="px-4 py-8 flex flex-col gap-2 justify-between h-full bg-[#393939] select-none text-gray-100">
       <div className="flex flex-col justify-between h-full">
-        <div>
-          <StatusIndicator status={CONN_STATUS} />
-          <p>
-            <span className="">Latency: </span>
-            <span className="text-sm">{LATENCY} ms</span>
-          </p>
+        {/* Status, Latency, State, Title */}
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-2">
+            <StatusIndicator status={CONN_STATUS} />
+            <p>
+              <span className="">Latency: </span>
+              <span className="text-sm">{LATENCY} ms</span>
+            </p>
+          </div>
+          <h1 className="text-5xl font-title font-black my-2">Controls</h1>
+          <PodStateIndicator state={POD_STATE} />
         </div>
-        <PodStateIndicator state={POD_STATE} />
-        <h1 className="text-5xl font-title font-black my-2">Controls</h1>
-        <div>
-          <div className="flex flex-col gap-4 mb-8">
+        {/* Switches and Buttons */}
+        <div className="space-y-8">
+          <div className="flex flex-col gap-4">
             {/* <p className="text-3xl font-title font-bold underline">Options</p> */}
             <div className="flex justify-between items-center">
               {/* @ts-ignore */}
@@ -103,7 +109,7 @@ const App = () => {
               <Switch
                 id="motor-cooling"
                 onCheckedChange={toggleMotorCooling}
-                disabled={false}
+                disabled={SWITCHES_DISABLED}
               />
             </div>
             <div className="flex justify-between items-center">
@@ -113,7 +119,7 @@ const App = () => {
               <Switch
                 id="active-suspension"
                 onCheckedChange={toggleActiveSuspension}
-                disabled={false}
+                disabled={SWITCHES_DISABLED}
               />
             </div>
           </div>
