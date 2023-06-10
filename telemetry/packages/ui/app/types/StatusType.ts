@@ -1,1 +1,5 @@
-export type StatusType = 'connected' | 'disconnected' | 'connecting';
+export type StatusType =
+  | 'connected'
+  | 'disconnected'
+  | 'connecting'
+  | 'reconnecting';

@@ -1,24 +1,28 @@
 import { toast } from 'react-hot-toast';
 import { useState } from 'react';
 import { PodStateIndicator } from './pod-state';
-import { PodState, failureStates } from '@/types/PodState';
+import { PodState, failureStates, idleStates } from '@/types/PodState';
 import { Button } from './ui/button';
 import { Label } from './ui/label';
 import { Switch } from './ui/switch';
 import { cn } from '@/lib/utils';
+import { MqttPublish } from '@/types/mqtt';
 import {
   calibrate,
-  retractBrakes,
-  startPod as startPod,
+  raise,
+  retract,
+  startPod,
+  stopPod,
 } from '@/controls/controls';
 
 interface PodControlsProps {
   podId: string;
   show: boolean;
+  mqttPublish: MqttPublish;
 }
 
-export const PodControls = ({ podId, show }: PodControlsProps) => {
-  const POD_STATE: PodState = failureStates.failureBraking; // TODOLater: replace with real value once we can read pod state from ROS
+export const PodControls = ({ podId, show, mqttPublish }: PodControlsProps) => {
+  const POD_STATE: PodState = idleStates.idle; // TODOLater: replace with real value once we can read pod state from ROS
 
   const [motorCooling, setMotorCooling] = useState(false);
   const [activeSuspension, setActiveSuspension] = useState(false);
@@ -46,8 +50,8 @@ export const PodControls = ({ podId, show }: PodControlsProps) => {
   return (
     <div className={cn('my-8 space-y-8', show ? 'block' : 'hidden')}>
       <PodStateIndicator state={POD_STATE} />
-      <div className="space-y-8">
-        <div className="flex flex-col gap-4">
+      <div className="space-y-6">
+        <div className="flex flex-col gap-2">
           {/* <p className="text-3xl font-title font-bold underline">Options</p> */}
           <div className="flex justify-between items-center">
             {/* @ts-ignore */}
@@ -70,11 +74,11 @@ export const PodControls = ({ podId, show }: PodControlsProps) => {
             />
           </div>
         </div>
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-2">
           {/* @ts-ignore */}
           <Button
             className={cn(
-              'px-4 py-12 rounded-md shadow-lg transition text-white text-3xl font-bold',
+              'px-4 py-10 rounded-md shadow-lg transition text-white text-3xl font-bold',
               'bg-yellow-600 hover:bg-yellow-700',
             )}
             onClick={() => calibrate(podId)}
@@ -84,7 +88,7 @@ export const PodControls = ({ podId, show }: PodControlsProps) => {
           {/* @ts-ignore */}
           <Button
             className={cn(
-              'px-4 py-12 rounded-md shadow-lg transition text-white text-3xl font-bold',
+              'px-4 py-10 rounded-md shadow-lg transition text-white text-3xl font-bold',
               'bg-green-600 hover:bg-green-700',
             )}
             onClick={() =>
@@ -99,22 +103,33 @@ export const PodControls = ({ podId, show }: PodControlsProps) => {
           {/* @ts-ignore */}
           <Button
             className={cn(
-              'px-4 py-12 rounded-md shadow-lg transition text-white text-3xl font-bold',
+              'px-4 py-10 rounded-md shadow-lg transition text-white text-3xl font-bold',
               'bg-red-700 hover:bg-red-800',
             )}
-            onClick={stop}
+            onClick={() => stopPod(podId)}
           >
             STOP RUN
           </Button>
           {/* @ts-ignore */}
           <Button
             className={cn(
-              'px-4 py-12 rounded-md shadow-lg transition text-white text-3xl font-bold',
+              'px-4 py-10 rounded-md shadow-lg transition text-white text-3xl font-bold',
               'bg-gray-600 hover:bg-gray-700',
             )}
-            onClick={() => retractBrakes(podId)}
+            onClick={() => retract(podId, mqttPublish)}
           >
             Retract Brakes
+          </Button>
+          {/* @ts-ignore */}
+          <Button
+            className={cn(
+              'px-4 py-10 rounded-md shadow-lg transition text-white text-3xl font-bold',
+              'bg-gray-600 hover:bg-gray-700',
+            )}
+            // @ts-ignore
+            onClick={() => raise(podId, mqttPublish)}
+          >
+            Raise Pod
           </Button>
         </div>
       </div>

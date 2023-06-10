@@ -1,3 +1,4 @@
+import { MqttPublish } from '@/types/mqtt';
 import { toast } from 'react-hot-toast';
 
 export const calibrate = (podId: string) => {
@@ -42,12 +43,49 @@ export const stopPod = (podId: string) => {
   toast(`[${podId}] Pod stopped!`, { icon: '🛑' });
 };
 
-export const retractBrakes = (podId: string) => {
-  console.log('Retracting brakes');
-  toast(`[${podId}] Brakes retracted!`);
-};
-
 export const clampBrakes = (podId: string) => {
   console.log('Clamping brakes');
   toast(`[${podId}] Brakes clamped!`);
+};
+
+// raise, lower, clamp, retract
+
+export const clamp = (podId: string, mqttPublish: MqttPublish) => {
+  console.log('Clamping');
+  toast(`[${podId}] Clamped!`);
+  mqttPublish({
+    topic: 'controls/clamp',
+    qos: 0,
+    payload: 'clamp',
+  });
+};
+
+export const retract = (podId: string, mqttPublish: MqttPublish) => {
+  console.log('Retracting');
+  toast(`[${podId}] Retracted!`);
+  mqttPublish({
+    topic: 'controls/retract',
+    qos: 0,
+    payload: 'retract',
+  });
+};
+
+export const raise = (podId: string, mqttPublish: MqttPublish) => {
+  console.log('Raising');
+  toast(`[${podId}] Raised!`);
+  mqttPublish({
+    topic: 'controls/raise',
+    qos: 0,
+    payload: 'raise',
+  });
+};
+
+export const lower = (podId: string, mqttPublish: MqttPublish) => {
+  console.log('Lowering');
+  toast(`[${podId}] Lowered!`);
+  mqttPublish({
+    topic: 'controls/lower',
+    qos: 0,
+    payload: 'lower',
+  });
 };
