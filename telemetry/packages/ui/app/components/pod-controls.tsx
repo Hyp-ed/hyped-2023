@@ -9,6 +9,8 @@ import { cn } from '@/lib/utils';
 import { MqttPublish } from '@/types/mqtt';
 import {
   calibrate,
+  clamp,
+  lower,
   raise,
   retract,
   startPod,
@@ -26,6 +28,9 @@ export const PodControls = ({ podId, show, mqttPublish }: PodControlsProps) => {
 
   const [motorCooling, setMotorCooling] = useState(false);
   const [activeSuspension, setActiveSuspension] = useState(false);
+
+  const [clamped, setClamped] = useState(false);
+  const [raised, setRaised] = useState(false);
 
   const SWITCHES_DISABLED = false; //TODOLater: replace with logic to determine whether switches should be disabled
 
@@ -114,22 +119,32 @@ export const PodControls = ({ podId, show, mqttPublish }: PodControlsProps) => {
           <Button
             className={cn(
               'px-4 py-10 rounded-md shadow-lg transition text-white text-3xl font-bold',
-              'bg-gray-600 hover:bg-gray-700',
+              clamped && 'bg-blue-600 hover:bg-blue-700',
+              !clamped && 'bg-gray-600 hover:bg-gray-700',
             )}
-            onClick={() => retract(podId, mqttPublish)}
+            onClick={() => {
+              if (clamped) retract(podId, mqttPublish);
+              else clamp(podId, mqttPublish);
+              setClamped(!clamped);
+            }}
           >
-            Retract Brakes
+            {clamped ? 'Retract Brakes' : 'Clamp Brakes'}
           </Button>
           {/* @ts-ignore */}
           <Button
             className={cn(
               'px-4 py-10 rounded-md shadow-lg transition text-white text-3xl font-bold',
-              'bg-gray-600 hover:bg-gray-700',
+              raised && 'bg-blue-600 hover:bg-blue-700',
+              !raised && 'bg-gray-600 hover:bg-gray-700',
             )}
             // @ts-ignore
-            onClick={() => raise(podId, mqttPublish)}
+            onClick={() => {
+              if (raised) lower(podId, mqttPublish);
+              else raise(podId, mqttPublish);
+              setRaised(!raised);
+            }}
           >
-            Raise Pod
+            {raised ? 'Lower Pod' : 'Raise Pod'}
           </Button>
         </div>
       </div>
