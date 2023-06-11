@@ -1071,40 +1071,64 @@ void Repl::addActiveSuspensionCommands(const std::uint8_t adc_pin,
     logger_.log(core::LogLevel::kFatal, "Failed to create adc instance");
     return;
   }
-  const auto adc = std::move(*optional_adc);
-  const auto pressure_sensor
-    = std::make_shared<sensors::Pressure>(logger_, adc, lower_pressure_pin, raise_pressure_pin);
+  const auto adc                          = std::move(*optional_adc);
+  const auto optional_raise_pressure_gpio = gpio_.getWriter(raise_pressure_pin);
+  if (!optional_raise_pressure_gpio) {
+    logger_.log(core::LogLevel::kFatal,
+                "Failed to create gpio writer for raise pressure pin %d",
+                raise_pressure_pin);
+    return;
+  }
+  const auto raise_pressure_gpio          = std::move(*optional_raise_pressure_gpio);
+  const auto optional_lower_pressure_gpio = gpio_.getWriter(lower_pressure_pin);
+  if (!optional_lower_pressure_gpio) {
+    logger_.log(core::LogLevel::kFatal,
+                "Failed to create gpio writer for lower pressure pin %d",
+                lower_pressure_pin);
+    return;
+  }
+  const auto lower_pressure_gpio = std::move(*optional_lower_pressure_gpio);
+  const auto pressure_sensor     = std::make_shared<sensors::Pressure>(logger_, adc);
   Command active_suspension_set_command;
   active_suspension_set_command.name        = "active suspension set";
   active_suspension_set_command.description = "Set the active suspension to specified pressure";
-  active_suspension_set_command.handler     = [this, pressure_sensor]() {
-    std::cout << "Enter pressure to set (bar)" << std::endl;
-    core::Float pressure;
-    std::cin >> pressure;
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    const core::Float lower_bound = pressure * 0.95;
-    const core::Float upper_bound = pressure * 1.05;
-    std::uint8_t in_range_count   = 0;
-    while (1) {
-      if (in_range_count == 100) {
-        logger_.log(core::LogLevel::kInfo, "Pressure set to %f", pressure);
-        return;
-      }
-      const auto optional_current_pressure = pressure_sensor->read();
-      if (!optional_current_pressure) {
-        logger_.log(core::LogLevel::kFatal, "Failed to read pressure sensor");
-        return;
-      }
-      const core::Float current_pressure = *optional_current_pressure;
-      if (current_pressure >= lower_bound && current_pressure <= upper_bound) {
-        ++in_range_count;
-        continue;
-      }
-      in_range_count = 0;
-      if (current_pressure < lower_bound) {}
-      if (current_pressure > upper_bound) {}
-    }
-  };
+  active_suspension_set_command.handler
+    = [this, pressure_sensor, lower_pressure_gpio, raise_pressure_gpio]() {
+        std::cout << "Enter pressure to set (bar)" << std::endl;
+        core::Float pressure;
+        std::cin >> pressure;
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        const core::Float lower_bound = pressure * 0.95;
+        const core::Float upper_bound = pressure * 1.05;
+        std::uint8_t in_range_count   = 0;
+        while (1) {
+          if (in_range_count == 100) {
+            logger_.log(core::LogLevel::kInfo, "Pressure set to %f", pressure);
+            return;
+          }
+          const auto optional_current_pressure = pressure_sensor->read();
+          if (!optional_current_pressure) {
+            logger_.log(core::LogLevel::kFatal, "Failed to read pressure sensor");
+            return;
+          }
+          const core::Float current_pressure = *optional_current_pressure;
+          if (current_pressure >= lower_bound && current_pressure <= upper_bound) {
+            raise_pressure_gpio->write(core::DigitalSignal::kLow);
+            lower_pressure_gpio->write(core::DigitalSignal::kLow);
+            ++in_range_count;
+            continue;
+          }
+          in_range_count = 0;
+          if (current_pressure < lower_bound) {
+            raise_pressure_gpio->write(core::DigitalSignal::kHigh);
+            lower_pressure_gpio->write(core::DigitalSignal::kLow);
+          }
+          if (current_pressure > upper_bound) {
+            raise_pressure_gpio->write(core::DigitalSignal::kLow);
+            lower_pressure_gpio->write(core::DigitalSignal::kHigh);
+          }
+        }
+      };
 }
 
 std::optional<std::shared_ptr<io::IAdc>> Repl::getAdc(const std::uint8_t bus)
