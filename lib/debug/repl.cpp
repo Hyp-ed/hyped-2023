@@ -283,6 +283,26 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
     const auto bus = motor_controller["bus"].GetString();
     repl->addMotorControllerCommands(bus);
   }
+  if (!debugger.HasMember("pressure")) {
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'debugger.pressure' in configuration file");
+    return std::nullopt;
+  }
+  const auto pressure = debugger["pressure"].GetObject();
+  if (!pressure.HasMember("enabled")) {
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'pressure.enabled' in configuration file");
+    return std::nullopt;
+  }
+  if (pressure["enabled"].GetBool()) {
+    if (!pressure.HasMember("pin")) {
+      logger_.log(core::LogLevel::kFatal,
+                  "Missing required field 'pressure.pin' in configuration file");
+      return std::nullopt;
+    }
+    const auto pin = pressure["pin"].GetUint();
+    repl->addPressureCommands(pin);
+  }
   return repl;
 }
 
@@ -877,6 +897,29 @@ void Repl::addMotorControllerCommands(const std::string &bus)
     time_frequency_controller->run(motors::FauxState::kStop);
   };
   addCommand(frequency_time_command);
+}
+
+void Repl::addPressureCommands(const std::uint8_t pin)
+{
+  const auto optional_adc = getAdc(pin);
+  if (!optional_adc) {
+    logger_.log(core::LogLevel::kFatal, "Failed to create adc instance");
+    return;
+  }
+  const auto adc             = std::move(*optional_adc);
+  const auto pressure_sensor = std::make_shared<sensors::Pressure>(logger_, adc);
+  Command pressure_sensor_read_command;
+  pressure_sensor_read_command.name        = "pressure sensor read";
+  pressure_sensor_read_command.description = "Read the pressure sensor";
+  pressure_sensor_read_command.handler     = [this, pressure_sensor]() {
+    const auto pressure = pressure_sensor->read();
+    if (!pressure) {
+      logger_.log(core::LogLevel::kFatal, "Failed to read pressure sensor");
+      return;
+    }
+    logger_.log(core::LogLevel::kInfo, "Pressure: %f", *pressure);
+  };
+  addCommand(pressure_sensor_read_command);
 }
 
 std::optional<std::shared_ptr<io::IAdc>> Repl::getAdc(const std::uint8_t bus)
