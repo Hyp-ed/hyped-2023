@@ -11,7 +11,14 @@
 
 namespace hyped::debug {
 
-Repl::Repl(core::ILogger &logger) : logger_(logger), i2c_(), spi_(), pwm_(), adc_(), uart_()
+Repl::Repl(core::ILogger &logger)
+    : logger_(logger),
+      i2c_(),
+      spi_(),
+      pwm_(),
+      adc_(),
+      uart_(),
+      gpio_(io::HardwareGpio(logger))
 {
 }
 
@@ -115,6 +122,36 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
       logger_.log(core::LogLevel::kFatal,
                   "Missing required field 'io.i2c.buses' in configuration file");
       return std::nullopt;
+    }
+  }
+  if (!io.HasMember("gpio")) {
+    logger_.log(core::LogLevel::kFatal, "Missing required field 'io.gpio' in configuration file");
+    return std::nullopt;
+  }
+  const auto gpio = io["gpio"].GetObject();
+  if (!gpio.HasMember("enabled")) {
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'io.gpio.enabled' in configuration file");
+    return std::nullopt;
+  }
+  if (gpio["enabled"].GetBool()) {
+    if (!gpio.HasMember("read_pins")) {
+      logger_.log(core::LogLevel::kFatal,
+                  "Missing required field 'io.gpio.read_pins' in configuration file");
+      return std::nullopt;
+    }
+    const auto read_pins = gpio["read_pins"].GetArray();
+    for (auto &pin : read_pins) {
+      repl->addGpioReadCommands(pin.GetUint());
+    }
+    if (!gpio.HasMember("write_pins")) {
+      logger_.log(core::LogLevel::kFatal,
+                  "Missing required field 'io.gpio.write_pins' in configuration file");
+      return std::nullopt;
+    }
+    const auto write_pins = gpio["write_pins"].GetArray();
+    for (auto &pin : write_pins) {
+      repl->addGpioWriteCommands(pin.GetUint());
     }
   }
   const auto buses = i2c["buses"].GetArray();
@@ -446,6 +483,74 @@ void Repl::addCanCommands(const std::string &bus)
     logger_.log(core::LogLevel::kDebug, "Wrote to CAN bus %s", bus.c_str());
   };
   addCommand(can_write_command);
+}
+
+void Repl::addGpioReadCommands(const std::uint8_t pin)
+{
+  const auto optional_gpio_reader = gpio_.getReader(pin);
+  if (!optional_gpio_reader) {
+    logger_.log(core::LogLevel::kFatal, "Failed to create GPIO reader on pin %d", pin);
+    return;
+  }
+  const auto gpio_reader = std::move(*optional_gpio_reader);
+  Command gpio_read_command;
+  std::stringstream identifier;
+  identifier << "gpio " << static_cast<int>(pin) << " read";
+  gpio_read_command.name = identifier.str();
+  std::stringstream description;
+  description << "Read from GPIO pin " << static_cast<int>(pin);
+  gpio_read_command.description = description.str();
+  gpio_read_command.handler     = [this, gpio_reader, pin]() {
+    const auto value = gpio_reader->read();
+    if (!value) {
+      logger_.log(core::LogLevel::kFatal, "Failed to read from GPIO pin %d", pin);
+      return;
+    }
+    logger_.log(
+      core::LogLevel::kDebug, "GPIO value from pin %d: %d", pin, static_cast<std::uint8_t>(*value));
+  };
+}
+
+void Repl::addGpioWriteCommands(const std::uint8_t pin)
+{
+  const auto optional_gpio_writer = gpio_.getWriter(pin);
+  if (!optional_gpio_writer) {
+    logger_.log(core::LogLevel::kFatal, "Failed to create GPIO writer on pin %d", pin);
+    return;
+  }
+  const auto gpio_writer = std::move(*optional_gpio_writer);
+  Command gpio_write_command;
+  std::stringstream identifier;
+  identifier << "gpio " << static_cast<int>(pin) << " write";
+  gpio_write_command.name = identifier.str();
+  std::stringstream description;
+  description << "Write to GPIO pin " << static_cast<int>(pin);
+  gpio_write_command.description = description.str();
+  gpio_write_command.handler     = [this, gpio_writer, pin]() {
+    std::cout << "Enter GPIO value: ";
+    std::uint8_t value;
+    std::cin >> std::hex >> value;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    core::DigitalSignal signal;
+    switch (value) {
+      case 0:
+        signal = core::DigitalSignal::kLow;
+        break;
+      case 1:
+        signal = core::DigitalSignal::kHigh;
+        break;
+      default:
+        logger_.log(core::LogLevel::kFatal, "Invalid GPIO value: %d, must be 0 or 1", value);
+        break;
+    }
+    const auto result = gpio_writer->write(signal);
+    if (result == core::Result::kFailure) {
+      logger_.log(core::LogLevel::kFatal, "Failed to write to GPIO pin %d", pin);
+      return;
+    }
+    logger_.log(core::LogLevel::kDebug, "Wrote %d to GPIO pin %d", value, pin);
+  };
+  addCommand(gpio_write_command);
 }
 
 void Repl::addI2cCommands(const std::uint8_t bus)
