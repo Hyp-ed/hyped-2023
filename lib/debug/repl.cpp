@@ -11,7 +11,14 @@
 
 namespace hyped::debug {
 
-Repl::Repl(core::ILogger &logger) : logger_(logger), i2c_(), spi_(), pwm_(), adc_(), uart_()
+Repl::Repl(core::ILogger &logger)
+    : logger_(logger),
+      i2c_(),
+      spi_(),
+      pwm_(),
+      adc_(),
+      uart_(),
+      gpio_(io::HardwareGpio(logger))
 {
 }
 
@@ -115,6 +122,36 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
       logger_.log(core::LogLevel::kFatal,
                   "Missing required field 'io.i2c.buses' in configuration file");
       return std::nullopt;
+    }
+  }
+  if (!io.HasMember("gpio")) {
+    logger_.log(core::LogLevel::kFatal, "Missing required field 'io.gpio' in configuration file");
+    return std::nullopt;
+  }
+  const auto gpio = io["gpio"].GetObject();
+  if (!gpio.HasMember("enabled")) {
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'io.gpio.enabled' in configuration file");
+    return std::nullopt;
+  }
+  if (gpio["enabled"].GetBool()) {
+    if (!gpio.HasMember("read_pins")) {
+      logger_.log(core::LogLevel::kFatal,
+                  "Missing required field 'io.gpio.read_pins' in configuration file");
+      return std::nullopt;
+    }
+    const auto read_pins = gpio["read_pins"].GetArray();
+    for (auto &pin : read_pins) {
+      repl->addGpioReadCommands(pin.GetUint());
+    }
+    if (!gpio.HasMember("write_pins")) {
+      logger_.log(core::LogLevel::kFatal,
+                  "Missing required field 'io.gpio.write_pins' in configuration file");
+      return std::nullopt;
+    }
+    const auto write_pins = gpio["write_pins"].GetArray();
+    for (auto &pin : write_pins) {
+      repl->addGpioWriteCommands(pin.GetUint());
     }
   }
   const auto buses = i2c["buses"].GetArray();
@@ -283,6 +320,61 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
     const auto bus = motor_controller["bus"].GetString();
     repl->addMotorControllerCommands(bus);
   }
+  if (!debugger.HasMember("pressure")) {
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'debugger.pressure' in configuration file");
+    return std::nullopt;
+  }
+  const auto pressure = debugger["pressure"].GetObject();
+  if (!pressure.HasMember("enabled")) {
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'pressure.enabled' in configuration file");
+    return std::nullopt;
+  }
+  if (pressure["enabled"].GetBool()) {
+    if (!pressure.HasMember("pin")) {
+      logger_.log(core::LogLevel::kFatal,
+                  "Missing required field 'pressure.pin' in configuration file");
+      return std::nullopt;
+    }
+    const auto pin = pressure["pin"].GetUint();
+    repl->addPressureCommands(pin);
+  }
+  if (!debugger.HasMember("active_suspension")) {
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'debugger.active_suspension' in configuration file");
+    return std::nullopt;
+  }
+  const auto active_suspension = debugger["active_suspension"].GetObject();
+  if (!active_suspension.HasMember("enabled")) {
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'active_suspension.enabled' in configuration file");
+    return std::nullopt;
+  }
+  if (active_suspension["enabled"].GetBool()) {
+    if (!active_suspension.HasMember("pressure_sensor_pin")) {
+      logger_.log(core::LogLevel::kFatal,
+                  "Missing required field 'active_suspension.pressure_sensor_pin' in "
+                  "configuration file");
+      return std::nullopt;
+    }
+    if (!active_suspension.HasMember("lower_pressure_pin")) {
+      logger_.log(core::LogLevel::kFatal,
+                  "Missing required field 'active_suspension.lower_pressure_pin' in "
+                  "configuration file");
+      return std::nullopt;
+    }
+    if (!active_suspension.HasMember("raise_pressure_pin")) {
+      logger_.log(core::LogLevel::kFatal,
+                  "Missing required field 'active_suspension.raise_pressure_pin' in "
+                  "configuration file");
+      return std::nullopt;
+    }
+    const auto pressure_sensor_pin = active_suspension["pressure_sensor_pin"].GetUint();
+    const auto lower_pressure_pin  = active_suspension["lower_pressure_pin"].GetUint();
+    const auto raise_pressure_pin  = active_suspension["raise_pressure_pin"].GetUint();
+    repl->addActiveSuspensionCommands(pressure_sensor_pin, lower_pressure_pin, raise_pressure_pin);
+  }
   return repl;
 }
 
@@ -391,6 +483,74 @@ void Repl::addCanCommands(const std::string &bus)
     logger_.log(core::LogLevel::kDebug, "Wrote to CAN bus %s", bus.c_str());
   };
   addCommand(can_write_command);
+}
+
+void Repl::addGpioReadCommands(const std::uint8_t pin)
+{
+  const auto optional_gpio_reader = gpio_.getReader(pin);
+  if (!optional_gpio_reader) {
+    logger_.log(core::LogLevel::kFatal, "Failed to create GPIO reader on pin %d", pin);
+    return;
+  }
+  const auto gpio_reader = std::move(*optional_gpio_reader);
+  Command gpio_read_command;
+  std::stringstream identifier;
+  identifier << "gpio " << static_cast<int>(pin) << " read";
+  gpio_read_command.name = identifier.str();
+  std::stringstream description;
+  description << "Read from GPIO pin " << static_cast<int>(pin);
+  gpio_read_command.description = description.str();
+  gpio_read_command.handler     = [this, gpio_reader, pin]() {
+    const auto value = gpio_reader->read();
+    if (!value) {
+      logger_.log(core::LogLevel::kFatal, "Failed to read from GPIO pin %d", pin);
+      return;
+    }
+    logger_.log(
+      core::LogLevel::kDebug, "GPIO value from pin %d: %d", pin, static_cast<std::uint8_t>(*value));
+  };
+}
+
+void Repl::addGpioWriteCommands(const std::uint8_t pin)
+{
+  const auto optional_gpio_writer = gpio_.getWriter(pin);
+  if (!optional_gpio_writer) {
+    logger_.log(core::LogLevel::kFatal, "Failed to create GPIO writer on pin %d", pin);
+    return;
+  }
+  const auto gpio_writer = std::move(*optional_gpio_writer);
+  Command gpio_write_command;
+  std::stringstream identifier;
+  identifier << "gpio " << static_cast<int>(pin) << " write";
+  gpio_write_command.name = identifier.str();
+  std::stringstream description;
+  description << "Write to GPIO pin " << static_cast<int>(pin);
+  gpio_write_command.description = description.str();
+  gpio_write_command.handler     = [this, gpio_writer, pin]() {
+    std::cout << "Enter GPIO value: ";
+    std::uint8_t value;
+    std::cin >> std::hex >> value;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    core::DigitalSignal signal;
+    switch (value) {
+      case 0:
+        signal = core::DigitalSignal::kLow;
+        break;
+      case 1:
+        signal = core::DigitalSignal::kHigh;
+        break;
+      default:
+        logger_.log(core::LogLevel::kFatal, "Invalid GPIO value: %d, must be 0 or 1", value);
+        break;
+    }
+    const auto result = gpio_writer->write(signal);
+    if (result == core::Result::kFailure) {
+      logger_.log(core::LogLevel::kFatal, "Failed to write to GPIO pin %d", pin);
+      return;
+    }
+    logger_.log(core::LogLevel::kDebug, "Wrote %d to GPIO pin %d", value, pin);
+  };
+  addCommand(gpio_write_command);
 }
 
 void Repl::addI2cCommands(const std::uint8_t bus)
@@ -877,6 +1037,98 @@ void Repl::addMotorControllerCommands(const std::string &bus)
     time_frequency_controller->run(motors::FauxState::kStop);
   };
   addCommand(frequency_time_command);
+}
+
+void Repl::addPressureCommands(const std::uint8_t pin)
+{
+  const auto optional_adc = getAdc(pin);
+  if (!optional_adc) {
+    logger_.log(core::LogLevel::kFatal, "Failed to create adc instance");
+    return;
+  }
+  const auto adc             = std::move(*optional_adc);
+  const auto pressure_sensor = std::make_shared<sensors::Pressure>(logger_, adc);
+  Command pressure_sensor_read_command;
+  pressure_sensor_read_command.name        = "pressure sensor read";
+  pressure_sensor_read_command.description = "Read the pressure sensor";
+  pressure_sensor_read_command.handler     = [this, pressure_sensor]() {
+    const auto pressure = pressure_sensor->read();
+    if (!pressure) {
+      logger_.log(core::LogLevel::kFatal, "Failed to read pressure sensor");
+      return;
+    }
+    logger_.log(core::LogLevel::kInfo, "Pressure: %f", *pressure);
+  };
+  addCommand(pressure_sensor_read_command);
+}
+
+void Repl::addActiveSuspensionCommands(const std::uint8_t adc_pin,
+                                       const std::uint8_t lower_pressure_pin,
+                                       const std::uint8_t raise_pressure_pin)
+{
+  const auto optional_adc = getAdc(adc_pin);
+  if (!optional_adc) {
+    logger_.log(core::LogLevel::kFatal, "Failed to create adc instance");
+    return;
+  }
+  const auto adc                          = std::move(*optional_adc);
+  const auto optional_raise_pressure_gpio = gpio_.getWriter(raise_pressure_pin);
+  if (!optional_raise_pressure_gpio) {
+    logger_.log(core::LogLevel::kFatal,
+                "Failed to create gpio writer for raise pressure pin %d",
+                raise_pressure_pin);
+    return;
+  }
+  const auto raise_pressure_gpio          = std::move(*optional_raise_pressure_gpio);
+  const auto optional_lower_pressure_gpio = gpio_.getWriter(lower_pressure_pin);
+  if (!optional_lower_pressure_gpio) {
+    logger_.log(core::LogLevel::kFatal,
+                "Failed to create gpio writer for lower pressure pin %d",
+                lower_pressure_pin);
+    return;
+  }
+  const auto lower_pressure_gpio = std::move(*optional_lower_pressure_gpio);
+  const auto pressure_sensor     = std::make_shared<sensors::Pressure>(logger_, adc);
+  Command active_suspension_set_command;
+  active_suspension_set_command.name        = "active suspension set";
+  active_suspension_set_command.description = "Set the active suspension to specified pressure";
+  active_suspension_set_command.handler
+    = [this, pressure_sensor, lower_pressure_gpio, raise_pressure_gpio]() {
+        std::cout << "Enter pressure to set (bar)" << std::endl;
+        core::Float pressure;
+        std::cin >> pressure;
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        const core::Float lower_bound = pressure * 0.95;
+        const core::Float upper_bound = pressure * 1.05;
+        std::uint8_t in_range_count   = 0;
+        while (1) {
+          if (in_range_count == 100) {
+            logger_.log(core::LogLevel::kInfo, "Pressure set to %f", pressure);
+            return;
+          }
+          const auto optional_current_pressure = pressure_sensor->read();
+          if (!optional_current_pressure) {
+            logger_.log(core::LogLevel::kFatal, "Failed to read pressure sensor");
+            return;
+          }
+          const core::Float current_pressure = *optional_current_pressure;
+          if (current_pressure >= lower_bound && current_pressure <= upper_bound) {
+            raise_pressure_gpio->write(core::DigitalSignal::kLow);
+            lower_pressure_gpio->write(core::DigitalSignal::kLow);
+            ++in_range_count;
+            continue;
+          }
+          in_range_count = 0;
+          if (current_pressure < lower_bound) {
+            raise_pressure_gpio->write(core::DigitalSignal::kHigh);
+            lower_pressure_gpio->write(core::DigitalSignal::kLow);
+          }
+          if (current_pressure > upper_bound) {
+            raise_pressure_gpio->write(core::DigitalSignal::kLow);
+            lower_pressure_gpio->write(core::DigitalSignal::kHigh);
+          }
+        }
+      };
 }
 
 std::optional<std::shared_ptr<io::IAdc>> Repl::getAdc(const std::uint8_t bus)
