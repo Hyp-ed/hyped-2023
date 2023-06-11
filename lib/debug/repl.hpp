@@ -58,6 +58,9 @@ class Repl {
   void addUartCommands(const std::uint8_t bus);
   void addMotorControllerCommands(const std::string &bus);
   void addPressureCommands(const std::uint8_t pin);
+  void addActiveSuspensionCommands(const std::uint8_t pressure_sensor_pin,
+                                   const std::uint8_t lower_pressure_pin,
+                                   const std::uint8_t raise_pressure_pin);
 
   /**
    * @brief Get the Adc object associated with the given pin or create a new one if it doesn't exist

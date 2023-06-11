@@ -303,6 +303,41 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
     const auto pin = pressure["pin"].GetUint();
     repl->addPressureCommands(pin);
   }
+  if (!debugger.HasMember("active_suspension")) {
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'debugger.active_suspension' in configuration file");
+    return std::nullopt;
+  }
+  const auto active_suspension = debugger["active_suspension"].GetObject();
+  if (!active_suspension.HasMember("enabled")) {
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'active_suspension.enabled' in configuration file");
+    return std::nullopt;
+  }
+  if (active_suspension["enabled"].GetBool()) {
+    if (!active_suspension.HasMember("pressure_sensor_pin")) {
+      logger_.log(core::LogLevel::kFatal,
+                  "Missing required field 'active_suspension.pressure_sensor_pin' in "
+                  "configuration file");
+      return std::nullopt;
+    }
+    if (!active_suspension.HasMember("lower_pressure_pin")) {
+      logger_.log(core::LogLevel::kFatal,
+                  "Missing required field 'active_suspension.lower_pressure_pin' in "
+                  "configuration file");
+      return std::nullopt;
+    }
+    if (!active_suspension.HasMember("raise_pressure_pin")) {
+      logger_.log(core::LogLevel::kFatal,
+                  "Missing required field 'active_suspension.raise_pressure_pin' in "
+                  "configuration file");
+      return std::nullopt;
+    }
+    const auto pressure_sensor_pin = active_suspension["pressure_sensor_pin"].GetUint();
+    const auto lower_pressure_pin  = active_suspension["lower_pressure_pin"].GetUint();
+    const auto raise_pressure_pin  = active_suspension["raise_pressure_pin"].GetUint();
+    repl->addActiveSuspensionCommands(pressure_sensor_pin, lower_pressure_pin, raise_pressure_pin);
+  }
   return repl;
 }
 
@@ -920,6 +955,51 @@ void Repl::addPressureCommands(const std::uint8_t pin)
     logger_.log(core::LogLevel::kInfo, "Pressure: %f", *pressure);
   };
   addCommand(pressure_sensor_read_command);
+}
+
+void Repl::addActiveSuspensionCommands(const std::uint8_t adc_pin,
+                                       const std::uint8_t lower_pressure_pin,
+                                       const std::uint8_t raise_pressure_pin)
+{
+  const auto optional_adc = getAdc(adc_pin);
+  if (!optional_adc) {
+    logger_.log(core::LogLevel::kFatal, "Failed to create adc instance");
+    return;
+  }
+  const auto adc = std::move(*optional_adc);
+  const auto pressure_sensor
+    = std::make_shared<sensors::Pressure>(logger_, adc, lower_pressure_pin, raise_pressure_pin);
+  Command active_suspension_set_command;
+  active_suspension_set_command.name        = "active suspension set";
+  active_suspension_set_command.description = "Set the active suspension to specified pressure";
+  active_suspension_set_command.handler     = [this, pressure_sensor]() {
+    std::cout << "Enter pressure to set (bar)" << std::endl;
+    core::Float pressure;
+    std::cin >> pressure;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    const core::Float lower_bound = pressure * 0.95;
+    const core::Float upper_bound = pressure * 1.05;
+    std::uint8_t in_range_count   = 0;
+    while (1) {
+      if (in_range_count == 100) {
+        logger_.log(core::LogLevel::kInfo, "Pressure set to %f", pressure);
+        return;
+      }
+      const auto optional_current_pressure = pressure_sensor->read();
+      if (!optional_current_pressure) {
+        logger_.log(core::LogLevel::kFatal, "Failed to read pressure sensor");
+        return;
+      }
+      const core::Float current_pressure = *optional_current_pressure;
+      if (current_pressure >= lower_bound && current_pressure <= upper_bound) {
+        ++in_range_count;
+        continue;
+      }
+      in_range_count = 0;
+      if (current_pressure < lower_bound) {}
+      if (current_pressure > upper_bound) {}
+    }
+  };
 }
 
 std::optional<std::shared_ptr<io::IAdc>> Repl::getAdc(const std::uint8_t bus)

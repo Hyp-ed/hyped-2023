@@ -50,6 +50,12 @@
 				"enabled": true,
 				"bus": "can1"
 			}
+		},
+		"active_suspension": {
+			"enabled": true,
+			"pressure_sensor_pin": 0,
+			"lower_pressure_pin": 0,
+			"raise_pressure_pin": 0
 		}
 	}
 }
