@@ -115,6 +115,7 @@ core::Result Pwm::setDutyCycleByPercentage(const core::Float duty_cycle)
     return core::Result::kFailure;
   }
   const std::uint32_t time_active = static_cast<std::uint32_t>(duty_cycle * current_period_);
+  current_duty_cycle_             = duty_cycle;
   return setDutyCycleByTime(time_active);
 }
 
@@ -127,7 +128,7 @@ core::Result Pwm::setDutyCycleByTime(const std::uint32_t time_active)
     return core::Result::kSuccess;
   }
   char write_buffer[10];
-  snprintf(write_buffer, sizeof(write_buffer), "%d", current_time_active_);
+  snprintf(write_buffer, sizeof(write_buffer), "%d", time_active);
   const ssize_t num_bytes_written = write(duty_cycle_file_, write_buffer, sizeof(write_buffer));
   if (num_bytes_written != sizeof(write_buffer)) {
     logger_.log(core::LogLevel::kFatal, "Failed to write to PWM duty cycle file");
@@ -151,8 +152,12 @@ core::Result Pwm::setPeriod(const std::uint32_t period, const int period_file)
 core::Result Pwm::setPolarity(const Polarity polarity, const int polarity_file)
 {
   const std::uint8_t polarity_value = static_cast<std::uint8_t>(polarity);
-  char write_buffer[2];
-  snprintf(write_buffer, sizeof(write_buffer), "%d", polarity_value);
+  char write_buffer[7];
+  if (polarity_value == 0) {
+    snprintf(write_buffer, sizeof(write_buffer), "normal");
+  } else {
+    snprintf(write_buffer, sizeof(write_buffer), "inversed");
+  }
   const ssize_t num_bytes_written = write(polarity_file, write_buffer, sizeof(write_buffer));
   if (num_bytes_written != sizeof(write_buffer)) { return core::Result::kFailure; }
   close(polarity_file);
