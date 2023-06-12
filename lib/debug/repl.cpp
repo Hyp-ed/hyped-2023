@@ -116,10 +116,10 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
                   "Missing required field 'io.i2c.buses' in configuration file");
       return std::nullopt;
     }
-  const auto buses = i2c["buses"].GetArray();
-  for (auto &bus : buses) {
-    repl->addI2cCommands(bus.GetUint());
-  }
+    const auto buses = i2c["buses"].GetArray();
+    for (auto &bus : buses) {
+      repl->addI2cCommands(bus.GetUint());
+    }
   }
   if (!io.HasMember("pwm")) {
     logger_.log(core::LogLevel::kFatal, "Missing required field 'io.pwm' in configuration file");
