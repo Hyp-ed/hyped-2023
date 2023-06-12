@@ -49,6 +49,8 @@ class Repl {
   void addHelpCommand();
   void addAdcCommands(const std::uint8_t pin);
   void addCanCommands(const std::string &bus);
+  void addGpioReadCommands(const std::uint8_t pin);
+  void addGpioWriteCommands(const std::uint8_t pin);
   void addI2cCommands(const std::uint8_t bus);
   void addPwmCommands(const std::uint8_t module, const std::uint32_t period);
   void addSpiCommands(const std::uint8_t bus);
@@ -125,8 +127,9 @@ class Repl {
 
   core::ILogger &logger_;
   std::map<std::string, Command> command_map_;
-  std::unordered_map<std::string, std::shared_ptr<io::ICan>> can_;
   std::unordered_map<std::uint8_t, std::shared_ptr<io::IAdc>> adc_;
+  std::unordered_map<std::string, std::shared_ptr<io::ICan>> can_;
+  io::HardwareGpio gpio_;
   std::unordered_map<std::uint8_t, std::shared_ptr<io::II2c>> i2c_;
   std::unordered_map<io::PwmModule, std::shared_ptr<io::Pwm>> pwm_;
   std::unordered_map<io::SpiBus, std::shared_ptr<io::ISpi>> spi_;
