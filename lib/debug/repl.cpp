@@ -1097,22 +1097,27 @@ void Repl::addActiveSuspensionCommands(const std::uint8_t adc_pin,
         std::cout << "Enter pressure to set (bar)" << std::endl;
         core::Float pressure;
         std::cin >> pressure;
+        std::cout >> "Enter precision (%)" << std::endl;
+        core::Float precision;
+        std::cin >> precision;
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        const core::Float lower_bound = pressure * 0.95;
-        const core::Float upper_bound = pressure * 1.05;
+        const core::Float lower_bound = pressure * (1 - precision / 100);
+        const core::Float upper_bound = pressure * (1 + precision / 100);
         std::uint8_t in_range_count   = 0;
         while (1) {
-          if (in_range_count == 100) {
-            logger_.log(core::LogLevel::kInfo, "Pressure set to %f", pressure);
-            return;
-          }
           const auto optional_current_pressure = pressure_sensor->read();
           if (!optional_current_pressure) {
             logger_.log(core::LogLevel::kFatal, "Failed to read pressure sensor");
             return;
           }
           const core::Float current_pressure = *optional_current_pressure;
+          if (in_range_count == 100) {
+            logger_.log(core::LogLevel::kInfo, "Pressure set to %f", current_pressure);
+            return;
+          }
           if (current_pressure >= lower_bound && current_pressure <= upper_bound) {
+            logger_.log(
+              core::LogLevel::kInfo, "Pressure in range, current pressure %f", current_pressure);
             raise_pressure_gpio->write(core::DigitalSignal::kLow);
             lower_pressure_gpio->write(core::DigitalSignal::kLow);
             ++in_range_count;
@@ -1120,10 +1125,14 @@ void Repl::addActiveSuspensionCommands(const std::uint8_t adc_pin,
           }
           in_range_count = 0;
           if (current_pressure < lower_bound) {
+            logger_.log(
+              core::LogLevel::kInfo, "Lowering pressure, current pressure %f", current_pressure);
             raise_pressure_gpio->write(core::DigitalSignal::kHigh);
             lower_pressure_gpio->write(core::DigitalSignal::kLow);
           }
           if (current_pressure > upper_bound) {
+            logger_.log(
+              core::LogLevel::kInfo, "Raising pressure, current pressure %f", current_pressure);
             raise_pressure_gpio->write(core::DigitalSignal::kLow);
             lower_pressure_gpio->write(core::DigitalSignal::kHigh);
           }
