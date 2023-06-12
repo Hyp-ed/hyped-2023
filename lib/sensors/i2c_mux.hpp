@@ -57,6 +57,17 @@ I2cMux<T, N>::I2cMux(core::ILogger &logger,
       max_num_unusable_sensors_(static_cast<std::uint8_t>(kFailureThreshold * N))
 {
   static_assert(N <= 8, "The I2c mux can only have up to 8 channels");
+  for (std::uint8_t i = 0; i < N; ++i) {
+    const auto &sensor               = sensors_.at(i);
+    const auto channel_select_result = selectChannel(sensor->getChannel());
+    if (channel_select_result == core::Result::kFailure) {
+      logger_.log(core::LogLevel::kFatal, "Failed to select channel %d from the i2c mux", i);
+    }
+    const auto result = sensor->configure();
+    if (!result) {
+      logger_.log(core::LogLevel::kFatal, "Failed to configure sensor on channel %d", i);
+    }
+  }
 }
 
 template<typename T, std::uint8_t N>

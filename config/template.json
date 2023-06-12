@@ -44,6 +44,13 @@
 				"enabled": false,
 				"bus": 2,
 				"device_address": 56
+			},
+			"mux": {
+				"enabled": false,
+				"bus": 2,
+				"mux_address": 112,
+				"sensor_type": "accelerometer",
+				"channels": [0, 1, 2, 3]
 			}
 		},
 		"motors": {

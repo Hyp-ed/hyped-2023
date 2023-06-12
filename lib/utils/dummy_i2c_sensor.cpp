@@ -6,9 +6,9 @@ DummyI2cSensor::DummyI2cSensor()
 {
 }
 
-core::Result DummyI2cSensor::configure()
+std::optional<core::Result> DummyI2cSensor::configure()
 {
-  return core::Result::kSuccess;
+  return std::nullopt;
 }
 
 std::optional<std::uint8_t> DummyI2cSensor::read()

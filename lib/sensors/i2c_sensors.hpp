@@ -16,8 +16,9 @@ class II2cMuxSensor {
   /*
    * This function carries out the initilization steps for a particular sensor.
    */
-  virtual std::optional<T> read()         = 0;
-  virtual std::uint8_t getChannel() const = 0;
+  virtual std::optional<core::Result> configure() = 0;
+  virtual std::optional<T> read()                 = 0;
+  virtual std::uint8_t getChannel() const         = 0;
   virtual ~II2cMuxSensor() {}
 };
 

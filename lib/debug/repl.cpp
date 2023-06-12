@@ -294,6 +294,57 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
     const auto bus            = temperature["bus"].GetUint();
     repl->addTemperatureCommands(bus, device_address);
   }
+
+  // Add Mux commands
+  if (!sensors.HasMember("mux")) {
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'sensors.mux' in configuration file");
+    return std::nullopt;
+  }
+  const auto mux = sensors["mux"].GetObject();
+  if (!mux.HasMember("enabled")) {
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'sensors.mux.enabled' in configuration file");
+    return std::nullopt;
+  }
+  if (mux["enabled"].GetBool()) {
+    if (!mux.HasMember("bus")) {
+      logger_.log(core::LogLevel::kFatal,
+                  "Missing required field 'sensors.mux.bus' in configuration file");
+      return std::nullopt;
+    }
+    const auto bus = mux["bus"].GetUint();
+    if (!mux.HasMember("mux_address")) {
+      logger_.log(core::LogLevel::kFatal,
+                  "Missing required field 'sensors.mux.device_address' in configuration file");
+      return std::nullopt;
+    }
+    const auto mux_address = mux["mux_address"].GetUint();
+    if (!mux.HasMember("sensor_type")) {
+      logger_.log(core::LogLevel::kFatal,
+                  "Missing required field 'sensors.mux.sensor_type' in configuration file");
+      return std::nullopt;
+    }
+    const auto sensor_type = mux["sensor_type"].GetString();
+    if (!mux.HasMember("sensor_address")) {
+      logger_.log(core::LogLevel::kFatal,
+                  "Missing required field 'sensors.mux.sensor_address' in configuration file");
+      return std::nullopt;
+    }
+    const auto sensor_address = mux["sensor_address"].GetUint();
+    if (!mux.HasMember("channels")) {
+      logger_.log(core::LogLevel::kFatal,
+                  "Missing required field 'sensors.mux.channels' in configuration file");
+      return std::nullopt;
+    }
+    const auto channels = mux["channels"].GetArray();
+    std::vector<std::uint8_t> channels_vector;
+    for (auto &channel : channels) {
+      channels_vector.push_back(channel.GetUint());
+    }
+    repl->addI2cMuxCommands(bus, mux_address, sensor_type, sensor_address, channels_vector);
+  }
+
   if (!debugger.HasMember("motors")) {
     logger_.log(core::LogLevel::kFatal,
                 "Missing required field 'debugger.motors' in configuration file");
@@ -743,6 +794,11 @@ void Repl::addAccelerometerCommands(const std::uint8_t bus, const std::uint8_t d
   const auto optional_accelerometer
     = sensors::Accelerometer::create(logger_, i2c, bus, device_address);
   const auto accelerometer = std::make_shared<sensors::Accelerometer>(*optional_accelerometer);
+  const core::Result configuration_result = *accelerometer->configure();
+  if (configuration_result == core::Result::kFailure) {
+    logger_.log(core::LogLevel::kFatal, "Failed to configure the accelerometer sensor");
+    return;
+  }
   Command accelerometer_read_command;
   std::stringstream identifier;
   identifier << "accelerometer 0x" << std::hex << static_cast<int>(device_address) << " read";
@@ -778,6 +834,12 @@ void Repl::addTemperatureCommands(const std::uint8_t bus, const std::uint8_t dev
   const auto i2c                  = std::move(*optional_i2c);
   const auto optional_temperature = sensors::Temperature::create(logger_, i2c, bus, device_address);
   const auto temperature          = std::make_shared<sensors::Temperature>(*optional_temperature);
+  // Calibrate the temperature sensor
+  const core::Result configuration_result = *temperature->configure();
+  if (configuration_result == core::Result::kFailure) {
+    logger_.log(core::LogLevel::kFatal, "Failed to configure the temperature sensor");
+    return;
+  }
   Command temperature_read_command;
   std::stringstream identifier;
   identifier << "temperature 0x" << std::hex << static_cast<int>(device_address) << " read";
@@ -797,6 +859,60 @@ void Repl::addTemperatureCommands(const std::uint8_t bus, const std::uint8_t dev
     }
   };
   addCommand(temperature_read_command);
+}
+
+void Repl::addI2cMuxCommands(const std::uint8_t bus,
+                             const std::uint8_t mux_address,
+                             const std::string &sensor_type,
+                             const std::uint8_t sensor_address,
+                             const std::vector<std::uint8_t> &channels)
+{
+  const auto optional_i2c = getI2c(bus);
+  if (!optional_i2c) {
+    logger_.log(core::LogLevel::kFatal, "Failed to create I2C instance on bus %d", bus);
+    return;
+  }
+  const auto i2c = std::move(*optional_i2c);
+  if (sensor_type == "accelerometer") {
+    // TODOLater: Figure out how to not hardcode this
+    std::array<std::unique_ptr<sensors::II2cMuxSensor<core::RawAccelerationData>>, 4>
+      accelerometers;
+    for (int i = 0; i < channels.size(); i++) {
+      const auto optional_accelerometer
+        = sensors::Accelerometer::create(logger_, i2c, channels[i], sensor_address);
+      accelerometers[i]
+        = std::make_unique<sensors::Accelerometer>(std::move(*optional_accelerometer));
+    }
+    // sensors::I2cMux<core::RawAccelerationData, 4> mux(logger_, i2c, mux_address, accelerometers);
+    std::shared_ptr<sensors::I2cMux<core::RawAccelerationData, 4>> mux_ptr
+      = std::make_shared<sensors::I2cMux<core::RawAccelerationData, 4>>(
+        logger_, i2c, mux_address, accelerometers);
+    Command mux_read_command;
+    std::stringstream identifier;
+    identifier << "mux 0x" << std::hex << static_cast<int>(mux_address) << " read";
+    mux_read_command.name = identifier.str();
+    std::stringstream description;
+    description << "Read mux 0x" << std::hex << static_cast<int>(mux_address) << " on "
+                << "I2C bus " << static_cast<int>(bus);
+    mux_read_command.description = description.str();
+    mux_read_command.handler     = [this, mux_ptr, bus]() {
+      const auto value = mux_ptr->readAllChannels();
+      if (!value) {
+        logger_.log(core::LogLevel::kFatal, "Failed to read the mux from bus %d", bus);
+      } else {
+        const std::array<core::RawAccelerationData, 4> mux_result = *value;
+        for (int i = 0; i < mux_result.size(); i++) {
+          logger_.log(core::LogLevel::kInfo,
+                      "Accelerometer %d: \n x %d \n y %d \n z %d",
+                      i,
+                      mux_result[i].x,
+                      mux_result[i].y,
+                      mux_result[i].z);
+        }
+      }
+    };
+    addCommand(mux_read_command);
+  }
 }
 
 void Repl::addMotorControllerCommands(const std::string &bus)

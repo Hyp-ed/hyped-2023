@@ -29,6 +29,8 @@ class Accelerometer : public II2cMuxSensor<core::RawAccelerationData> {
                                              const std::uint8_t device_address);
   ~Accelerometer();
 
+  std::optional<core::Result> configure() override;
+
   /*
    * @brief Checks if the accelerometer is ready to be read
    * @return kSuccess if the sensor is ready to be read,
@@ -37,9 +39,9 @@ class Accelerometer : public II2cMuxSensor<core::RawAccelerationData> {
    */
   std::optional<core::Result> isValueReady();
 
-  std::optional<core::RawAccelerationData> read();
+  std::optional<core::RawAccelerationData> read() override;
 
-  std::uint8_t getChannel() const;
+  std::uint8_t getChannel() const override;
 
  private:
   Accelerometer(core::ILogger &logger,
