@@ -294,6 +294,26 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
     const auto bus            = temperature["bus"].GetUint();
     repl->addTemperatureCommands(bus, device_address);
   }
+  if (!sensors.HasMember("pressure")) {
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'sensors.pressure' in configuration file");
+    return std::nullopt;
+  }
+  const auto pressure = sensors["pressure"].GetObject();
+  if (!pressure.HasMember("enabled")) {
+    logger_.log(core::LogLevel::kFatal,
+                "Missing required field 'sensors.pressure.enabled' in configuration file");
+    return std::nullopt;
+  }
+  if (pressure["enabled"].GetBool()) {
+    if (!pressure.HasMember("pin")) {
+      logger_.log(core::LogLevel::kFatal,
+                  "Missing required field 'sensors.pressure.pin' in configuration file");
+      return std::nullopt;
+    }
+    const auto pin = pressure["pin"].GetUint();
+    repl->addPressureCommands(pin);
+  }
   if (!debugger.HasMember("motors")) {
     logger_.log(core::LogLevel::kFatal,
                 "Missing required field 'debugger.motors' in configuration file");
@@ -319,26 +339,6 @@ std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
     }
     const auto bus = motor_controller["bus"].GetString();
     repl->addMotorControllerCommands(bus);
-  }
-  if (!debugger.HasMember("pressure")) {
-    logger_.log(core::LogLevel::kFatal,
-                "Missing required field 'debugger.pressure' in configuration file");
-    return std::nullopt;
-  }
-  const auto pressure = debugger["pressure"].GetObject();
-  if (!pressure.HasMember("enabled")) {
-    logger_.log(core::LogLevel::kFatal,
-                "Missing required field 'pressure.enabled' in configuration file");
-    return std::nullopt;
-  }
-  if (pressure["enabled"].GetBool()) {
-    if (!pressure.HasMember("pin")) {
-      logger_.log(core::LogLevel::kFatal,
-                  "Missing required field 'pressure.pin' in configuration file");
-      return std::nullopt;
-    }
-    const auto pin = pressure["pin"].GetUint();
-    repl->addPressureCommands(pin);
   }
   if (!debugger.HasMember("active_suspension")) {
     logger_.log(core::LogLevel::kFatal,

@@ -6,7 +6,7 @@
 				"pins": []
 			},
 			"can": {
-				"enabled": true,
+				"enabled": false,
 				"buses": [
 					"can1"
 				]
@@ -52,12 +52,12 @@
 		},
 		"motors": {
 			"motor_controller": {
-				"enabled": true,
+				"enabled": false,
 				"bus": "can1"
 			}
 		},
 		"active_suspension": {
-			"enabled": true,
+			"enabled": false,
 			"pressure_sensor_pin": 0,
 			"lower_pressure_pin": 0,
 			"raise_pressure_pin": 0
