@@ -1097,7 +1097,7 @@ void Repl::addActiveSuspensionCommands(const std::uint8_t adc_pin,
         std::cout << "Enter pressure to set (bar)" << std::endl;
         core::Float pressure;
         std::cin >> pressure;
-        std::cout >> "Enter precision (%)" << std::endl;
+        std::cout << "Enter precision (%)" << std::endl;
         core::Float precision;
         std::cin >> precision;
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
