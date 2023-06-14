@@ -799,6 +799,47 @@ void Repl::addTemperatureCommands(const std::uint8_t bus, const std::uint8_t dev
   addCommand(temperature_read_command);
 }
 
+void Repl::addImdCommands(const std::string &bus)
+{
+  const auto optional_can = getCan(bus);
+  if (!optional_can) {
+    logger_.log(core::LogLevel::kFatal, "Failed to create CAN instance on bus %s", bus.c_str());
+    return;
+  }
+  const auto can          = std::move(*optional_can);
+  const auto optional_imd = sensors::Imd::create(logger_, can);
+  if (!optional_imd) {
+    logger_.log(core::LogLevel::kFatal, "Failed to create IMD instance");
+    return;
+  }
+  auto imd = std::move(*optional_imd);
+  Command imd_request_values;
+  imd_request_values.name = "imd request values";
+  imd_request_values.description
+    = "Request values from the IMD for positive and negative resistances, and isolation state";
+  imd_request_values.handler = [this, imd, bus, can]() {
+    core::Result update_values_result = imd->updateValues();
+    if (update_values_result == core::Result::kFailure) {
+      logger_.log(core::LogLevel::kFatal, "Failed to run IMD::updateValues()");
+      return;
+    }
+    // Allow time for IMD to respond over CAN
+    sleep(1);
+    core::Result can_receive_result = can->receive();
+    if (can_receive_result == core::Result::kFailure) {
+      logger_.log(core::LogLevel::kFatal, "Failed to run can.receive()");
+      return;
+    } else {
+      logger_.log(core::LogLevel::kInfo,
+                  "Isolation State: %d\n Positive Resistance: %d\n Negative Resistance: %d\n",
+                  imd->getIsolationStatus(),
+                  imd->getResistancePositive(),
+                  imd->getResistanceNegative());
+    }
+  };
+  addCommand(imd_request_values);
+}
+
 void Repl::addMotorControllerCommands(const std::string &bus)
 {
   const auto optional_can = getCan(bus);

@@ -116,7 +116,7 @@ core::Result HardwareCan::receive()
   return core::Result::kSuccess;
 }
 
-void HardwareCan::addProcessor(const std::uint16_t id, std::shared_ptr<ICanProcessor> processor)
+void HardwareCan::addProcessor(const std::uint32_t id, std::shared_ptr<ICanProcessor> processor)
 {
   const auto id_and_processors = processors_.find(id);
   if (id_and_processors == processors_.end()) {

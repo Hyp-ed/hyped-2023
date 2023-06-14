@@ -44,6 +44,10 @@
 				"enabled": false,
 				"bus": 2,
 				"device_address": 56
+			},
+			"imd": {
+				"enabled": true,
+				"bus": "can1"
 			}
 		},
 		"motors": {

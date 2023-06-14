@@ -81,6 +81,6 @@ class ICan {
    * @param id The ID of the message to be processed
    * @param processor The processor to be called when a message with the given ID is received
    */
-  virtual void addProcessor(const std::uint16_t id, std::shared_ptr<ICanProcessor> processor) = 0;
+  virtual void addProcessor(const std::uint32_t id, std::shared_ptr<ICanProcessor> processor) = 0;
 };
 }  // namespace hyped::io
