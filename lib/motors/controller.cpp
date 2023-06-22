@@ -69,9 +69,9 @@ std::optional<std::shared_ptr<Controller>> Controller::create(
                message_file_path.c_str());
     return std::nullopt;
   }
-  if (!messages.HasMember("set_frequency")) {
+  if (!messages.HasMember("test_mode_command")) {
     logger.log(core::LogLevel::kFatal,
-               "Missing required field 'set_frequency' in can message "
+               "Missing required field 'test_mode_command' in can message "
                "file at %s",
                message_file_path.c_str());
     return std::nullopt;
@@ -461,20 +461,20 @@ core::Result Controller::configure()
 
 core::Result Controller::accelerate()
 {
-  std::uint16_t new_frequency      = frequency_calculator_->calculateFrequency(velocity_);
-  const auto set_frequency_message = messages_.find("set_frequency");
-  if (set_frequency_message == messages_.end()) {
-    logger_.log(core::LogLevel::kFatal, "Failed to find 'set_frequency' message");
+  std::uint16_t new_frequency          = frequency_calculator_->calculateFrequency(velocity_);
+  const auto test_mode_command_message = messages_.find("test_mode_command");
+  if (test_mode_command_message == messages_.end()) {
+    logger_.log(core::LogLevel::kFatal, "Failed to find 'test_mode_command' message");
     return core::Result::kFailure;
   }
-  io::CanFrame message = set_frequency_message->second;
+  io::CanFrame message = test_mode_command_message->second;
   message.data[4]      = new_frequency & 0xFF;
   message.data[5]      = (new_frequency >> 8) & 0xFF;
   message.data[6]      = (new_frequency >> 16) & 0xFF;
   message.data[7]      = (new_frequency >> 24) & 0xFF;
   core::Result result  = can_->send(message);
   if (result != core::Result::kSuccess) {
-    logger_.log(core::LogLevel::kFatal, "Failed to send 'set_frequency' message");
+    logger_.log(core::LogLevel::kFatal, "Failed to send 'test_mode_command' message");
     return result;
   }
   const auto start_drive_message = messages_.find("start_drive");

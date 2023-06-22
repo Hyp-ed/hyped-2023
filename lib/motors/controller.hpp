@@ -13,6 +13,7 @@
 #include <rapidjson/istreamwrapper.h>
 
 #include <core/logger.hpp>
+#include <core/timer.hpp>
 #include <core/types.hpp>
 #include <io/can.hpp>
 

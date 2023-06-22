@@ -12,7 +12,28 @@
             "command": "0x2B",
             "index": "0x2031",
             "subindex": "0x00",
-            "data": "0x00000060"
+            "data": "0x00000032"
+        },
+        "set_frequency": {
+            "id": "0x601",
+            "command": "0x2B",
+            "index": "0x2040",
+            "subindex": "0x04",
+            "data": "0x00000005"
+        },
+        "motor_rated_current": {
+            "id": "0x601",
+            "command": "0x2B",
+            "index": "0x6075",
+            "subindex": "0x00",
+            "data": "0x00004E20x"
+        },
+        "controller_max_current": {
+            "id": "0x601",
+            "command": "0x2B",
+            "index": "0x2050",
+            "subindex": "0x00",
+            "data": "0x000C3500"
         }
     },
     "messages": {
@@ -37,11 +58,11 @@
             "subindex": "0x00",
             "data": "0x00000000"
         },
-        "set_frequency": {
+        "test_mode_command": {
             "id": "0x601",
             "command": "0x2B",
-            "index": "0x2040",
-            "subindex": "0x04",
+            "index": "0x2031",
+            "subindex": "0x00",
             "data": "0x00000000"
         },
         "shutdown": {

@@ -807,7 +807,7 @@ void Repl::addMotorControllerCommands(const std::string &bus)
     return;
   }
   const auto can                  = std::move(*optional_can);
-  const auto frequency_calculator = std::make_shared<motors::ConstantFrequencyCalculator>(logger_);
+  const auto frequency_calculator = std::make_shared<motors::TimeFrequencyCalculator>(logger_);
   const auto optional_controller  = motors::Controller::create(
     logger_, "motor_controller_messages.json", can, frequency_calculator);
   if (!optional_controller) {
@@ -904,9 +904,9 @@ void Repl::addMotorControllerCommands(const std::string &bus)
     std::cout << "Frequency: ";
     std::cin >> frequency;
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    frequency_calculator->setFrequency(frequency);
+    // frequency_calculator->setFrequency(frequency);
   };
-  addCommand(controller_set_frequency_command);
+  // addCommand(controller_set_frequency_command);
   Command controller_run_command;
   controller_run_command.name        = "controller run";
   controller_run_command.description = "Enter running state and begin pwm";
