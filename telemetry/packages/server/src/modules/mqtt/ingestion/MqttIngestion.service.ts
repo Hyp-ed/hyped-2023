@@ -15,10 +15,6 @@ export class MqttIngestionService {
     const measurementKey = rawParams[1];
     const value = rawValue;
 
-    console.log('podId', podId);
-    console.log('measurementKey', measurementKey);
-    console.log('value', value);
-
     if (
       !podId ||
       !measurementKey ||
