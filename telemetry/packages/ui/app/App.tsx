@@ -85,21 +85,16 @@ const App = () => {
         </div>
         <div className="flex flex-col justify-start h-full mt-4">
           {/* Select component to decide which pod to show the controls for */}
-          {/* @ts-ignore */}
           <Select
             onValueChange={(podId) => setPod(podId)}
             defaultValue={pod}
             style={{ width: 'full' }}
           >
-            {/* @ts-ignore */}
             <SelectTrigger>
-              {/* @ts-ignore */}
               <SelectValue placeholder="Pod" />
             </SelectTrigger>
-            {/* @ts-ignore */}
             <SelectContent>
               {podIds.map((podId) => (
-                // @ts-ignore
                 <SelectItem key={podId} value={podId}>
                   {podId}
                 </SelectItem>
