@@ -95,7 +95,6 @@ const App = () => {
             </SelectTrigger>
             <SelectContent>
               {podIds.map((podId) => (
-                
                 <SelectItem key={podId} value={podId}>
                   {podId}
                 </SelectItem>

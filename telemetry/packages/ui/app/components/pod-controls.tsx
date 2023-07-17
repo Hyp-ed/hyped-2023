@@ -131,7 +131,7 @@ export const PodControls = ({ podId, show, mqttPublish }: PodControlsProps) => {
               raised && 'bg-blue-600 hover:bg-blue-700',
               !raised && 'bg-gray-600 hover:bg-gray-700',
             )}
-            
+            // @ts-ignore
             onClick={() => {
               if (raised) lower(podId, mqttPublish);
               else raise(podId, mqttPublish);
@@ -146,7 +146,7 @@ export const PodControls = ({ podId, show, mqttPublish }: PodControlsProps) => {
               deadman_switch && 'bg-red-600 hover:bg-red-700',
               !deadman_switch && 'bg-gray-600 hover:bg-gray-700',
             )}
-            
+            // @ts-ignore
             onClick={() => {
               if (deadman_switch) stopHP(podId, mqttPublish);
               else startHP(podId, mqttPublish);

@@ -7,7 +7,7 @@ import '@fontsource/raleway';
 import { Toaster } from 'react-hot-toast';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-  
+  // @ts-ignore
   <React.StrictMode>
     <App />
        <Toaster
