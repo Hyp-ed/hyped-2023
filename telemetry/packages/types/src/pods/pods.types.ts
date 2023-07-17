@@ -25,7 +25,7 @@ export type Measurement = RangeMeasurement | EnumMeasurement;
 
 export type Pod = {
   name: string;
-  id: number;
+  id: string;
   measurements: Record<string, Measurement>;
 }
 

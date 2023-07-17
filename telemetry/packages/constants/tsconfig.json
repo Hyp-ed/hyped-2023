@@ -1,6 +1,12 @@
 {
   "compilerOptions": {
     "outDir": "./dist",
+    "module": "esnext",
+    "lib": ["esnext"],
+    "importHelpers": true,
+    "sourceMap": true,
+    "rootDir": "./src",
+    "noEmit": true,
     "strict": true,
     "declaration": true,
     "declarationMap": true,

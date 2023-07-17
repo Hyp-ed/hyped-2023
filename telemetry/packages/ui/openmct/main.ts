@@ -2,6 +2,7 @@ import openmct from 'openmct/dist/openmct';
 
 import { DictionaryPlugin } from './plugins/dictionary-plugin';
 import { HistoricalTelemetryPlugin } from './plugins/historical-telemetry-plugin';
+import { RealtimeTelemetryPlugin } from './plugins/realtime-telemetry-plugin';
 
 const timeWindow = 15 * 60 * 1000;
 
@@ -32,5 +33,6 @@ openmct.install(
 
 openmct.install(DictionaryPlugin());
 openmct.install(HistoricalTelemetryPlugin());
+openmct.install(RealtimeTelemetryPlugin());
 
 openmct.start();

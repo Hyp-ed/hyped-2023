@@ -1,17 +1,14 @@
+import { OpenMctMeasurement } from '@hyped/telemetry-types';
 import { OpenMCT } from 'openmct/dist/openmct';
+import { DomainObject } from 'openmct/dist/src/api/objects/ObjectAPI';
 import { ObjectIdentitifer } from '../types/ObjectIdentifier';
-import { fetchPod, fetchPodIds } from './data/pods-data';
 import { fetchObjectTypes } from './data/object-types-data';
-import { parsePodId } from './utils/parsePodId';
+import { fetchMeasurement, fetchPod, fetchPodIds } from './data/pods-data';
+import { convertNamespaceToPodId } from './utils/convertNamespaceToPodId';
 
 const podObjectProvider = {
   get: (identifier: ObjectIdentitifer) => {
-    if (!identifier.key.startsWith('pod_')) {
-      throw new Error('Invalid identifier');
-    }
-
-    const podId = parsePodId(identifier.key);
-    return fetchPod(podId).then((pod) => {
+    return fetchPod(identifier.key).then((pod) => {
       return {
         identifier,
         name: pod.name,
@@ -24,16 +21,8 @@ const podObjectProvider = {
 
 const measurementsObjectProvider = {
   get: (identifier: ObjectIdentitifer) => {
-    if (!identifier.namespace.startsWith('hyped.pod_')) {
-      throw new Error('Invalid identifier');
-    }
-
-    const podId = parsePodId(identifier.namespace);
-    return fetchPod(podId).then((pod) => {
-      const measurement = pod.measurements.find(
-        (measurement) => measurement.key === identifier.key,
-      );
-
+    const podId = convertNamespaceToPodId(identifier.namespace);
+    return fetchMeasurement(podId, identifier.key).then((measurement) => {
       if (!measurement) {
         throw new Error('Measurement not found');
       }
@@ -45,25 +34,26 @@ const measurementsObjectProvider = {
         telemetry: {
           values: measurement.values,
         },
-        location: `hyped.taxonomy:pod_${podId}`,
+        location: `hyped.taxonomy:${podId}`,
+        podId,
       };
     });
   },
 };
 
 const compositionProvider = {
-  appliesTo: (domainObject: any) => {
+  appliesTo: (domainObject: DomainObject) => {
     return (
       domainObject.identifier.namespace === 'hyped.taxonomy' &&
       domainObject.type === 'folder'
     );
   },
-  load: (domainObject: any) => {
-    const podId = parsePodId(domainObject.identifier.key);
+  load: (domainObject: DomainObject) => {
+    const podId = domainObject.identifier.key;
     return fetchPod(podId).then((pod) =>
-      pod.measurements.map((measurement: any) => {
+      pod.measurements.map((measurement: OpenMctMeasurement) => {
         return {
-          namespace: `hyped.pod_${podId}`,
+          namespace: `hyped.${podId}`,
           key: measurement.key,
         };
       }),
@@ -75,16 +65,16 @@ export function DictionaryPlugin() {
   return function install(openmct: OpenMCT) {
     fetchPodIds()
       .then(({ ids }) => {
-        ids.forEach((id) => {
+        ids.forEach((podId) => {
           openmct.objects.addRoot(
             {
               namespace: `hyped.taxonomy`,
-              key: `pod_${id}`,
+              key: podId,
             },
             openmct.priority.HIGH,
           );
           openmct.objects.addProvider(
-            `hyped.pod_${id}`,
+            `hyped.${podId}`,
             measurementsObjectProvider,
           );
         });

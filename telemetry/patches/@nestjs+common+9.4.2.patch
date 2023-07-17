@@ -1,5 +1,5 @@
 diff --git a/node_modules/@nestjs/common/services/logger.service.d.ts b/node_modules/@nestjs/common/services/logger.service.d.ts
-index 6e9a283..4b8533f 100644
+index 8e52c68..89ab4f1 100644
 --- a/node_modules/@nestjs/common/services/logger.service.d.ts
 +++ b/node_modules/@nestjs/common/services/logger.service.d.ts
 @@ -21,11 +21,11 @@ export interface LoggerService {

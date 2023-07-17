@@ -118,7 +118,9 @@ const generateValueByFormat = (measurement: Measurement): string => {
       return String(random.int(measurement.range.min, measurement.range.max));
 
     default:
-      throw new Error('Measurement format not supported');
+      throw new Error(
+        'Measurement format not supported: ' + measurement.format,
+      );
   }
 };
 
@@ -152,13 +154,17 @@ client.on('connect', () => {
         previousValues[measurement.key] = newValue;
 
         // Publish the new value to the MQTT broker
-        client.publish(`hyped/${podId}/${measurement.key}`, newValue, (err) => {
-          if (err) {
-            console.error('ERROR PUBLISHING', err);
-          } else {
-            console.log(`Published ${measurement.name} = ${newValue}`);
-          }
-        });
+        client.publish(
+          `hyped/${podId}/measurement/${measurement.key}`,
+          newValue,
+          (err) => {
+            if (err) {
+              console.error('ERROR PUBLISHING', err);
+            } else {
+              console.log(`Published ${measurement.name} = ${newValue}`);
+            }
+          },
+        );
         console.log(`Published ${measurement.name} = ${newValue}`);
       }, SENSOR_UPDATE_INTERVAL);
     });
