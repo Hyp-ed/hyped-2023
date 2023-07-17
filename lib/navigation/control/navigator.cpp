@@ -14,7 +14,7 @@ Navigator::Navigator(core::ILogger &logger, const core::ITimeSource &time)
       // crosschecker_(logger, time),
       running_means_filter_(logger, time),
       encoders_preprocessor_(logger),
-      previous_keyence_reading_(first_keyence_datapoint_)
+      previous_keyence_reading_({0, 0})
 {
 }
 
