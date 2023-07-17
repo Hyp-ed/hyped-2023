@@ -11,8 +11,7 @@ namespace hyped::navigation {
 
 class AccelerometerTrajectoryEstimator {
  public:
-  AccelerometerTrajectoryEstimator(const core::ITimeSource &time,
-                                   const core::TimePoint initial_time);
+  AccelerometerTrajectoryEstimator(const core::ITimeSource &time);
   /**
    * @brief update the imu estimate for both displacement and velocity. Displacement is
    * used for cross checking agreement with wheel encooders, velocity is used for us to

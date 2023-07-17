@@ -6,7 +6,7 @@
 
 #include <core/logger.hpp>
 #include <core/types.hpp>
-#include <navigation/preprocess_encoders.hpp>
+#include <navigation/preprocessing/preprocess_encoders.hpp>
 #include <utils/manual_time.hpp>
 
 namespace hyped::test {

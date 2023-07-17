@@ -6,17 +6,16 @@
 
 namespace hyped::navigation {
 
-AccelerometerTrajectoryEstimator::AccelerometerTrajectoryEstimator(
-  const core::ITimeSource &time, const core::TimePoint initial_time)
+AccelerometerTrajectoryEstimator::AccelerometerTrajectoryEstimator(const core::ITimeSource &time)
     : time_(time),
-      previous_timestamp_(initial_time),
+      previous_timestamp_(time.now()),
       displacement_estimate_(0),
       velocity_estimate_(0)
 {
 }
 
 // TODOLater: change arguments to instead take some sort of "datapoint" struct with acc_val and
-// timestamp instead
+// timestamp instead, also switch to doubles?
 void AccelerometerTrajectoryEstimator::update(const core::Float acceleration,
                                               const core::TimePoint timestamp)
 {

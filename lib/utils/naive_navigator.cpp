@@ -13,19 +13,22 @@ std::optional<core::Trajectory> NaiveNavigator::currentTrajectory()
   return current_trajectory_;
 }
 
-void NaiveNavigator::keyenceUpdate(const core::KeyenceData &keyence_data)
+core::Result NaiveNavigator::keyenceUpdate(const core::KeyenceData &keyence_data)
 {
   // Do nothing. Keyence has no direct influence on trajectory
+  return core::Result::kSuccess;
 }
 
-void NaiveNavigator::encoderUpdate(const core::EncoderData &encoder_data)
+core::Result NaiveNavigator::encoderUpdate(const core::EncoderData &encoder_data)
 {
   core::Float sum                  = std::accumulate(encoder_data.begin(), encoder_data.end(), 0.0);
   core::Float encoder_average      = static_cast<core::Float>(sum / core::kNumEncoders);
   current_trajectory_.displacement = encoder_average;
+  return core::Result::kSuccess;
 }
 
-void NaiveNavigator::accelerometerUpdate(const core::RawAccelerometerData &accelerometer_data)
+core::Result NaiveNavigator::accelerometerUpdate(
+  const core::RawAccelerometerData &accelerometer_data)
 {
   core::Float sum = 0.0;
   for (std::size_t i = 0; i < core::kNumAccelerometers; ++i) {
@@ -37,6 +40,7 @@ void NaiveNavigator::accelerometerUpdate(const core::RawAccelerometerData &accel
   current_trajectory_.acceleration  = accelerometer_average;
   // TODOLater: improve this...
   current_trajectory_.velocity = 0;
+  return core::Result::kSuccess;
 }
 
 }  // namespace hyped::utils
