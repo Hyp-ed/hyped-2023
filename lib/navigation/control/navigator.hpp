@@ -63,6 +63,7 @@ class Navigator : public INavigator {
   // previous readings
   core::EncoderData previous_encoder_reading_;
   core::KeyenceData previous_keyence_reading_;
+  core::KeyenceData first_keyence_datapoint_ = {0, 0};
 
   // current navigation trajectory
   core::Trajectory trajectory_;

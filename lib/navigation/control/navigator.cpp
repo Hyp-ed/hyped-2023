@@ -13,7 +13,8 @@ Navigator::Navigator(core::ILogger &logger, const core::ITimeSource &time)
       accelerometer_trajectory_estimator_(time),
       // crosschecker_(logger, time),
       running_means_filter_(logger, time),
-      encoders_preprocessor_(logger)
+      encoders_preprocessor_(logger),
+      previous_keyence_reading_(first_keyence_datapoint_)
 {
 }
 
