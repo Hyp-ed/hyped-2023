@@ -89,3 +89,23 @@ export const lower = (podId: string, mqttPublish: MqttPublish) => {
     payload: 'lower',
   });
 };
+
+export const startHP = (podId: string, mqttPublish: MqttPublish) => {
+  console.log('Starting HP');
+  toast(`[${podId}] HP started!`);
+  mqttPublish({
+    topic: 'controls/start-hp',
+    qos: 0,
+    payload: 'start-hp',
+  });
+}
+
+export const stopHP = (podId: string, mqttPublish: MqttPublish) => {
+  console.log('Stopping HP');
+  toast(`[${podId}] HP stopped!`);
+  mqttPublish({
+    topic: 'controls/stop-hp',
+    qos: 0,
+    payload: 'stop-hp',
+  });
+}

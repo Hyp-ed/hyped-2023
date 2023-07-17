@@ -15,6 +15,8 @@ import {
   retract,
   startPod,
   stopPod,
+  startHP,
+  stopHP
 } from '@/controls/controls';
 
 interface PodControlsProps {
@@ -31,6 +33,7 @@ export const PodControls = ({ podId, show, mqttPublish }: PodControlsProps) => {
 
   const [clamped, setClamped] = useState(false);
   const [raised, setRaised] = useState(false);
+  const [deadman_switch, setDeadmanSwitch] = useState(false);
 
   const SWITCHES_DISABLED = false; //TODOLater: replace with logic to determine whether switches should be disabled
 
@@ -81,7 +84,7 @@ export const PodControls = ({ podId, show, mqttPublish }: PodControlsProps) => {
         </div>
         <div className="flex flex-col gap-2">
           {/* @ts-ignore */}
-          <Button
+          {/* <Button
             className={cn(
               'px-4 py-10 rounded-md shadow-lg transition text-white text-3xl font-bold',
               'bg-yellow-600 hover:bg-yellow-700',
@@ -89,7 +92,7 @@ export const PodControls = ({ podId, show, mqttPublish }: PodControlsProps) => {
             onClick={() => calibrate(podId)}
           >
             CALIBRATE
-          </Button>
+          </Button> */}
           {/* @ts-ignore */}
           <Button
             className={cn(
@@ -145,6 +148,22 @@ export const PodControls = ({ podId, show, mqttPublish }: PodControlsProps) => {
             }}
           >
             {raised ? 'Lower Pod' : 'Raise Pod'}
+          </Button>
+          {/* @ts-ignore */}
+          <Button
+            className={cn(
+              'px-4 py-10 rounded-md shadow-lg transition text-white text-3xl font-bold',
+              deadman_switch && 'bg-red-600 hover:bg-red-700',
+              !deadman_switch && 'bg-gray-600 hover:bg-gray-700',
+            )}
+            // @ts-ignore
+            onClick={() => {
+              if (deadman_switch) stopHP(podId, mqttPublish);
+              else startHP(podId, mqttPublish);
+              setDeadmanSwitch(!deadman_switch);
+            }}
+          >
+            {deadman_switch ? 'HP Active' : 'HP Inactive'}
           </Button>
         </div>
       </div>
