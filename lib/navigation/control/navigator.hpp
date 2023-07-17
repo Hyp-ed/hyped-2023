@@ -56,7 +56,8 @@ class Navigator : public INavigator {
   AccelerometerPreprocessor accelerometer_preprocessor_;
   EncodersPreprocessor encoders_preprocessor_;
   AccelerometerTrajectoryEstimator accelerometer_trajectory_estimator_;
-  Crosscheck crosschecker_;
+  // TODOLater: use again when wheel encoders work
+  // Crosscheck crosschecker_;
   RunningMeansFilter running_means_filter_;
 
   // previous readings
