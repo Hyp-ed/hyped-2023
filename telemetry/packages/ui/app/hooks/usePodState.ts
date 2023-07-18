@@ -17,8 +17,11 @@ export const usePodState = (
     if (!client) return;
     client.on('message', (topic, message) => {
       if (topic === `hyped/${podId}/state`) {
-        console.log(message.toString());
-        setPodState(message.toString() as PodState);
+        const newPodState = message.toString();
+        const allowedStates = Object.values(podStates);
+        if (allowedStates.includes(newPodState as PodState)) {
+          setPodState(newPodState as PodState);
+        }
       }
     });
   }, [client]);
