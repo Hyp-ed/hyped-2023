@@ -18,6 +18,7 @@ import {
 } from '@/controls/controls';
 import { MqttPublish, MqttSubscribe } from '@hyped/telemetry-types';
 import { MqttClient } from 'mqtt/types/lib/client';
+import { usePodState } from '@/hooks/usePodState';
 
 interface PodControlsProps {
   podId: string;
@@ -34,27 +35,13 @@ export const PodControls = ({
   subscribe,
   client,
 }: PodControlsProps) => {
-  const [podState, setPodState] = useState<PodState>(podStates.UNKNOWN);
-
-  useEffect(() => {
-    subscribe({
-      topic: `state`,
-    });
-    if (!client) return;
-    client.on('message', (topic, message) => {
-      if (topic === `hyped/${podId}/state`) {
-        console.log(message.toString());
-        setPodState(message.toString() as PodState);
-      }
-    });
-  }, [client]);
+  const { podState } = usePodState(client, subscribe, podId);
 
   const [motorCooling, setMotorCooling] = useState(false);
   const [activeSuspension, setActiveSuspension] = useState(false);
-
   const [clamped, setClamped] = useState(false);
   const [raised, setRaised] = useState(false);
-  const [deadman_switch, setDeadmanSwitch] = useState(false);
+  const [deadmanSwitch, setDeadmanSwitch] = useState(false);
 
   const SWITCHES_DISABLED = false; //TODOLater: replace with logic to determine whether switches should be disabled
 
@@ -163,16 +150,16 @@ export const PodControls = ({
           <Button
             className={cn(
               'px-4 py-10 rounded-md shadow-lg transition text-white text-3xl font-bold',
-              deadman_switch && 'bg-red-600 hover:bg-red-700',
-              !deadman_switch && 'bg-gray-600 hover:bg-gray-700',
+              deadmanSwitch && 'bg-red-600 hover:bg-red-700',
+              !deadmanSwitch && 'bg-gray-600 hover:bg-gray-700',
             )}
             onClick={() => {
-              if (deadman_switch) stopHP(podId, publish);
+              if (deadmanSwitch) stopHP(podId, publish);
               else startHP(podId, publish);
-              setDeadmanSwitch(!deadman_switch);
+              setDeadmanSwitch(!deadmanSwitch);
             }}
           >
-            {deadman_switch ? 'HP Active' : 'HP Inactive'}
+            {deadmanSwitch ? 'HP Active' : 'HP Inactive'}
           </Button>
         </div>
       </div>
