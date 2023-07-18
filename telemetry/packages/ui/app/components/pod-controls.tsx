@@ -8,7 +8,6 @@ import { Switch } from './ui/switch';
 import { cn } from '@/lib/utils';
 import { MqttPublish } from '@/types/mqtt';
 import {
-  calibrate,
   clamp,
   lower,
   raise,
@@ -22,10 +21,10 @@ import {
 interface PodControlsProps {
   podId: string;
   show: boolean;
-  mqttPublish: MqttPublish;
+  publish: MqttPublish;
 }
 
-export const PodControls = ({ podId, show, mqttPublish }: PodControlsProps) => {
+export const PodControls = ({ podId, show, publish }: PodControlsProps) => {
   const POD_STATE: PodState = podStates.failureBraking; // TODOLater: replace with real value once we can read pod state from ROS
 
   const [motorCooling, setMotorCooling] = useState(false);
@@ -118,8 +117,8 @@ export const PodControls = ({ podId, show, mqttPublish }: PodControlsProps) => {
               !clamped && 'bg-gray-600 hover:bg-gray-700',
             )}
             onClick={() => {
-              if (clamped) retract(podId, mqttPublish);
-              else clamp(podId, mqttPublish);
+              if (clamped) retract(podId, publish);
+              else clamp(podId, publish);
               setClamped(!clamped);
             }}
           >
@@ -132,8 +131,8 @@ export const PodControls = ({ podId, show, mqttPublish }: PodControlsProps) => {
               !raised && 'bg-gray-600 hover:bg-gray-700',
             )}
             onClick={() => {
-              if (raised) lower(podId, mqttPublish);
-              else raise(podId, mqttPublish);
+              if (raised) lower(podId, publish);
+              else raise(podId, publish);
               setRaised(!raised);
             }}
           >
@@ -146,8 +145,8 @@ export const PodControls = ({ podId, show, mqttPublish }: PodControlsProps) => {
               !deadman_switch && 'bg-gray-600 hover:bg-gray-700',
             )}
             onClick={() => {
-              if (deadman_switch) stopHP(podId, mqttPublish);
-              else startHP(podId, mqttPublish);
+              if (deadman_switch) stopHP(podId, publish);
+              else startHP(podId, publish);
               setDeadmanSwitch(!deadman_switch);
             }}
           >
