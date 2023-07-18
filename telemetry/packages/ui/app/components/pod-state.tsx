@@ -42,7 +42,22 @@ export const PodStateIndicator = ({ state }: { state: PodState }) => (
       <DialogHeader>
         <DialogTitle>State Machine Flow Chart</DialogTitle>
       </DialogHeader>
-      <StateMachineFlowChart currentState={state} />
+      <div className="flex flex-col gap-4">
+        <h1>
+          Current State is:{' '}
+          <span
+            className={cn(
+              'font-bold uppercase',
+              state in nullStates || (state in staticStates && 'text-white'),
+              state in okayStates && 'text-green-600',
+              state in failureStates && 'text-red-600',
+            )}
+          >
+            {state}
+          </span>
+        </h1>
+        <StateMachineFlowChart currentState={state} />
+      </div>
       <DialogFooter>
         <DialogTrigger asChild>
           <Button>Close</Button>
