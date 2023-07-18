@@ -11,7 +11,7 @@ import { useState } from 'react';
 import { useMQTT } from './hooks/useMQTT';
 
 const App = () => {
-  const { connectionStatus, publish, latency } = useMQTT();
+  const { connectionStatus, publish, latency, subscribe, client } = useMQTT();
 
   const podIds = ['pod_1'];
   const [pod, setPod] = useState(podIds[0]);
@@ -54,6 +54,8 @@ const App = () => {
               podId={podId}
               show={pod === podId}
               publish={publish}
+              subscribe={subscribe}
+              client={client}
             />
           ))}
         </div>

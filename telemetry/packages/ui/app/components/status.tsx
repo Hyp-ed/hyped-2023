@@ -11,7 +11,9 @@ export const StatusIndicator = ({ status }: StatusIndicatorProps) => (
               ${
                 status === 'connected'
                   ? 'bg-green-500 animate-[pulse_linear_1s_infinite]'
-                  : status === 'connecting' || status === 'waiting'
+                  : status === 'connecting' ||
+                    status === 'waiting' ||
+                    status === 'reconnecting'
                   ? 'bg-orange-500 animate-[pulse_linear_0.5s_infinite]'
                   : status === 'disconnected' || status === 'error'
                   ? 'bg-red-500'
@@ -22,7 +24,9 @@ export const StatusIndicator = ({ status }: StatusIndicatorProps) => (
       className={`text-sm italic ${
         status == 'connected'
           ? 'text-green-500'
-          : status == 'connecting'
+          : status == 'connecting' ||
+            status == 'waiting' ||
+            status == 'reconnecting'
           ? 'text-orange-500'
           : status == 'disconnected'
           ? 'text-red-500'
@@ -39,7 +43,9 @@ export const StatusIndicator = ({ status }: StatusIndicatorProps) => (
         ? 'Waiting...'
         : status == 'error'
         ? 'Error'
-        : ''}
+        : status == 'reconnecting'
+        ? 'Reconnecting...'
+        : status}
     </p>
   </div>
 );

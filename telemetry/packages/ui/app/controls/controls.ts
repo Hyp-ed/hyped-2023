@@ -1,4 +1,4 @@
-import { MqttPublish } from '@/types/mqtt';
+import { MqttPublish } from '@hyped/telemetry-types';
 import { toast } from 'react-hot-toast';
 
 export const calibrate = (podId: string) => {
@@ -50,62 +50,62 @@ export const clampBrakes = (podId: string) => {
 
 // raise, lower, clamp, retract
 
-export const clamp = (podId: string, mqttPublish: MqttPublish) => {
+export const clamp = (podId: string, publish: MqttPublish) => {
   console.log('Clamping');
   toast(`[${podId}] Clamped!`);
-  mqttPublish({
+  publish({
     topic: 'controls/clamp',
     qos: 0,
     payload: 'clamp',
   });
 };
 
-export const retract = (podId: string, mqttPublish: MqttPublish) => {
+export const retract = (podId: string, publish: MqttPublish) => {
   console.log('Retracting');
   toast(`[${podId}] Retracted!`);
-  mqttPublish({
+  publish({
     topic: 'controls/retract',
     qos: 0,
     payload: 'retract',
   });
 };
 
-export const raise = (podId: string, mqttPublish: MqttPublish) => {
+export const raise = (podId: string, publish: MqttPublish) => {
   console.log('Raising');
   toast(`[${podId}] Raised!`);
-  mqttPublish({
+  publish({
     topic: 'controls/raise',
     qos: 0,
     payload: 'raise',
   });
 };
 
-export const lower = (podId: string, mqttPublish: MqttPublish) => {
+export const lower = (podId: string, publish: MqttPublish) => {
   console.log('Lowering');
   toast(`[${podId}] Lowered!`);
-  mqttPublish({
+  publish({
     topic: 'controls/lower',
     qos: 0,
     payload: 'lower',
   });
 };
 
-export const startHP = (podId: string, mqttPublish: MqttPublish) => {
+export const startHP = (podId: string, publish: MqttPublish) => {
   console.log('Starting HP');
   toast(`[${podId}] HP started!`);
-  mqttPublish({
+  publish({
     topic: 'controls/start-hp',
     qos: 0,
     payload: 'start-hp',
   });
-}
+};
 
-export const stopHP = (podId: string, mqttPublish: MqttPublish) => {
+export const stopHP = (podId: string, publish: MqttPublish) => {
   console.log('Stopping HP');
   toast(`[${podId}] HP stopped!`);
-  mqttPublish({
+  publish({
     topic: 'controls/stop-hp',
     qos: 0,
     payload: 'stop-hp',
   });
-}
+};

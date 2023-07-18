@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react';
 import mqtt from 'mqtt/dist/mqtt';
-import { IClientOptions, MqttClient } from 'mqtt/types/lib/client';
+import {
+  ClientSubscribeCallback,
+  IClientOptions,
+  MqttClient,
+} from 'mqtt/types/lib/client';
 import { StatusType } from '@/types/StatusType';
 import { QoS } from '@hyped/telemetry-types';
 
@@ -56,14 +60,31 @@ export const useMQTT = () => {
     payload: string;
     podId?: string;
   }) => {
-    if (client) {
-      client.publish(`hyped/${podId}/${topic}`, payload, { qos }, (error) => {
-        if (error) {
-          console.error('Publish error: ', error);
-        }
-      });
-    }
+    if (!client) return;
+    // if (!client) throw new Error('MQTT client not connected');
+    client.publish(`hyped/${podId}/${topic}`, payload, { qos }, (error) => {
+      if (error) {
+        console.error('Publish error: ', error);
+      }
+    });
   };
 
-  return { connectionStatus, publish, latency };
+  /**
+   * Subscribe to an MQTT topic
+   */
+  const subscribe = ({
+    topic,
+    qos = 0,
+    podId = 'pod_1',
+  }: {
+    topic: string;
+    qos?: QoS;
+    podId?: string;
+  }) => {
+    if (!client) return;
+    // if (!client) throw new Error('MQTT client not connected');
+    client.subscribe(`hyped/${podId}/${topic}`, { qos });
+  };
+
+  return { connectionStatus, publish, latency, subscribe, client };
 };

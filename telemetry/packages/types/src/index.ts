@@ -8,4 +8,4 @@ export type {
   OpenMctObjectTypes,
   OpenMctObjectType,
 } from './openmct/openmct-object-types.types';
-export type { QoS } from './mqtt/mqtt.types';
+export type { QoS, MqttPublish, MqttSubscribe } from './mqtt/mqtt.types';

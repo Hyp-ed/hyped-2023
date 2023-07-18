@@ -1,12 +1,11 @@
 import { toast } from 'react-hot-toast';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { PodStateIndicator } from './pod-state';
 import { PodState, podStates } from '@/types/PodState';
 import { Button } from './ui/button';
 import { Label } from './ui/label';
 import { Switch } from './ui/switch';
 import { cn } from '@/lib/utils';
-import { MqttPublish } from '@/types/mqtt';
 import {
   clamp,
   lower,
@@ -17,15 +16,38 @@ import {
   startHP,
   stopHP,
 } from '@/controls/controls';
+import { MqttPublish, MqttSubscribe } from '@hyped/telemetry-types';
+import { MqttClient } from 'mqtt/types/lib/client';
 
 interface PodControlsProps {
   podId: string;
   show: boolean;
   publish: MqttPublish;
+  subscribe: MqttSubscribe;
+  client: MqttClient;
 }
 
-export const PodControls = ({ podId, show, publish }: PodControlsProps) => {
-  const POD_STATE: PodState = podStates.failureBraking; // TODOLater: replace with real value once we can read pod state from ROS
+export const PodControls = ({
+  podId,
+  show,
+  publish,
+  subscribe,
+  client,
+}: PodControlsProps) => {
+  const [podState, setPodState] = useState<PodState>('idle');
+
+  useEffect(() => {
+    subscribe({
+      topic: `state`,
+    });
+    if (!client) return;
+    client.on('message', (topic, message) => {
+      if (topic === `hyped/${podId}/state`) {
+        console.log(message.toString());
+        setPodState(message.toString() as PodState);
+      }
+    });
+  }, [client]);
 
   const [motorCooling, setMotorCooling] = useState(false);
   const [activeSuspension, setActiveSuspension] = useState(false);
@@ -56,7 +78,7 @@ export const PodControls = ({ podId, show, publish }: PodControlsProps) => {
 
   return (
     <div className={cn('my-8 space-y-8', show ? 'block' : 'hidden')}>
-      <PodStateIndicator state={POD_STATE} />
+      <PodStateIndicator state={podState} />
       <div className="space-y-6">
         <div className="flex flex-col gap-2">
           {/* <p className="text-3xl font-title font-bold underline">Options</p> */}
