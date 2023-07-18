@@ -102,4 +102,41 @@ TEST(Navigator, acceleromter_update_check_failure)
   ASSERT_EQ(result, core::Result::kFailure);
 }
 
+TEST(Navigator, current_trajectory_success)
+{
+  utils::ManualTime manual_time;
+  core::Logger logger("test", core::LogLevel::kFatal, manual_time);
+  navigation::Navigator navigator(logger, manual_time);
+  const core::RawAccelerationData zero_acc(0, 0, 0, manual_time.now(), true);
+  core::Result acceleration_result
+    = navigator.accelerometerUpdate({zero_acc, zero_acc, zero_acc, zero_acc});
+
+  core::Result keyence_result = navigator.keyenceUpdate({0, 0});
+
+  const auto trajectory = navigator.currentTrajectory();
+
+  ASSERT_EQ(trajectory.value().acceleration, 0.0);
+  ASSERT_EQ(trajectory.value().velocity, 0.0);
+  ASSERT_EQ(trajectory.value().displacement, 0.0);
+}
+
+TEST(Navigator, current_trajectory_fail)
+{
+  utils::ManualTime manual_time;
+  core::Logger logger("test", core::LogLevel::kFatal, manual_time);
+  navigation::Navigator navigator(logger, manual_time);
+  const core::RawAccelerationData zero_acc(0, 0, 0, manual_time.now(), true);
+  core::Result acceleration_result
+    = navigator.accelerometerUpdate({zero_acc, zero_acc, zero_acc, zero_acc});
+
+  core::Result keyence_result = navigator.keyenceUpdate({3, 3});
+
+  const auto trajectory = navigator.currentTrajectory();
+
+  bool fail_flag = false;
+  if (!trajectory) { fail_flag = true; }
+
+  ASSERT_TRUE(fail_flag);
+}
+
 }  // namespace hyped::test

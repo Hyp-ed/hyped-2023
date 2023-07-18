@@ -45,8 +45,9 @@ std::optional<core::Trajectory> Navigator::currentTrajectory()
     trajectory_.displacement, mean_encoder_value, mean_keyence_value);
   */
   // temp solution
-  SensorChecks check_trajectory = SensorChecks::kAcceptable;
-  if (std::abs(trajectory_.displacement - mean_keyence_value) > 10) {
+  const core::Float keyence_displacement = mean_keyence_value * kStripeDistance;
+  SensorChecks check_trajectory          = SensorChecks::kAcceptable;
+  if (std::abs(trajectory_.displacement - keyence_displacement) > 10) {
     check_trajectory = SensorChecks::kUnacceptable;
   }
 
