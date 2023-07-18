@@ -1,3 +1,5 @@
+import { Limits } from "../pods/pods.types";
+
 export type OpenMctMeasurement = {
   name: string;
   key: string;
@@ -9,6 +11,7 @@ export type OpenMctMeasurement = {
     format: string;
     min?: number;
     max?: number;
+    limits?: Limits;
     enumerations?: {
       value: number;
       string: string;

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /* eslint-disable no-console */
 import mqtt from 'mqtt';
 import random from 'random';

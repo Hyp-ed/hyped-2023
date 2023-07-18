@@ -27,15 +27,21 @@ const measurementsObjectProvider = {
         throw new Error('Measurement not found');
       }
 
+      const telemetryValue = measurement.values.find(m => m?.key === 'value');
+      if (!telemetryValue) {
+        throw new Error('Measurement does not have a telemetry source value');
+      }
+
       return {
         identifier,
+        podId,
         name: measurement.name,
         type: `hyped.${measurement.type}`,
         telemetry: {
           values: measurement.values,
         },
         location: `hyped.taxonomy:${podId}`,
-        podId,
+        limits: telemetryValue.limits,
       };
     });
   },
