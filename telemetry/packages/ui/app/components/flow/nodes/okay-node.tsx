@@ -2,7 +2,7 @@ import { memo } from 'react';
 import { Handle, NodeProps, NodeTypes, Position } from 'reactflow';
 import { BASE_NODE_STYLES } from './styles';
 import { cn } from '@/lib/utils';
-import { NodeDataType } from '../flow-chart';
+import { NodeDataType } from '../types';
 
 export default memo(
   ({
