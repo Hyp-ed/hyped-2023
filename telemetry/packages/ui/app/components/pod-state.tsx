@@ -38,7 +38,7 @@ export const PodStateIndicator = ({ state }: { state: PodState }) => (
         </p>
       </Button>
     </DialogTrigger>
-    <DialogContent className="min-w-[95%]">
+    <DialogContent className="min-w-[85%]">
       <DialogHeader>
         <DialogTitle>State Machine Flow Chart</DialogTitle>
       </DialogHeader>

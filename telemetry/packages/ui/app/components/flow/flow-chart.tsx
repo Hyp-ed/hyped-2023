@@ -132,34 +132,6 @@ export function StateMachineFlowChart({
         type: getNodeType(podStates.accelerating),
       },
       {
-        id: 'cruising',
-        data: {
-          label: 'Cruising',
-          targetPositions: [
-            {
-              position: Position.Left,
-              id: 'left',
-            },
-          ],
-          sourcePositions: [
-            {
-              position: Position.Right,
-              id: 'right',
-            },
-            {
-              position: Position.Top,
-              id: 'top',
-            },
-          ],
-          active: currentState === podStates.cruising,
-        },
-        position: {
-          x: 800,
-          y: 200,
-        },
-        type: getNodeType(podStates.cruising),
-      },
-      {
         id: 'nominal-braking',
         data: {
           label: 'Nominal Braking',
@@ -182,7 +154,7 @@ export function StateMachineFlowChart({
           active: currentState === podStates.frictionBraking, // or podStates.motorBraking?
         },
         position: {
-          x: 1000,
+          x: 800,
           y: 200,
         },
         type: getNodeType(podStates.frictionBraking),
@@ -206,7 +178,7 @@ export function StateMachineFlowChart({
           active: currentState === podStates.stopped,
         },
         position: {
-          x: 1200,
+          x: 1000,
           y: 200,
         },
         type: getNodeType(podStates.stopped),
@@ -228,7 +200,7 @@ export function StateMachineFlowChart({
           active: currentState === podStates.off,
         },
         position: {
-          x: 1400,
+          x: 1200,
           y: 200,
         },
         type: getNodeType(podStates.off),
@@ -252,7 +224,7 @@ export function StateMachineFlowChart({
           active: currentState === podStates.failureBraking,
         },
         position: {
-          x: 1200,
+          x: 1000,
           y: 0,
         },
         type: getNodeType(podStates.failureBraking),
@@ -276,7 +248,7 @@ export function StateMachineFlowChart({
           active: currentState === podStates.failureStopped,
         },
         position: {
-          x: 1400,
+          x: 1200,
           y: 0,
         },
         type: getNodeType(podStates.failureStopped),
