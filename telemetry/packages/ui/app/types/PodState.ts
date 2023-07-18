@@ -9,6 +9,7 @@ export const failureStates = {
   frictionBrakingFail: 'frictionBrakingFail',
   failureBraking: 'failureBraking',
   failureStopped: 'failureStopped',
+  failureCalibrating: 'failureCalibrating',
 } as const;
 
 export const idleStates = {
