@@ -10792,9 +10792,9 @@ open@^8.4.0:
     is-docker "^2.1.1"
     is-wsl "^2.2.0"
 
-"openmct@git+https://github.com/nasa/openmct.git#v2.1.5":
-  version "2.1.5"
-  resolved "git+https://github.com/nasa/openmct.git#a8e70cd831b0551be5f26dcf64e1020ab0709220"
+"openmct@git+https://github.com/nasa/openmct.git#v2.2.5":
+  version "2.2.5"
+  resolved "git+https://github.com/nasa/openmct.git#55d0efa510ad1da827f969e46cb8d0f0f8325bf5"
 
 optionator@^0.8.1, optionator@^0.8.3:
   version "0.8.3"

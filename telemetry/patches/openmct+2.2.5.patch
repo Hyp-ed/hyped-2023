@@ -23,7 +23,7 @@ index ce404b2..5594ef7 100644
  };
  type BuildInfo = {
 diff --git a/node_modules/openmct/dist/src/api/time/TimeContext.d.ts b/node_modules/openmct/dist/src/api/time/TimeContext.d.ts
-index 88351ad..df9eeb2 100644
+index b87f325..e56366e 100644
 --- a/node_modules/openmct/dist/src/api/time/TimeContext.d.ts
 +++ b/node_modules/openmct/dist/src/api/time/TimeContext.d.ts
 @@ -43,7 +43,7 @@ declare class TimeContext {
