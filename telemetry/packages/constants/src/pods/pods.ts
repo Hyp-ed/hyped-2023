@@ -2,29 +2,60 @@ import type { Pods } from '@hyped/telemetry-types';
 
 export const POD_IDS = ['pod_1'] as const;
 
-const RANGES = {
-  presssure: {
-    min: 3.26,
-    max: 4.6,
+// ************************************ COMMON ************************************ //
+const accelerometerCommon = {
+  format: 'float',
+  type: 'acceleration',
+  unit: 'ms^-2',
+  limits: {
+    critical: {
+      low: -150,
+      high: 150,
+    },
   },
-  acceleration: {
-    min: -150,
-    max: 150,
-  },
-  wheel_encoder: {
-    min: 0,
-    max: 10000000000000,
-  },
-  hall_effect: {
-    min: 0,
-    max: 500,
-  },
-  temperature: {
-    min: 0,
-    max: 120,
-  },
-};
+} as const;
 
+const thermistorCommon = {
+  format: 'float',
+  type: 'thermistor',
+  unit: '°C',
+  limits: {
+    critical: {
+      low: 0,
+      high: 120,
+    },
+  },
+} as const;
+
+const pressureCommon = {
+  format: 'float',
+  type: 'pressure',
+  unit: 'bar',
+  limits: {
+    critical: {
+      low: 3.26,
+      high: 4.6,
+    },
+    warning: {
+      low: 3.5,
+      high: 4.4,
+    }
+  },
+} as const;
+
+const hallEffectCommon = {
+  format: 'float',
+  type: 'hall_effect',
+  unit: 'A',
+  limits: {
+    critical: {
+      low: 0,
+      high: 500,
+    },
+  },
+} as const;
+
+// ************************************ MEASUREMENTS ************************************ //
 export const pods: Pods = {
   pod_1: {
     id: 'pod_1',
@@ -33,42 +64,196 @@ export const pods: Pods = {
       accelerometer_1: {
         name: 'Accelerometer 1',
         key: 'accelerometer_1',
-        format: 'float',
-        type: 'acceleration',
-        unit: 'ms^-2',
-        range: RANGES.acceleration,
+        ...accelerometerCommon,
       },
       accelerometer_2: {
         name: 'Accelerometer 2',
         key: 'accelerometer_2',
-        format: 'float',
-        type: 'acceleration',
-        unit: 'ms^-2',
-        range: RANGES.acceleration,
+        ...accelerometerCommon,
       },
       accelerometer_3: {
         name: 'Accelerometer 3',
         key: 'accelerometer_3',
-        format: 'float',
-        type: 'acceleration',
-        unit: 'ms^-2',
-        range: RANGES.acceleration,
+        ...accelerometerCommon,
       },
       accelerometer_4: {
         name: 'Accelerometer 4',
         key: 'accelerometer_4',
-        format: 'float',
-        type: 'acceleration',
-        unit: 'ms^-2',
-        range: RANGES.acceleration,
+        ...accelerometerCommon,
       },
       accelerometer_avg: {
         name: 'Accelerometer Average',
         key: 'accelerometer_avg',
+        ...accelerometerCommon,
+      },
+      displacement: {
+        name: 'Displacement',
+        key: 'displacement',
+        format: 'float',
+        type: 'displacement',
+        unit: 'm',
+        limits: {
+          critical: {
+            low: 0,
+            high: 110,
+          },
+        },
+      },
+      velocity: {
+        name: 'Velocity',
+        key: 'velocity',
+        format: 'float',
+        type: 'velocity',
+        unit: 'm/s',
+        limits: {
+          critical: {
+            low: 0,
+            high: 10000000000000,
+          },
+        },
+      },
+      acceleration: {
+        name: 'Acceleration',
+        key: 'acceleration',
         format: 'float',
         type: 'acceleration',
-        unit: 'ms^-2',
-        range: RANGES.acceleration,
+        unit: 'm/s^2',
+        limits: {
+          critical: {
+            low: 0,
+            high: 10000000000000,
+          },
+        },
+      },
+      pressure_1: {
+        name: 'Pressure 1',
+        key: 'pressure_1',
+        ...pressureCommon,
+      },
+      pressure_2: {
+        name: 'Pressure 2',
+        key: 'pressure_2',
+        ...pressureCommon,
+      },
+      pressure_3: {
+        name: 'Pressure 3',
+        key: 'pressure_3',
+        ...pressureCommon,
+      },
+      pressure_4: {
+        name: 'Pressure 4',
+        key: 'pressure_4',
+        ...pressureCommon,
+      },
+      pressure_5: {
+        name: 'Pressure 5',
+        key: 'pressure_5',
+        ...pressureCommon,
+      },
+      pressure_6: {
+        name: 'Pressure 6',
+        key: 'pressure_6',
+        ...pressureCommon,
+      },
+      pressure_7: {
+        name: 'Pressure 7',
+        key: 'pressure_7',
+        ...pressureCommon,
+      },
+      pressure_8: {
+        name: 'Pressure 8',
+        key: 'pressure_8',
+        ...pressureCommon,
+      },
+      hall_effect_1: {
+        name: 'Hall Effect 1',
+        key: 'hall_effect_1',
+        ...hallEffectCommon,
+      },
+      hall_effect_2: {
+        name: 'Hall Effect 2',
+        key: 'hall_effect_2',
+        ...hallEffectCommon,
+      },
+      thermistor_1: {
+        name: 'Thermistor 1',
+        key: 'thermistor_1',
+        ...thermistorCommon,
+      },
+      thermistor_2: {
+        name: 'Thermistor 2',
+        key: 'thermistor_2',
+        ...thermistorCommon,
+      },
+      thermistor_3: {
+        name: 'Thermistor 3',
+        key: 'thermistor_3',
+        ...thermistorCommon,
+      },
+      thermistor_4: {
+        name: 'Thermistor 4',
+        key: 'thermistor_4',
+        ...thermistorCommon,
+      },
+      thermistor_5: {
+        name: 'Thermistor 5',
+        key: 'thermistor_5',
+        ...thermistorCommon,
+      },
+      thermistor_6: {
+        name: 'Thermistor 6',
+        key: 'thermistor_6',
+        ...thermistorCommon,
+      },
+      thermistor_7: {
+        name: 'Thermistor 7',
+        key: 'thermistor_7',
+        ...thermistorCommon,
+      },
+      thermistor_8: {
+        name: 'Thermistor 8',
+        key: 'thermistor_8',
+        ...thermistorCommon,
+      },
+      thermistor_9: {
+        name: 'Thermistor 9',
+        key: 'thermistor_9',
+        ...thermistorCommon,
+      },
+      thermistor_10: {
+        name: 'Thermistor 10',
+        key: 'thermistor_10',
+        ...thermistorCommon,
+      },
+      thermistor_11: {
+        name: 'Thermistor 11',
+        key: 'thermistor_11',
+        ...thermistorCommon,
+      },
+      thermistor_12: {
+        name: 'Thermistor 12',
+        key: 'thermistor_12',
+        ...thermistorCommon,
+      },
+      thermistor_13: {
+        name: 'Thermistor 13',
+        key: 'thermistor_13',
+        ...thermistorCommon,
+      },
+      thermistor_14: {
+        name: 'Thermistor 14',
+        key: 'thermistor_14',
+        ...thermistorCommon,
+      },
+      thermistor_15: {
+        name: 'Thermistor 15',
+        key: 'thermistor_15',
+        ...thermistorCommon,
+      },
+      thermistor_16: {
+        name: 'Thermistor 16',
+        key: 'thermistor_16',
+        ...thermistorCommon,
       },
       brake_clamp_status: {
         name: 'Brake Clamp Status',
@@ -104,215 +289,6 @@ export const pods: Pods = {
           },
         ],
       },
-      displacement: {
-        name: 'Displacement',
-        key: 'displacement',
-        format: 'float',
-        type: 'displacement',
-        unit: 'm',
-        range: {
-          min: 0,
-          max: 10000000000000,
-        },
-      },
-      velocity: {
-        name: 'Velocity',
-        key: 'velocity',
-        format: 'float',
-        type: 'velocity',
-        unit: 'm/s',
-        range: {
-          min: 0,
-          max: 10000000000000,
-        },
-      },
-      acceleration: {
-        name: 'Acceleration',
-        key: 'acceleration',
-        format: 'float',
-        type: 'acceleration',
-        unit: 'm/s^2',
-        range: {
-          min: 0,
-          max: 10000000000000,
-        },
-      },
-      wheel_encoder_front_left: {
-        name: 'Wheel Encoder – Front Left',
-        key: 'wheel_encoder_front_left',
-        format: 'integer',
-        type: 'encoder',
-        unit: 'number of rotations',
-        range: RANGES.wheel_encoder,
-      },
-      wheel_encoder_front_right: {
-        name: 'Wheel Encoder – Front Right',
-        key: 'wheel_encoder_front_right',
-        format: 'integer',
-        type: 'encoder',
-        unit: 'number of rotations',
-        range: RANGES.wheel_encoder,
-      },
-      wheel_encoder_rear_left: {
-        name: 'Wheel Encoder – Rear Left',
-        key: 'wheel_encoder_rear_left',
-        format: 'integer',
-        type: 'encoder',
-        unit: 'number of rotations',
-        range: RANGES.wheel_encoder,
-      },
-      wheel_encoder_rear_right: {
-        name: 'Wheel Encoder – Rear Right',
-        key: 'wheel_encoder_rear_right',
-        format: 'integer',
-        type: 'encoder',
-        unit: 'number of rotations',
-        range: RANGES.wheel_encoder,
-      },
-      pressure_1: {
-        name: 'Pressure 1',
-        key: 'pressure_1',
-        format: 'float',
-        type: 'pressure',
-        unit: 'bar',
-        range: RANGES.presssure,
-      },
-      pressure_2: {
-        name: 'Pressure 2',
-        key: 'pressure_2',
-        format: 'float',
-        type: 'pressure',
-        unit: 'bar',
-        range: RANGES.presssure,
-      },
-      pressure_3: {
-        name: 'Pressure 3',
-        key: 'pressure_3',
-        format: 'float',
-        type: 'pressure',
-        unit: 'bar',
-        range: RANGES.presssure,
-      },
-      pressure_4: {
-        name: 'Pressure 4',
-        key: 'pressure_4',
-        format: 'float',
-        type: 'pressure',
-        unit: 'bar',
-        range: RANGES.presssure,
-      },
-      pressure_5: {
-        name: 'Pressure 5',
-        key: 'pressure_5',
-        format: 'float',
-        type: 'pressure',
-        unit: 'bar',
-        range: RANGES.presssure,
-      },
-      pressure_6: {
-        name: 'Pressure 6',
-        key: 'pressure_6',
-        format: 'float',
-        type: 'pressure',
-        unit: 'bar',
-        range: RANGES.presssure,
-      },
-      pressure_7: {
-        name: 'Pressure 7',
-        key: 'pressure_7',
-        format: 'float',
-        type: 'pressure',
-        unit: 'bar',
-        range: RANGES.presssure,
-      },
-      pressure_8: {
-        name: 'Pressure 8',
-        key: 'pressure_8',
-        format: 'float',
-        type: 'pressure',
-        unit: 'bar',
-        range: RANGES.presssure,
-      },
-      hall_effect_1: {
-        name: 'Hall Effect 1',
-        key: 'hall_effect_1',
-        format: 'float',
-        type: 'hall_effect',
-        unit: 'A',
-        range: RANGES.hall_effect,
-      },
-      hall_effect_2: {
-        name: 'Hall Effect 2',
-        key: 'hall_effect_2',
-        format: 'float',
-        type: 'hall_effect',
-        unit: 'A',
-        range: RANGES.hall_effect,
-      },
-      temperature_1: {
-        name: 'Temperature 1',
-        key: 'temperature_1',
-        format: 'float',
-        type: 'temperature',
-        unit: '°C',
-        range: RANGES.temperature,
-      },
-      temperature_2: {
-        name: 'Temperature 2',
-        key: 'temperature_2',
-        format: 'float',
-        type: 'temperature',
-        unit: '°C',
-        range: RANGES.temperature,
-      },
-      temperature_3: {
-        name: 'Temperature 3',
-        key: 'temperature_3',
-        format: 'float',
-        type: 'temperature',
-        unit: '°C',
-        range: RANGES.temperature,
-      },
-      temperature_4: {
-        name: 'Temperature 4',
-        key: 'temperature_4',
-        format: 'float',
-        type: 'temperature',
-        unit: '°C',
-        range: RANGES.temperature,
-      },
-      temperature_5: {
-        name: 'Temperature 5',
-        key: 'temperature_5',
-        format: 'float',
-        type: 'temperature',
-        unit: '°C',
-        range: RANGES.temperature,
-      },
-      temperature_6: {
-        name: 'Temperature 6',
-        key: 'temperature_6',
-        format: 'float',
-        type: 'temperature',
-        unit: '°C',
-        range: RANGES.temperature,
-      },
-      temperature_7: {
-        name: 'Temperature 7',
-        key: 'temperature_7',
-        format: 'float',
-        type: 'temperature',
-        unit: '°C',
-        range: RANGES.temperature,
-      },
-      temperature_8: {
-        name: 'Temperature 8',
-        key: 'temperature_8',
-        format: 'float',
-        type: 'temperature',
-        unit: '°C',
-        range: RANGES.temperature,
-      }
     },
   },
 };

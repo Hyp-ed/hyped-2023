@@ -5,13 +5,21 @@ export type BaseMeasurement = {
   type: string;
 };
 
-export type RangeMeasurement = BaseMeasurement & {
-  format: 'float' | 'integer';
-  range: {
-    min: number;
-    max: number;
+export type Limits = {
+  warning?: {
+    low: number;
+    high: number;
   };
-};
+  critical: {
+    low: number;
+    high: number;
+  };
+}
+
+export type RangeMeasurement = BaseMeasurement & {  
+  format: 'float' | 'integer';
+  limits: Limits;
+}
 
 export type EnumMeasurement = BaseMeasurement & {
   format: 'enum';
