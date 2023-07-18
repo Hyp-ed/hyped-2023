@@ -1,7 +1,7 @@
 import { toast } from 'react-hot-toast';
 import { useState } from 'react';
 import { PodStateIndicator } from './pod-state';
-import { PodState, failureStates, idleStates } from '@/types/PodState';
+import { PodState, podStates } from '@/types/PodState';
 import { Button } from './ui/button';
 import { Label } from './ui/label';
 import { Switch } from './ui/switch';
@@ -16,7 +16,7 @@ import {
   startPod,
   stopPod,
   startHP,
-  stopHP
+  stopHP,
 } from '@/controls/controls';
 
 interface PodControlsProps {
@@ -26,7 +26,7 @@ interface PodControlsProps {
 }
 
 export const PodControls = ({ podId, show, mqttPublish }: PodControlsProps) => {
-  const POD_STATE: PodState = idleStates.idle; // TODOLater: replace with real value once we can read pod state from ROS
+  const POD_STATE: PodState = podStates.failureBraking; // TODOLater: replace with real value once we can read pod state from ROS
 
   const [motorCooling, setMotorCooling] = useState(false);
   const [activeSuspension, setActiveSuspension] = useState(false);

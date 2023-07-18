@@ -12,10 +12,12 @@ export const failureStates = {
   failureCalibrating: 'failureCalibrating',
 } as const;
 
-export const idleStates = {
+export const staticStates = {
   idle: 'idle',
   calibrating: 'calibrating',
   ready: 'ready',
+  stopped: 'stopped',
+  off: 'off',
 } as const;
 
 export const okayStates = {
@@ -24,17 +26,15 @@ export const okayStates = {
   motorBraking: 'motorBraking',
   preFrictionBraking: 'preFrictionBraking',
   frictionBraking: 'frictionBraking',
-  stopped: 'stopped',
 } as const;
 
 export const nullStates = {
-  off: 'off',
   unknown: 'unknown',
 } as const;
 
 export const podStates = {
   ...failureStates,
-  ...idleStates,
+  ...staticStates,
   ...okayStates,
   ...nullStates,
 };
