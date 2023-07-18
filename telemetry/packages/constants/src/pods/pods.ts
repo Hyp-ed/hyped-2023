@@ -9,8 +9,8 @@ const accelerometerCommon = {
   unit: 'ms^-2',
   limits: {
     critical: {
-      min: -150,
-      max: 150,
+      low: -150,
+      high: 150,
     },
   },
 } as const;
@@ -21,8 +21,8 @@ const thermistorCommon = {
   unit: '°C',
   limits: {
     critical: {
-      min: 0,
-      max: 120,
+      low: 0,
+      high: 120,
     },
   },
 } as const;
@@ -33,8 +33,8 @@ const pressureCommon = {
   unit: 'bar',
   limits: {
     critical: {
-      min: 3.26,
-      max: 4.6,
+      low: 3.26,
+      high: 4.6,
     },
   },
 } as const;
@@ -45,8 +45,8 @@ const hallEffectCommon = {
   unit: 'A',
   limits: {
     critical: {
-      min: 0,
-      max: 500,
+      low: 0,
+      high: 500,
     },
   },
 } as const;
@@ -90,8 +90,8 @@ export const pods: Pods = {
         unit: 'm',
         limits: {
           critical: {
-            min: 0,
-            max: 10000000000000,
+            low: 0,
+            high: 10000000000000,
           },
         },
       },
@@ -103,8 +103,8 @@ export const pods: Pods = {
         unit: 'm/s',
         limits: {
           critical: {
-            min: 0,
-            max: 10000000000000,
+            low: 0,
+            high: 10000000000000,
           },
         },
       },
@@ -116,8 +116,8 @@ export const pods: Pods = {
         unit: 'm/s^2',
         limits: {
           critical: {
-            min: 0,
-            max: 10000000000000,
+            low: 0,
+            high: 10000000000000,
           },
         },
       },

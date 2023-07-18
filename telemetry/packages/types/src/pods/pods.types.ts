@@ -7,12 +7,12 @@ export type BaseMeasurement = {
 
 export type Limits = {
   warning?: {
-    min: number;
-    max: number;
+    low: number;
+    high: number;
   };
   critical: {
-    min: number;
-    max: number;
+    low: number;
+    high: number;
   };
 }
 

@@ -14,8 +14,8 @@ export function mapMeasurementToOpenMct(
         unit: measurement.unit,
         format: measurement.format,
         ...('limits' in measurement && {
-          min: measurement.limits?.critical.min,
-          max: measurement.limits?.critical.max,
+          min: measurement.limits?.critical.low,
+          max: measurement.limits?.critical.high,
           limits: measurement.limits,
         }),
         ...('enumerations' in measurement && {

@@ -3,8 +3,9 @@ import openmct from 'openmct/dist/openmct';
 import { DictionaryPlugin } from './plugins/dictionary-plugin';
 import { HistoricalTelemetryPlugin } from './plugins/historical-telemetry-plugin';
 import { RealtimeTelemetryPlugin } from './plugins/realtime-telemetry-plugin';
+import { LimitPlugin } from './plugins/limit-plugin';
 
-const timeWindow = 15 * 60 * 1000;
+const timeWindow = 10 * 1000;
 
 openmct.setAssetPath('/openmct-lib');
 
@@ -56,5 +57,6 @@ openmct.install(
 openmct.install(DictionaryPlugin());
 openmct.install(HistoricalTelemetryPlugin());
 openmct.install(RealtimeTelemetryPlugin());
+openmct.install(LimitPlugin());
 
 openmct.start();
