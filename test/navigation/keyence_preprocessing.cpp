@@ -8,5 +8,35 @@
 #include <utils/manual_time.hpp>
 
 namespace hyped::test {
-// TODO
+TEST(keyence, equal_data)
+{
+  utils::ManualTime manual_time;
+  core::Logger logger("test", core::LogLevel::kFatal, manual_time);
+  navigation::KeyencePreprocessor keyence_processer(logger);
+  const core::KeyenceData data = {1, 1};
+  const auto final_data        = keyence_processer.checkKeyenceAgrees(data);
+  ASSERT_EQ(final_data, navigation::SensorChecks::kAcceptable);
 }
+
+TEST(keyence, single_unequal_data)
+{
+  utils::ManualTime manual_time;
+  core::Logger logger("test", core::LogLevel::kFatal, manual_time);
+  navigation::KeyencePreprocessor keyence_processer(logger);
+  const core::KeyenceData data = {1, 3};
+  auto final_data              = keyence_processer.checkKeyenceAgrees(data);
+  ASSERT_EQ(final_data, navigation::SensorChecks::kAcceptable);
+}
+
+TEST(keyence, multi_unequal_data)
+{
+  utils::ManualTime manual_time;
+  core::Logger logger("test", core::LogLevel::kFatal, manual_time);
+  navigation::KeyencePreprocessor keyence_processer(logger);
+  const core::KeyenceData data = {1, 2};
+  auto final_data              = keyence_processer.checkKeyenceAgrees(data);
+  ASSERT_EQ(final_data, navigation::SensorChecks::kAcceptable);
+  final_data = keyence_processer.checkKeyenceAgrees(data);
+  ASSERT_EQ(final_data, navigation::SensorChecks::kUnacceptable);
+}
+}  // namespace hyped::test
