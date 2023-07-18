@@ -27,7 +27,7 @@ void AccelerometerTrajectoryEstimator::update(const core::Float acceleration,
   const core::Float velocity_estimate = velocity_estimate_ + (acceleration * time_elapsed_seconds);
 
   // from equation s = ut + 0.5*a*(t^2)
-  displacement_estimate_ = (velocity_estimate_ * time_elapsed_seconds)
+  displacement_estimate_ = displacement_estimate_ + (velocity_estimate_ * time_elapsed_seconds)
                            + (0.5 * acceleration * time_elapsed_seconds * time_elapsed_seconds);
   velocity_estimate_  = velocity_estimate;
   previous_timestamp_ = timestamp;
