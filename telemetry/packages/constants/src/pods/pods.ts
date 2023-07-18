@@ -36,6 +36,10 @@ const pressureCommon = {
       low: 3.26,
       high: 4.6,
     },
+    warning: {
+      low: 3.5,
+      high: 4.4,
+    }
   },
 } as const;
 
@@ -91,7 +95,7 @@ export const pods: Pods = {
         limits: {
           critical: {
             low: 0,
-            high: 10000000000000,
+            high: 110,
           },
         },
       },
