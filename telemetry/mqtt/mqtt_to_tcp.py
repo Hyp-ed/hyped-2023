@@ -26,7 +26,8 @@ mqttc.subscribe("#", 0)
 
 def on_message(client, userdata, msg):
     """ Callback function for MQTT messages """
-    if msg.topic.startswith("htped/pod_1/measurement/"):
+    # Ignore messages from the pod
+    if msg.topic.startswith("hyped/pod_1/measurement/"):
         return
     print("Received message on topic: " + msg.topic)
     print("Message: " + msg.payload.decode("utf-8"))
@@ -45,7 +46,7 @@ def on_message(client, userdata, msg):
 
 
 # Assign callback function to receive messages
-mqtt.on_message = on_message
+mqttc.on_message = on_message
 
 # Loop forever, receiving messages
 mqttc.loop_forever()
