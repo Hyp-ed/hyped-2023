@@ -1,6 +1,6 @@
 import ReactFlow, { Position } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { PodState, podStates } from '@/types/PodState';
+import { PodState, podStates } from '@hyped/telemetry-constants';
 import { defaultNode, failureNode, okayNode } from './nodes';
 import { useMemo } from 'react';
 import './styles.css';
@@ -34,10 +34,10 @@ export function StateMachineFlowChart({
               id: 'right',
             },
           ],
-          active: currentState === podStates.idle,
+          active: currentState === podStates.IDLE,
         },
         position: { x: 0, y: 200 },
-        type: getNodeType(podStates.idle),
+        type: getNodeType(podStates.IDLE),
       },
       {
         id: 'calibrating',
@@ -59,10 +59,10 @@ export function StateMachineFlowChart({
               id: 'left',
             },
           ],
-          active: currentState === podStates.calibrating,
+          active: currentState === podStates.CALIBRATING,
         },
         position: { x: 200, y: 200 },
-        type: getNodeType(podStates.calibrating),
+        type: getNodeType(podStates.CALIBRATING),
       },
       {
         id: 'failure-calibrating',
@@ -74,10 +74,10 @@ export function StateMachineFlowChart({
               id: 'bottom',
             },
           ],
-          active: currentState === podStates.failureCalibrating,
+          active: currentState === podStates.FAILURE_CALIBRATING,
         },
         position: { x: 200, y: 0 },
-        type: getNodeType(podStates.failureCalibrating),
+        type: getNodeType(podStates.FAILURE_CALIBRATING),
       },
       {
         id: 'ready',
@@ -95,13 +95,13 @@ export function StateMachineFlowChart({
               id: 'left',
             },
           ],
-          active: currentState === podStates.ready,
+          active: currentState === podStates.READY,
         },
         position: {
           x: 400,
           y: 200,
         },
-        type: getNodeType(podStates.ready),
+        type: getNodeType(podStates.READY),
       },
       {
         id: 'accelerating',
@@ -123,13 +123,13 @@ export function StateMachineFlowChart({
               id: 'top',
             },
           ],
-          active: currentState === podStates.accelerating,
+          active: currentState === podStates.ACCELERATING,
         },
         position: {
           x: 600,
           y: 200,
         },
-        type: getNodeType(podStates.accelerating),
+        type: getNodeType(podStates.ACCELERATING),
       },
       {
         id: 'nominal-braking',
@@ -151,13 +151,13 @@ export function StateMachineFlowChart({
               id: 'top',
             },
           ],
-          active: currentState === podStates.frictionBraking, // or podStates.motorBraking?
+          active: currentState === podStates.NOMINAL_BRAKING, // or podStates.motorBraking?
         },
         position: {
           x: 800,
           y: 200,
         },
-        type: getNodeType(podStates.frictionBraking),
+        type: getNodeType(podStates.NOMINAL_BRAKING),
       },
       {
         id: 'stopped',
@@ -175,13 +175,13 @@ export function StateMachineFlowChart({
               id: 'left',
             },
           ],
-          active: currentState === podStates.stopped,
+          active: currentState === podStates.STOPPED,
         },
         position: {
           x: 1000,
           y: 200,
         },
-        type: getNodeType(podStates.stopped),
+        type: getNodeType(podStates.STOPPED),
       },
       {
         id: 'off',
@@ -197,13 +197,13 @@ export function StateMachineFlowChart({
               id: 'top',
             },
           ],
-          active: currentState === podStates.off,
+          active: currentState === podStates.OFF,
         },
         position: {
           x: 1200,
           y: 200,
         },
-        type: getNodeType(podStates.off),
+        type: getNodeType(podStates.OFF),
       },
       {
         id: 'failure-braking',
@@ -221,13 +221,13 @@ export function StateMachineFlowChart({
               id: 'left',
             },
           ],
-          active: currentState === podStates.failureBraking,
+          active: currentState === podStates.FAILURE_BRAKING,
         },
         position: {
           x: 1000,
           y: 0,
         },
-        type: getNodeType(podStates.failureBraking),
+        type: getNodeType(podStates.FAILURE_BRAKING),
       },
       {
         id: 'failure-stopped',
@@ -245,13 +245,13 @@ export function StateMachineFlowChart({
               id: 'bottom',
             },
           ],
-          active: currentState === podStates.failureStopped,
+          active: currentState === podStates.FAILURE_STOPPED,
         },
         position: {
           x: 1200,
           y: 0,
         },
-        type: getNodeType(podStates.failureStopped),
+        type: getNodeType(podStates.FAILURE_STOPPED),
       },
     ],
     [currentState],

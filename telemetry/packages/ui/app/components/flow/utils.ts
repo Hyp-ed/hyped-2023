@@ -3,7 +3,7 @@ import {
   failureStates,
   okayStates,
   staticStates,
-} from '@/types/PodState';
+} from '@hyped/telemetry-constants';
 
 /**
  * Returns the node type based on the state of the pod (okay, failure, static)

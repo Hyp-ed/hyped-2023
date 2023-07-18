@@ -1,7 +1,7 @@
 import { toast } from 'react-hot-toast';
 import { useEffect, useState } from 'react';
 import { PodStateIndicator } from './pod-state';
-import { PodState, podStates } from '@/types/PodState';
+import { PodState, podStates } from '@hyped/telemetry-constants';
 import { Button } from './ui/button';
 import { Label } from './ui/label';
 import { Switch } from './ui/switch';
@@ -34,7 +34,7 @@ export const PodControls = ({
   subscribe,
   client,
 }: PodControlsProps) => {
-  const [podState, setPodState] = useState<PodState>('idle');
+  const [podState, setPodState] = useState<PodState>(podStates.UNKNOWN);
 
   useEffect(() => {
     subscribe({

@@ -5,7 +5,7 @@ import {
   staticStates,
   nullStates,
   okayStates,
-} from '@/types/PodState';
+} from '@hyped/telemetry-constants';
 import { Button } from './ui/button';
 import {
   Dialog,
