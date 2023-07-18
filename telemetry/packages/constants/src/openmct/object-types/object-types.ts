@@ -7,8 +7,38 @@ export const openMctObjectTypes: OpenMctObjectTypes = [
     icon: 'icon-telemetry',
   },
   {
+    id: 'thermistor',
+    name: 'Thermistor',
+    icon: 'icon-telemetry',
+  },
+  {
     id: 'acceleration',
     name: 'Acceleration',
+    icon: 'icon-telemetry',
+  },
+  {
+    id: 'pressure',
+    name: 'Pressure',
+    icon: 'icon-telemetry',
+  },
+  {
+    id: 'hall_effect',
+    name: 'Hall Effect',
+    icon: 'icon-telemetry',
+  },
+  {
+    id: 'displacement',
+    name: 'Displacement',
+    icon: 'icon-telemetry',
+  },
+  {
+    id: 'velocity',
+    name: 'Velocity',
+    icon: 'icon-telemetry',
+  },
+  {
+    id: 'status',
+    name: 'status',
     icon: 'icon-telemetry',
   },
   {
