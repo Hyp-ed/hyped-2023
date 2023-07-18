@@ -1,14 +1,12 @@
 import { toast } from 'react-hot-toast';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { PodStateIndicator } from './pod-state';
-import { PodState, failureStates, idleStates } from '@/types/PodState';
+import { PodState, podStates } from '@hyped/telemetry-constants';
 import { Button } from './ui/button';
 import { Label } from './ui/label';
 import { Switch } from './ui/switch';
 import { cn } from '@/lib/utils';
-import { MqttPublish } from '@/types/mqtt';
 import {
-  calibrate,
   clamp,
   lower,
   raise,
@@ -16,17 +14,40 @@ import {
   startPod,
   stopPod,
   startHP,
-  stopHP
+  stopHP,
 } from '@/controls/controls';
+import { MqttPublish, MqttSubscribe } from '@hyped/telemetry-types';
+import { MqttClient } from 'mqtt/types/lib/client';
 
 interface PodControlsProps {
   podId: string;
   show: boolean;
-  mqttPublish: MqttPublish;
+  publish: MqttPublish;
+  subscribe: MqttSubscribe;
+  client: MqttClient | null;
 }
 
-export const PodControls = ({ podId, show, mqttPublish }: PodControlsProps) => {
-  const POD_STATE: PodState = idleStates.idle; // TODOLater: replace with real value once we can read pod state from ROS
+export const PodControls = ({
+  podId,
+  show,
+  publish,
+  subscribe,
+  client,
+}: PodControlsProps) => {
+  const [podState, setPodState] = useState<PodState>(podStates.UNKNOWN);
+
+  useEffect(() => {
+    subscribe({
+      topic: `state`,
+    });
+    if (!client) return;
+    client.on('message', (topic, message) => {
+      if (topic === `hyped/${podId}/state`) {
+        console.log(message.toString());
+        setPodState(message.toString() as PodState);
+      }
+    });
+  }, [client]);
 
   const [motorCooling, setMotorCooling] = useState(false);
   const [activeSuspension, setActiveSuspension] = useState(false);
@@ -57,21 +78,21 @@ export const PodControls = ({ podId, show, mqttPublish }: PodControlsProps) => {
 
   return (
     <div className={cn('my-8 space-y-8', show ? 'block' : 'hidden')}>
-      <PodStateIndicator state={POD_STATE} />
+      <PodStateIndicator state={podState} />
       <div className="space-y-6">
         <div className="flex flex-col gap-2">
           {/* <p className="text-3xl font-title font-bold underline">Options</p> */}
           <div className="flex justify-between items-center">
-                       <Label htmlFor="motor-cooling">Motor Cooling</Label>
-                       <Switch
+            <Label htmlFor="motor-cooling">Motor Cooling</Label>
+            <Switch
               id="motor-cooling"
               onCheckedChange={toggleMotorCooling}
               disabled={SWITCHES_DISABLED}
             />
           </div>
           <div className="flex justify-between items-center">
-                       <Label htmlFor="active-suspension">Active Suspension</Label>
-                       <Switch
+            <Label htmlFor="active-suspension">Active Suspension</Label>
+            <Switch
               id="active-suspension"
               onCheckedChange={toggleActiveSuspension}
               disabled={SWITCHES_DISABLED}
@@ -79,7 +100,7 @@ export const PodControls = ({ podId, show, mqttPublish }: PodControlsProps) => {
           </div>
         </div>
         <div className="flex flex-col gap-2">
-                   {/* <Button
+          {/* <Button
             className={cn(
               'px-4 py-10 rounded-md shadow-lg transition text-white text-3xl font-bold',
               'bg-yellow-600 hover:bg-yellow-700',
@@ -88,7 +109,7 @@ export const PodControls = ({ podId, show, mqttPublish }: PodControlsProps) => {
           >
             CALIBRATE
           </Button> */}
-                   <Button
+          <Button
             className={cn(
               'px-4 py-10 rounded-md shadow-lg transition text-white text-3xl font-bold',
               'bg-green-600 hover:bg-green-700',
@@ -102,7 +123,7 @@ export const PodControls = ({ podId, show, mqttPublish }: PodControlsProps) => {
           >
             START RUN
           </Button>
-                   <Button
+          <Button
             className={cn(
               'px-4 py-10 rounded-md shadow-lg transition text-white text-3xl font-bold',
               'bg-red-700 hover:bg-red-800',
@@ -111,45 +132,43 @@ export const PodControls = ({ podId, show, mqttPublish }: PodControlsProps) => {
           >
             STOP RUN
           </Button>
-                   <Button
+          <Button
             className={cn(
               'px-4 py-10 rounded-md shadow-lg transition text-white text-3xl font-bold',
               clamped && 'bg-blue-600 hover:bg-blue-700',
               !clamped && 'bg-gray-600 hover:bg-gray-700',
             )}
             onClick={() => {
-              if (clamped) retract(podId, mqttPublish);
-              else clamp(podId, mqttPublish);
+              if (clamped) retract(podId, publish);
+              else clamp(podId, publish);
               setClamped(!clamped);
             }}
           >
             {clamped ? 'Retract Brakes' : 'Clamp Brakes'}
           </Button>
-                   <Button
+          <Button
             className={cn(
               'px-4 py-10 rounded-md shadow-lg transition text-white text-3xl font-bold',
               raised && 'bg-blue-600 hover:bg-blue-700',
               !raised && 'bg-gray-600 hover:bg-gray-700',
             )}
-            // @ts-ignore
             onClick={() => {
-              if (raised) lower(podId, mqttPublish);
-              else raise(podId, mqttPublish);
+              if (raised) lower(podId, publish);
+              else raise(podId, publish);
               setRaised(!raised);
             }}
           >
             {raised ? 'Lower Pod' : 'Raise Pod'}
           </Button>
-                   <Button
+          <Button
             className={cn(
               'px-4 py-10 rounded-md shadow-lg transition text-white text-3xl font-bold',
               deadman_switch && 'bg-red-600 hover:bg-red-700',
               !deadman_switch && 'bg-gray-600 hover:bg-gray-700',
             )}
-            // @ts-ignore
             onClick={() => {
-              if (deadman_switch) stopHP(podId, mqttPublish);
-              else startHP(podId, mqttPublish);
+              if (deadman_switch) stopHP(podId, publish);
+              else startHP(podId, publish);
               setDeadmanSwitch(!deadman_switch);
             }}
           >

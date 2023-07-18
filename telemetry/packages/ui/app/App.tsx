@@ -1,5 +1,4 @@
 import { Logo, StatusIndicator } from './components';
-import { StatusType } from '@/types/StatusType';
 import { PodControls } from './components/pod-controls';
 import {
   Select,
@@ -8,66 +7,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from './components/ui/select';
-import { useEffect, useState } from 'react';
-import mqtt from 'mqtt/dist/mqtt';
+import { useState } from 'react';
+import { useMQTT } from './hooks/useMQTT';
 
 const App = () => {
-  const LATENCY = 11; // TODOLater: replace with real value once latency is implemented
+  const { connectionStatus, publish, latency, subscribe, client } = useMQTT();
 
   const podIds = ['pod_1'];
   const [pod, setPod] = useState(podIds[0]);
-
-  const [client, setClient] = useState<mqtt.MqttClient | null>(null);
-  const [connectStatus, setConnectStatus] =
-    useState<StatusType>('disconnected');
-
-  const MQTT_BROKER = 'ws://localhost:8080';
-
-  const mqttPublish = ({
-    topic,
-    qos,
-    payload,
-  }: {
-    topic: string;
-    qos: mqtt.QoS | undefined;
-    payload: string;
-  }) => {
-    if (client) {
-      client.publish(`hyped/pod_1/${topic}`, payload, { qos }, (error: any) => {
-        if (error) {
-          console.log('Publish error: ', error);
-        }
-      });
-    }
-  };
-
-  // Connect to MQTT broker on mount
-  useEffect(() => {
-    const mqttConnect = (
-      host: string,
-      mqttOption: mqtt.IClientOptions | undefined,
-    ) => {
-      setConnectStatus('connecting');
-      setClient(mqtt.connect(host, mqttOption));
-    };
-    mqttConnect(MQTT_BROKER, undefined);
-  }, []);
-
-  useEffect(() => {
-    if (client) {
-      console.log(client);
-      client.on('connect', () => {
-        setConnectStatus('connected');
-      });
-      client.on('error', (err: any) => {
-        console.error('Connection error: ', err);
-        client.end();
-      });
-      client.on('reconnect', () => {
-        setConnectStatus('reconnecting');
-      });
-    }
-  }, [client]);
 
   return (
     <main className="px-4 py-8 flex flex-col gap-2 justify-between h-full bg-[#393939] select-none text-gray-100">
@@ -75,10 +22,10 @@ const App = () => {
         {/* Status, Latency, State, Title */}
         <div className="flex flex-col gap-2">
           <div className="flex flex-col gap-1">
-            <StatusIndicator status={connectStatus} />
+            <StatusIndicator status={connectionStatus} />
             <p>
               <span className="">Latency: </span>
-              <span className="text-sm">{LATENCY} ms</span>
+              <span className="text-sm">{latency} ms</span>
             </p>
           </div>
           <h1 className="text-5xl font-title font-black my-2">Controls</h1>
@@ -106,7 +53,9 @@ const App = () => {
               key={podId}
               podId={podId}
               show={pod === podId}
-              mqttPublish={mqttPublish}
+              publish={publish}
+              subscribe={subscribe}
+              client={client}
             />
           ))}
         </div>

@@ -3,7 +3,7 @@ export type BaseMeasurement = {
   key: string;
   unit: string;
   type: string;
-}
+};
 
 export type Limits = {
   warning?: {
@@ -27,7 +27,7 @@ export type EnumMeasurement = BaseMeasurement & {
     value: number;
     string: string;
   }[];
-}
+};
 
 export type Measurement = RangeMeasurement | EnumMeasurement;
 
@@ -35,6 +35,6 @@ export type Pod = {
   name: string;
   id: string;
   measurements: Record<string, Measurement>;
-}
+};
 
 export type Pods = Record<string, Pod>;

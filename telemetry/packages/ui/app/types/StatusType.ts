@@ -2,4 +2,6 @@ export type StatusType =
   | 'connected'
   | 'disconnected'
   | 'connecting'
-  | 'reconnecting';
+  | 'reconnecting'
+  | 'error'
+  | 'waiting';
