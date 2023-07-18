@@ -63,12 +63,16 @@ export const PodControls = ({
     toast(active ? 'Active suspension enabled' : 'Active suspension disabled');
   };
 
+  // toast when the pod state changes
+  useEffect(() => {
+    toast(`Pod state changed: ${podState}`);
+  }, [podState]);
+
   return (
     <div className={cn('my-8 space-y-8', show ? 'block' : 'hidden')}>
       <PodStateIndicator state={podState} />
       <div className="space-y-6">
         <div className="flex flex-col gap-2">
-          {/* <p className="text-3xl font-title font-bold underline">Options</p> */}
           <div className="flex justify-between items-center">
             <Label htmlFor="motor-cooling">Motor Cooling</Label>
             <Switch
@@ -87,15 +91,6 @@ export const PodControls = ({
           </div>
         </div>
         <div className="flex flex-col gap-2">
-          {/* <Button
-            className={cn(
-              'px-4 py-10 rounded-md shadow-lg transition text-white text-3xl font-bold',
-              'bg-yellow-600 hover:bg-yellow-700',
-            )}
-            onClick={() => calibrate(podId)}
-          >
-            CALIBRATE
-          </Button> */}
           <Button
             className={cn(
               'px-4 py-10 rounded-md shadow-lg transition text-white text-3xl font-bold',
