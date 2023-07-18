@@ -4,6 +4,7 @@ import { DictionaryPlugin } from './plugins/dictionary-plugin';
 import { HistoricalTelemetryPlugin } from './plugins/historical-telemetry-plugin';
 import { RealtimeTelemetryPlugin } from './plugins/realtime-telemetry-plugin';
 import { LimitPlugin } from './plugins/limit-plugin';
+import { GaugePlugin } from './plugins/gauge-plugin';
 
 const timeWindow = 10 * 1000;
 
@@ -46,6 +47,8 @@ openmct.install(openmct.plugins.Timelist());
 openmct.install(openmct.plugins.BarChart());
 openmct.install(openmct.plugins.ScatterPlot());
 
+openmct.install(GaugePlugin());
+
 openmct.install(
   openmct.plugins.Conductor({
     menuOptions: [
@@ -61,4 +64,11 @@ openmct.install(
   }),
 );
 
-openmct.start();
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+// Wait for all plugins to be installed before starting
+sleep(1000).then(() => {
+  openmct.start();
+})
