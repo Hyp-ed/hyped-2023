@@ -1,18 +1,12 @@
 import { useEffect, useState } from 'react';
 import mqtt from 'mqtt/dist/mqtt';
-import {
-  ClientSubscribeCallback,
-  IClientOptions,
-  MqttClient,
-} from 'mqtt/types/lib/client';
+import { IClientOptions, MqttClient } from 'mqtt/types/lib/client';
 import { StatusType } from '@/types/StatusType';
 import { QoS } from '@hyped/telemetry-types';
 
 const MQTT_BROKER = 'ws://localhost:8080';
 
 export const useMQTT = () => {
-  const latency = 11; // TODOLater: replace with real value once latency is implemented
-
   const [client, setClient] = useState<MqttClient | null>(null);
 
   const [connectionStatus, setConnectionStatus] =
@@ -86,5 +80,5 @@ export const useMQTT = () => {
     client.subscribe(`hyped/${podId}/${topic}`, { qos });
   };
 
-  return { connectionStatus, publish, latency, subscribe, client };
+  return { connectionStatus, publish, subscribe, client };
 };

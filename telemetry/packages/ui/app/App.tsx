@@ -9,9 +9,11 @@ import {
 } from './components/ui/select';
 import { useState } from 'react';
 import { useMQTT } from './hooks/useMQTT';
+import { useLatency } from './hooks/useLatency';
 
 const App = () => {
-  const { connectionStatus, publish, latency, subscribe, client } = useMQTT();
+  const { connectionStatus, publish, subscribe, client } = useMQTT();
+  const { latency } = useLatency(client, subscribe, publish);
 
   const podIds = ['pod_1'];
   const [pod, setPod] = useState(podIds[0]);
@@ -24,7 +26,7 @@ const App = () => {
           <div className="flex flex-col gap-1">
             <StatusIndicator status={connectionStatus} />
             <p>
-              <span className="">Latency: </span>
+              <span className="">Latency: {latency}</span>
               <span className="text-sm">{latency} ms</span>
             </p>
           </div>
