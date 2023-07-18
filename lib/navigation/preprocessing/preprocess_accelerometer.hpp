@@ -1,7 +1,5 @@
 #pragma once
 
-#include "consts.hpp"
-
 #include <cmath>
 
 #include <algorithm>
@@ -9,13 +7,22 @@
 #include <cstdint>
 #include <optional>
 
-#include "core/logger.hpp"
-#include "core/types.hpp"
+#include <core/logger.hpp>
+#include <core/time.hpp>
+#include <core/timer.hpp>
+#include <core/types.hpp>
+#include <navigation/control/consts.hpp>
+
+#if defined(__linux__)
+#include <eigen3/Eigen/Dense>
+//#else
+// TODO: add appropriate eigen include for mac here
+#endif
 
 namespace hyped::navigation {
 class AccelerometerPreprocessor {
  public:
-  AccelerometerPreprocessor(core::ILogger &logger);
+  AccelerometerPreprocessor(core::ILogger &logger, const core::ITimeSource &time);
 
   /**
    * @brief convert raw accelerometer data to cleaned and filtered data
@@ -28,9 +35,13 @@ class AccelerometerPreprocessor {
 
  private:
   core::ILogger &logger_;
+  const core::ITimeSource &time_;
+
   std::array<std::uint16_t, core::kNumAccelerometers> num_outliers_per_accelerometer_;
   std::array<bool, core::kNumAccelerometers> are_accelerometers_reliable_;
   std::size_t num_reliable_accelerometers_;
+  // TODOLater: implement this (maybe const and on construction?)
+  Eigen::Matrix<core::Float, 1, 3> measurement_matrix_;
 
   // number of allowed consecutive outliers from single accelerometer
   static constexpr std::uint8_t kNumAllowedAccelerometerFailures_ = 20;
@@ -41,7 +52,7 @@ class AccelerometerPreprocessor {
    * @param accelerometer_data
    * @return filtered accelerometer data
    */
-  core::AccelerometerData detectOutliers(core::AccelerometerData accelerometer_data);
+  core::AccelerometerData handleOutliers(core::AccelerometerData accelerometer_data);
 
   /**
    * @brief check the reliability of all accelerometer's

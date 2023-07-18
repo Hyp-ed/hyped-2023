@@ -75,8 +75,9 @@ std::optional<core::RawAccelerationData> Accelerometer::read()
   if (!result_z) { return std::nullopt; }
   const std::int32_t z_acceleration = getAccelerationFromRawValue(*result_z);
   core::WallClock time;
+  // TODOLater (sensors): add a check for active sensor. Maybe remove optional return?
   const std::optional<core::RawAccelerationData> acceleration_three_axis{
-    std::in_place, x_acceleration, y_acceleration, z_acceleration, time.now()};
+    std::in_place, x_acceleration, y_acceleration, z_acceleration, time.now(), true};
   logger_.log(core::LogLevel::kDebug, "Successfully read accelerometer data");
   return acceleration_three_axis;
 }

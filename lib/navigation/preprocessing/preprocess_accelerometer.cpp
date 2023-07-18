@@ -2,8 +2,10 @@
 
 namespace hyped::navigation {
 
-AccelerometerPreprocessor::AccelerometerPreprocessor(core::ILogger &logger)
+AccelerometerPreprocessor::AccelerometerPreprocessor(core::ILogger &logger,
+                                                     const core::ITimeSource &time)
     : logger_(logger),
+      time_(time),
       num_outliers_per_accelerometer_({0, 0, 0, 0}),
       are_accelerometers_reliable_({true, true, true, true}),
       num_reliable_accelerometers_(core::kNumAccelerometers)
@@ -22,17 +24,14 @@ std::optional<core::AccelerometerData> AccelerometerPreprocessor::processData(
     }
     accelerometer_data.at(i) = std::sqrt(magnitude);
   }
-  const core::AccelerometerData accel_data = detectOutliers(accelerometer_data);
-  SensorChecks sensorcheck                 = checkReliable();
+  const core::AccelerometerData clean_accelerometer_data = handleOutliers(accelerometer_data);
+  SensorChecks sensorcheck                               = checkReliable();
 
-  if (sensorcheck == SensorChecks::kUnacceptable) {
-    return std::nullopt;
-  } else {
-    return accelerometer_data;
-  }
+  if (sensorcheck == SensorChecks::kUnacceptable) { return std::nullopt; }
+  return clean_accelerometer_data;
 }
 
-core::AccelerometerData AccelerometerPreprocessor::detectOutliers(
+core::AccelerometerData AccelerometerPreprocessor::handleOutliers(
   core::AccelerometerData accelerometer_data)
 {
   // core::AccelerometerData accelerometer_data;
