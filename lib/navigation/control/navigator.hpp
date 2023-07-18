@@ -18,7 +18,8 @@
 
 namespace hyped::navigation {
 
-class Navigator : public INavigator {
+//: public INavigator, TODOLater: find out why adding this breaks things
+class Navigator {
  public:
   Navigator(core::ILogger &logger, const core::ITimeSource &time);
 
@@ -46,6 +47,10 @@ class Navigator : public INavigator {
    */
   core::Result accelerometerUpdate(
     const std::array<core::RawAccelerationData, core::kNumAccelerometers> &accelerometer_data);
+
+  core::KeyenceData getPreviousKeyenceReading();
+
+  core::EncoderData getPreviousEncoderReading();
 
  private:
   core::ILogger &logger_;

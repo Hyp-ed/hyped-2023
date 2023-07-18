@@ -91,7 +91,7 @@ core::Result Navigator::keyenceUpdate(const core::KeyenceData &keyence_data)
 }
 
 // TODOLater: check input from sensors matches this
-// THIS SHOULD NOT BE CALLED!
+// THIS SHOULD NOT BE CALLED! - wheel encoders not currenty operational!
 core::Result Navigator::encoderUpdate(const core::EncoderData &encoder_data)
 {
   // check encoder data strictly increasing
@@ -166,6 +166,16 @@ core::Result Navigator::accelerometerUpdate(
 
   logger_.log(core::LogLevel::kInfo, "Navigation trjectory successfully updated.");
   return core::Result::kSuccess;
+}
+
+core::KeyenceData Navigator::getPreviousKeyenceReading()
+{
+  return previous_keyence_reading_;
+}
+
+core::EncoderData Navigator::getPreviousEncoderReading()
+{
+  return previous_encoder_reading_;
 }
 
 }  // namespace hyped::navigation
