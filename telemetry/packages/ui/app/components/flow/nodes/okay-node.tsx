@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { Handle, NodeProps, NodeTypes, Position } from 'reactflow';
+import { Handle, NodeProps } from 'reactflow';
 import { BASE_NODE_STYLES } from './styles';
 import { cn } from '@/lib/utils';
 import { NodeDataType } from '../types';
