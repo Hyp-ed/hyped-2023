@@ -24,7 +24,7 @@ interface PodControlsProps {
   show: boolean;
   publish: MqttPublish;
   subscribe: MqttSubscribe;
-  client: MqttClient;
+  client: MqttClient | null;
 }
 
 export const PodControls = ({
