@@ -37,6 +37,7 @@ const App = () => {
           <Select
             onValueChange={(podId) => setPod(podId)}
             defaultValue={pod}
+            // @ts-ignore
             style={{ width: 'full' }}
           >
             <SelectTrigger>
