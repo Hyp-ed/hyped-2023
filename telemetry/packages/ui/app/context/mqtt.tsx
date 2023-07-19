@@ -71,7 +71,7 @@ export const MQTTProvider = ({ children }: { children: React.ReactNode }) => {
   }: {
     topic: string;
     qos?: QoS;
-    payload: string;
+    payload: string | Buffer;
     podId?: string;
   }) => {
     const fullTopic = getFullTopic(topic, podId);
@@ -127,7 +127,9 @@ export const MQTTProvider = ({ children }: { children: React.ReactNode }) => {
       publish({
         topic: 'latency/request',
         qos: 0,
-        payload: 'pls bro',
+        payload: JSON.stringify({
+          latency: new Date().getTime().toString(),
+        }),
       });
     }, 1000);
     return () => clearInterval(interval);
