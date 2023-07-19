@@ -14,7 +14,7 @@ s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 mqtt_client = mqtt.Client()
 
 # connect to MQTT broker
-mqtt_client.connect("192.168.93.221", 1883, 60)
+mqtt_client.connect("localhost", 1883, 60)
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.bind((HOST, PORT))
