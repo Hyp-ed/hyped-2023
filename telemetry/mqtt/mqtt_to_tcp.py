@@ -3,10 +3,13 @@ import socket
 import time
 import json
 
+CLIENT_HOST = "192.168.93.221"
+CLIENT_PORT = 65432
+
 # Connect to TCP server
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-s.bind(("localhost", 65432))
+s.bind((CLIENT_HOST, CLIENT_PORT))
 
 conn = s.listen(1)
 # Wait for 2 connections
@@ -25,9 +28,18 @@ mqttc.subscribe("#", 0)
 
 
 def on_message(client, userdata, msg):
+    print("onMessage")
     """ Callback function for MQTT messages """
     # Ignore messages from the pod
-    if msg.topic.startswith("hyped/pod_1/measurement/"):
+    if msg.topic.startswith("hyped/pod_1/measurement/") or msg.topic == "hyped/pod_1/latency/response":
+        print("Ignoring message from pod")
+        return
+    # Handle latency
+    if msg.topic == "hyped/pod_1/latency/request":
+        print("Received latency request")
+        # Send latency request over TCP
+        for conn in connections:
+            conn.sendall(msg.payload).encode("utf-8")
         return
     print("Received message on topic: " + msg.topic)
     print("Message: " + msg.payload.decode("utf-8"))

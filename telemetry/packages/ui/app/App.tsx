@@ -8,11 +8,12 @@ import {
   SelectValue,
 } from './components/ui/select';
 import { useState } from 'react';
-import { useMQTT } from './hooks/useMQTT';
 import { StatusError } from './components/status-error';
+import { useMQTT } from './context/mqtt';
 
 const App = () => {
-  const { connectionStatus, publish, latency, subscribe, client } = useMQTT();
+  const { client, publish, subscribe, unsubscribe, latency, connectionStatus } =
+    useMQTT();
 
   const podIds = ['pod_1'];
   const [pod, setPod] = useState(podIds[0]);
@@ -26,7 +27,7 @@ const App = () => {
             <StatusIndicator status={connectionStatus} />
             <StatusError status={connectionStatus} />
             <p>
-              <span className="">Latency: </span>
+              <span className="">Latency: {latency}</span>
               <span className="text-sm">{latency} ms</span>
             </p>
           </div>
