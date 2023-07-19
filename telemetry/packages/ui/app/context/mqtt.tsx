@@ -131,7 +131,7 @@ export const MQTTProvider = ({ children }: { children: React.ReactNode }) => {
       });
     }, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [client]);
 
   // subscribe to latency messages and calculate latency
   useEffect(() => {
