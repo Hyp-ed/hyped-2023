@@ -10,6 +10,7 @@ import {
 import { useState } from 'react';
 import { useMQTT } from './hooks/useMQTT';
 import { useLatency } from './hooks/useLatency';
+import { StatusError } from './components/status-error';
 
 const App = () => {
   const { connectionStatus, publish, subscribe, client } = useMQTT();
@@ -25,6 +26,7 @@ const App = () => {
         <div className="flex flex-col gap-2">
           <div className="flex flex-col gap-1">
             <StatusIndicator status={connectionStatus} />
+            <StatusError status={connectionStatus} />
             <p>
               <span className="">Latency: {latency}</span>
               <span className="text-sm">{latency} ms</span>
