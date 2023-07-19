@@ -61,7 +61,7 @@ std::optional<core::Trajectory> Navigator::currentTrajectory()
   // TODOLater: check braking implementation here!
   if (trajectory_.displacement
       > static_cast<core::Float>(kTrackLength - kBrakingDistance - kBreakingBuffer)) {
-    logger_.log(core::LogLevel::kFatal, "Time to break!");
+    logger_.log(core::LogLevel::kFatal, "Time to brake!");
     return std::nullopt;
   }
 
