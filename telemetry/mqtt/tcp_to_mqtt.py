@@ -1,19 +1,20 @@
 import paho.mqtt.client as mqtt
 import socket
 import json
+import time
 
 # create a socket to receive data from the TCP sender
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
 # get local machine name
-HOST = "127.0.0.1"
-PORT = 65432
+HOST = "192.168.93.221"
+PORT = 65433
 
 mqtt_client = mqtt.Client()
 
 # connect to MQTT broker
-mqtt_client.connect("localhost", 1883, 60)
+mqtt_client.connect("192.168.93.221", 1883, 60)
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.bind((HOST, PORT))
@@ -28,7 +29,11 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 break
             # loop through the dictionary and publish each key-value pair
             for key, value in json.loads(data).items():
-                if key.startswith("accelerometer"):
+                if key == "latency":
+                    time.sleep(0.5)
+                    print("Sending latency response" + str(value))
+                    mqtt_client.publish("hyped/pod_1/latency/response", value)
+                elif key.startswith("accelerometer"):
                     mqtt_client.publish(
                         "hyped/pod_1/measurement/" + key, value["x"])
                 else:

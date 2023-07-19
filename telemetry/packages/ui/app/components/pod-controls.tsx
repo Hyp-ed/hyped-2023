@@ -1,7 +1,6 @@
 import { toast } from 'react-hot-toast';
 import { useEffect, useState } from 'react';
 import { PodStateIndicator } from './pod-state';
-import { PodState, podStates } from '@hyped/telemetry-constants';
 import { Button } from './ui/button';
 import { Label } from './ui/label';
 import { Switch } from './ui/switch';
@@ -19,6 +18,7 @@ import {
 import { MqttPublish, MqttSubscribe } from '@hyped/telemetry-types';
 import { MqttClient } from 'mqtt/types/lib/client';
 import { usePodState } from '@/hooks/usePodState';
+import { useMQTT } from '@/context/mqtt';
 
 interface PodControlsProps {
   podId: string;
@@ -28,14 +28,9 @@ interface PodControlsProps {
   client: MqttClient | null;
 }
 
-export const PodControls = ({
-  podId,
-  show,
-  publish,
-  subscribe,
-  client,
-}: PodControlsProps) => {
-  const { podState } = usePodState(client, subscribe, podId);
+export const PodControls = ({ podId, show }: PodControlsProps) => {
+  const { client, subscribe, unsubscribe, publish } = useMQTT();
+  const { podState } = usePodState(client, subscribe, unsubscribe, podId);
 
   const [motorCooling, setMotorCooling] = useState(false);
   const [activeSuspension, setActiveSuspension] = useState(false);

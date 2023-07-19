@@ -8,13 +8,12 @@ import {
   SelectValue,
 } from './components/ui/select';
 import { useState } from 'react';
-import { useMQTT } from './hooks/useMQTT';
-import { useLatency } from './hooks/useLatency';
 import { StatusError } from './components/status-error';
+import { useMQTT } from './context/mqtt';
 
 const App = () => {
-  const { connectionStatus, publish, subscribe, client } = useMQTT();
-  const { latency } = useLatency(client, subscribe, publish);
+  const { client, publish, subscribe, unsubscribe, latency, connectionStatus } =
+    useMQTT();
 
   const podIds = ['pod_1'];
   const [pod, setPod] = useState(podIds[0]);

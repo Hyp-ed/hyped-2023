@@ -22,3 +22,5 @@ export type MqttSubscribe = ({
   qos?: QoS;
   podId?: string;
 }) => void;
+
+export type MqttUnsubscribe = (topic: string, podId: string) => void;
