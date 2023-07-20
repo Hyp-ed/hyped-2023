@@ -2,9 +2,9 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { IClientOptions, MqttClient } from 'mqtt/types/lib/client';
 import { MqttPublish, MqttSubscribe, QoS } from '@hyped/telemetry-types';
 import {
-  PodConnectionStatusType,
-  POD_CONNECTION_STATUS,
-} from '@/types/PodConnectionStatus';
+  MQTTConnectionStatusType,
+  MQTT_CONNECTION_STATUS,
+} from '@/types/MQTTConnectionStatus';
 import mqtt from 'mqtt/dist/mqtt';
 import { MqttUnsubscribe } from '@hyped/telemetry-types';
 import { getTopic } from '@/lib/utils';
@@ -14,7 +14,7 @@ type MQTTContextType = {
   publish: MqttPublish;
   subscribe: MqttSubscribe;
   unsubscribe: MqttUnsubscribe;
-  connectionStatus: PodConnectionStatusType;
+  mqttConnectionStatus: MQTTConnectionStatusType;
 };
 
 const MQTTContext = createContext<MQTTContextType | null>(null);
@@ -34,7 +34,7 @@ export const MQTTProvider = ({ broker, qos, children }: MQTTProviderProps) => {
   const [client, setClient] = useState<MqttClient | null>(null);
 
   const [connectionStatus, setConnectionStatus] =
-    useState<PodConnectionStatusType>(POD_CONNECTION_STATUS.UNKNOWN);
+    useState<MQTTConnectionStatusType>(MQTT_CONNECTION_STATUS.UNKNOWN);
 
   /**
    * Connect to an MQTT broker
@@ -43,7 +43,7 @@ export const MQTTProvider = ({ broker, qos, children }: MQTTProviderProps) => {
    */
   const mqttConnect = (host: string, mqttOption?: IClientOptions) => {
     console.log('Connecting to MQTT broker: ', host);
-    setConnectionStatus(POD_CONNECTION_STATUS.CONNECTING);
+    setConnectionStatus(MQTT_CONNECTION_STATUS.CONNECTING);
     const mqttClient = mqtt.connect(host, mqttOption);
     setClient(mqttClient);
   };
@@ -57,15 +57,16 @@ export const MQTTProvider = ({ broker, qos, children }: MQTTProviderProps) => {
   useEffect(() => {
     if (client) {
       client.on('connect', () => {
-        setConnectionStatus(POD_CONNECTION_STATUS.CONNECTED);
+        console.log('Client connected to broker');
+        setConnectionStatus(MQTT_CONNECTION_STATUS.CONNECTED);
       });
       client.on('error', (err: any) => {
         console.error('Connection error: ', err);
-        setConnectionStatus(POD_CONNECTION_STATUS.ERROR);
+        setConnectionStatus(MQTT_CONNECTION_STATUS.ERROR);
         client.end();
       });
       client.on('reconnect', () => {
-        setConnectionStatus(POD_CONNECTION_STATUS.RECONNECTING);
+        setConnectionStatus(MQTT_CONNECTION_STATUS.RECONNECTING);
       });
     } else {
       console.log("Client doesn't exist, reconnecting...");
@@ -85,6 +86,7 @@ export const MQTTProvider = ({ broker, qos, children }: MQTTProviderProps) => {
       console.log(`Couldn't publish to ${fullTopic} because client is null`);
       return;
     }
+    console.log(`Publishing to ${fullTopic}: `, payload);
     client.publish(fullTopic, payload, { qos }, (error) => {
       if (error) {
         console.error('Publish error: ', error);
@@ -130,7 +132,7 @@ export const MQTTProvider = ({ broker, qos, children }: MQTTProviderProps) => {
         publish,
         subscribe,
         unsubscribe,
-        connectionStatus,
+        mqttConnectionStatus: connectionStatus,
       }}
     >
       {children}

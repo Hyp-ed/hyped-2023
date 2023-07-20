@@ -1,68 +1,38 @@
-import { useLatency } from '@/hooks/useLatency';
-import {
-  PodConnectionStatusType,
-  POD_CONNECTION_STATUS,
-} from '@/types/PodConnectionStatus';
-
-interface PodConnectionStatusProps {
-  mqttStatus: PodConnectionStatusType;
-  podId: string;
-}
+import { usePods } from '@/context/pods';
+import { cn } from '@/lib/utils';
+import { POD_CONNECTION_STATUS } from '@/types/PodConnectionStatus';
 
 /**
  * Displays the connection status of a pod
- * @param mqttStatus The current connection status of the pod
  * @param podId The ID of the pod
  */
-export const PodConnectionStatus = ({
-  mqttStatus,
-  podId,
-}: PodConnectionStatusProps) => {
-  const { latency } = useLatency(podId);
+export const PodConnectionStatus = ({ podId }: { podId: string }) => {
+  const { connectionStatus } = usePods(podId);
+
+  const CONNECTED = connectionStatus === POD_CONNECTION_STATUS.CONNECTED;
+  const UNKNOWN = connectionStatus === POD_CONNECTION_STATUS.UNKNOWN;
+  const DISCONNECTED = connectionStatus === POD_CONNECTION_STATUS.DISCONNECTED;
+  const ERROR = connectionStatus === POD_CONNECTION_STATUS.ERROR;
 
   return (
     <div className="flex gap-2 items-center">
       <div
-        className={`w-2 h-2 rounded-full
-              ${
-                mqttStatus === 'CONNECTED'
-                  ? 'bg-green-500 animate-[pulse_linear_1s_infinite]'
-                  : mqttStatus === POD_CONNECTION_STATUS.CONNECTING ||
-                    mqttStatus === POD_CONNECTION_STATUS.UNKNOWN ||
-                    mqttStatus === POD_CONNECTION_STATUS.RECONNECTING
-                  ? 'bg-orange-500 animate-[pulse_linear_0.5s_infinite]'
-                  : mqttStatus === POD_CONNECTION_STATUS.DISCONNECTED ||
-                    mqttStatus === POD_CONNECTION_STATUS.ERROR
-                  ? 'bg-red-500'
-                  : ''
-              }`}
+        className={cn(
+          'w-2 h-2 rounded-full',
+          CONNECTED && 'bg-green-500 animate-[pulse_linear_1s_infinite]',
+          UNKNOWN && 'bg-orange-500 animate-[pulse_linear_0.5s_infinite]',
+          (DISCONNECTED || ERROR) && 'bg-red-500',
+        )}
       />
       <p
-        className={`text-sm italic ${
-          mqttStatus == 'CONNECTED'
-            ? 'text-green-500'
-            : mqttStatus == POD_CONNECTION_STATUS.CONNECTING ||
-              mqttStatus == POD_CONNECTION_STATUS.UNKNOWN ||
-              mqttStatus == POD_CONNECTION_STATUS.RECONNECTING
-            ? 'text-orange-500'
-            : mqttStatus == POD_CONNECTION_STATUS.DISCONNECTED
-            ? 'text-red-500'
-            : ''
-        }`}
+        className={cn(
+          'text-sm italic',
+          CONNECTED && 'text-green-500',
+          UNKNOWN && 'text-orange-500',
+          (DISCONNECTED || ERROR) && 'text-red-500',
+        )}
       >
-        {mqttStatus == 'CONNECTED'
-          ? 'Connected'
-          : mqttStatus == POD_CONNECTION_STATUS.CONNECTING
-          ? 'Connecting...'
-          : mqttStatus == POD_CONNECTION_STATUS.DISCONNECTED
-          ? 'Disconnected'
-          : mqttStatus == POD_CONNECTION_STATUS.UNKNOWN
-          ? 'Unknown/waiting...'
-          : mqttStatus == POD_CONNECTION_STATUS.ERROR
-          ? 'Error'
-          : mqttStatus == POD_CONNECTION_STATUS.RECONNECTING
-          ? 'Trying to reconnect...'
-          : mqttStatus}
+        {connectionStatus}
       </p>
     </div>
   );

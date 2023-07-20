@@ -11,12 +11,13 @@ import { useState } from 'react';
 import { PodDisconnectError } from './components/pod-disconnect-error';
 import { useMQTT } from './context/mqtt';
 import { Latency } from './components/latency';
+import { POD_IDS } from '@hyped/telemetry-constants';
+
+const DEFAULT_POD = POD_IDS[0];
 
 const App = () => {
-  const { connectionStatus } = useMQTT();
-
-  const podIds = ['pod_1'];
-  const [pod, setPod] = useState(podIds[0]);
+  const { mqttConnectionStatus: connectionStatus } = useMQTT();
+  const [currentPod, setCurrentPod] = useState<string>(DEFAULT_POD);
 
   return (
     <main className="px-4 py-8 flex flex-col gap-2 justify-between h-full bg-[#393939] select-none text-gray-100">
@@ -24,32 +25,32 @@ const App = () => {
         {/* Status, Latency, State, Title */}
         <div className="flex flex-col gap-2">
           <div className="flex flex-col gap-1">
-            <ConnectionStatus mqttStatus={connectionStatus} podId={pod} />
+            <ConnectionStatus podId={currentPod} />
             <PodDisconnectError status={connectionStatus} />
-            <Latency podId={pod} />
+            <Latency podId={currentPod} />
           </div>
           <h1 className="text-5xl font-title font-black my-2">Controls</h1>
         </div>
         <div className="flex flex-col justify-start h-full mt-4">
           {/* Select component to decide which pod to show the controls for */}
           <Select
-            onValueChange={(podId) => setPod(podId)}
-            defaultValue={pod}
+            onValueChange={(podId) => setCurrentPod(podId)}
+            defaultValue={currentPod}
             style={{ width: 'full' }}
           >
             <SelectTrigger>
               <SelectValue placeholder="Pod" />
             </SelectTrigger>
             <SelectContent>
-              {podIds.map((podId) => (
+              {POD_IDS.map((podId) => (
                 <SelectItem key={podId} value={podId}>
                   {podId}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
-          {podIds.map((podId) => (
-            <PodControls key={podId} podId={podId} show={pod === podId} />
+          {POD_IDS.map((podId) => (
+            <PodControls podId={podId} show={currentPod === podId} />
           ))}
         </div>
         <Logo />
