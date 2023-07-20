@@ -1,66 +1,20 @@
 import type { Pods } from '@hyped/telemetry-types';
+import {
+  accelerometerCommon,
+  hallEffectCommon,
+  keyenceCommon,
+  pressureCommon,
+  thermistorCommon,
+} from './common';
 
 export const POD_IDS = ['pod_1'] as const;
 
-// ************************************ COMMON ************************************ //
-const accelerometerCommon = {
-  format: 'float',
-  type: 'acceleration',
-  unit: 'ms^-2',
-  limits: {
-    critical: {
-      low: -150,
-      high: 150,
-    },
-  },
-} as const;
-
-const thermistorCommon = {
-  format: 'float',
-  type: 'thermistor',
-  unit: '°C',
-  limits: {
-    critical: {
-      low: 0,
-      high: 120,
-    },
-  },
-} as const;
-
-const pressureCommon = {
-  format: 'float',
-  type: 'pressure',
-  unit: 'bar',
-  limits: {
-    critical: {
-      low: 3.26,
-      high: 4.6,
-    },
-    warning: {
-      low: 3.5,
-      high: 4.4,
-    }
-  },
-} as const;
-
-const hallEffectCommon = {
-  format: 'float',
-  type: 'hall_effect',
-  unit: 'A',
-  limits: {
-    critical: {
-      low: 0,
-      high: 500,
-    },
-  },
-} as const;
-
-// ************************************ MEASUREMENTS ************************************ //
 export const pods: Pods = {
   pod_1: {
     id: 'pod_1',
     name: 'Pod Ness',
     measurements: {
+      // ************************************ ACCELEROMETERS ************************************ //
       accelerometer_1: {
         name: 'Accelerometer 1',
         key: 'accelerometer_1',
@@ -86,6 +40,8 @@ export const pods: Pods = {
         key: 'accelerometer_avg',
         ...accelerometerCommon,
       },
+
+      // ************************************ NAVIGATION ************************************ //
       displacement: {
         name: 'Displacement',
         key: 'displacement',
@@ -95,7 +51,7 @@ export const pods: Pods = {
         limits: {
           critical: {
             low: 0,
-            high: 110,
+            high: 100,
           },
         },
       },
@@ -108,7 +64,7 @@ export const pods: Pods = {
         limits: {
           critical: {
             low: 0,
-            high: 10000000000000,
+            high: 50,
           },
         },
       },
@@ -117,14 +73,16 @@ export const pods: Pods = {
         key: 'acceleration',
         format: 'float',
         type: 'acceleration',
-        unit: 'm/s^2',
+        unit: 'm/s²',
         limits: {
           critical: {
             low: 0,
-            high: 10000000000000,
+            high: 5,
           },
         },
       },
+
+      // ************************************ PRESSURE ************************************ //
       pressure_1: {
         name: 'Pressure 1',
         key: 'pressure_1',
@@ -165,16 +123,8 @@ export const pods: Pods = {
         key: 'pressure_8',
         ...pressureCommon,
       },
-      hall_effect_1: {
-        name: 'Hall Effect 1',
-        key: 'hall_effect_1',
-        ...hallEffectCommon,
-      },
-      hall_effect_2: {
-        name: 'Hall Effect 2',
-        key: 'hall_effect_2',
-        ...hallEffectCommon,
-      },
+
+      // ************************************ THERMISTORS ************************************ //
       thermistor_1: {
         name: 'Thermistor 1',
         key: 'thermistor_1',
@@ -255,6 +205,20 @@ export const pods: Pods = {
         key: 'thermistor_16',
         ...thermistorCommon,
       },
+
+      // ************************************ HALL EFFECTS ************************************ //
+      hall_effect_1: {
+        name: 'Hall Effect 1',
+        key: 'hall_effect_1',
+        ...hallEffectCommon,
+      },
+      hall_effect_2: {
+        name: 'Hall Effect 2',
+        key: 'hall_effect_2',
+        ...hallEffectCommon,
+      },
+
+      // ************************************ STATUS ************************************ //
       brake_clamp_status: {
         name: 'Brake Clamp Status',
         key: 'brake_clamp_status',
@@ -288,6 +252,69 @@ export const pods: Pods = {
             string: 'OFF',
           },
         ],
+      },
+
+      battery_status: {
+        name: 'Battery Status',
+        key: 'battery_status',
+        format: 'enum',
+        type: 'status',
+        unit: 'state',
+        enumerations: [
+          {
+            value: 1,
+            string: 'HEALTHY',
+          },
+          {
+            value: 0,
+            string: 'UNHEALTHY',
+          },
+        ],
+      },
+
+      motor_controller_status: {
+        name: 'Motor Controller Status',
+        key: 'motor_controller_status',
+        format: 'enum',
+        type: 'status',
+        unit: 'state',
+        enumerations: [
+          {
+            value: 1,
+            string: 'HEALTHY',
+          },
+          {
+            value: 0,
+            string: 'UNHEALTHY',
+          },
+        ],
+      },
+
+      // ************************************ KEYENCE ************************************ //
+      keyence_1: {
+        name: 'Keyence 1',
+        key: 'keyence_1',
+        ...keyenceCommon,
+      },
+      keyence_2: {
+        name: 'Keyence 2',
+        key: 'keyence_2',
+        ...keyenceCommon,
+      },
+
+      // ************************************ POWER ************************************ //
+      power_line_resistance: {
+        name: 'Power Line Resistance',
+        key: 'power_line_resistance',
+        format: 'integer',
+        type: 'resistance',
+        unit: 'kΩ',
+        limits: {
+          critical: {
+            low: 0,
+            high: 100,
+          },
+        },
       },
     },
   },
