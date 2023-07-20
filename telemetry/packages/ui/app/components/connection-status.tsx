@@ -1,51 +1,69 @@
-import { StatusType } from '@/types/StatusType';
+import { useLatency } from '@/hooks/useLatency';
+import {
+  PodConnectionStatusType,
+  POD_CONNECTION_STATUS,
+} from '@/types/PodConnectionStatus';
 
-interface ConnectionStatusProps {
-  status: StatusType;
+interface PodConnectionStatusProps {
+  mqttStatus: PodConnectionStatusType;
+  podId: string;
 }
 
-export const ConnectionStatus = ({ status }: ConnectionStatusProps) => (
-  <div className="flex gap-2 items-center">
-    <div
-      className={`w-2 h-2 rounded-full
+/**
+ * Displays the connection status of a pod
+ * @param mqttStatus The current connection status of the pod
+ * @param podId The ID of the pod
+ */
+export const PodConnectionStatus = ({
+  mqttStatus,
+  podId,
+}: PodConnectionStatusProps) => {
+  const { latency } = useLatency(podId);
+
+  return (
+    <div className="flex gap-2 items-center">
+      <div
+        className={`w-2 h-2 rounded-full
               ${
-                status === 'connected'
+                mqttStatus === 'CONNECTED'
                   ? 'bg-green-500 animate-[pulse_linear_1s_infinite]'
-                  : status === 'connecting' ||
-                    status === 'waiting' ||
-                    status === 'reconnecting'
+                  : mqttStatus === POD_CONNECTION_STATUS.CONNECTING ||
+                    mqttStatus === POD_CONNECTION_STATUS.UNKNOWN ||
+                    mqttStatus === POD_CONNECTION_STATUS.RECONNECTING
                   ? 'bg-orange-500 animate-[pulse_linear_0.5s_infinite]'
-                  : status === 'disconnected' || status === 'error'
+                  : mqttStatus === POD_CONNECTION_STATUS.DISCONNECTED ||
+                    mqttStatus === POD_CONNECTION_STATUS.ERROR
                   ? 'bg-red-500'
                   : ''
               }`}
-    />
-    <p
-      className={`text-sm italic ${
-        status == 'connected'
-          ? 'text-green-500'
-          : status == 'connecting' ||
-            status == 'waiting' ||
-            status == 'reconnecting'
-          ? 'text-orange-500'
-          : status == 'disconnected'
-          ? 'text-red-500'
-          : ''
-      }`}
-    >
-      {status == 'connected'
-        ? 'Connected'
-        : status == 'connecting'
-        ? 'Connecting...'
-        : status == 'disconnected'
-        ? 'Disconnected'
-        : status == 'waiting'
-        ? 'Waiting...'
-        : status == 'error'
-        ? 'Error'
-        : status == 'reconnecting'
-        ? 'Trying to reconnect...'
-        : status}
-    </p>
-  </div>
-);
+      />
+      <p
+        className={`text-sm italic ${
+          mqttStatus == 'CONNECTED'
+            ? 'text-green-500'
+            : mqttStatus == POD_CONNECTION_STATUS.CONNECTING ||
+              mqttStatus == POD_CONNECTION_STATUS.UNKNOWN ||
+              mqttStatus == POD_CONNECTION_STATUS.RECONNECTING
+            ? 'text-orange-500'
+            : mqttStatus == POD_CONNECTION_STATUS.DISCONNECTED
+            ? 'text-red-500'
+            : ''
+        }`}
+      >
+        {mqttStatus == 'CONNECTED'
+          ? 'Connected'
+          : mqttStatus == POD_CONNECTION_STATUS.CONNECTING
+          ? 'Connecting...'
+          : mqttStatus == POD_CONNECTION_STATUS.DISCONNECTED
+          ? 'Disconnected'
+          : mqttStatus == POD_CONNECTION_STATUS.UNKNOWN
+          ? 'Unknown/waiting...'
+          : mqttStatus == POD_CONNECTION_STATUS.ERROR
+          ? 'Error'
+          : mqttStatus == POD_CONNECTION_STATUS.RECONNECTING
+          ? 'Trying to reconnect...'
+          : mqttStatus}
+      </p>
+    </div>
+  );
+};

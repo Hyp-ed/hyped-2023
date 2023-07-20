@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils';
 import {
-  PodState,
+  PodStateType,
   failureStates,
   staticStates,
   nullStates,
@@ -10,7 +10,6 @@ import { Button } from './ui/button';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -18,7 +17,12 @@ import {
 } from '@/components/ui/dialog';
 import { StateMachineFlowChart } from './flow/flow-chart';
 
-export const PodStateIndicator = ({ state }: { state: PodState }) => (
+/**
+ * Displays the current state of the pod.
+ * Opens a dialog with the State Machine Flow Chart when clicked.
+ * @param state The current state of the pod
+ */
+export const PodState = ({ state }: { state: PodStateType }) => (
   <Dialog>
     <DialogTrigger asChild>
       <Button

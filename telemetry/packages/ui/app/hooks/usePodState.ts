@@ -1,28 +1,21 @@
-import { PodState, podStates } from '@hyped/telemetry-constants';
-import { MqttSubscribe } from '@hyped/telemetry-types';
-import { MqttUnsubscribe } from '@hyped/telemetry-types';
-import { MqttClient } from 'mqtt/types/lib/client';
+import { useMQTT } from '@/context/mqtt';
+import { getTopic } from '@/lib/utils';
+import { PodStateType, podStates } from '@hyped/telemetry-constants';
 import { useEffect, useState } from 'react';
 
-export const usePodState = (
-  client: MqttClient | null,
-  subscribe: MqttSubscribe,
-  unsubscribe: MqttUnsubscribe,
-  podId: string,
-) => {
-  const [podState, setPodState] = useState<PodState>(podStates.UNKNOWN);
+export const usePodState = (podId: string) => {
+  const { client, subscribe, unsubscribe } = useMQTT();
+  const [podState, setPodState] = useState<PodStateType>(podStates.UNKNOWN);
 
   useEffect(() => {
-    subscribe({
-      topic: `state`,
-    });
     if (!client) return;
+    subscribe('state', podId);
     const getPodState = (topic: string, message: Buffer) => {
-      if (topic === `hyped/${podId}/state`) {
+      if (topic === getTopic('state', podId)) {
         const newPodState = message.toString();
         const allowedStates = Object.values(podStates);
-        if (allowedStates.includes(newPodState as PodState)) {
-          setPodState(newPodState as PodState);
+        if (allowedStates.includes(newPodState as PodStateType)) {
+          setPodState(newPodState as PodStateType);
         }
       }
     };

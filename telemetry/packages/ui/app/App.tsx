@@ -1,4 +1,4 @@
-import { Logo, StatusIndicator } from './components';
+import { Logo, ConnectionStatus } from './components';
 import { PodControls } from './components/pod-controls';
 import {
   Select,
@@ -8,12 +8,12 @@ import {
   SelectValue,
 } from './components/ui/select';
 import { useState } from 'react';
-import { StatusError } from './components/status-error';
+import { PodDisconnectError } from './components/pod-disconnect-error';
 import { useMQTT } from './context/mqtt';
+import { Latency } from './components/latency';
 
 const App = () => {
-  const { client, publish, subscribe, unsubscribe, latency, connectionStatus } =
-    useMQTT();
+  const { connectionStatus } = useMQTT();
 
   const podIds = ['pod_1'];
   const [pod, setPod] = useState(podIds[0]);
@@ -24,12 +24,9 @@ const App = () => {
         {/* Status, Latency, State, Title */}
         <div className="flex flex-col gap-2">
           <div className="flex flex-col gap-1">
-            <StatusIndicator status={connectionStatus} />
-            <StatusError status={connectionStatus} />
-            <p>
-              <span className="">Latency: {latency}</span>
-              <span className="text-sm">{latency} ms</span>
-            </p>
+            <ConnectionStatus mqttStatus={connectionStatus} podId={pod} />
+            <PodDisconnectError status={connectionStatus} />
+            <Latency podId={pod} />
           </div>
           <h1 className="text-5xl font-title font-black my-2">Controls</h1>
         </div>
@@ -38,7 +35,6 @@ const App = () => {
           <Select
             onValueChange={(podId) => setPod(podId)}
             defaultValue={pod}
-            // @ts-ignore
             style={{ width: 'full' }}
           >
             <SelectTrigger>
@@ -53,14 +49,7 @@ const App = () => {
             </SelectContent>
           </Select>
           {podIds.map((podId) => (
-            <PodControls
-              key={podId}
-              podId={podId}
-              show={pod === podId}
-              publish={publish}
-              subscribe={subscribe}
-              client={client}
-            />
+            <PodControls key={podId} podId={podId} show={pod === podId} />
           ))}
         </div>
         <Logo />

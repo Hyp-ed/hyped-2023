@@ -1,6 +1,6 @@
 import ReactFlow, { Position } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { PodState, podStates } from '@hyped/telemetry-constants';
+import { PodStateType, podStates } from '@hyped/telemetry-constants';
 import { defaultNode, failureNode, okayNode } from './nodes';
 import { useMemo } from 'react';
 import './styles.css';
@@ -11,7 +11,7 @@ import { CustomNodeType } from './types';
 export function StateMachineFlowChart({
   currentState,
 }: {
-  currentState: PodState;
+  currentState: PodStateType;
 }) {
   const nodeTypes = useMemo(
     () => ({

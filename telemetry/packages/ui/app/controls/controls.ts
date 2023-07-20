@@ -1,11 +1,9 @@
 import { MqttPublish } from '@hyped/telemetry-types';
 import { toast } from 'react-hot-toast';
 
-export const calibrate = (podId: string) => {
-  console.log('Calibrating');
-  toast(`[${podId}] Calibrating!`);
-};
-
+/**
+ * TODO: Not implemented
+ */
 export const startPod = (
   podId: string,
   options: {
@@ -38,74 +36,46 @@ export const startPod = (
   }
 };
 
+/**
+ * TODO: Not implemented
+ */
 export const stopPod = (podId: string) => {
   console.log('STOP!');
   toast(`[${podId}] Pod stopped!`, { icon: '🛑' });
 };
 
-export const clampBrakes = (podId: string) => {
-  console.log('Clamping brakes');
-  toast(`[${podId}] Brakes clamped!`);
-};
-
-// raise, lower, clamp, retract
-
 export const clamp = (podId: string, publish: MqttPublish) => {
   console.log('Clamping');
   toast(`[${podId}] Clamped!`);
-  publish({
-    topic: 'controls/clamp',
-    qos: 0,
-    payload: 'clamp',
-  });
+  publish('controls/clamp', 'clamp', podId);
 };
 
 export const retract = (podId: string, publish: MqttPublish) => {
   console.log('Retracting');
   toast(`[${podId}] Retracted!`);
-  publish({
-    topic: 'controls/retract',
-    qos: 0,
-    payload: 'retract',
-  });
+  publish('controls/retract', 'retract', podId);
 };
 
 export const raise = (podId: string, publish: MqttPublish) => {
   console.log('Raising');
   toast(`[${podId}] Raised!`);
-  publish({
-    topic: 'controls/raise',
-    qos: 0,
-    payload: 'raise',
-  });
+  publish('controls/raise', 'raise', podId);
 };
 
 export const lower = (podId: string, publish: MqttPublish) => {
   console.log('Lowering');
   toast(`[${podId}] Lowered!`);
-  publish({
-    topic: 'controls/lower',
-    qos: 0,
-    payload: 'lower',
-  });
+  publish('controls/lower', 'lower', podId);
 };
 
 export const startHP = (podId: string, publish: MqttPublish) => {
   console.log('Starting HP');
   toast(`[${podId}] HP started!`);
-  publish({
-    topic: 'controls/start-hp',
-    qos: 0,
-    payload: 'start-hp',
-  });
+  publish('controls/start-hp', 'start-hp', podId);
 };
 
 export const stopHP = (podId: string, publish: MqttPublish) => {
   console.log('Stopping HP');
   toast(`[${podId}] HP stopped!`);
-  publish({
-    topic: 'controls/stop-hp',
-    qos: 0,
-    payload: 'stop-hp',
-  });
+  publish('controls/stop-hp', 'stop-hp', podId);
 };
