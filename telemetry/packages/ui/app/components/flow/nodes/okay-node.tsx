@@ -20,7 +20,7 @@ export default memo(
           BASE_NODE_STYLES,
           data.active
             ? 'border-2 border-green-200 bg-green-700 text-green-200'
-            : 'border-2 border-green-600 text-green-600 border-dashed',
+            : 'border-2 border-green-600 text-white border-dashed',
         )}
       >
         {' '}
