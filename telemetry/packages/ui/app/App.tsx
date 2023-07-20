@@ -50,7 +50,11 @@ const App = () => {
             </SelectContent>
           </Select>
           {POD_IDS.map((podId) => (
-            <PodControls podId={podId} show={currentPod === podId} />
+            <PodControls
+              key={podId}
+              podId={podId}
+              show={currentPod === podId}
+            />
           ))}
         </div>
         <Logo />

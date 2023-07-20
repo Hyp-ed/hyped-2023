@@ -13,14 +13,29 @@ import { getTopic } from '@/lib/utils';
 const POD_MAX_LATENCY = 300;
 
 /**
+ * The number of previous latencies to keep
+ */
+const NUM_PREVIOUS_LATENCIES = 50;
+
+/**
+ * The number of latencies to use to calculate average
+ */
+const NUM_LATENCIES_AVG = 10;
+
+/**
  * The interval between latency messages, in milliseconds
  */
 const LATENCY_REQUEST_INTERVAL = 100;
 
+export type PreviousLatenciesType = {
+  index: number;
+  latency: number;
+}[];
+
 type PodsContextType = {
   [podId: string]: {
     connectionStatus: PodConnectionStatusType;
-    previousLatencies?: number[];
+    previousLatencies?: PreviousLatenciesType;
     latency?: number;
   };
 };
@@ -124,15 +139,22 @@ export const PodsProvider = ({
         ...prevState,
         [podId]: {
           connectionStatus: POD_CONNECTION_STATUS.CONNECTED,
-          // maintain a list of the previous 10 latencies
+          // maintain a list of the previous NUM_PREVIOUS_LATENCIES latencies
           previousLatencies: [
-            ...(prevState[podId].previousLatencies || []).slice(-10),
-            latency,
+            ...(prevState[podId].previousLatencies || []).slice(
+              -NUM_PREVIOUS_LATENCIES,
+            ),
+            {
+              index: new Date().getTime(),
+              latency,
+            },
           ],
-          // calculate the average latency
+          // calculate the average latency from the last NUM_LATENCIES_AVG latencies
           latency: Math.round(
-            (prevState[podId].previousLatencies?.reduce((a, b) => a + b, 0) ||
-              0) / (prevState[podId].previousLatencies?.length || 1),
+            (prevState[podId].previousLatencies || [])
+              .slice(-NUM_LATENCIES_AVG)
+              .reduce((acc, { latency }) => acc + latency, 0) /
+              NUM_LATENCIES_AVG,
           ),
         },
       }));
