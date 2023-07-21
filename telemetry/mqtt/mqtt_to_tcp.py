@@ -3,7 +3,7 @@ import socket
 import time
 import json
 
-CLIENT_HOST = "192.168.93.221"
+CLIENT_HOST = "192.168.1.40"
 CLIENT_PORT = 65432
 
 # Connect to TCP server
@@ -28,33 +28,36 @@ mqttc.subscribe("#", 0)
 
 
 def on_message(client, userdata, msg):
-    print("onMessage")
+    # print("onMessage")
     """ Callback function for MQTT messages """
     # Ignore messages from the pod
     if msg.topic.startswith("hyped/pod_1/measurement/") or msg.topic == "hyped/pod_1/latency/response":
-        print("Ignoring message from pod")
+        # print("Ignoring message from pod")
         return
     # Handle latency
     if msg.topic == "hyped/pod_1/latency/request":
-        print("Received latency request")
+        # print("Received latency request")
         # Send latency request over TCP
-        for conn in connections:
-            conn.sendall(msg.payload).encode("utf-8")
+        # for conn in connections:
+            # if msg.payload == None:
+                # print(msg)
+            # conn.sendall(msg.payload)
         return
     print("Received message on topic: " + msg.topic)
-    print("Message: " + msg.payload.decode("utf-8"))
+    # print("Message: " + msg.payload.encode())
 
     # Build the JSON message
     json_msg = {
         "topic": msg.topic,
-        "value": msg.payload.decode("utf-8"),
+        "value": msg.payload,
         "timestamp": time.time(),
     }
 
     # Send the message over TCP
     # conn.sendall(json.dumps(json_msg).encode("utf-8"))
     for conn in connections:
-        conn.sendall(json.dumps(json_msg).encode("utf-8"))
+        print(json_msg)
+        conn.sendall(json_msg["value"])
 
 
 # Assign callback function to receive messages
