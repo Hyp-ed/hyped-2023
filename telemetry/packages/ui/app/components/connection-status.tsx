@@ -61,17 +61,17 @@ export const PodConnectionStatus = ({ podId }: { podId: string }) => {
           side="bottom"
           className="border-none bg-black shadow-2xl"
         >
-          <TooltipArrow width={15} height={8} className="left-0" />
+          {/* <TooltipArrow width={15} height={8} className="left-0" /> */}
           <p className="text-sm">
             <span className="font-bold">Status:</span> {connectionStatus}
           </p>
           <p className="text-sm">
-            <span className="font-bold">Uptime:</span>{' '}
+            <span className="font-bold">GUI connection uptime:</span>{' '}
             {/* uptime in s then x mins, y secs etc. */}
             {Math.floor(uptime / 60)} mins {uptime % 60} secs
           </p>
           <p className="text-sm">
-            <span className="font-bold">Connection established:</span>{' '}
+            <span className="font-bold">GUI connection established:</span>{' '}
             {/* connection time in mm:hh:ss */}
             {connectionEstablished?.toLocaleTimeString()}
           </p>

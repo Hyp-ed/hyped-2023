@@ -44,7 +44,7 @@ export const Latency = ({ podId }: { podId: string }) => {
           side="bottom"
           className="border-none bg-black shadow-2xl"
         >
-          <TooltipArrow width={15} height={8} />
+          {/* <TooltipArrow width={15} height={8} /> */}
           <LatencyChart data={previousLatencies} />
         </TooltipContent>
       </Tooltip>
