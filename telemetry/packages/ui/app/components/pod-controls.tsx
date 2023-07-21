@@ -16,6 +16,7 @@ import {
   stopHP,
 } from '@/controls/controls';
 import { usePod } from '@/context/pods';
+import { ALL_POD_STATES } from '@hyped/telemetry-constants';
 
 interface PodControlsProps {
   podId: string;
@@ -31,7 +32,7 @@ export const PodControls = ({ podId, show }: PodControlsProps) => {
   const [raised, setRaised] = useState(false);
   const [deadmanSwitch, setDeadmanSwitch] = useState(false);
 
-  const SWITCHES_DISABLED = false; //TODOLater: replace with logic to determine whether switches should be disabled
+  const SWITCHES_DISABLED = podState !== ALL_POD_STATES.READY;
 
   /**
    * Toggles motor cooling
