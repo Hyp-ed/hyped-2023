@@ -8,27 +8,9 @@ export const startPod = async (
     activeSuspension: boolean;
   },
 ) => {
-  const { motorCooling, activeSuspension } = options;
-  if (motorCooling && activeSuspension) {
-    toast.success(
-      `[${podId}] Pod launched (with motor cooling and active suspension)!`,
-      {
-        icon: '🚀',
-      },
-    );
-  } else if (motorCooling) {
-    toast.success(`[${podId}] Pod launched (with motor cooling)!`, {
-      icon: '🚀',
-    });
-  } else if (activeSuspension) {
-    toast.success(`[${podId}] Pod launched with (active suspension)!`, {
-      icon: '🚀',
-    });
-  } else {
-    toast.success(`[${podId}] Pod launched!`, { icon: '🚀' });
-  }
-
-  const res = await http.post(`pods/${podId}/controls/start`);
+  const res = await http.post(`pods/${podId}/controls/start`, {
+    body: JSON.stringify(options),
+  });
   return res.status === 200;
 };
 
