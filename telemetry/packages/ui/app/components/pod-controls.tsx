@@ -87,7 +87,7 @@ export const PodControls = ({ podId, show }: PodControlsProps) => {
               'bg-green-600 hover:bg-green-700',
             )}
             onClick={() =>
-              startPod(podId, {
+              startPod(podId, publish, {
                 motorCooling,
                 activeSuspension,
               })
@@ -100,7 +100,7 @@ export const PodControls = ({ podId, show }: PodControlsProps) => {
               'px-4 py-10 rounded-md shadow-lg transition text-white text-3xl font-bold',
               'bg-red-700 hover:bg-red-800',
             )}
-            onClick={() => stopPod(podId)}
+            onClick={() => stopPod(podId, publish)}
           >
             STOP RUN
           </Button>

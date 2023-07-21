@@ -1,11 +1,9 @@
 import { MqttPublish } from '@/types/mqtt';
 import { toast } from 'react-hot-toast';
 
-/**
- * TODO: Not implemented
- */
 export const startPod = (
   podId: string,
+  publish: MqttPublish,
   options: {
     motorCooling: boolean;
     activeSuspension: boolean;
@@ -34,14 +32,14 @@ export const startPod = (
     console.log('GO!');
     toast.success(`[${podId}] Pod launched!`, { icon: '🚀' });
   }
+
+  publish('controls/go', 'go', podId);
 };
 
-/**
- * TODO: Not implemented
- */
-export const stopPod = (podId: string) => {
+export const stopPod = (podId: string, publish: MqttPublish) => {
   console.log('STOP!');
   toast(`[${podId}] Pod stopped!`, { icon: '🛑' });
+  publish('controls/stop', 'stop', podId);
 };
 
 export const clamp = (podId: string, publish: MqttPublish) => {
