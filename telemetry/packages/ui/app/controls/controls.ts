@@ -1,4 +1,4 @@
-import { MqttPublish } from '@hyped/telemetry-types';
+import { MqttPublish } from '@/types/mqtt';
 import { toast } from 'react-hot-toast';
 
 /**

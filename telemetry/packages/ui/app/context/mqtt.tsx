@@ -1,12 +1,12 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { IClientOptions, MqttClient } from 'mqtt/types/lib/client';
-import { MqttPublish, MqttSubscribe, QoS } from '@hyped/telemetry-types';
+import { MqttPublish, MqttSubscribe, QoS } from '@/types/mqtt';
 import {
   MQTTConnectionStatusType,
   MQTT_CONNECTION_STATUS,
 } from '@/types/MQTTConnectionStatus';
 import mqtt from 'mqtt/dist/mqtt';
-import { MqttUnsubscribe } from '@hyped/telemetry-types';
+import { MqttUnsubscribe } from '@/types/mqtt';
 import { getTopic } from '@/lib/utils';
 
 type MQTTContextType = {
