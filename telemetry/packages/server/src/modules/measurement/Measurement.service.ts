@@ -22,9 +22,8 @@ export class MeasurementService {
     private faultService: FaultService,
   ) {}
 
-  public addMeasurementReading(props: MeasurementReading) {
-    const currentTime = new Date();
-
+  // This function _is_ ordered in importance
+  public async addMeasurementReading(props: MeasurementReading) {
     const validatedMeasurement = this.validateMeasurementReading(props);
 
     if (!validatedMeasurement) {
@@ -32,19 +31,22 @@ export class MeasurementService {
     }
 
     const { measurement, reading } = validatedMeasurement;
-    const { podId, measurementKey, value } = reading
+    const { podId, measurementKey, value, timestamp } = reading
 
+    // First, get the data to the client ASAP
     this.realtimeDataGateway.sendMeasurementReading({
       podId,
       measurementKey,
       value,
+      timestamp
     });
 
+    // Then check if it breaches limits
     if (measurement.format === 'float' || measurement.format === 'integer') {
       const breachLevel = doesMeasurementBreachLimits(measurement, reading);
       if (breachLevel) {
         this.logger.debug(`Measurement breached limits {${props.podId}/${props.measurementKey}}: ${breachLevel} with value ${props.value}`)
-        this.faultService.addLimitBreachFault({
+        await this.faultService.addLimitBreachFault({
           level: breachLevel,
           measurement,
           tripReading: reading
@@ -52,8 +54,9 @@ export class MeasurementService {
       }
     }
 
+    // Then save it to the database
     const point = new Point('measurement')
-      .timestamp(currentTime)
+      .timestamp(timestamp)
       .tag('podId', podId)
       .tag('measurementKey', measurementKey)
       .tag('format', measurement.format)
