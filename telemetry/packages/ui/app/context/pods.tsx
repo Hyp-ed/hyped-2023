@@ -92,6 +92,12 @@ export const PodsProvider = ({
             {
               ...prevState[podId],
               connectionStatus: POD_CONNECTION_STATUS.DISCONNECTED,
+              // reset previous latencies
+              previousLatencies: [],
+              // reset latency
+              latency: undefined,
+              // reset connection established
+              connectionEstablished: undefined,
             },
           ]),
         ),
@@ -125,6 +131,12 @@ export const PodsProvider = ({
             [podId]: {
               ...prevState[podId],
               connectionStatus: POD_CONNECTION_STATUS.DISCONNECTED,
+              // reset previous latencies
+              previousLatencies: [],
+              // reset latency
+              latency: undefined,
+              // reset connection established
+              connectionEstablished: undefined,
             },
           }));
         }
@@ -163,17 +175,6 @@ export const PodsProvider = ({
 
         setLastLatencyResponse(new Date().getTime());
 
-        // if the connection has not been established, set the connection established time
-        if (!podsState[podId].connectionEstablished) {
-          setPodsState((prevState) => ({
-            ...prevState,
-            [podId]: {
-              ...prevState[podId],
-              connectionEstablished: new Date(),
-            },
-          }));
-        }
-
         // update the connection status
         setPodsState((prevState) => ({
           ...prevState,
@@ -197,15 +198,9 @@ export const PodsProvider = ({
                 .reduce((acc, { latency }) => acc + latency, 0) /
                 NUM_LATENCIES_AVG,
             ),
-            // time since connection established in seconds
-            uptime:
-              Math.round(
-                (new Date().getTime() -
-                  (
-                    prevState[podId].connectionEstablished || new Date()
-                  ).getTime()) /
-                  1000,
-              ) || 0,
+            // set the connection established time if it hasn't been set yet
+            connectionEstablished:
+              prevState[podId].connectionEstablished || new Date(),
           },
         }));
       }
