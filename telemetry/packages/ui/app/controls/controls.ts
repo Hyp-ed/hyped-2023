@@ -1,9 +1,8 @@
-import { MqttPublish } from '@/types/mqtt';
+import { http } from 'openmct/core/http';
 import { toast } from 'react-hot-toast';
 
-export const startPod = (
+export const startPod = async (
   podId: string,
-  publish: MqttPublish,
   options: {
     motorCooling: boolean;
     activeSuspension: boolean;
@@ -29,40 +28,48 @@ export const startPod = (
     toast.success(`[${podId}] Pod launched!`, { icon: '🚀' });
   }
 
-  publish('controls/go', 'go', podId);
+  const res = await http.post(`pods/${podId}/controls/start`);
+  return res.status === 200;
 };
 
-export const stopPod = (podId: string, publish: MqttPublish) => {
+export const stopPod = async (podId: string) => {
   toast(`[${podId}] Pod stopped!`, { icon: '🛑' });
-  publish('controls/stop', 'stop', podId);
+  const res = await http.post(`pods/${podId}/controls/stop`);
+  return res.status === 200;
 };
 
-export const clamp = (podId: string, publish: MqttPublish) => {
+export const clamp = async (podId: string) => {
   toast(`[${podId}] Clamped!`);
-  publish('controls/clamp', 'clamp', podId);
+  const res = await http.post(`pods/${podId}/controls/clamp`);
+  return res.status === 200;
 };
 
-export const retract = (podId: string, publish: MqttPublish) => {
+export const retract = async (podId: string) => {
   toast(`[${podId}] Retracted!`);
-  publish('controls/retract', 'retract', podId);
+  const res = await http.post(`pods/${podId}/controls/retract`);
+  return res.status === 200;
 };
 
-export const raise = (podId: string, publish: MqttPublish) => {
+export const raise = async (podId: string) => {
   toast(`[${podId}] Raised!`);
-  publish('controls/raise', 'raise', podId);
+  const res = await http.post(`pods/${podId}/controls/raise`);
+  return res.status === 200;
 };
 
-export const lower = (podId: string, publish: MqttPublish) => {
+export const lower = async (podId: string) => {
   toast(`[${podId}] Lowered!`);
-  publish('controls/lower', 'lower', podId);
+  const res = await http.post(`pods/${podId}/controls/lower`);
+  return res.status === 200;
 };
 
-export const startHP = (podId: string, publish: MqttPublish) => {
+export const startHP = async (podId: string) => {
   toast(`[${podId}] HP started!`);
-  publish('controls/start-hp', 'start-hp', podId);
+  const res = await http.post(`pods/${podId}/controls/start-hp`);
+  return res.status === 200;
 };
 
-export const stopHP = (podId: string, publish: MqttPublish) => {
+export const stopHP = async (podId: string) => {
   toast(`[${podId}] HP stopped!`);
-  publish('controls/stop-hp', 'stop-hp', podId);
+  const res = await http.post(`pods/${podId}/controls/stop-hp`);
+  return res.status === 200;
 };

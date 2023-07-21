@@ -15,7 +15,6 @@ import {
   startHP,
   stopHP,
 } from '@/controls/controls';
-import { useMQTT } from '@/context/mqtt';
 import { usePod } from '@/context/pods';
 
 interface PodControlsProps {
@@ -24,7 +23,6 @@ interface PodControlsProps {
 }
 
 export const PodControls = ({ podId, show }: PodControlsProps) => {
-  const { publish } = useMQTT();
   const { podState } = usePod(podId);
 
   const [motorCooling, setMotorCooling] = useState(false);
@@ -87,7 +85,7 @@ export const PodControls = ({ podId, show }: PodControlsProps) => {
               'bg-green-600 hover:bg-green-700',
             )}
             onClick={() =>
-              startPod(podId, publish, {
+              startPod(podId, {
                 motorCooling,
                 activeSuspension,
               })
@@ -100,7 +98,7 @@ export const PodControls = ({ podId, show }: PodControlsProps) => {
               'px-4 py-10 rounded-md shadow-lg transition text-white text-3xl font-bold',
               'bg-red-700 hover:bg-red-800',
             )}
-            onClick={() => stopPod(podId, publish)}
+            onClick={() => stopPod(podId)}
           >
             STOP RUN
           </Button>
@@ -111,8 +109,8 @@ export const PodControls = ({ podId, show }: PodControlsProps) => {
               !clamped && 'bg-gray-600 hover:bg-gray-700',
             )}
             onClick={() => {
-              if (clamped) retract(podId, publish);
-              else clamp(podId, publish);
+              if (clamped) retract(podId);
+              else clamp(podId);
               setClamped(!clamped);
             }}
           >
@@ -125,8 +123,8 @@ export const PodControls = ({ podId, show }: PodControlsProps) => {
               !raised && 'bg-gray-600 hover:bg-gray-700',
             )}
             onClick={() => {
-              if (raised) lower(podId, publish);
-              else raise(podId, publish);
+              if (raised) lower(podId);
+              else raise(podId);
               setRaised(!raised);
             }}
           >
@@ -139,8 +137,8 @@ export const PodControls = ({ podId, show }: PodControlsProps) => {
               !deadmanSwitch && 'bg-gray-600 hover:bg-gray-700',
             )}
             onClick={() => {
-              if (deadmanSwitch) stopHP(podId, publish);
-              else startHP(podId, publish);
+              if (deadmanSwitch) stopHP(podId);
+              else startHP(podId);
               setDeadmanSwitch(!deadmanSwitch);
             }}
           >
