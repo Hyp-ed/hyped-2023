@@ -8,6 +8,7 @@ import { MqttIngestionModule } from './modules/mqtt/ingestion/MqttIngestion.modu
 import { OpenMCTModule } from './modules/openmct/OpenMCT.module';
 import { MeasurementModule } from './modules/measurement/Measurement.module';
 import { PodControlsModule } from './modules/controls/PodControls.module';
+import { WarningsModule } from './modules/warnings/Warnings.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { PodControlsModule } from './modules/controls/PodControls.module';
     OpenMCTModule,
     MeasurementModule,
     PodControlsModule,
+    WarningsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
