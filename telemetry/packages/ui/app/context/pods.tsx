@@ -37,6 +37,7 @@ type PodsContextType = {
     connectionStatus: PodConnectionStatusType;
     previousLatencies?: PreviousLatenciesType;
     latency?: number;
+    connectionEstablished?: Date;
   };
 };
 
@@ -127,17 +128,35 @@ export const PodsProvider = ({
   // subscribe to latency messages and calculate latency
   useEffect(() => {
     if (!client) return;
-
     const getLatency = (podId: string, topic: string, message: Buffer) => {
       if (topic !== getTopic('latency/response', podId)) return;
+
+      // calculate the latency
       const latency =
         new Date().getTime() -
         parseInt(JSON.parse(message.toString())['latency']);
+
       console.log(`Received latency response from ${podId}: ${latency}ms`);
+
       setLastLatencyResponse(new Date().getTime());
+
+      // if the connection has not been established, set the connection established time
+      if (!podsState[podId].connectionEstablished) {
+        console.log('Setting connection established time');
+        setPodsState((prevState) => ({
+          ...prevState,
+          [podId]: {
+            ...prevState[podId],
+            connectionEstablished: new Date(),
+          },
+        }));
+      }
+
+      // update the connection status
       setPodsState((prevState) => ({
         ...prevState,
         [podId]: {
+          ...prevState[podId],
           connectionStatus: POD_CONNECTION_STATUS.CONNECTED,
           // maintain a list of the previous NUM_PREVIOUS_LATENCIES latencies
           previousLatencies: [
@@ -156,6 +175,15 @@ export const PodsProvider = ({
               .reduce((acc, { latency }) => acc + latency, 0) /
               NUM_LATENCIES_AVG,
           ),
+          // time since connection established in seconds
+          uptime:
+            Math.round(
+              (new Date().getTime() -
+                (
+                  prevState[podId].connectionEstablished || new Date()
+                ).getTime()) /
+                1000,
+            ) || 0,
         },
       }));
     };
