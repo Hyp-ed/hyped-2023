@@ -6,6 +6,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { useMQTT } from './mqtt';
 import { MQTT_CONNECTION_STATUS } from '@/types/MQTTConnectionStatus';
 import { getTopic } from '@/lib/utils';
+import { ALL_POD_STATES, PodStateType } from '@hyped/telemetry-constants';
 
 /**
  * The maximum latency before a pod is considered disconnected, in milliseconds
@@ -38,6 +39,7 @@ type PodsContextType = {
     previousLatencies?: PreviousLatenciesType;
     latency?: number;
     connectionEstablished?: Date;
+    podState: PodStateType;
   };
 };
 
@@ -48,6 +50,7 @@ function createPodsContextFromIds(podIds: string[]): PodsContextType {
   for (const podId of podIds) {
     podsContext[podId] = {
       connectionStatus: POD_CONNECTION_STATUS.UNKNOWN,
+      podState: ALL_POD_STATES.UNKNOWN,
     };
   }
   return podsContext;
@@ -81,6 +84,7 @@ export const PodsProvider = ({
           Object.entries(prevState).map(([podId]) => [
             podId,
             {
+              ...prevState[podId],
               connectionStatus: POD_CONNECTION_STATUS.DISCONNECTED,
             },
           ]),
@@ -129,6 +133,20 @@ export const PodsProvider = ({
   useEffect(() => {
     if (!client) return;
     const getLatency = (podId: string, topic: string, message: Buffer) => {
+      if (topic === getTopic('state', podId)) {
+        const newPodState = message.toString();
+        const allowedStates = Object.values(ALL_POD_STATES);
+        if (allowedStates.includes(newPodState as PodStateType)) {
+          setPodsState((prevState) => ({
+            ...prevState,
+            [podId]: {
+              ...prevState[podId],
+              podState: newPodState as PodStateType,
+            },
+          }));
+        }
+      }
+
       if (topic !== getTopic('latency/response', podId)) return;
 
       // calculate the latency
@@ -190,6 +208,7 @@ export const PodsProvider = ({
 
     podIds.map((podId) => {
       subscribe('latency/response', podId);
+      subscribe('state', podId);
       client.on('message', (topic, message) =>
         getLatency(podId, topic, message),
       );
@@ -201,6 +220,7 @@ export const PodsProvider = ({
           getLatency(podId, topic, message),
         );
         unsubscribe('latency/response', podId);
+        unsubscribe('state', podId);
       });
     };
   }, [client]);
