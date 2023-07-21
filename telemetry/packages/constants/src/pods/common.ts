@@ -19,6 +19,10 @@ export const thermistorCommon = {
       low: 15,
       high: 120,
     },
+    warning: {
+      low: 20,
+      high: 100,
+    }
   },
 } as const;
 
@@ -26,12 +30,6 @@ export const pressureCommon = {
   format: 'float',
   type: 'pressure',
   unit: 'bar',
-  limits: {
-    critical: {
-      low: 3.2,
-      high: 3.7,
-    },
-  },
 } as const;
 
 export const hallEffectCommon = {

@@ -83,45 +83,125 @@ export const pods: Pods = {
       },
 
       // ************************************ PRESSURE ************************************ //
-      pressure_1: {
-        name: 'Pressure 1',
-        key: 'pressure_1',
+      pressure_back_pull: {
+        name: 'Pressure – Back Pull',
+        key: 'pressure_back_pull',
         ...pressureCommon,
+        limits: {
+          critical: {
+            low: -0.2,
+            high: 5.5,
+          },
+          warning: {
+            low: -0.19,
+            high: 5.2,
+          }
+        }
       },
-      pressure_2: {
-        name: 'Pressure 2',
-        key: 'pressure_2',
+      pressure_front_pull: {
+        name: 'Pressure – Front Pull',
+        key: 'pressure_front_pull',
         ...pressureCommon,
+        limits: {
+          critical: {
+            low: -0.2,
+            high: 5.5,
+          },
+          warning: {
+            low: -0.19,
+            high: 5.2,
+          }
+        }
       },
-      pressure_3: {
-        name: 'Pressure 3',
-        key: 'pressure_3',
+      pressure_front_push: {
+        name: 'Pressure – Front Push',
+        key: 'pressure_front_push',
         ...pressureCommon,
+        limits: {
+          critical: {
+            low: -0.2,
+            high: 5.5,
+          },
+          warning: {
+            low: -0.19,
+            high: 5.2,
+          }
+        }
       },
-      pressure_4: {
-        name: 'Pressure 4',
-        key: 'pressure_4',
+      pressure_back_push: {
+        name: 'Pressure – Back Push',
+        key: 'pressure_back_push',
         ...pressureCommon,
+        limits: {
+          critical: {
+            low: -0.2,
+            high: 5.5,
+          },
+          warning: {
+            low: -0.19,
+            high: 5.2,
+          }
+        }
       },
-      pressure_5: {
-        name: 'Pressure 5',
-        key: 'pressure_5',
+      pressure_brakes_reservoir: {
+        name: 'Pressure – Brakes Reservoir',
+        key: 'pressure_brakes_reservoir',
         ...pressureCommon,
+        limits: {
+          critical: {
+            low: 3,
+            high: 7.4,
+          },
+          warning: {
+            low: 3.5,
+            high: 6.9,
+          }
+        }
       },
-      pressure_6: {
-        name: 'Pressure 6',
-        key: 'pressure_6',
+      pressure_active_suspension_reservoir: {
+        name: 'Pressure – Active Suspension Reservoir',
+        key: 'pressure_active_suspension_reservoir',
         ...pressureCommon,
+        limits: {
+          critical: {
+            low: 3,
+            high: 7.4,
+          },
+          warning: {
+            low: 3.5,
+            high: 6.9,
+          }
+        }
       },
-      pressure_7: {
-        name: 'Pressure 7',
-        key: 'pressure_7',
+      pressure_front_brake: {
+        name: 'Pressure – Front Brake',
+        key: 'pressure_front_brake',
         ...pressureCommon,
+        limits: {
+          critical: {
+            low: -0.2,
+            high: 4.2,
+          },
+          warning: {
+            low: -0.19,
+            high: 4,
+          }
+        }
       },
-      pressure_8: {
-        name: 'Pressure 8',
-        key: 'pressure_8',
+      pressure_back_brake: {
+        name: 'Pressure – Back Brake',
+        key: 'pressure_back_brake',
         ...pressureCommon,
+        limits: {
+          critical: {
+            low: -0.2,
+            high: 4.2,
+          },
+          warning: {
+            low: -0.19,
+            high: 4,
+          }
+        }
       },
 
       // ************************************ THERMISTORS ************************************ //
@@ -185,26 +265,26 @@ export const pods: Pods = {
         key: 'thermistor_12',
         ...thermistorCommon,
       },
-      thermistor_13: {
-        name: 'Thermistor 13',
-        key: 'thermistor_13',
-        ...thermistorCommon,
-      },
-      thermistor_14: {
-        name: 'Thermistor 14',
-        key: 'thermistor_14',
-        ...thermistorCommon,
-      },
-      thermistor_15: {
-        name: 'Thermistor 15',
-        key: 'thermistor_15',
-        ...thermistorCommon,
-      },
-      thermistor_16: {
-        name: 'Thermistor 16',
-        key: 'thermistor_16',
-        ...thermistorCommon,
-      },
+      // thermistor_13: {
+      //   name: 'Thermistor 13',
+      //   key: 'thermistor_13',
+      //   ...thermistorCommon,
+      // },
+      // thermistor_14: {
+      //   name: 'Thermistor 14',
+      //   key: 'thermistor_14',
+      //   ...thermistorCommon,
+      // },
+      // thermistor_15: {
+      //   name: 'Thermistor 15',
+      //   key: 'thermistor_15',
+      //   ...thermistorCommon,
+      // },
+      // thermistor_16: {
+      //   name: 'Thermistor 16',
+      //   key: 'thermistor_16',
+      //   ...thermistorCommon,
+      // },
 
       // ************************************ HALL EFFECTS ************************************ //
       hall_effect_1: {
@@ -228,11 +308,11 @@ export const pods: Pods = {
         enumerations: [
           {
             value: 1,
-            string: 'ON',
+            string: 'CLAMPED',
           },
           {
             value: 0,
-            string: 'OFF',
+            string: 'UNCLAMPED',
           },
         ],
       },
@@ -245,11 +325,11 @@ export const pods: Pods = {
         enumerations: [
           {
             value: 1,
-            string: 'ON',
+            string: 'RAISED',
           },
           {
             value: 0,
-            string: 'OFF',
+            string: 'LOWERED',
           },
         ],
       },
