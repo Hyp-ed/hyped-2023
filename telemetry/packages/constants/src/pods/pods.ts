@@ -370,6 +370,24 @@ export const pods: Pods = {
         ],
       },
 
+      high_power_status: {
+        name: 'High Power Status',
+        key: 'high_power_status',
+        format: 'enum',
+        type: 'status',
+        unit: 'state',
+        enumerations: [
+          {
+            value: 1,
+            string: 'ACTIVE',
+          },
+          {
+            value: 0,
+            string: 'OFF',
+          },
+        ],
+      },
+
       // ************************************ KEYENCE ************************************ //
       keyence_1: {
         name: 'Keyence 1',
