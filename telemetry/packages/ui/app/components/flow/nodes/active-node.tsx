@@ -4,7 +4,7 @@ import { BASE_NODE_STYLES } from './styles';
 import { cn } from '@/lib/utils';
 import { NodeDataType } from '../types';
 
-export default memo(
+export const ActiveNode = memo(
   ({
     data,
   }: Omit<NodeProps, 'data'> & {

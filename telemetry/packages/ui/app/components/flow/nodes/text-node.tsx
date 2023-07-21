@@ -2,7 +2,7 @@ import { memo } from 'react';
 import { NodeProps } from 'reactflow';
 import { NodeDataType } from '../types';
 
-export default memo(
+export const TextNode = memo(
   ({
     data,
   }: Omit<NodeProps, 'data'> & {

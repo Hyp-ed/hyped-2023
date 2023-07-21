@@ -4,7 +4,7 @@ import { Handle, NodeProps } from 'reactflow';
 import { BASE_NODE_STYLES } from './styles';
 import { NodeDataType } from '../types';
 
-export default memo(
+export const PassiveNode = memo(
   ({
     data,
   }: Omit<NodeProps, 'data'> & {
