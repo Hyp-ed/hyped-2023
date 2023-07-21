@@ -6,7 +6,7 @@ export const FAILURE_STATES = {
   FAILURE_CALIBRATING: 'FAILURE_CALIBRATING',
 } as const;
 
-export const STATIC_STATES = {
+export const PASSIVE_STATES = {
   IDLE: 'IDLE',
   CALIBRATING: 'CALIBRATING',
   READY: 'READY',
@@ -14,7 +14,7 @@ export const STATIC_STATES = {
   OFF: 'OFF',
 } as const;
 
-export const OKAY_STATES = {
+export const ACTIVE_STATES = {
   ACCELERATING: 'ACCELERATING',
   NOMINAL_BRAKING: 'NOMINAL_BRAKING',
 } as const;
@@ -25,7 +25,7 @@ export const NULL_STATES = {
 
 export const ALL_POD_STATES = {
   ...FAILURE_STATES,
-  ...STATIC_STATES,
-  ...OKAY_STATES,
+  ...PASSIVE_STATES,
+  ...ACTIVE_STATES,
   ...NULL_STATES,
 };

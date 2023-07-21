@@ -1,10 +1,10 @@
 import { cn } from '@/lib/utils';
 import {
   PodStateType,
-  failureStates,
-  staticStates,
-  nullStates,
-  okayStates,
+  FAILURE_STATES,
+  PASSIVE_STATES,
+  NULL_STATES,
+  ACTIVE_STATES,
 } from '@hyped/telemetry-constants';
 import { Button } from './ui/button';
 import {
@@ -28,12 +28,12 @@ export const PodState = ({ state }: { state: PodStateType }) => (
       <Button
         className={cn(
           'px-3 py-2 rounded-md w-full justify-start',
-          state in nullStates ||
-            (state in staticStates &&
+          state in NULL_STATES ||
+            (state in ACTIVE_STATES &&
               'bg-gray-600 hover:bg-gray-700 border-2 border-gray-800 text-white'),
-          state in okayStates &&
+          state in ACTIVE_STATES &&
             'bg-green-700 hover:bg-green-800 border-2 border-green-900 text-white',
-          state in failureStates &&
+          state in FAILURE_STATES &&
             'bg-red-700 hover:bg-red-800 border-2 border-red-900 text-white',
         )}
       >
@@ -52,9 +52,9 @@ export const PodState = ({ state }: { state: PodStateType }) => (
           <span
             className={cn(
               'font-bold uppercase',
-              state in nullStates || (state in staticStates && 'text-white'),
-              state in okayStates && 'text-green-600',
-              state in failureStates && 'text-red-600',
+              state in NULL_STATES || (state in PASSIVE_STATES && 'text-white'),
+              state in ACTIVE_STATES && 'text-green-600',
+              state in FAILURE_STATES && 'text-red-600',
             )}
           >
             {state}

@@ -1,8 +1,8 @@
 import {
   PodStateType,
-  failureStates,
-  okayStates,
-  staticStates,
+  FAILURE_STATES,
+  ACTIVE_STATES,
+  PASSIVE_STATES,
 } from '@hyped/telemetry-constants';
 
 /**
@@ -11,7 +11,7 @@ import {
  * @returns The node type (okayNode, failureNode, defaultNode)
  */
 export const getNodeType = (state: PodStateType) => {
-  if (state in failureStates) return 'failureNode';
-  if (state in staticStates) return 'defaultNode';
-  if (state in okayStates) return 'okayNode';
+  if (state in FAILURE_STATES) return 'FailureNode';
+  if (state in PASSIVE_STATES) return 'DefaultNode';
+  if (state in ACTIVE_STATES) return 'OkayNode';
 };
