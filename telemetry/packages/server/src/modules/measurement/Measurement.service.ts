@@ -9,6 +9,8 @@ import {
   MeasurementReadingSchema,
 } from './MeasurementReading.types';
 import { MeasurementReadingValidationError } from './errors/MeasurementReadingValidationError';
+import { doesMeasurementBreachLimits } from './utils/doesMeasurementBreachLimits';
+import { FaultService } from '../openmct/faults/Fault.service';
 
 @Injectable()
 export class MeasurementService {
@@ -17,6 +19,7 @@ export class MeasurementService {
     private readonly logger: LoggerService,
     private influxService: InfluxService,
     private realtimeDataGateway: RealtimeTelemetryDataGateway,
+    private faultService: FaultService,
   ) {}
 
   public addMeasurementReading(props: MeasurementReading) {
@@ -28,16 +31,25 @@ export class MeasurementService {
       throw new MeasurementReadingValidationError('Invalid measurement');
     }
 
-    const {
-      measurement,
-      reading: { podId, measurementKey, value },
-    } = validatedMeasurement;
+    const { measurement, reading } = validatedMeasurement;
+    const { podId, measurementKey, value } = reading
 
     this.realtimeDataGateway.sendMeasurementReading({
       podId,
       measurementKey,
       value,
     });
+
+    if (measurement.format === 'float' || measurement.format === 'integer') {
+      const breachLevel = doesMeasurementBreachLimits(measurement, reading);
+      if (breachLevel) {
+        this.faultService.addLimitBreachFault({
+          level: breachLevel,
+          measurement,
+          tripReading: reading
+        });
+      }
+    }
 
     const point = new Point('measurement')
       .timestamp(currentTime)
@@ -47,7 +59,7 @@ export class MeasurementService {
       .floatField('value', value);
 
     try {
-      this.influxService.write.writePoint(point);
+      this.influxService.telemetryWrite.writePoint(point);
 
       this.logger.debug(
         `Added measurement {${props.podId}/${props.measurementKey}}: ${props.value}`,
