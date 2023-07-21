@@ -1,4 +1,4 @@
-import { usePods } from '@/context/pods';
+import { usePod } from '@/context/pods';
 import { POD_CONNECTION_STATUS } from '@/types/PodConnectionStatus';
 import {
   Tooltip,
@@ -14,7 +14,7 @@ import { cn } from '@/lib/utils';
  * Displays the latency between the base station and the pod
  */
 export const Latency = ({ podId }: { podId: string }) => {
-  const { latency, connectionStatus, previousLatencies } = usePods(podId);
+  const { latency, connectionStatus, previousLatencies } = usePod(podId);
 
   return (
     <TooltipProvider>

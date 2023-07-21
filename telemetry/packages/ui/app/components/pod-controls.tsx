@@ -16,7 +16,7 @@ import {
   stopHP,
 } from '@/controls/controls';
 import { useMQTT } from '@/context/mqtt';
-import { usePods } from '@/context/pods';
+import { usePod } from '@/context/pods';
 
 interface PodControlsProps {
   podId: string;
@@ -25,7 +25,7 @@ interface PodControlsProps {
 
 export const PodControls = ({ podId, show }: PodControlsProps) => {
   const { publish } = useMQTT();
-  const { podState } = usePods(podId);
+  const { podState } = usePod(podId);
 
   const [motorCooling, setMotorCooling] = useState(false);
   const [activeSuspension, setActiveSuspension] = useState(false);

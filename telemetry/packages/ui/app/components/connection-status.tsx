@@ -1,4 +1,4 @@
-import { usePods } from '@/context/pods';
+import { usePod } from '@/context/pods';
 import { cn } from '@/lib/utils';
 import { POD_CONNECTION_STATUS } from '@/types/PodConnectionStatus';
 import {
@@ -15,7 +15,7 @@ import { useState, useEffect } from 'react';
  * @param podId The ID of the pod
  */
 export const PodConnectionStatus = ({ podId }: { podId: string }) => {
-  const { connectionStatus, connectionEstablished } = usePods(podId);
+  const { connectionStatus, connectionEstablished } = usePod(podId);
 
   const [uptime, setUptime] = useState(0);
 

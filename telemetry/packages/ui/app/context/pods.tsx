@@ -230,7 +230,7 @@ export const PodsProvider = ({
   );
 };
 
-export const usePods = (podId: string) => {
+export const usePod = (podId: string) => {
   const context = useContext(PodsContext);
   if (!context) {
     throw new Error('usePods must be used within PodsProvider');
