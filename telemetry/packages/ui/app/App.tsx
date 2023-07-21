@@ -12,12 +12,13 @@ import { PodDisconnectError } from './components/pod-disconnect-error';
 import { useMQTT } from './context/mqtt';
 import { Latency } from './components/latency';
 import { POD_IDS } from '@hyped/telemetry-constants';
+import { usePods } from './context/pods';
 
 const DEFAULT_POD = POD_IDS[0];
 
 const App = () => {
-  const { mqttConnectionStatus: connectionStatus } = useMQTT();
   const [currentPod, setCurrentPod] = useState<string>(DEFAULT_POD);
+  const { connectionStatus } = usePods(currentPod);
 
   return (
     <main className="px-4 py-8 flex flex-col gap-2 justify-between h-full bg-[#393939] select-none text-gray-100">

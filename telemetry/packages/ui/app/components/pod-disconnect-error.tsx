@@ -1,8 +1,4 @@
 import {
-  MQTTConnectionStatusType,
-  MQTT_CONNECTION_STATUS,
-} from '@/types/MQTTConnectionStatus';
-import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogContent,
@@ -12,19 +8,23 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { useEffect, useState } from 'react';
+import {
+  POD_CONNECTION_STATUS,
+  PodConnectionStatusType,
+} from '@/types/PodConnectionStatus';
 
 export const PodDisconnectError = ({
   status,
 }: {
-  status: MQTTConnectionStatusType;
+  status: PodConnectionStatusType;
 }) => {
   const [open, setOpen] = useState(false);
 
   // Open dialog when pod disconnects or encounters an error
   useEffect(() => {
     setOpen(
-      status === MQTT_CONNECTION_STATUS.DISCONNECTED ||
-        status === MQTT_CONNECTION_STATUS.ERROR,
+      status === POD_CONNECTION_STATUS.DISCONNECTED ||
+        status === POD_CONNECTION_STATUS.ERROR,
     );
   }, [status]);
 
@@ -36,7 +36,7 @@ export const PodDisconnectError = ({
         <AlertDialogHeader>
           <AlertDialogTitle>Pod disconnected!</AlertDialogTitle>
           <AlertDialogDescription>
-            Lost MQTT connection to pod.
+            Lost connection to pod.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
