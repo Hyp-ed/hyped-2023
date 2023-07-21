@@ -1,7 +1,7 @@
 import ReactFlow, { Position } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { PodStateType, podStates } from '@hyped/telemetry-constants';
-import { defaultNode, failureNode, okayNode } from './nodes';
+import { defaultNode, failureNode, okayNode, textNode } from './nodes';
 import { useMemo } from 'react';
 import './styles.css';
 import { getNodeType } from './utils';
@@ -18,6 +18,7 @@ export function StateMachineFlowChart({
       failureNode,
       defaultNode,
       okayNode,
+      textNode,
     }),
     [],
   );
@@ -253,12 +254,56 @@ export function StateMachineFlowChart({
         },
         type: getNodeType(podStates.FAILURE_STOPPED),
       },
+      {
+        id: 'key-default-label',
+        data: {
+          label: 'Key:',
+        },
+        position: {
+          x: 0,
+          y: 360,
+        },
+        type: 'textNode',
+      },
+      {
+        id: 'key-default',
+        data: {
+          label: 'Idle State',
+        },
+        position: {
+          x: 0,
+          y: 400,
+        },
+        type: 'defaultNode',
+      },
+      {
+        id: 'key-okay',
+        data: {
+          label: 'Okay State',
+        },
+        position: {
+          x: 175,
+          y: 400,
+        },
+        type: 'okayNode',
+      },
+      {
+        id: 'key-failure',
+        data: {
+          label: 'Failure State',
+        },
+        position: {
+          x: 350,
+          y: 400,
+        },
+        type: 'failureNode',
+      },
     ],
     [currentState],
   );
 
   return (
-    <div className="min-h-[350px] pt-8">
+    <div className="min-h-[500px] pt-8">
       <ReactFlow
         nodes={nodes}
         edges={edges}
