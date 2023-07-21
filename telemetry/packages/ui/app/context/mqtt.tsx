@@ -83,10 +83,9 @@ export const MQTTProvider = ({ broker, qos, children }: MQTTProviderProps) => {
   const publish = (topic: string, payload: string, podId: string) => {
     const fullTopic = getTopic(topic, podId);
     if (!client) {
-      console.log(`Couldn't publish to ${fullTopic} because client is null`);
+      console.error(`Couldn't publish to ${fullTopic} because client is null`);
       return;
     }
-    console.log(`Publishing to ${fullTopic}: `, payload);
     client.publish(fullTopic, payload, { qos }, (error) => {
       if (error) {
         console.error('Publish error: ', error);
@@ -102,7 +101,9 @@ export const MQTTProvider = ({ broker, qos, children }: MQTTProviderProps) => {
   const subscribe = (topic: string, podId: string) => {
     const fullTopic = getTopic(topic, podId);
     if (!client) {
-      console.log(`Couldn't subscribe to ${fullTopic} because client is null`);
+      console.error(
+        `Couldn't subscribe to ${fullTopic} because client is null`,
+      );
       return;
     }
     client.subscribe(fullTopic, { qos });
@@ -117,7 +118,7 @@ export const MQTTProvider = ({ broker, qos, children }: MQTTProviderProps) => {
   const unsubscribe = (topic: string, podId: string) => {
     const fullTopic = getTopic(topic, podId);
     if (!client) {
-      console.log(
+      console.error(
         `Couldn't unsubscribe from ${fullTopic} because client is null`,
       );
       return;
