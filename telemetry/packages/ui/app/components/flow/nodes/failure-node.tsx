@@ -4,7 +4,7 @@ import { BASE_NODE_STYLES } from './styles';
 import { cn } from '@/lib/utils';
 import { NodeDataType } from '../types';
 
-export default memo(
+export const FailureNode = memo(
   ({
     data,
   }: Omit<NodeProps, 'data'> & {
@@ -20,7 +20,7 @@ export default memo(
           BASE_NODE_STYLES,
           data.active
             ? 'border-2 border-red-200 bg-red-700 text-red-200'
-            : 'border-2 border-red-600 text-red-600 border-dashed',
+            : 'border-2 border-red-600 text-white border-dashed',
         )}
       >
         {' '}
