@@ -1,51 +1,82 @@
-import { StatusType } from '@/types/StatusType';
+import { usePod } from '@/context/pods';
+import { cn } from '@/lib/utils';
+import { POD_CONNECTION_STATUS } from '@/types/PodConnectionStatus';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+  TooltipArrow,
+} from '@/components/ui/tooltip';
+import { useState, useEffect } from 'react';
 
-interface ConnectionStatusProps {
-  status: StatusType;
-}
+/**
+ * Displays the connection status of a pod
+ * @param podId The ID of the pod
+ */
+export const PodConnectionStatus = ({ podId }: { podId: string }) => {
+  const { connectionStatus, connectionEstablished } = usePod(podId);
 
-export const ConnectionStatus = ({ status }: ConnectionStatusProps) => (
-  <div className="flex gap-2 items-center">
-    <div
-      className={`w-2 h-2 rounded-full
-              ${
-                status === 'connected'
-                  ? 'bg-green-500 animate-[pulse_linear_1s_infinite]'
-                  : status === 'connecting' ||
-                    status === 'waiting' ||
-                    status === 'reconnecting'
-                  ? 'bg-orange-500 animate-[pulse_linear_0.5s_infinite]'
-                  : status === 'disconnected' || status === 'error'
-                  ? 'bg-red-500'
-                  : ''
-              }`}
-    />
-    <p
-      className={`text-sm italic ${
-        status == 'connected'
-          ? 'text-green-500'
-          : status == 'connecting' ||
-            status == 'waiting' ||
-            status == 'reconnecting'
-          ? 'text-orange-500'
-          : status == 'disconnected'
-          ? 'text-red-500'
-          : ''
-      }`}
-    >
-      {status == 'connected'
-        ? 'Connected'
-        : status == 'connecting'
-        ? 'Connecting...'
-        : status == 'disconnected'
-        ? 'Disconnected'
-        : status == 'waiting'
-        ? 'Waiting...'
-        : status == 'error'
-        ? 'Error'
-        : status == 'reconnecting'
-        ? 'Trying to reconnect...'
-        : status}
-    </p>
-  </div>
-);
+  const [uptime, setUptime] = useState(0);
+
+  // Update the uptime every second
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setUptime((uptime) => uptime + 1);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const CONNECTED = connectionStatus === POD_CONNECTION_STATUS.CONNECTED;
+  const UNKNOWN = connectionStatus === POD_CONNECTION_STATUS.UNKNOWN;
+  const DISCONNECTED = connectionStatus === POD_CONNECTION_STATUS.DISCONNECTED;
+  const ERROR = connectionStatus === POD_CONNECTION_STATUS.ERROR;
+
+  return (
+    <TooltipProvider>
+      <Tooltip delayDuration={300}>
+        <TooltipTrigger className="text-left">
+          <div className="flex gap-2 items-center">
+            <div
+              className={cn(
+                'w-2 h-2 rounded-full',
+                CONNECTED && 'bg-green-500 animate-[pulse_linear_1s_infinite]',
+                UNKNOWN && 'bg-orange-500 animate-[pulse_linear_0.5s_infinite]',
+                (DISCONNECTED || ERROR) && 'bg-red-500',
+              )}
+            />
+            <p
+              className={cn(
+                'text-sm italic',
+                CONNECTED && 'text-green-500',
+                UNKNOWN && 'text-orange-500',
+                (DISCONNECTED || ERROR) && 'text-red-500',
+              )}
+            >
+              {connectionStatus}
+            </p>
+          </div>
+        </TooltipTrigger>
+        <TooltipContent
+          side="bottom"
+          className="border-none bg-black shadow-2xl"
+        >
+          {/* <TooltipArrow width={15} height={8} className="left-0" /> */}
+          <p className="text-sm">
+            <span className="font-bold">Status:</span> {connectionStatus}
+          </p>
+          <p className="text-sm">
+            <span className="font-bold">GUI connection uptime:</span>{' '}
+            {/* uptime in s then x mins, y secs etc. */}
+            {Math.floor(uptime / 60)} mins {uptime % 60} secs
+          </p>
+          <p className="text-sm">
+            <span className="font-bold">GUI connection established:</span>{' '}
+            {/* connection time in mm:hh:ss */}
+            {connectionEstablished?.toLocaleTimeString()}
+          </p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+};

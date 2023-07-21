@@ -1,84 +1,92 @@
-// create a contet for mqtt
-
 import { createContext, useContext, useEffect, useState } from 'react';
 import { IClientOptions, MqttClient } from 'mqtt/types/lib/client';
-import { MqttPublish, MqttSubscribe, QoS } from '@hyped/telemetry-types';
-import { StatusType } from '@/types/StatusType';
+import { MqttPublish, MqttSubscribe, QoS } from '@/types/mqtt';
+import {
+  MQTTConnectionStatusType,
+  MQTT_CONNECTION_STATUS,
+} from '@/types/MQTTConnectionStatus';
 import mqtt from 'mqtt/dist/mqtt';
-import { MqttUnsubscribe } from '@hyped/telemetry-types';
-
-const MQTT_BROKER = 'ws://localhost:8080';
+import { MqttUnsubscribe } from '@/types/mqtt';
+import { getTopic } from '@/lib/utils';
 
 type MQTTContextType = {
   client: MqttClient | null;
-  latency: number | undefined;
   publish: MqttPublish;
   subscribe: MqttSubscribe;
   unsubscribe: MqttUnsubscribe;
-  connectionStatus: StatusType;
+  mqttConnectionStatus: MQTTConnectionStatusType;
 };
 
 const MQTTContext = createContext<MQTTContextType | null>(null);
 
-export const MQTTProvider = ({ children }: { children: React.ReactNode }) => {
+interface MQTTProviderProps {
+  broker: string;
+  qos: QoS;
+  children: React.ReactNode;
+}
+
+/**
+ * MQTT Context Provider.
+ * Provides an MQTT client and functions to publish, subscribe and unsubscribe to MQTT topics.
+ * Also provides the connection status of the MQTT client.
+ */
+export const MQTTProvider = ({ broker, qos, children }: MQTTProviderProps) => {
   const [client, setClient] = useState<MqttClient | null>(null);
 
   const [connectionStatus, setConnectionStatus] =
-    useState<StatusType>('waiting');
+    useState<MQTTConnectionStatusType>(MQTT_CONNECTION_STATUS.UNKNOWN);
 
+  /**
+   * Connect to an MQTT broker
+   * @param host The host to connect to
+   * @param mqttOption The MQTT options
+   */
   const mqttConnect = (host: string, mqttOption?: IClientOptions) => {
     console.log('Connecting to MQTT broker: ', host);
-    setConnectionStatus('connecting');
+    setConnectionStatus(MQTT_CONNECTION_STATUS.CONNECTING);
     const mqttClient = mqtt.connect(host, mqttOption);
-    console.log('MQTT client: ', mqttClient);
     setClient(mqttClient);
   };
 
   // Connect to MQTT broker on mount
   useEffect(() => {
-    mqttConnect(MQTT_BROKER);
+    mqttConnect(broker);
   }, []);
 
   // Handle client changes
   useEffect(() => {
-    console.log('CLIENT CHANGED: ', client);
     if (client) {
       client.on('connect', () => {
-        setConnectionStatus('connected');
+        console.log('Client connected to broker');
+        setConnectionStatus(MQTT_CONNECTION_STATUS.CONNECTED);
       });
       client.on('error', (err: any) => {
         console.error('Connection error: ', err);
-        setConnectionStatus('error');
+        setConnectionStatus(MQTT_CONNECTION_STATUS.ERROR);
         client.end();
       });
       client.on('reconnect', () => {
-        setConnectionStatus('reconnecting');
+        setConnectionStatus(MQTT_CONNECTION_STATUS.RECONNECTING);
       });
     } else {
-      console.log("Client doesn't exist, reconnecting");
-      mqttConnect(MQTT_BROKER);
+      console.log("Client doesn't exist, reconnecting...");
+      mqttConnect(broker);
     }
   }, [client]);
 
   /**
    * Publish an MQTT message
+   * @param topic The topic to publish to (will be prefixed with ```hyped/{podId}/```)
+   * @param payload The payload to publish
+   * @param podId The pod ID
    */
-  const publish = ({
-    topic,
-    qos = 0,
-    payload,
-    podId = 'pod_1',
-  }: {
-    topic: string;
-    qos?: QoS;
-    payload: string | Buffer;
-    podId?: string;
-  }) => {
-    const fullTopic = getFullTopic(topic, podId);
+  const publish = (topic: string, payload: string, podId: string) => {
+    const fullTopic = getTopic(topic, podId);
     if (!client) {
       console.log(`Couldn't publish to ${fullTopic} because client is null`);
       return;
     }
+    console.log(`Publishing to ${fullTopic}: `, payload);
     client.publish(fullTopic, payload, { qos }, (error) => {
       if (error) {
         console.error('Publish error: ', error);
@@ -88,17 +96,11 @@ export const MQTTProvider = ({ children }: { children: React.ReactNode }) => {
 
   /**
    * Subscribe to an MQTT topic
+   * @param topic The topic to subscribe to (will be prefixed with ```hyped/{podId}/```)
+   * @param podId The pod ID
    */
-  const subscribe = ({
-    topic,
-    qos = 0,
-    podId = 'pod_1',
-  }: {
-    topic: string;
-    qos?: QoS;
-    podId?: string;
-  }) => {
-    const fullTopic = getFullTopic(topic, podId);
+  const subscribe = (topic: string, podId: string) => {
+    const fullTopic = getTopic(topic, podId);
     if (!client) {
       console.log(`Couldn't subscribe to ${fullTopic} because client is null`);
       return;
@@ -106,8 +108,14 @@ export const MQTTProvider = ({ children }: { children: React.ReactNode }) => {
     client.subscribe(fullTopic, { qos });
   };
 
+  /**
+   * Unsubscribe from an MQTT topic
+   * @param topic The topic to unsubscribe from (will be prefixed with ```hyped/{podId}/```)
+   * @param podId The pod ID
+   * @returns
+   */
   const unsubscribe = (topic: string, podId: string) => {
-    const fullTopic = getFullTopic(topic, podId);
+    const fullTopic = getTopic(topic, podId);
     if (!client) {
       console.log(
         `Couldn't unsubscribe from ${fullTopic} because client is null`,
@@ -117,41 +125,6 @@ export const MQTTProvider = ({ children }: { children: React.ReactNode }) => {
     client.unsubscribe(fullTopic);
   };
 
-  const [latency, setLatency] = useState<number>();
-  console.log(client);
-
-  // send latency messages on interval
-  useEffect(() => {
-    const interval = setInterval(() => {
-      console.log('Sending latency request');
-      publish({
-        topic: 'latency/request',
-        qos: 0,
-        payload: JSON.stringify({
-          latency: new Date().getTime().toString(),
-        }),
-      });
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [client]);
-
-  // subscribe to latency messages and calculate latency
-  useEffect(() => {
-    if (!client) return;
-    subscribe({ topic: 'latency/response', qos: 0 });
-    const getLatency = (topic: string, message: Buffer) => {
-      if (topic === 'latency/response') {
-        const latency = new Date().getTime() - parseInt(message.toString());
-        setLatency(latency);
-      }
-    };
-    client.on('message', getLatency);
-    return () => {
-      client.off('message', getLatency);
-      unsubscribe('latency/response', 'pod_1');
-    };
-  }, [client]);
-
   return (
     <MQTTContext.Provider
       value={{
@@ -159,8 +132,7 @@ export const MQTTProvider = ({ children }: { children: React.ReactNode }) => {
         publish,
         subscribe,
         unsubscribe,
-        latency,
-        connectionStatus,
+        mqttConnectionStatus: connectionStatus,
       }}
     >
       {children}
@@ -174,8 +146,4 @@ export const useMQTT = () => {
     throw new Error('useMQTT must be used within MQTTProvider');
   }
   return context;
-};
-
-const getFullTopic = (topic: string, podId: string) => {
-  return `hyped/${podId}/${topic}`;
 };

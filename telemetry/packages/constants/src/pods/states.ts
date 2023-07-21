@@ -1,12 +1,12 @@
-export type PodState = keyof typeof podStates;
+export type PodStateType = keyof typeof ALL_POD_STATES;
 
-export const failureStates = {
+export const FAILURE_STATES = {
   FAILURE_BRAKING: 'FAILURE_BRAKING',
   FAILURE_STOPPED: 'FAILURE_STOPPED',
   FAILURE_CALIBRATING: 'FAILURE_CALIBRATING',
 } as const;
 
-export const staticStates = {
+export const PASSIVE_STATES = {
   IDLE: 'IDLE',
   CALIBRATING: 'CALIBRATING',
   READY: 'READY',
@@ -14,18 +14,18 @@ export const staticStates = {
   OFF: 'OFF',
 } as const;
 
-export const okayStates = {
+export const ACTIVE_STATES = {
   ACCELERATING: 'ACCELERATING',
   NOMINAL_BRAKING: 'NOMINAL_BRAKING',
 } as const;
 
-export const nullStates = {
+export const NULL_STATES = {
   UNKNOWN: 'UNKNOWN',
 } as const;
 
-export const podStates = {
-  ...failureStates,
-  ...staticStates,
-  ...okayStates,
-  ...nullStates,
+export const ALL_POD_STATES = {
+  ...FAILURE_STATES,
+  ...PASSIVE_STATES,
+  ...ACTIVE_STATES,
+  ...NULL_STATES,
 };

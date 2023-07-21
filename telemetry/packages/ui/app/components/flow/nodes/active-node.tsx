@@ -1,10 +1,10 @@
-import { cn } from '@/lib/utils';
 import { memo } from 'react';
-import { Handle, NodeProps  } from 'reactflow';
+import { Handle, NodeProps } from 'reactflow';
 import { BASE_NODE_STYLES } from './styles';
+import { cn } from '@/lib/utils';
 import { NodeDataType } from '../types';
 
-export default memo(
+export const ActiveNode = memo(
   ({
     data,
   }: Omit<NodeProps, 'data'> & {
@@ -19,10 +19,11 @@ export default memo(
         className={cn(
           BASE_NODE_STYLES,
           data.active
-            ? 'border-2 bg-white text-black'
-            : 'border-2 text-white border-white border-dashed',
+            ? 'border-2 border-green-200 bg-green-700 text-green-200'
+            : 'border-2 border-green-600 text-white border-dashed',
         )}
       >
+        {' '}
         {data.label}
       </div>
       {data.sourcePositions &&
