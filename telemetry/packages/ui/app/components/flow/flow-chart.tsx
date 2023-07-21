@@ -263,7 +263,7 @@ export function StateMachineFlowChart({
           x: 0,
           y: 360,
         },
-        type: 'textNode',
+        type: 'TextNode',
       },
       {
         id: 'key-passive',
@@ -274,7 +274,7 @@ export function StateMachineFlowChart({
           x: 0,
           y: 400,
         },
-        type: 'defaultNode',
+        type: 'PassiveNode',
       },
       {
         id: 'key-active',
@@ -285,7 +285,7 @@ export function StateMachineFlowChart({
           x: 175,
           y: 400,
         },
-        type: 'okayNode',
+        type: 'ActiveNode',
       },
       {
         id: 'key-failure',
@@ -296,7 +296,7 @@ export function StateMachineFlowChart({
           x: 350,
           y: 400,
         },
-        type: 'failureNode',
+        type: 'FailureNode',
       },
     ],
     [currentState],

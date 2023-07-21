@@ -12,6 +12,6 @@ import {
  */
 export const getNodeType = (state: PodStateType) => {
   if (state in FAILURE_STATES) return 'FailureNode';
-  if (state in PASSIVE_STATES) return 'DefaultNode';
-  if (state in ACTIVE_STATES) return 'OkayNode';
+  if (state in PASSIVE_STATES) return 'PassiveNode';
+  if (state in ACTIVE_STATES) return 'ActiveNode';
 };
