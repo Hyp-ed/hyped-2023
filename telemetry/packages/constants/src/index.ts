@@ -1,13 +1,12 @@
 export { pods, POD_IDS } from './pods/pods';
 export {
-  podStates,
-  staticStates,
-  okayStates,
-  nullStates,
-  failureStates,
+  ALL_POD_STATES,
+  PASSIVE_STATES,
+  ACTIVE_STATES,
+  NULL_STATES,
+  FAILURE_STATES,
 } from './pods/states';
-export type { PodState } from './pods/states';
-
+export type { PodStateType } from './pods/states';
 export { openMctObjectTypes } from './openmct/object-types/object-types';
 
 export * as socket from './socket';

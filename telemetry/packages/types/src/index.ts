@@ -11,9 +11,3 @@ export type {
 export type {
   OpenMctFault
 } from './openmct/openmct-fault.types';
-export type {
-  QoS,
-  MqttPublish,
-  MqttSubscribe,
-  MqttUnsubscribe,
-} from './mqtt/mqtt.types';

@@ -1,12 +1,7 @@
-import { MqttPublish } from '@hyped/telemetry-types';
+import { http } from 'openmct/core/http';
 import { toast } from 'react-hot-toast';
 
-export const calibrate = (podId: string) => {
-  console.log('Calibrating');
-  toast(`[${podId}] Calibrating!`);
-};
-
-export const startPod = (
+export const startPod = async (
   podId: string,
   options: {
     motorCooling: boolean;
@@ -15,7 +10,6 @@ export const startPod = (
 ) => {
   const { motorCooling, activeSuspension } = options;
   if (motorCooling && activeSuspension) {
-    console.log('GO! (with motor cooling and active suspension)');
     toast.success(
       `[${podId}] Pod launched (with motor cooling and active suspension)!`,
       {
@@ -23,89 +17,59 @@ export const startPod = (
       },
     );
   } else if (motorCooling) {
-    console.log('GO! (with motor cooling)');
     toast.success(`[${podId}] Pod launched (with motor cooling)!`, {
       icon: '🚀',
     });
   } else if (activeSuspension) {
-    console.log('GO! (with active suspension)');
     toast.success(`[${podId}] Pod launched with (active suspension)!`, {
       icon: '🚀',
     });
   } else {
-    console.log('GO!');
     toast.success(`[${podId}] Pod launched!`, { icon: '🚀' });
   }
+
+  const res = await http.post(`pods/${podId}/controls/start`);
+  return res.status === 200;
 };
 
-export const stopPod = (podId: string) => {
-  console.log('STOP!');
+export const stopPod = async (podId: string) => {
   toast(`[${podId}] Pod stopped!`, { icon: '🛑' });
+  const res = await http.post(`pods/${podId}/controls/stop`);
+  return res.status === 200;
 };
 
-export const clampBrakes = (podId: string) => {
-  console.log('Clamping brakes');
-  toast(`[${podId}] Brakes clamped!`);
-};
-
-// raise, lower, clamp, retract
-
-export const clamp = (podId: string, publish: MqttPublish) => {
-  console.log('Clamping');
+export const clamp = async (podId: string) => {
   toast(`[${podId}] Clamped!`);
-  publish({
-    topic: 'controls/clamp',
-    qos: 0,
-    payload: 'clamp',
-  });
+  const res = await http.post(`pods/${podId}/controls/clamp`);
+  return res.status === 200;
 };
 
-export const retract = (podId: string, publish: MqttPublish) => {
-  console.log('Retracting');
+export const retract = async (podId: string) => {
   toast(`[${podId}] Retracted!`);
-  publish({
-    topic: 'controls/retract',
-    qos: 0,
-    payload: 'retract',
-  });
+  const res = await http.post(`pods/${podId}/controls/retract`);
+  return res.status === 200;
 };
 
-export const raise = (podId: string, publish: MqttPublish) => {
-  console.log('Raising');
+export const raise = async (podId: string) => {
   toast(`[${podId}] Raised!`);
-  publish({
-    topic: 'controls/raise',
-    qos: 0,
-    payload: 'raise',
-  });
+  const res = await http.post(`pods/${podId}/controls/raise`);
+  return res.status === 200;
 };
 
-export const lower = (podId: string, publish: MqttPublish) => {
-  console.log('Lowering');
+export const lower = async (podId: string) => {
   toast(`[${podId}] Lowered!`);
-  publish({
-    topic: 'controls/lower',
-    qos: 0,
-    payload: 'lower',
-  });
+  const res = await http.post(`pods/${podId}/controls/lower`);
+  return res.status === 200;
 };
 
-export const startHP = (podId: string, publish: MqttPublish) => {
-  console.log('Starting HP');
+export const startHP = async (podId: string) => {
   toast(`[${podId}] HP started!`);
-  publish({
-    topic: 'controls/start-hp',
-    qos: 0,
-    payload: 'start-hp',
-  });
+  const res = await http.post(`pods/${podId}/controls/start-hp`);
+  return res.status === 200;
 };
 
-export const stopHP = (podId: string, publish: MqttPublish) => {
-  console.log('Stopping HP');
+export const stopHP = async (podId: string) => {
   toast(`[${podId}] HP stopped!`);
-  publish({
-    topic: 'controls/stop-hp',
-    qos: 0,
-    payload: 'stop-hp',
-  });
+  const res = await http.post(`pods/${podId}/controls/stop-hp`);
+  return res.status === 200;
 };

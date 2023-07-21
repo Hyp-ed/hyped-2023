@@ -1,9 +1,9 @@
 import { toast } from 'react-hot-toast';
 import { useEffect, useState } from 'react';
-import { PodStateIndicator } from './pod-state';
-import { Button } from './ui/button';
-import { Label } from './ui/label';
-import { Switch } from './ui/switch';
+import { PodState } from './pod-state';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
 import {
   clamp,
@@ -15,22 +15,15 @@ import {
   startHP,
   stopHP,
 } from '@/controls/controls';
-import { MqttPublish, MqttSubscribe } from '@hyped/telemetry-types';
-import { MqttClient } from 'mqtt/types/lib/client';
-import { usePodState } from '@/hooks/usePodState';
-import { useMQTT } from '@/context/mqtt';
+import { usePod } from '@/context/pods';
 
 interface PodControlsProps {
   podId: string;
   show: boolean;
-  publish: MqttPublish;
-  subscribe: MqttSubscribe;
-  client: MqttClient | null;
 }
 
 export const PodControls = ({ podId, show }: PodControlsProps) => {
-  const { client, subscribe, unsubscribe, publish } = useMQTT();
-  const { podState } = usePodState(client, subscribe, unsubscribe, podId);
+  const { podState } = usePod(podId);
 
   const [motorCooling, setMotorCooling] = useState(false);
   const [activeSuspension, setActiveSuspension] = useState(false);
@@ -58,14 +51,14 @@ export const PodControls = ({ podId, show }: PodControlsProps) => {
     toast(active ? 'Active suspension enabled' : 'Active suspension disabled');
   };
 
-  // toast when the pod state changes
+  // Display notification when the pod state changes
   useEffect(() => {
     toast(`Pod state changed: ${podState}`);
   }, [podState]);
 
   return (
     <div className={cn('my-8 space-y-8', show ? 'block' : 'hidden')}>
-      <PodStateIndicator state={podState} />
+      <PodState state={podState} />
       <div className="space-y-6">
         <div className="flex flex-col gap-2">
           <div className="flex justify-between items-center">
@@ -116,8 +109,8 @@ export const PodControls = ({ podId, show }: PodControlsProps) => {
               !clamped && 'bg-gray-600 hover:bg-gray-700',
             )}
             onClick={() => {
-              if (clamped) retract(podId, publish);
-              else clamp(podId, publish);
+              if (clamped) retract(podId);
+              else clamp(podId);
               setClamped(!clamped);
             }}
           >
@@ -130,8 +123,8 @@ export const PodControls = ({ podId, show }: PodControlsProps) => {
               !raised && 'bg-gray-600 hover:bg-gray-700',
             )}
             onClick={() => {
-              if (raised) lower(podId, publish);
-              else raise(podId, publish);
+              if (raised) lower(podId);
+              else raise(podId);
               setRaised(!raised);
             }}
           >
@@ -144,8 +137,8 @@ export const PodControls = ({ podId, show }: PodControlsProps) => {
               !deadmanSwitch && 'bg-gray-600 hover:bg-gray-700',
             )}
             onClick={() => {
-              if (deadmanSwitch) stopHP(podId, publish);
-              else startHP(podId, publish);
+              if (deadmanSwitch) stopHP(podId);
+              else startHP(podId);
               setDeadmanSwitch(!deadmanSwitch);
             }}
           >
