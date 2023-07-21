@@ -7,11 +7,17 @@ import { useMQTT } from './mqtt';
 import { MQTT_CONNECTION_STATUS } from '@/types/MQTTConnectionStatus';
 import { getTopic } from '@/lib/utils';
 import { ALL_POD_STATES, PodStateType } from '@hyped/telemetry-constants';
+import { http } from 'openmct/core/http';
 
 /**
  * The maximum latency before a pod is considered disconnected, in milliseconds
  */
 const POD_MAX_LATENCY = 300;
+
+/**
+ * The latency at which a warning is sent to the server, in milliseconds
+ */
+const POD_WARNING_LATENCY = 100;
 
 /**
  * The number of previous latencies to keep
@@ -110,7 +116,6 @@ export const PodsProvider = ({
   }, [client]);
 
   useEffect(() => {
-    // check if we have received a latency response within the last POD_MAX_LATENCY milliseconds
     const interval = setTimeout(() => {
       podIds.map((podId) => {
         if (!lastLatencyResponse) return;
@@ -144,62 +149,66 @@ export const PodsProvider = ({
             },
           }));
         }
-      }
+      } else if (topic === getTopic('latency/response', podId)) {
+        // calculate the latency
+        const latency =
+          new Date().getTime() -
+          parseInt(JSON.parse(message.toString())['latency']);
 
-      if (topic !== getTopic('latency/response', podId)) return;
+        // send warning to the server if the latency is too high
+        // send warning to the server if the latency is too high
+        if (latency > POD_WARNING_LATENCY) {
+          http.post(`pods/${podId}/warnings/latency`);
+        }
 
-      // calculate the latency
-      const latency =
-        new Date().getTime() -
-        parseInt(JSON.parse(message.toString())['latency']);
+        setLastLatencyResponse(new Date().getTime());
 
-      setLastLatencyResponse(new Date().getTime());
+        // if the connection has not been established, set the connection established time
+        if (!podsState[podId].connectionEstablished) {
+          setPodsState((prevState) => ({
+            ...prevState,
+            [podId]: {
+              ...prevState[podId],
+              connectionEstablished: new Date(),
+            },
+          }));
+        }
 
-      // if the connection has not been established, set the connection established time
-      if (!podsState[podId].connectionEstablished) {
+        // update the connection status
         setPodsState((prevState) => ({
           ...prevState,
           [podId]: {
             ...prevState[podId],
-            connectionEstablished: new Date(),
+            connectionStatus: POD_CONNECTION_STATUS.CONNECTED,
+            // maintain a list of the previous NUM_PREVIOUS_LATENCIES latencies
+            previousLatencies: [
+              ...(prevState[podId].previousLatencies || []).slice(
+                -NUM_PREVIOUS_LATENCIES,
+              ),
+              {
+                index: new Date().getTime(),
+                latency,
+              },
+            ],
+            // calculate the average latency from the last NUM_LATENCIES_AVG latencies
+            latency: Math.round(
+              (prevState[podId].previousLatencies || [])
+                .slice(-NUM_LATENCIES_AVG)
+                .reduce((acc, { latency }) => acc + latency, 0) /
+                NUM_LATENCIES_AVG,
+            ),
+            // time since connection established in seconds
+            uptime:
+              Math.round(
+                (new Date().getTime() -
+                  (
+                    prevState[podId].connectionEstablished || new Date()
+                  ).getTime()) /
+                  1000,
+              ) || 0,
           },
         }));
       }
-
-      // update the connection status
-      setPodsState((prevState) => ({
-        ...prevState,
-        [podId]: {
-          ...prevState[podId],
-          connectionStatus: POD_CONNECTION_STATUS.CONNECTED,
-          // maintain a list of the previous NUM_PREVIOUS_LATENCIES latencies
-          previousLatencies: [
-            ...(prevState[podId].previousLatencies || []).slice(
-              -NUM_PREVIOUS_LATENCIES,
-            ),
-            {
-              index: new Date().getTime(),
-              latency,
-            },
-          ],
-          // calculate the average latency from the last NUM_LATENCIES_AVG latencies
-          latency: Math.round(
-            (prevState[podId].previousLatencies || [])
-              .slice(-NUM_LATENCIES_AVG)
-              .reduce((acc, { latency }) => acc + latency, 0) /
-              NUM_LATENCIES_AVG,
-          ),
-          // time since connection established in seconds
-          uptime:
-            Math.round(
-              (new Date().getTime() -
-                (
-                  prevState[podId].connectionEstablished || new Date()
-                ).getTime()) /
-                1000,
-            ) || 0,
-        },
-      }));
     };
 
     podIds.map((podId) => {

@@ -10,6 +10,9 @@ export class WarningsService {
   ) {}
 
   async createLatencyWarning(podId: string) {
-    this.logger.log(`Creating latency warning for pod ${podId}`);
+    this.logger.log(
+      `Creating latency warning for pod ${podId}`,
+      WarningsService.name,
+    );
   }
 }
