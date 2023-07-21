@@ -17,7 +17,7 @@ import { Server, Socket } from 'socket.io';
     origin: '*',
   },
 })
-export class RealtimeDataGateway {
+export class RealtimeTelemetryDataGateway {
   @WebSocketServer()
   socket: Server;
 
@@ -55,7 +55,7 @@ export class RealtimeDataGateway {
 
     this.logger.debug(
       `Sending realtime ${value} to ${measurementRoom}`,
-      RealtimeDataGateway.name,
+      RealtimeTelemetryDataGateway.name,
     );
   }
 }

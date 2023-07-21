@@ -3,7 +3,7 @@ import { Point } from '@influxdata/influxdb-client';
 import { Injectable, LoggerService } from '@nestjs/common';
 import { InfluxService } from '../influx/Influx.service';
 import { Logger } from '../logger/Logger.decorator';
-import { RealtimeDataGateway } from '../openmct/data/realtime/RealtimeData.gateway';
+import { RealtimeTelemetryDataGateway } from '../openmct/data/realtime/RealtimeTelemetryData.gateway';
 import {
   MeasurementReading,
   MeasurementReadingSchema,
@@ -16,7 +16,7 @@ export class MeasurementService {
     @Logger()
     private readonly logger: LoggerService,
     private influxService: InfluxService,
-    private realtimeDataGateway: RealtimeDataGateway,
+    private realtimeDataGateway: RealtimeTelemetryDataGateway,
   ) {}
 
   public addMeasurementReading(props: MeasurementReading) {
