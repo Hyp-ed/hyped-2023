@@ -6,6 +6,9 @@ import { RangeMeasurement } from '@hyped/telemetry-types/dist/pods/pods.types';
 import { Injectable, LoggerService } from '@nestjs/common';
 import { HistoricalFaultDataService } from './data/historical/HistoricalFaultData.service';
 import { nanoid } from 'nanoid'
+import { RealtimeFaultDataGateway } from './data/realtime/RealtimeFaultData.gateway';
+import { toUnixTimestamp } from '@/modules/common/utils/toUnixTimestamp';
+import { OpenMctFault } from '@hyped/telemetry-types';
 
 type Fault = {
   level: FaultLevel;
@@ -20,6 +23,7 @@ export class FaultService {
     private readonly logger: LoggerService,
     private influxService: InfluxService,
     private historicalService: HistoricalFaultDataService,
+    private realtimeService: RealtimeFaultDataGateway,
   ) {}
 
   public addLimitBreachFault(props: Fault) {
@@ -39,8 +43,8 @@ export class FaultService {
     // })
 
     const namespace = `/${tripReading.podId}/${measurement.key}}`
-    const fault = {
-      type: null, // to change
+    const fault: OpenMctFault = {
+      type: 'global-alarm-status', // to change
       fault: {
         acknowledged: false,
         currentValueInfo: {
@@ -55,7 +59,7 @@ export class FaultService {
         severity: level,
         shelved: false,
         shortDescription: '',
-        triggerTime: currentTime,
+        triggerTime: toUnixTimestamp(currentTime).toString(),
         triggerValueInfo: {
           value: tripReading.value,
           rangeCondition: level,
@@ -63,5 +67,7 @@ export class FaultService {
         },
       },
     };
+
+    this.realtimeService.sendFault(fault);
   }
 }

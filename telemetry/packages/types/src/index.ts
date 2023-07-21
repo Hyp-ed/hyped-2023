@@ -9,6 +9,9 @@ export type {
   OpenMctObjectType,
 } from './openmct/openmct-object-types.types';
 export type {
+  OpenMctFault
+} from './openmct/openmct-fault.types';
+export type {
   QoS,
   MqttPublish,
   MqttSubscribe,

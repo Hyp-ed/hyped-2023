@@ -43,6 +43,7 @@ export class MeasurementService {
     if (measurement.format === 'float' || measurement.format === 'integer') {
       const breachLevel = doesMeasurementBreachLimits(measurement, reading);
       if (breachLevel) {
+        this.logger.debug(`Measurement breached limits {${props.podId}/${props.measurementKey}}: ${breachLevel} with value ${props.value}`)
         this.faultService.addLimitBreachFault({
           level: breachLevel,
           measurement,
