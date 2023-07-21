@@ -97,7 +97,6 @@ export const PodsProvider = ({
     // send latency messages every LATENCY_INTERVAL milliseconds
     const interval = setInterval(() => {
       podIds.map((podId) => {
-        console.log(`Sending latency request to ${podId}`);
         publish(
           'latency/request',
           JSON.stringify({
@@ -154,13 +153,10 @@ export const PodsProvider = ({
         new Date().getTime() -
         parseInt(JSON.parse(message.toString())['latency']);
 
-      console.log(`Received latency response from ${podId}: ${latency}ms`);
-
       setLastLatencyResponse(new Date().getTime());
 
       // if the connection has not been established, set the connection established time
       if (!podsState[podId].connectionEstablished) {
-        console.log('Setting connection established time');
         setPodsState((prevState) => ({
           ...prevState,
           [podId]: {
