@@ -2,35 +2,8 @@ import { log } from '@/lib/logger';
 import { http } from 'openmct/core/http';
 import { toast } from 'react-hot-toast';
 
-export const startPod = async (
-  podId: string,
-  options: {
-    motorCooling: boolean;
-    activeSuspension: boolean;
-  },
-) => {
-  log(`UI button clicked: start`, podId);
-
-  const { motorCooling, activeSuspension } = options;
-  if (motorCooling && activeSuspension) {
-    toast.success(
-      `[${podId}] Pod launched (with motor cooling and active suspension)!`,
-      {
-        icon: '🚀',
-      },
-    );
-  } else if (motorCooling) {
-    toast.success(`[${podId}] Pod launched (with motor cooling)!`, {
-      icon: '🚀',
-    });
-  } else if (activeSuspension) {
-    toast.success(`[${podId}] Pod launched with (active suspension)!`, {
-      icon: '🚀',
-    });
-  } else {
-    toast.success(`[${podId}] Pod launched!`, { icon: '🚀' });
-  }
-
+export const startPod = async (podId: string) => {
+  toast.success(`[${podId}] Pod launched!`, { icon: '🚀' });
   const res = await http.post(`pods/${podId}/controls/start`);
   return res.status === 200;
 };
@@ -88,4 +61,3 @@ export const tilt = async (podId: string) => {
   const res = await http.post(`pods/${podId}/controls/tilt`);
   return res.status === 200;
 };
-
