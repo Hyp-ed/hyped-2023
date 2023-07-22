@@ -14,6 +14,7 @@ import {
   stopPod,
   startHP,
   stopHP,
+  tilt,
 } from '@/controls/controls';
 import { usePod } from '@/context/pods';
 
@@ -60,7 +61,7 @@ export const PodControls = ({ podId, show }: PodControlsProps) => {
     <div className={cn('my-8 space-y-8', show ? 'block' : 'hidden')}>
       <PodState state={podState} />
       <div className="space-y-6">
-        <div className="flex flex-col gap-2">
+        {/* <div className="flex flex-col gap-2">
           <div className="flex justify-between items-center">
             <Label htmlFor="motor-cooling">Motor Cooling</Label>
             <Switch
@@ -77,7 +78,7 @@ export const PodControls = ({ podId, show }: PodControlsProps) => {
               disabled={SWITCHES_DISABLED}
             />
           </div>
-        </div>
+        </div> */}
         <div className="flex flex-col gap-2">
           <Button
             className={cn(
@@ -143,6 +144,19 @@ export const PodControls = ({ podId, show }: PodControlsProps) => {
             }}
           >
             {deadmanSwitch ? 'HP Active' : 'HP Inactive'}
+          </Button>
+
+          <Button
+            className={cn(
+              'px-4 py-10 rounded-md shadow-lg transition text-white text-3xl font-bold',
+              deadmanSwitch && 'bg-red-600 hover:bg-red-700',
+              !deadmanSwitch && 'bg-gray-600 hover:bg-gray-700',
+            )}
+            onClick={() => {
+              tilt(podId);
+            }}
+          >
+            Tilt
           </Button>
         </div>
       </div>

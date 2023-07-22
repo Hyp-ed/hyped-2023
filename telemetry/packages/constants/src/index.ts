@@ -8,4 +8,8 @@ export {
 } from './pods/states';
 export type { PodStateType } from './pods/states';
 export { openMctObjectTypes } from './openmct/object-types/object-types';
+
 export * as socket from './socket';
+
+export { FAULT_LEVEL } from './faults/levels';
+export type { FaultLevel } from './faults/levels';

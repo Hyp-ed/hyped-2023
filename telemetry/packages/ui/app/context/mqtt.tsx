@@ -86,7 +86,6 @@ export const MQTTProvider = ({ broker, qos, children }: MQTTProviderProps) => {
       console.log(`Couldn't publish to ${fullTopic} because client is null`);
       return;
     }
-    console.log(`Publishing to ${fullTopic}: `, payload);
     client.publish(fullTopic, payload, { qos }, (error) => {
       if (error) {
         console.error('Publish error: ', error);

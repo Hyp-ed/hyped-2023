@@ -1,9 +1,9 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
-import { HistoricalDataService } from './HistoricalData.service';
+import { HistoricalTelemetryDataService } from './HistoricalTelemetryData.service';
 
 @Controller('openmct/data/historical')
-export class HistoricalDataController {
-  constructor(private historicalDataService: HistoricalDataService) {}
+export class HistoricalTelemetryDataController {
+  constructor(private historicalDataService: HistoricalTelemetryDataService) {}
   @Get('pods/:podId/measurements/:measurementKey')
   getHistoricalReading(
     @Param('podId') podId: string,
