@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Params, Payload, Subscribe } from 'nest-mqtt';
 import { MeasurementService } from '@/modules/measurement/Measurement.service';
-import { toUnixTimestamp } from '@/modules/common/utils/toUnixTimestamp';
-
+import { currentTime } from '@influxdata/influxdb-client';
 @Injectable()
 export class MqttIngestionService {
   constructor(private measurementService: MeasurementService) {}
@@ -12,7 +11,7 @@ export class MqttIngestionService {
     @Params() rawParams: string[],
     @Payload() rawValue: any,
   ) {
-    const timestamp = toUnixTimestamp(new Date());
+    const timestamp = currentTime.nanos();
     const podId = rawParams[0];
     const measurementKey = rawParams[1];
     const value = rawValue;

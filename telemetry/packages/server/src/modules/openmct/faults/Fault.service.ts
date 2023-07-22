@@ -2,15 +2,18 @@ import { InfluxService } from '@/modules/influx/Influx.service';
 import { Logger } from '@/modules/logger/Logger.decorator';
 import { MeasurementReading } from '@/modules/measurement/MeasurementReading.types';
 import { FaultLevel } from '@hyped/telemetry-constants';
+import { OpenMctFault, Unpacked } from '@hyped/telemetry-types';
 import { RangeMeasurement } from '@hyped/telemetry-types/dist/pods/pods.types';
+import { Point } from '@influxdata/influxdb-client';
 import { Injectable, LoggerService } from '@nestjs/common';
-import { HistoricalFaultDataService } from './data/historical/HistoricalFaultData.service';
-import { nanoid } from 'nanoid'
+import {
+  GetHistoricalFaultsReturn,
+  HistoricalFaultDataService,
+} from './data/historical/HistoricalFaultData.service';
 import { RealtimeFaultDataGateway } from './data/realtime/RealtimeFaultData.gateway';
-import { toUnixTimestamp } from '@/modules/common/utils/toUnixTimestamp';
-import { OpenMctFault } from '@hyped/telemetry-types';
+import { convertToOpenMctFault } from './utils/convertToOpenMctFault';
 
-type Fault = {
+export type Fault = {
   level: FaultLevel;
   measurement: RangeMeasurement;
   tripReading: MeasurementReading;
@@ -26,48 +29,90 @@ export class FaultService {
     private realtimeService: RealtimeFaultDataGateway,
   ) {}
 
-  public addLimitBreachFault(props: Fault) {
-    const currentTime = new Date();
+  public async addLimitBreachFault(fault: Fault) {
+    const { measurement, tripReading } = fault;
 
-    const { level, measurement, tripReading } = props;
-
-    // check if unacked fault already exists within timetorefault
-    // if it does, update current value
-    // or add it
-
-    // const possibleExistingFault = this.historicalService.getHistoricalFaultForMeasurement({
-    //   podId: tripReading.podId,
-    //   measurementKey: measurement.key,
-    //   startTimestamp: (currentTime.getTime() - TIME_TO_REFAULT).toString(),
-    //   endTimestamp: currentTime.getTime().toString()
-    // })
-
-    const namespace = `/${tripReading.podId}/${measurement.key}}`
-    const fault: OpenMctFault = {
-      type: 'global-alarm-status', // to change
-      fault: {
-        acknowledged: false,
-        currentValueInfo: {
-          value: tripReading.value,
-          rangeCondition: level,
-          monitoringResult: level,
+    const possibleExistingFaults =
+      await this.historicalService.getHistoricalFaults(
+        {
+          podId: tripReading.podId,
+          measurementKey: measurement.key,
         },
-        id: `id-${namespace}-${nanoid()}`,
-        name: `${measurement.name} is out of range`,
-        namespace: `/${tripReading.podId}/${measurement.key}}`,
-        seqNum: 0,
-        severity: level,
-        shelved: false,
-        shortDescription: '',
-        triggerTime: toUnixTimestamp(currentTime).toString(),
-        triggerValueInfo: {
-          value: tripReading.value,
-          rangeCondition: level,
-          monitoringResult: level,
-        },
-      },
-    };
+        { includeAcknowledged: false },
+      );
 
-    this.realtimeService.sendFault(fault);
+    if (possibleExistingFaults && possibleExistingFaults?.length > 0) {
+      const existingFault = possibleExistingFaults[0];
+      this.logger.debug(
+        `Found existing fault ${existingFault.fault.fault.id}, updating`,
+        FaultService.name,
+      );
+      await this.updateExistingFault(existingFault, tripReading);
+      return;
+    }
+
+    const openMctFault = convertToOpenMctFault(fault);
+    this.realtimeService.sendFault(openMctFault);
+    await this.saveFault(fault, openMctFault);
+  }
+
+  private async saveFault(fault: Fault, openMctFault: OpenMctFault) {
+    const { measurement, tripReading } = fault;
+
+    const point = new Point('fault')
+      .timestamp(tripReading.timestamp)
+      .tag('podId', tripReading.podId)
+      .tag('measurementKey', measurement.key)
+      .tag('acknowledged', 'false')
+      // is influx the right choice? probably not - but we're already using it for telemetry
+      .stringField('fault', JSON.stringify(openMctFault));
+
+    try {
+      this.influxService.faultsWrite.writePoint(point);
+
+      this.logger.debug(
+        `Adding fault with id ${openMctFault.fault.id}`,
+        FaultService.name,
+      );
+    } catch (e) {
+      this.logger.error(
+        `Failed to add fault {${openMctFault.fault.id}}`,
+        e,
+        FaultService.name,
+      );
+    }
+  }
+
+  private async updateExistingFault(
+    influxFault: Unpacked<GetHistoricalFaultsReturn>,
+    updatedReading: MeasurementReading,
+  ) {
+    const updatedFault = influxFault.fault;
+    updatedFault.fault.currentValueInfo.value = updatedReading.value;
+
+    this.realtimeService.sendFault(updatedFault);
+
+    // This should overwrite the existing fault
+    const point = new Point('fault')
+      .timestamp(influxFault.timestamp)
+      .tag('podId', updatedReading.podId)
+      .tag('measurementKey', updatedReading.measurementKey)
+      .tag('acknowledged', influxFault.fault.fault.acknowledged.toString())
+      .stringField('fault', JSON.stringify(updatedFault));
+
+    try {
+      this.influxService.faultsWrite.writePoint(point);
+
+      this.logger.debug(
+        `Updating fault with id ${updatedFault.fault.id}`,
+        FaultService.name,
+      );
+    } catch (e) {
+      this.logger.error(
+        `Failed to update fault with id ${updatedFault.fault.id}`,
+        e,
+        FaultService.name,
+      );
+    }
   }
 }
