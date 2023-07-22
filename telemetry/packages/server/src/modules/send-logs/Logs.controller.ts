@@ -5,11 +5,11 @@ import { LogsService } from './Logs.service';
 export class LogsController {
   constructor(private uiLogsService: LogsService) {}
   @Post('ui')
-  logUI(@Body() body: any) {
-    return this.uiLogsService.logUI(body.message);
+  logUIMessage(@Body() body: any) {
+    return this.uiLogsService.logUIMessage(body.message);
   }
   @Post('ui/:podId')
-  logUIWithPodID(@Param('podId') podId: string, @Body() body: any) {
-    return this.uiLogsService.logUIWithPodID(podId, body.message);
+  logUIMessageWithPodID(@Param('podId') podId: string, @Body() body: any) {
+    return this.uiLogsService.logUIMessageWithPodID(podId, body.message);
   }
 }
