@@ -16,6 +16,7 @@ import {
   stopHP,
 } from '@/controls/controls';
 import { usePod } from '@/context/pods';
+import { http } from 'openmct/core/http';
 
 interface PodControlsProps {
   podId: string;
@@ -25,31 +26,20 @@ interface PodControlsProps {
 export const PodControls = ({ podId, show }: PodControlsProps) => {
   const { podState } = usePod(podId);
 
-  const [motorCooling, setMotorCooling] = useState(false);
-  const [activeSuspension, setActiveSuspension] = useState(false);
   const [clamped, setClamped] = useState(false);
   const [raised, setRaised] = useState(false);
   const [deadmanSwitch, setDeadmanSwitch] = useState(false);
   const [stopped, setStopped] = useState(true);
-
-  const SWITCHES_DISABLED = false; //TODOLater: replace with logic to determine whether switches should be disabled
-
-  /**
-   * Toggles motor cooling
-   * @param active Whether motor cooling is active
-   */
-  const toggleMotorCooling = (active: boolean) => {
-    setMotorCooling(active);
-    toast(active ? 'Motor cooling enabled' : 'Motor cooling disabled');
-  };
+  const [preChargeLive, setPreChargeLive] = useState(false);
 
   /**
-   * Toggles active suspension
-   * @param active Whether active suspension is active
+   * Toggle the precharge/live state of the mc
+   * @param value Whether the mc should be live or precharge
    */
-  const toggleActiveSuspension = (active: boolean) => {
-    setActiveSuspension(active);
-    toast(active ? 'Active suspension enabled' : 'Active suspension disabled');
+  const togglePreChargeLive = (value: boolean) => {
+    setPreChargeLive(value);
+    if (value) http.post(`pods/${podId}/controls/live-mc`);
+    else http.post(`pods/${podId}/controls/pre-charge-mc`);
   };
 
   // Display notification when the pod state changes
@@ -61,23 +51,11 @@ export const PodControls = ({ podId, show }: PodControlsProps) => {
     <div className={cn('my-8 space-y-8', show ? 'block' : 'hidden')}>
       <PodState state={podState} />
       <div className="space-y-6">
-        <div className="flex flex-col gap-2">
-          <div className="flex justify-between items-center">
-            <Label htmlFor="motor-cooling">Motor Cooling</Label>
-            <Switch
-              id="motor-cooling"
-              onCheckedChange={toggleMotorCooling}
-              disabled={SWITCHES_DISABLED}
-            />
-          </div>
-          <div className="flex justify-between items-center">
-            <Label htmlFor="active-suspension">Active Suspension</Label>
-            <Switch
-              id="active-suspension"
-              onCheckedChange={toggleActiveSuspension}
-              disabled={SWITCHES_DISABLED}
-            />
-          </div>
+        <div className="flex justify-between items-center">
+          <Label htmlFor="active-suspension">
+            {preChargeLive ? 'MC: Live' : 'MC: Precharge'}
+          </Label>
+          <Switch id="pre-charge-live" onCheckedChange={togglePreChargeLive} />
         </div>
         <div className="flex flex-col gap-2">
           {stopped ? (
@@ -87,10 +65,7 @@ export const PodControls = ({ podId, show }: PodControlsProps) => {
                 'bg-green-600 hover:bg-green-700',
               )}
               onClick={() => {
-                startPod(podId, {
-                  motorCooling,
-                  activeSuspension,
-                });
+                startPod(podId);
                 setStopped(false);
               }}
             >
