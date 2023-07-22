@@ -8,8 +8,13 @@ export class LogsService {
     private readonly logger: LoggerService,
   ) {}
 
-  async logUI(podId: string, message: string) {
+  async logUIWithPodID(podId: string, message: string) {
     this.logger.log(`Pod "${podId}" UI log: ${message}`, LogsService.name);
+    return true;
+  }
+
+  async logUI(message: string) {
+    this.logger.log(`Pod UI log: ${message}`, LogsService.name);
     return true;
   }
 }
