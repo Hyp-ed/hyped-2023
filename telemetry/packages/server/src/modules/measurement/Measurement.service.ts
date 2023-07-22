@@ -3,12 +3,14 @@ import { Point } from '@influxdata/influxdb-client';
 import { Injectable, LoggerService } from '@nestjs/common';
 import { InfluxService } from '../influx/Influx.service';
 import { Logger } from '../logger/Logger.decorator';
-import { RealtimeDataGateway } from '../openmct/data/realtime/RealtimeData.gateway';
+import { RealtimeTelemetryDataGateway } from '../openmct/data/realtime/RealtimeTelemetryData.gateway';
 import {
   MeasurementReading,
   MeasurementReadingSchema,
 } from './MeasurementReading.types';
 import { MeasurementReadingValidationError } from './errors/MeasurementReadingValidationError';
+import { doesMeasurementBreachLimits } from './utils/doesMeasurementBreachLimits';
+import { FaultService } from '../openmct/faults/Fault.service';
 
 @Injectable()
 export class MeasurementService {
@@ -16,38 +18,52 @@ export class MeasurementService {
     @Logger()
     private readonly logger: LoggerService,
     private influxService: InfluxService,
-    private realtimeDataGateway: RealtimeDataGateway,
+    private realtimeDataGateway: RealtimeTelemetryDataGateway,
+    private faultService: FaultService,
   ) {}
 
-  public addMeasurementReading(props: MeasurementReading) {
-    const currentTime = new Date();
-
+  // This function _is_ ordered in importance
+  public async addMeasurementReading(props: MeasurementReading) {
     const validatedMeasurement = this.validateMeasurementReading(props);
 
     if (!validatedMeasurement) {
       throw new MeasurementReadingValidationError('Invalid measurement');
     }
 
-    const {
-      measurement,
-      reading: { podId, measurementKey, value },
-    } = validatedMeasurement;
+    const { measurement, reading } = validatedMeasurement;
+    const { podId, measurementKey, value, timestamp } = reading
 
+    // First, get the data to the client ASAP
     this.realtimeDataGateway.sendMeasurementReading({
       podId,
       measurementKey,
       value,
+      timestamp
     });
 
+    // Then check if it breaches limits
+    if (measurement.format === 'float' || measurement.format === 'integer') {
+      const breachLevel = doesMeasurementBreachLimits(measurement, reading);
+      if (breachLevel) {
+        this.logger.debug(`Measurement breached limits {${props.podId}/${props.measurementKey}}: ${breachLevel} with value ${props.value}`)
+        await this.faultService.addLimitBreachFault({
+          level: breachLevel,
+          measurement,
+          tripReading: reading
+        });
+      }
+    }
+
+    // Then save it to the database
     const point = new Point('measurement')
-      .timestamp(currentTime)
+      .timestamp(timestamp)
       .tag('podId', podId)
       .tag('measurementKey', measurementKey)
       .tag('format', measurement.format)
       .floatField('value', value);
 
     try {
-      this.influxService.write.writePoint(point);
+      this.influxService.telemetryWrite.writePoint(point);
 
       this.logger.debug(
         `Added measurement {${props.podId}/${props.measurementKey}}: ${props.value}`,

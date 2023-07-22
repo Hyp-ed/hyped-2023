@@ -7,6 +7,7 @@ import { MqttClientModule } from './modules/mqtt/client/MqttClientModule';
 import { MqttIngestionModule } from './modules/mqtt/ingestion/MqttIngestion.module';
 import { OpenMCTModule } from './modules/openmct/OpenMCT.module';
 import { MeasurementModule } from './modules/measurement/Measurement.module';
+import { FaultModule } from './modules/openmct/faults/Fault.module';
 import { PodControlsModule } from './modules/controls/PodControls.module';
 import { WarningsModule } from './modules/warnings/Warnings.module';
 
@@ -18,6 +19,7 @@ import { WarningsModule } from './modules/warnings/Warnings.module';
     MqttIngestionModule,
     OpenMCTModule,
     MeasurementModule,
+    FaultModule,
     PodControlsModule,
     WarningsModule,
   ],
