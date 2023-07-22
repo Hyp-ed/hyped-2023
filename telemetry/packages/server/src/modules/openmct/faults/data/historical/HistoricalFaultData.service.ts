@@ -62,7 +62,9 @@ export class HistoricalFaultDataService {
         !getAcknowledged
           ? fluxExpression(`|> filter(fn: (r) => r["acknowledged"] == "false")`)
           : ''
-      }`;
+      }
+      |> group(columns: ["faultId"])
+      |> last()`;
 
     try {
       const data = await this.influxService.query.collectRows<InfluxRow>(query);

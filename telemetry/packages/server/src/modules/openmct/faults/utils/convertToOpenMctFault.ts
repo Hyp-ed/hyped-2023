@@ -1,4 +1,3 @@
-import { toUnixTimestamp } from '@/modules/common/utils/toUnixTimestamp';
 import { OpenMctFault } from '@hyped/telemetry-types';
 import { nanoid } from 'nanoid';
 import { Fault } from '../Fault.service';
@@ -10,7 +9,7 @@ export function convertToOpenMctFault(
 
   const namespace = `/${tripReading.podId}/${measurement.key}`;
   return {
-    type: 'global-alarm-status',
+    type: 'alarms',
     fault: {
       id: `${namespace}-${nanoid()}`,
       name: `${measurement.name} is out of range`,

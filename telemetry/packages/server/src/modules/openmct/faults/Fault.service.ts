@@ -12,6 +12,7 @@ import {
 } from './data/historical/HistoricalFaultData.service';
 import { RealtimeFaultDataGateway } from './data/realtime/RealtimeFaultData.gateway';
 import { convertToOpenMctFault } from './utils/convertToOpenMctFault';
+import { INFLUX_FAULTS_BUCKET, INFLUX_ORG } from '@/modules/core/config';
 
 export type Fault = {
   level: FaultLevel;
@@ -61,6 +62,7 @@ export class FaultService {
 
     const point = new Point('fault')
       .timestamp(tripReading.timestamp)
+      .tag('faultId', openMctFault.fault.id)
       .tag('podId', tripReading.podId)
       .tag('measurementKey', measurement.key)
       .tag('acknowledged', 'false')
@@ -92,9 +94,9 @@ export class FaultService {
 
     this.realtimeService.sendFault(updatedFault);
 
-    // This should overwrite the existing fault
     const point = new Point('fault')
-      .timestamp(influxFault.timestamp)
+      .timestamp(updatedReading.timestamp)
+      .tag('faultId', updatedFault.fault.id)
       .tag('podId', updatedReading.podId)
       .tag('measurementKey', updatedReading.measurementKey)
       .tag('acknowledged', influxFault.fault.fault.acknowledged.toString())
