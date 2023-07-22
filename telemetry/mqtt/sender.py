@@ -13,21 +13,14 @@ s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 # get local machine name
 host = "localhost"
-port = 65432
+port = 65433
 
 # connection to hostname on the port.
-
 s.connect((host, port))
 
 while True:
     s.send(json.dumps({
-        "pressure_1": random.uniform(MIN_PRESSURE, MAX_PRESSURE),
-        "pressure_2": random.uniform(MIN_PRESSURE, MAX_PRESSURE),
-        "pressure_3": random.uniform(MIN_PRESSURE, MAX_PRESSURE),
-        "pressure_4": random.uniform(MIN_PRESSURE, MAX_PRESSURE),
-        "pressure_5": random.uniform(MIN_PRESSURE, MAX_PRESSURE),
-        "pressure_6": random.uniform(MIN_PRESSURE, MAX_PRESSURE),
-        "pressure_7": random.uniform(MIN_PRESSURE, MAX_PRESSURE),
-        "pressure_8": random.uniform(MIN_PRESSURE, MAX_PRESSURE),
+        "hyped/pod_1/measurement/pressure": random.uniform(MIN_PRESSURE, MAX_PRESSURE),
     }).encode('utf-8'))
-    time.sleep(0.5)
+    print("Sent")
+    time.sleep(1)
