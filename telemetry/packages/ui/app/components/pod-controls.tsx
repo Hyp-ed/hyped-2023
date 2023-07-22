@@ -19,6 +19,7 @@ import {
 import { usePod } from '@/context/pods';
 import { http } from 'openmct/core/http';
 import { log } from '@/lib/logger';
+import { ALL_POD_STATES } from '@hyped/telemetry-constants';
 
 interface PodControlsProps {
   podId: string;
@@ -58,7 +59,17 @@ export const PodControls = ({ podId, show }: PodControlsProps) => {
           <Label htmlFor="active-suspension">
             {preChargeLive ? 'MC: Live' : 'MC: Precharge'}
           </Label>
-          <Switch id="pre-charge-live" onCheckedChange={togglePreChargeLive} />
+          <Switch
+            id="pre-charge-live"
+            onCheckedChange={togglePreChargeLive}
+            disabled={
+              !(
+                podState === ALL_POD_STATES.IDLE ||
+                podState === ALL_POD_STATES.READY ||
+                podState === ALL_POD_STATES.STOPPED
+              )
+            }
+          />
         </div>
         <div className="flex flex-col gap-2">
           {stopped ? (
