@@ -18,7 +18,7 @@ import {
 } from '@/controls/controls';
 import { usePod } from '@/context/pods';
 
-interface PodControlsProps {3
+interface PodControlsProps {
   podId: string;
   show: boolean;
 }
