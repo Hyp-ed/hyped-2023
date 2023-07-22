@@ -9,6 +9,7 @@ import { OpenMCTModule } from './modules/openmct/OpenMCT.module';
 import { MeasurementModule } from './modules/measurement/Measurement.module';
 import { FaultModule } from './modules/openmct/faults/Fault.module';
 import { PodControlsModule } from './modules/controls/PodControls.module';
+import { WarningsModule } from './modules/warnings/Warnings.module';
 import { RemoteLogsModule } from './modules/remote-logs/RemoteLogs.module';
 
 @Module({
@@ -21,6 +22,7 @@ import { RemoteLogsModule } from './modules/remote-logs/RemoteLogs.module';
     MeasurementModule,
     FaultModule,
     PodControlsModule,
+    WarningsModule,
     RemoteLogsModule,
   ],
   controllers: [AppController],

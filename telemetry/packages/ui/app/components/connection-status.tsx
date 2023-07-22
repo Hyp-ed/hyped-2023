@@ -21,11 +21,15 @@ export const PodConnectionStatus = ({ podId }: { podId: string }) => {
 
   // Update the uptime every second
   useEffect(() => {
+    if (connectionStatus !== POD_CONNECTION_STATUS.CONNECTED) {
+      setUptime(0);
+      return;
+    }
     const interval = setInterval(() => {
       setUptime((uptime) => uptime + 1);
     }, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [connectionStatus]);
 
   const CONNECTED = connectionStatus === POD_CONNECTION_STATUS.CONNECTED;
   const UNKNOWN = connectionStatus === POD_CONNECTION_STATUS.UNKNOWN;
@@ -73,7 +77,9 @@ export const PodConnectionStatus = ({ podId }: { podId: string }) => {
           <p className="text-sm">
             <span className="font-bold">GUI connection established:</span>{' '}
             {/* connection time in mm:hh:ss */}
-            {connectionEstablished?.toLocaleTimeString()}
+            {connectionEstablished
+              ? connectionEstablished.toLocaleTimeString()
+              : 'N/A'}
           </p>
         </TooltipContent>
       </Tooltip>
