@@ -30,6 +30,7 @@ export const PodControls = ({ podId, show }: PodControlsProps) => {
   const [clamped, setClamped] = useState(false);
   const [raised, setRaised] = useState(false);
   const [deadmanSwitch, setDeadmanSwitch] = useState(false);
+  const [stopped, setStopped] = useState(true);
 
   const SWITCHES_DISABLED = false; //TODOLater: replace with logic to determine whether switches should be disabled
 
@@ -79,29 +80,36 @@ export const PodControls = ({ podId, show }: PodControlsProps) => {
           </div>
         </div>
         <div className="flex flex-col gap-2">
-          <Button
-            className={cn(
-              'px-4 py-10 rounded-md shadow-lg transition text-white text-3xl font-bold',
-              'bg-green-600 hover:bg-green-700',
-            )}
-            onClick={() =>
-              startPod(podId, {
-                motorCooling,
-                activeSuspension,
-              })
-            }
-          >
-            START RUN
-          </Button>
-          <Button
-            className={cn(
-              'px-4 py-10 rounded-md shadow-lg transition text-white text-3xl font-bold',
-              'bg-red-700 hover:bg-red-800',
-            )}
-            onClick={() => stopPod(podId)}
-          >
-            STOP RUN
-          </Button>
+          {stopped ? (
+            <Button
+              className={cn(
+                'px-4 py-10 rounded-md shadow-lg transition text-white text-3xl font-bold',
+                'bg-green-600 hover:bg-green-700',
+              )}
+              onClick={() => {
+                startPod(podId, {
+                  motorCooling,
+                  activeSuspension,
+                });
+                setStopped(false);
+              }}
+            >
+              START RUN
+            </Button>
+          ) : (
+            <Button
+              className={cn(
+                'px-4 py-10 rounded-md shadow-lg transition text-white text-3xl font-bold',
+                'bg-red-700 hover:bg-red-800',
+              )}
+              onClick={() => {
+                stopPod(podId);
+                setStopped(true);
+              }}
+            >
+              STOP RUN
+            </Button>
+          )}
           <Button
             className={cn(
               'px-4 py-10 rounded-md shadow-lg transition text-white text-3xl font-bold',
