@@ -8,6 +8,7 @@ import {
 import mqtt from 'mqtt/dist/mqtt';
 import { MqttUnsubscribe } from '@/types/mqtt';
 import { getTopic } from '@/lib/utils';
+import { log } from '@/lib/logger';
 
 type MQTTContextType = {
   client: MqttClient | null;
@@ -42,7 +43,7 @@ export const MQTTProvider = ({ broker, qos, children }: MQTTProviderProps) => {
    * @param mqttOption The MQTT options
    */
   const mqttConnect = (host: string, mqttOption?: IClientOptions) => {
-    console.log('Connecting to MQTT broker: ', host);
+    log(`Connecting to MQTT broker: ${host}`);
     setConnectionStatus(MQTT_CONNECTION_STATUS.CONNECTING);
     const mqttClient = mqtt.connect(host, mqttOption);
     setClient(mqttClient);
@@ -57,11 +58,11 @@ export const MQTTProvider = ({ broker, qos, children }: MQTTProviderProps) => {
   useEffect(() => {
     if (client) {
       client.on('connect', () => {
-        console.log('Client connected to broker');
+        log('MQTT client connected to broker');
         setConnectionStatus(MQTT_CONNECTION_STATUS.CONNECTED);
       });
       client.on('error', (err: any) => {
-        console.error('Connection error: ', err);
+        log(`MQTT connection error: ${err}`);
         setConnectionStatus(MQTT_CONNECTION_STATUS.ERROR);
         client.end();
       });
@@ -69,7 +70,7 @@ export const MQTTProvider = ({ broker, qos, children }: MQTTProviderProps) => {
         setConnectionStatus(MQTT_CONNECTION_STATUS.RECONNECTING);
       });
     } else {
-      console.log("Client doesn't exist, reconnecting...");
+      log("MQTT client doesn't exist, reconnecting...");
       mqttConnect(broker);
     }
   }, [client]);
@@ -83,12 +84,12 @@ export const MQTTProvider = ({ broker, qos, children }: MQTTProviderProps) => {
   const publish = (topic: string, payload: string, podId: string) => {
     const fullTopic = getTopic(topic, podId);
     if (!client) {
-      console.error(`Couldn't publish to ${fullTopic} because client is null`);
+      log(`MQTT couldn't publish to ${fullTopic} because client is null`);
       return;
     }
     client.publish(fullTopic, payload, { qos }, (error) => {
       if (error) {
-        console.error('Publish error: ', error);
+        log(`MQTT publish error: ${error}`);
       }
     });
   };
@@ -101,9 +102,7 @@ export const MQTTProvider = ({ broker, qos, children }: MQTTProviderProps) => {
   const subscribe = (topic: string, podId: string) => {
     const fullTopic = getTopic(topic, podId);
     if (!client) {
-      console.error(
-        `Couldn't subscribe to ${fullTopic} because client is null`,
-      );
+      log(`MQTT couldn't subscribe to ${fullTopic} because client is null`);
       return;
     }
     client.subscribe(fullTopic, { qos });
@@ -118,9 +117,7 @@ export const MQTTProvider = ({ broker, qos, children }: MQTTProviderProps) => {
   const unsubscribe = (topic: string, podId: string) => {
     const fullTopic = getTopic(topic, podId);
     if (!client) {
-      console.error(
-        `Couldn't unsubscribe from ${fullTopic} because client is null`,
-      );
+      log(`MQTT couldn't unsubscribe from ${fullTopic} because client is null`);
       return;
     }
     client.unsubscribe(fullTopic);
