@@ -50,7 +50,8 @@ export class RealtimeTelemetryDataGateway {
       podId,
       measurementKey,
       value,
-      timestamp,
+      // convert from ns to milliseconds
+      timestamp: Number(timestamp) / 1000000,
     });
 
     this.logger.debug(

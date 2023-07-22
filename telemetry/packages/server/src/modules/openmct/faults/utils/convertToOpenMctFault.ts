@@ -8,6 +8,8 @@ export function convertToOpenMctFault(
   const { measurement, tripReading, level } = fault;
 
   const namespace = `/${tripReading.podId}/${measurement.key}`;
+  const triggerDate = new Date(Number(tripReading.timestamp) / 1000000);
+
   return {
     type: 'global-alarm-status',
     fault: {
@@ -19,7 +21,8 @@ export function convertToOpenMctFault(
       shortDescription: '',
       shelved: false,
       acknowledged: false,
-      triggerTime: tripReading.timestamp.toString(),
+      // convert unix timestamp to HH:mm:ss
+      triggerTime: `${triggerDate.getHours()}:${triggerDate.getMinutes()}:${triggerDate.getSeconds()}`,
       triggerValueInfo: {
         value: tripReading.value,
         rangeCondition: level,
