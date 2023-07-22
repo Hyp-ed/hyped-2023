@@ -9,7 +9,7 @@ export function convertToOpenMctFault(
 
   const namespace = `/${tripReading.podId}/${measurement.key}`;
   return {
-    type: 'alarms',
+    type: 'global-alarm-status',
     fault: {
       id: `${namespace}-${nanoid()}`,
       name: `${measurement.name} is out of range`,

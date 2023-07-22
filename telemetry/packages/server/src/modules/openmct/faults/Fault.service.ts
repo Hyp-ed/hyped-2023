@@ -53,8 +53,8 @@ export class FaultService {
     }
 
     const openMctFault = convertToOpenMctFault(fault);
-    this.realtimeService.sendFault(openMctFault);
     await this.saveFault(fault, openMctFault);
+    this.realtimeService.sendFault(openMctFault);
   }
 
   private async saveFault(fault: Fault, openMctFault: OpenMctFault) {
@@ -92,8 +92,6 @@ export class FaultService {
     const updatedFault = influxFault.fault;
     updatedFault.fault.currentValueInfo.value = updatedReading.value;
 
-    this.realtimeService.sendFault(updatedFault);
-
     const point = new Point('fault')
       .timestamp(updatedReading.timestamp)
       .tag('faultId', updatedFault.fault.id)
@@ -116,5 +114,7 @@ export class FaultService {
         FaultService.name,
       );
     }
+
+    this.realtimeService.sendFault(updatedFault);
   }
 }
