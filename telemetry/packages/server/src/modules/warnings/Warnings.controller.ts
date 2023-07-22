@@ -3,10 +3,10 @@ import { WarningsService } from './Warnings.service';
 
 @Controller('pods/:podId/warnings')
 export class WarningsController {
-  constructor(private warningsServcie: WarningsService) {}
+  constructor(private warningsService: WarningsService) {}
 
   @Post('latency')
   async createLatencyWarning(@Param('podId') podId: string) {
-    await this.warningsServcie.createLatencyWarning(podId);
+    await this.warningsService.createLatencyWarning(podId);
   }
 }
