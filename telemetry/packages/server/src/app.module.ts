@@ -8,7 +8,7 @@ import { MqttIngestionModule } from './modules/mqtt/ingestion/MqttIngestion.modu
 import { OpenMCTModule } from './modules/openmct/OpenMCT.module';
 import { MeasurementModule } from './modules/measurement/Measurement.module';
 import { PodControlsModule } from './modules/controls/PodControls.module';
-import { LogsModule } from './modules/send-logs/Logs.module';
+import { RemoteLogsModule } from './modules/remote-logs/RemoteLogs.module';
 
 @Module({
   imports: [
@@ -19,7 +19,7 @@ import { LogsModule } from './modules/send-logs/Logs.module';
     OpenMCTModule,
     MeasurementModule,
     PodControlsModule,
-    LogsModule,
+    RemoteLogsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
