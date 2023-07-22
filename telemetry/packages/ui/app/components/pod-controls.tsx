@@ -20,6 +20,8 @@ import { usePod } from '@/context/pods';
 import { http } from 'openmct/core/http';
 import { log } from '@/lib/logger';
 import { ALL_POD_STATES } from '@hyped/telemetry-constants';
+import { useToggle } from 'usehooks-ts'
+import { StartDialog } from './StartDialog';
 
 interface PodControlsProps {
   podId: string;
@@ -28,6 +30,7 @@ interface PodControlsProps {
 
 export const PodControls = ({ podId, show }: PodControlsProps) => {
   const { podState } = usePod(podId);
+  const [countdownOpen, toggleCountdown, setCountdown] = useToggle()
 
   const [clamped, setClamped] = useState(false);
   const [raised, setRaised] = useState(false);
@@ -44,6 +47,14 @@ export const PodControls = ({ podId, show }: PodControlsProps) => {
     if (value) http.post(`pods/${podId}/controls/live-mc`);
     else http.post(`pods/${podId}/controls/pre-charge-mc`);
   };
+
+  const startPodClick = async () => {
+    // const ans = await confirm();
+    // if (ans) {
+      // startPod(podId);
+      setStopped(false);
+    // }
+  }
 
   // Display notification when the pod state changes
   useEffect(() => {
@@ -78,10 +89,7 @@ export const PodControls = ({ podId, show }: PodControlsProps) => {
                 'px-4 py-10 rounded-md shadow-lg transition text-white text-3xl font-bold',
                 'bg-green-600 hover:bg-green-700',
               )}
-              onClick={() => {
-                startPod(podId);
-                setStopped(false);
-              }}
+              onClick={() => setCountdown(true)}
             >
               START RUN
             </Button>
@@ -154,6 +162,7 @@ export const PodControls = ({ podId, show }: PodControlsProps) => {
           </Button>
         </div>
       </div>
+      <StartDialog startCallback={startPodClick} isDialogOpen={countdownOpen} closeDialog={() => setCountdown(false)} />
     </div>
   );
 };
