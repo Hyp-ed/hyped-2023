@@ -82,3 +82,10 @@ export const stopHP = async (podId: string) => {
   const res = await http.post(`pods/${podId}/controls/stop-hp`);
   return res.status === 200;
 };
+
+export const tilt = async (podId: string) => {
+  toast(`[${podId}] tilt!`);
+  const res = await http.post(`pods/${podId}/controls/tilt`);
+  return res.status === 200;
+};
+
