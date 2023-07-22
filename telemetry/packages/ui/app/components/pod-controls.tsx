@@ -18,6 +18,7 @@ import {
 } from '@/controls/controls';
 import { usePod } from '@/context/pods';
 import { http } from 'openmct/core/http';
+import { log } from '@/lib/logger';
 
 interface PodControlsProps {
   podId: string;
@@ -46,6 +47,7 @@ export const PodControls = ({ podId, show }: PodControlsProps) => {
   // Display notification when the pod state changes
   useEffect(() => {
     toast(`Pod state changed: ${podState}`);
+    log(`Pod state changed: ${podState}`, podId);
   }, [podState]);
 
   return (

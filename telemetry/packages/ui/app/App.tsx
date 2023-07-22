@@ -27,7 +27,7 @@ const App = () => {
         <div className="flex flex-col gap-2">
           <div className="flex flex-col gap-1">
             <ConnectionStatus podId={currentPod} />
-            <PodDisconnectError status={connectionStatus} />
+            <PodDisconnectError status={connectionStatus} podId={currentPod} />
             <Latency podId={currentPod} />
           </div>
           <h1 className="text-5xl font-title font-black my-2">Controls</h1>
