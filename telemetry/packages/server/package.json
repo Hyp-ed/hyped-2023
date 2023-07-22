@@ -30,6 +30,7 @@
     "dotenv": "^16.0.3",
     "env-var": "^7.3.0",
     "mqtt": "^4.3.7",
+    "nanoid": "^3.3.6",
     "nest-mqtt": "^0.2.0",
     "nest-winston": "^1.9.1",
     "random": "^3.0.6",

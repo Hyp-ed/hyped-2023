@@ -1,6 +1,6 @@
 import { flux, fluxDateTime } from '@influxdata/influxdb-client';
 import { Injectable, LoggerService } from '@nestjs/common';
-import { INFLUX_BUCKET } from '@/core/config';
+import { INFLUX_TELEMETRY_BUCKET } from '@/core/config';
 import { InfluxService } from '@/modules/influx/Influx.service';
 import { Logger } from '@/modules/logger/Logger.decorator';
 
@@ -13,7 +13,7 @@ type InfluxRow = {
 };
 
 @Injectable()
-export class HistoricalDataService {
+export class HistoricalTelemetryDataService {
   constructor(
     private influxService: InfluxService,
     @Logger()
@@ -34,7 +34,7 @@ export class HistoricalDataService {
     );
 
     const query = flux`
-      from(bucket: "${INFLUX_BUCKET}")
+      from(bucket: "${INFLUX_TELEMETRY_BUCKET}")
         |> range(start: ${fluxStart}, stop: ${fluxEnd})
         |> filter(fn: (r) => r["measurementKey"] == "${measurementKey}")
         |> filter(fn: (r) => r["podId"] == "${podId}")`;
@@ -51,7 +51,7 @@ export class HistoricalDataService {
       this.logger.error(
         `Failed to get historical reading for {${podId}/${measurementKey}}`,
         e,
-        HistoricalDataService.name,
+        HistoricalTelemetryDataService.name,
       );
     }
   }

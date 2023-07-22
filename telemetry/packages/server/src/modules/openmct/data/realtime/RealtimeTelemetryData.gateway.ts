@@ -17,7 +17,7 @@ import { Server, Socket } from 'socket.io';
     origin: '*',
   },
 })
-export class RealtimeDataGateway {
+export class RealtimeTelemetryDataGateway {
   @WebSocketServer()
   socket: Server;
 
@@ -43,19 +43,19 @@ export class RealtimeDataGateway {
   }
 
   sendMeasurementReading(props: MeasurementReading) {
-    const { podId, measurementKey, value } = props;
+    const { podId, measurementKey, value, timestamp } = props;
 
     const measurementRoom = socketConstants.getMeasurementRoomName(podId, measurementKey);
     this.socket.to(measurementRoom).emit(socketConstants.MEASUREMENT_EVENT, {
       podId,
       measurementKey,
       value,
-      timestamp: Date.now(),
+      timestamp,
     });
 
     this.logger.debug(
       `Sending realtime ${value} to ${measurementRoom}`,
-      RealtimeDataGateway.name,
+      RealtimeTelemetryDataGateway.name,
     );
   }
 }

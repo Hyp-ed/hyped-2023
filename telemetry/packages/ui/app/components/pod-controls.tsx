@@ -14,6 +14,7 @@ import {
   stopPod,
   startHP,
   stopHP,
+  tilt,
 } from '@/controls/controls';
 import { usePod } from '@/context/pods';
 import { http } from 'openmct/core/http';
@@ -126,6 +127,19 @@ export const PodControls = ({ podId, show }: PodControlsProps) => {
             }}
           >
             {deadmanSwitch ? 'HP Active' : 'HP Inactive'}
+          </Button>
+
+          <Button
+            className={cn(
+              'px-4 py-10 rounded-md shadow-lg transition text-white text-3xl font-bold',
+              deadmanSwitch && 'bg-red-600 hover:bg-red-700',
+              !deadmanSwitch && 'bg-gray-600 hover:bg-gray-700',
+            )}
+            onClick={() => {
+              tilt(podId);
+            }}
+          >
+            Tilt
           </Button>
         </div>
       </div>

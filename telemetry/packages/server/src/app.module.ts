@@ -7,6 +7,7 @@ import { MqttClientModule } from './modules/mqtt/client/MqttClientModule';
 import { MqttIngestionModule } from './modules/mqtt/ingestion/MqttIngestion.module';
 import { OpenMCTModule } from './modules/openmct/OpenMCT.module';
 import { MeasurementModule } from './modules/measurement/Measurement.module';
+import { FaultModule } from './modules/openmct/faults/Fault.module';
 import { PodControlsModule } from './modules/controls/PodControls.module';
 
 @Module({
@@ -17,6 +18,7 @@ import { PodControlsModule } from './modules/controls/PodControls.module';
     MqttIngestionModule,
     OpenMCTModule,
     MeasurementModule,
+    FaultModule,
     PodControlsModule,
   ],
   controllers: [AppController],
