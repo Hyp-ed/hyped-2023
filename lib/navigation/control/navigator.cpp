@@ -45,8 +45,9 @@ std::optional<core::Trajectory> Navigator::currentTrajectory()
     trajectory_.displacement, mean_encoder_value, mean_keyence_value);
   */
   // temp solution
-  SensorChecks check_trajectory = SensorChecks::kAcceptable;
-  if (std::abs(trajectory_.displacement - mean_keyence_value) > 10) {
+  const core::Float keyence_displacement = mean_keyence_value * kStripeDistance;
+  SensorChecks check_trajectory          = SensorChecks::kAcceptable;
+  if (std::abs(trajectory_.displacement - keyence_displacement) > 10) {
     check_trajectory = SensorChecks::kUnacceptable;
   }
 
@@ -91,7 +92,7 @@ core::Result Navigator::keyenceUpdate(const core::KeyenceData &keyence_data)
 }
 
 // TODOLater: check input from sensors matches this
-// THIS SHOULD NOT BE CALLED!
+// THIS SHOULD NOT BE CALLED! - wheel encoders not currenty operational!
 core::Result Navigator::encoderUpdate(const core::EncoderData &encoder_data)
 {
   // check encoder data strictly increasing
@@ -166,6 +167,16 @@ core::Result Navigator::accelerometerUpdate(
 
   logger_.log(core::LogLevel::kInfo, "Navigation trjectory successfully updated.");
   return core::Result::kSuccess;
+}
+
+core::KeyenceData Navigator::getPreviousKeyenceReading()
+{
+  return previous_keyence_reading_;
+}
+
+core::EncoderData Navigator::getPreviousEncoderReading()
+{
+  return previous_encoder_reading_;
 }
 
 }  // namespace hyped::navigation
