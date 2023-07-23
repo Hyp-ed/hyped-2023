@@ -4,11 +4,11 @@
 
 namespace hyped::utils {
 
-class DummyI2cSensor : public sensors::IMuxSensor<std::uint8_t> {
+class DummyAdcMuxSensor : public sensors::IMuxSensor<core::Float> {
  public:
-  DummyI2cSensor();
+  DummyAdcMuxSensor();
   virtual core::Result configure();
-  virtual std::optional<std::uint8_t> read();
+  virtual std::optional<core::Float> read();
   virtual std::uint8_t getChannel() const;
 };
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "i2c_sensors.hpp"
+#include "mux_sensors.hpp"
 
 #include <cstdint>
 #include <memory>
@@ -15,7 +15,7 @@ namespace hyped::sensors {
 constexpr std::uint8_t kDefaultTemperatureAddress     = 0x38;
 constexpr std::uint8_t kAlternativeTemperatureAddress = 0x3F;
 
-class Temperature : public II2cMuxSensor<std::int16_t> {
+class Temperature : public IMuxSensor<std::int16_t> {
  public:
   static std::optional<Temperature> create(core::ILogger &logger,
                                            std::shared_ptr<io::II2c> i2c,

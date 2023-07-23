@@ -1,6 +1,6 @@
 #pragma once
 
-#include "i2c_sensors.hpp"
+#include "mux_sensors.hpp"
 
 #include <unistd.h>
 
@@ -21,12 +21,16 @@ constexpr std::string_view kAxisLabels[3] = {"x-axis", "y-axis", "z-axis"};
 constexpr std::uint8_t kDefaultAccelerometerAddress     = 0x19;
 constexpr std::uint8_t kAlternativeAccelerometerAddress = 0x18;
 
-class Accelerometer : public II2cMuxSensor<core::RawAccelerationData> {
+class Accelerometer : public IMuxSensor<core::RawAccelerationData> {
  public:
   static std::optional<Accelerometer> create(core::ILogger &logger,
                                              std::shared_ptr<io::II2c> i2c,
                                              const std::uint8_t channel,
                                              const std::uint8_t device_address);
+  Accelerometer(core::ILogger &logger,
+                std::shared_ptr<io::II2c> i2c,
+                const std::uint8_t channel,
+                const std::uint8_t device_address);
   ~Accelerometer();
 
   /*
@@ -42,10 +46,6 @@ class Accelerometer : public II2cMuxSensor<core::RawAccelerationData> {
   std::uint8_t getChannel() const;
 
  private:
-  Accelerometer(core::ILogger &logger,
-                std::shared_ptr<io::II2c> i2c,
-                const std::uint8_t channel,
-                const std::uint8_t device_address);
   std::optional<std::int16_t> getRawAcceleration(const core::Axis axis);
   std::int32_t getAccelerationFromRawValue(const std::int16_t rawAcceleration);
   void setRegisterAddressFromAxis(const core::Axis axis);
