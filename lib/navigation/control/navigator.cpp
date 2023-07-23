@@ -46,7 +46,7 @@ std::optional<core::Trajectory> Navigator::currentTrajectory()
   */
   // temp solution
   SensorChecks check_trajectory = SensorChecks::kAcceptable;
-  if (std::abs(trajectory_.displacement - mean_keyence_value) > 10) {
+  if (std::abs(trajectory_.displacement - mean_keyence_value) > 12) {
     check_trajectory = SensorChecks::kUnacceptable;
   }
 
@@ -60,8 +60,8 @@ std::optional<core::Trajectory> Navigator::currentTrajectory()
 
   // TODOLater: check braking implementation here!
   if (trajectory_.displacement
-      > static_cast<core::Float>(kTrackLength - (1.5 * kBrakingDistance))) {
-    logger_.log(core::LogLevel::kFatal, "Time to break!");
+      > static_cast<core::Float>(kTrackLength - kBrakingDistance - kBreakingBuffer)) {
+    logger_.log(core::LogLevel::kFatal, "Time to brake!");
     return std::nullopt;
   }
 
