@@ -54,7 +54,7 @@ class Controller {
   core::Result processSdoMessage(const std::uint16_t index,
                                  const std::uint8_t subindex,
                                  std::uint32_t data);
-
+  void setCurrent(const std::uint64_t current);
   /**
    * @brief Runs the motor controller in the provided state from state machine
    *

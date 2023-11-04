@@ -172,14 +172,6 @@ int main(int argc, char **argv)
     }
   }
 
-  // DeadManSwitch
-  const hyped::io::PwmModule pwm_module = static_cast<hyped::io::PwmModule>(2);
-  const auto optional
-    = hyped::io::Pwm::create(logger, pwm_module, 50, hyped::io::Polarity::kActiveHigh);
-  const auto pwm = *optional;
-
-  const hyped::core::Result pwm_duty_cycle = pwm->setDutyCycleByPercentage(0.5);
-
   /* big man can */
   const auto optional_can = getCan(logger, "can1");
   if (!optional_can) {
@@ -232,30 +224,42 @@ int main(int argc, char **argv)
     return -1;
   }
   const auto keyence = *optional_keyence;
+  const auto optional_brake_pin
+    = gpio->getWriter(1, hyped::io::Edge::kRising);  // TODO change this to the correct pin
+  if (!optional_brake_pin) {
+    logger.log(hyped::core::LogLevel::kFatal, "Failed to get brake pin");
+    return -1;
+  }
+  const auto brake_pin             = *optional_brake_pin;
+  const auto retract_brakes_result = brake_pin->write(hyped::core::DigitalSignal::kLow);
+  if (retract_brakes_result == hyped::core::Result::kFailure) {
+    logger.log(hyped::core::LogLevel::kFatal, "Failed to retract brakes");
+    return -1;
+  }
   // set up a thread to update keyence at every 100ms
   std::thread t(keep_updating_keyence, keyence, sockfd, num_poles);
   t.detach();
-  while (!should_brake) {
-    // setting up the motor to vrooom vrooom
-    for (int i = 200; i <= 1000; i += 200) {
-      const auto accelerate_result = controller->run(hyped::motors::FauxState::kAccelerate, i);
-      if (accelerate_result == hyped::core::Result::kFailure) {
-        logger.log(hyped::core::LogLevel::kFatal, "Failed to accelerate");
-        return -1;
-      }
-      std::this_thread::sleep_for(std::chrono::milliseconds(200));
-    }
-  }
-  // STOPPING
-  for (int i = 1000; i >= 0; i -= 200) {
-    const auto accelerate_result = controller->run(hyped::motors::FauxState::kStop, i);
+  controller->setCurrent(0);
+  // setting up the motor to vrooom vrooom
+  for (int i = 200; i <= 1000; i += 200) {
+    controller->setCurrent(i);
+    const auto accelerate_result = controller->run(hyped::motors::FauxState::kAccelerate);
     if (accelerate_result == hyped::core::Result::kFailure) {
       logger.log(hyped::core::LogLevel::kFatal, "Failed to accelerate");
       return -1;
     }
     std::this_thread::sleep_for(std::chrono::milliseconds(200));
   }
-  pwm->setDutyCycleByPercentage(0);
+  // STOPPING
+  for (int i = 1000; i >= 0; i -= 200) {
+    const auto accelerate_result = controller->run(hyped::motors::FauxState::kStop);
+    if (accelerate_result == hyped::core::Result::kFailure) {
+      logger.log(hyped::core::LogLevel::kFatal, "Failed to accelerate");
+      return -1;
+    }
+    std::this_thread::sleep_for(std::chrono::milliseconds(200));
+  }
+  brake_pin->write(hyped::core::DigitalSignal::kHigh);
   // SHUTTING DOWN
   std::cout << "your mum lol, bye...."
             << "\n";

@@ -16,6 +16,14 @@
         }
     },
     "messages": {
+        "set_current": {
+            "TODO": "TODO",
+            "id": "0x601",
+            "command": "0x2B",
+            "index": "0x0000",
+            "subindex": "0x00",
+            "data": "0x00000000"
+        },
         "enter_stop_state": {
             "id": "0x000",
             "command": "0x02",

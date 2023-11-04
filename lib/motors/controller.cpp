@@ -447,6 +447,17 @@ core::Result Controller::run(FauxState state)
   }
 }
 
+void Controller::setCurrent(const std::uint64_t current)
+{
+  auto message    = messages_.find("set_current")->second;
+  message.data[4] = current & 0xFF;
+  message.data[5] = (current >> 8) & 0xFF;
+  message.data[6] = (current >> 16) & 0xFF;
+  message.data[7] = (current >> 24) & 0xFF;
+
+  can_->send(message);
+}
+
 core::Result Controller::configure()
 {
   for (io::CanFrame message : configuration_messages_) {
