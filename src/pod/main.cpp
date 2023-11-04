@@ -235,9 +235,6 @@ int main(int argc, char **argv)
   // set up a thread to update keyence at every 100ms
   std::thread t(keep_updating_keyence, keyence, sockfd, num_poles);
   t.detach();
-  while (true) {
-    logger.log(hyped::core::LogLevel::kInfo, "this is to waste time");
-  }
   while (!should_brake) {
     // setting up the motor to vrooom vrooom
     for (int i = 200; i <= 1000; i += 200) {
