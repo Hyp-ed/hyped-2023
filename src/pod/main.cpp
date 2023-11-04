@@ -252,7 +252,7 @@ int main(int argc, char **argv)
   // STOPPING
   for (int i = 1000; i >= 0; i -= 200) {
     // const auto accelerate_result = controller->run(hyped::motors::FauxState::kStop, i);
-    // if (accelerate_result == hyped::czore::Result::kFailure) {
+    // if (accelerate_result == hyped::core::Result::kFailure) {
     //   logger.log(hyped::core::LogLevel::kFatal, "Failed to accelerate");
     //   return -1;
     // }
