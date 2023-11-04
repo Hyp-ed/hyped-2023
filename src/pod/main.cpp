@@ -238,23 +238,24 @@ int main(int argc, char **argv)
   while (!should_brake) {
     // setting up the motor to vrooom vrooom
     for (int i = 200; i <= 1000; i += 200) {
-      // const auto accelerate_result = controller->run(hyped::motors::FauxState::kAccelerate, i);
-      // if (accelerate_result == hyped::core::Result::kFailure) {
-      //   logger.log(hyped::core::LogLevel::kFatal, "Failed to accelerate");
-      //   return -1;
-      // }
+      const auto accelerate_result = controller->run(hyped::motors::FauxState::kAccelerate, i);
+      if (accelerate_result == hyped::core::Result::kFailure) {
+        logger.log(hyped::core::LogLevel::kFatal, "Failed to accelerate");
+        return -1;
+      }
       std::this_thread::sleep_for(std::chrono::milliseconds(200));
     }
   }
   // STOPPING
   for (int i = 1000; i >= 0; i -= 200) {
-    // const auto accelerate_result = controller->run(hyped::motors::FauxState::kStop, i);
-    // if (accelerate_result == hyped::core::Result::kFailure) {
-    //   logger.log(hyped::core::LogLevel::kFatal, "Failed to accelerate");
-    //   return -1;
-    // }
+    const auto accelerate_result = controller->run(hyped::motors::FauxState::kStop, i);
+    if (accelerate_result == hyped::core::Result::kFailure) {
+      logger.log(hyped::core::LogLevel::kFatal, "Failed to accelerate");
+      return -1;
+    }
     std::this_thread::sleep_for(std::chrono::milliseconds(200));
   }
+  pwm->setDutyCycleByPercentage(0);
   // SHUTTING DOWN
   std::cout << "your mum lol, bye...."
             << "\n";

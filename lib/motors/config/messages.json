@@ -2,7 +2,7 @@
     "config_messages": {
         "test_stepper_enable": {
             "id": "0x601",
-            "command": "0x2B",
+            "command": "0x2F",
             "index": "0x6040",
             "subindex": "0x09",
             "data": "0x00000001"
