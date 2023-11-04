@@ -17,6 +17,7 @@
 #include <io/can.hpp>
 #include <io/hardware_can.hpp>
 #include <io/hardware_gpio.hpp>
+#include <io/hardware_i2c.hpp>
 #include <io/pwm.hpp>
 #include <motors/constant_frequency_calculator.hpp>
 #include <motors/controller.hpp>
@@ -58,6 +59,21 @@ void keep_updating_keyence(std::shared_ptr<hyped::sensors::Keyence> keyence,
     send(sockfd, json.c_str(), json.length(), 0);
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
     if (should_brake) { break; }
+  }
+}
+
+void log_accelerometer(std::shared_ptr<hyped ::sensors::Accelerometer> accelerometer, int file_fd)
+{
+  while (true) {
+    if (accelerometer->isValueReady() == hyped::core::Result::kFailure) { continue; }
+    const auto optional_data = accelerometer->read();
+    if (!optional_data) { continue; }
+    const auto data    = *optional_data;
+    std::string record = std::to_string(data.measured_at.time_since_epoch().count()) + ", "
+                         + std::to_string(data.x) + ", " + std::to_string(data.y) + ", "
+                         + std::to_string(data.z) + "\n";
+    send(file_fd, record.c_str(), record.length(), 0);
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
   }
 }
 
@@ -239,6 +255,27 @@ int main(int argc, char **argv)
   // set up a thread to update keyence at every 100ms
   std::thread t(keep_updating_keyence, keyence, sockfd, num_poles);
   t.detach();
+  // set up a thread to log accelerometer data
+  const auto optional_i2c
+    = hyped::io::HardwareI2c::create(logger, 1);  // TODO change this to the correct bus
+  if (!optional_i2c) {
+    logger.log(hyped::core::LogLevel::kFatal, "Failed to create I2C instance");
+    return -1;
+  }
+  const auto i2c                    = *optional_i2c;
+  const auto optional_accelerometer = hyped::sensors::Accelerometer::create(
+    logger, i2c, 1, 0x19);  // TODO change this to the correct address
+  if (!optional_accelerometer) {
+    logger.log(hyped::core::LogLevel::kFatal, "Failed to create accelerometer instance");
+    return -1;
+  }
+  const auto accelerometer = *optional_accelerometer;
+  int file_fd              = open("accelerometer_data.csv", O_WRONLY | O_CREAT | O_TRUNC, 0644);
+  if (file_fd < 0) {
+    logger.log(hyped::core::LogLevel::kFatal, "Failed to open file");
+    return -1;
+  }
+  std::thread t3(log_accelerometer, accelerometer, file_fd);
   controller->setCurrent(0);
   // setting up the motor to vrooom vrooom
   for (int i = 200; i <= 1000; i += 200) {

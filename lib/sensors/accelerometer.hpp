@@ -23,10 +23,10 @@ constexpr std::uint8_t kAlternativeAccelerometerAddress = 0x18;
 
 class Accelerometer : public II2cMuxSensor<core::RawAccelerationData> {
  public:
-  static std::optional<Accelerometer> create(core::ILogger &logger,
-                                             std::shared_ptr<io::II2c> i2c,
-                                             const std::uint8_t channel,
-                                             const std::uint8_t device_address);
+  static std::optional<std::shared_ptr<Accelerometer>> create(core::ILogger &logger,
+                                                              std::shared_ptr<io::II2c> i2c,
+                                                              const std::uint8_t channel,
+                                                              const std::uint8_t device_address);
   ~Accelerometer();
 
   /*
@@ -41,11 +41,12 @@ class Accelerometer : public II2cMuxSensor<core::RawAccelerationData> {
 
   std::uint8_t getChannel() const;
 
- private:
   Accelerometer(core::ILogger &logger,
                 std::shared_ptr<io::II2c> i2c,
                 const std::uint8_t channel,
                 const std::uint8_t device_address);
+
+ private:
   std::optional<std::int16_t> getRawAcceleration(const core::Axis axis);
   std::int32_t getAccelerationFromRawValue(const std::int16_t rawAcceleration);
   void setRegisterAddressFromAxis(const core::Axis axis);
