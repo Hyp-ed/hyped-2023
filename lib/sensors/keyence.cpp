@@ -2,17 +2,17 @@
 
 namespace hyped::sensors {
 
-std::optional<Keyence> Keyence::create(core::ILogger &logger,
-                                       std::shared_ptr<io::IGpio> gpio,
-                                       const std::uint8_t new_pin)
+std::optional<std::shared_ptr<Keyence>> Keyence::create(core::ILogger &logger,
+                                                        std::shared_ptr<io::HardwareGpio> gpio,
+                                                        const std::uint8_t new_pin)
 {
-  const auto reader = gpio->getReader(new_pin);
+  const auto reader = gpio->getReader(new_pin, io::Edge::kRising);
   if (!reader) {
     logger.log(core::LogLevel::kFatal, "Failed to create Keyence instance");
     return std::nullopt;
   }
   logger.log(core::LogLevel::kDebug, "Successfully created Keyence instance");
-  return Keyence(logger, *reader);
+  return std::make_shared<Keyence>(logger, *reader);
 }
 
 Keyence::Keyence(core::ILogger &logger, std::shared_ptr<io::IGpioReader> gpio_reader)

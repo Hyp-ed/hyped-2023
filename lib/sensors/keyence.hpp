@@ -6,20 +6,20 @@
 
 #include <core/logger.hpp>
 #include <io/gpio.hpp>
+#include <io/hardware_gpio.hpp>
 
 namespace hyped::sensors {
 class Keyence {
  public:
-  static std::optional<Keyence> create(core::ILogger &logger,
-                                       std::shared_ptr<io::IGpio> gpio,
-                                       const std::uint8_t new_pin);
+  static std::optional<std::shared_ptr<Keyence>> create(core::ILogger &logger,
+                                                        std::shared_ptr<io::HardwareGpio> gpio,
+                                                        const std::uint8_t new_pin);
   ~Keyence();
 
   std::uint8_t getStripeCount();
 
   void updateStripeCount();
 
- private:
   Keyence(core::ILogger &logger, std::shared_ptr<io::IGpioReader> gpio_reader);
 
  private:

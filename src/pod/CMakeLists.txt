@@ -11,4 +11,6 @@ target_link_libraries(${target}
     hyped_core
     hyped_io
     hyped_utils
+    hyped_sensors
+    hyped_motors
 )
