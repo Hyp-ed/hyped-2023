@@ -127,23 +127,6 @@ int main(int argc, char **argv)
   hyped::core::WallClock time;
   hyped::core::Timer timer(time);
   hyped::core::Logger logger("Pod", hyped::core::LogLevel::kWarn, time);
-  // Connect to sender TCP server
-  int sockfd = socket(AF_INET, SOCK_STREAM, 0);
-  if (sockfd < 0) {
-    logger.log(hyped::core::LogLevel::kFatal, "Failed to create socket");
-    return -1;
-  }
-  struct sockaddr_in serv_addr;
-  serv_addr.sin_family      = AF_INET;
-  serv_addr.sin_port        = htons(65433);
-  serv_addr.sin_addr.s_addr = inet_addr("192.168.1.56");
-  // Connect to TCP server
-  if (connect(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
-    // Print error message and errno
-    logger.log(hyped::core::LogLevel::kFatal, "Failed to connect to socket");
-    logger.log(hyped::core::LogLevel::kFatal, "Error: %s", strerror(errno));
-    return -1;
-  }
   // Connect to receiver TCP server
   int sockfd2 = socket(AF_INET, SOCK_STREAM, 0);
   if (sockfd2 < 0) {
@@ -154,7 +137,7 @@ int main(int argc, char **argv)
   struct sockaddr_in serv_addr2;
   serv_addr2.sin_family      = AF_INET;
   serv_addr2.sin_port        = htons(65432);
-  serv_addr2.sin_addr.s_addr = inet_addr("192.168.1.56");
+  serv_addr2.sin_addr.s_addr = inet_addr("192.168.6.1");
 
   // Set socket to non-blocking
   int flags = fcntl(sockfd2, F_GETFL, 0);
@@ -253,8 +236,8 @@ int main(int argc, char **argv)
     return -1;
   }
   // set up a thread to update keyence at every 100ms
-  std::thread t(keep_updating_keyence, keyence, sockfd, num_poles);
-  t.detach();
+  // std::thread t(keep_updating_keyence, keyence, sockfd, num_poles);
+  // t.detach();
   // set up a thread to log accelerometer data
   const auto optional_i2c
     = hyped::io::HardwareI2c::create(logger, 1);  // TODO change this to the correct bus
@@ -276,6 +259,7 @@ int main(int argc, char **argv)
     return -1;
   }
   std::thread t3(log_accelerometer, accelerometer, file_fd);
+  t3.detach();
   controller->setCurrent(0);
   // setting up the motor to vrooom vrooom
   for (int i = 200; i <= 1000; i += 200) {
